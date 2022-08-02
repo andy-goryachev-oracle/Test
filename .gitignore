@@ -1,2 +1,3 @@
 /bin/
 .DS_Store
+hs_err*.log
