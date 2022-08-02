@@ -2,6 +2,7 @@ package goryachev.bugs.fit_to_width;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.skin.TableViewSkin;
@@ -39,6 +40,8 @@ public class TestFitToWidth extends Application {
     @Override
     public void start(Stage s) throws Exception {
         TableView<Entry> v = new TableView();
+        v.getSelectionModel().setCellSelectionEnabled(true);
+        v.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         v.setSkin(new TableViewSkin(v));
         v.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
@@ -63,7 +66,10 @@ public class TestFitToWidth extends Application {
         
         v.getItems().addAll(
                 new Entry("1", "One"),
-                new Entry("2", "Two")
+                new Entry("2", "Two"),
+                new Entry("3", "Three"),
+                new Entry("4", "Four"),
+                new Entry("99", "Ninety Nine")
                 );
         
         Scene sc = new Scene(v);
