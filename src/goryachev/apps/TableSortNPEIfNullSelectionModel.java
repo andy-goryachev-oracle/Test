@@ -52,11 +52,12 @@ public class TableSortNPEIfNullSelectionModel extends Application {
     }
     
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage s) throws Exception {
         Scene scene = new Scene(getContent());
-        primaryStage.setTitle(System.getProperty("java.version"));
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        s.setTitle(getClass().getSimpleName() + " " + System.getProperty("java.version"));
+        s.setWidth(600);
+        s.setScene(scene);
+        s.show();
     }
 
     public static void main(String[] args) {

@@ -42,9 +42,11 @@ public class TableViewNPEWithoutSelectionModel extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(new Scene(getContent(), 800, 400));
-        primaryStage.show();
+    public void start(Stage s) throws Exception {
+        s.setTitle(getClass().getSimpleName() + " " + System.getProperty("java.version"));
+        s.setWidth(600);
+        s.setScene(new Scene(getContent(), 800, 400));
+        s.show();
     }
     
     public static void main(String[] args) {
