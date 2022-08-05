@@ -7,13 +7,13 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableRow;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 /**
@@ -43,6 +43,17 @@ public class TreeTableSortNPEIfNullSelectionModel extends Application {
         
         // instantiate the table with null items
         TreeTableView<Locale> view = new TreeTableView<Locale>(root);
+        
+//        view.setRowFactory((v) -> {
+//            TreeTableRow r = new TreeTableRow();
+//            r.selectedProperty().addListener((s,p,on) -> {
+//                System.err.println("selected=" + on + " " + r);
+//            });
+//            r.focusedProperty().addListener((s,p,on) -> {
+//                System.err.println("focused=" + on + " " + r);
+//            });
+//            return r;
+//        });
         
         {
             TreeTableColumn<Locale, String> c = new TreeTableColumn<>("Language");
@@ -81,6 +92,7 @@ public class TreeTableSortNPEIfNullSelectionModel extends Application {
         //view.getSortOrder().add(column);
         BorderPane parent = new BorderPane();
         parent.setCenter(view);
+        parent.setBottom(new TextField());
         parent.setPadding(new Insets(20));
         return parent;
     }
