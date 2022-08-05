@@ -3,6 +3,7 @@ package goryachev.apps;
 import java.util.Locale;
 
 import javafx.application.Application;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -30,8 +31,15 @@ import javafx.stage.Stage;
  * @author Jeanette Winzenburg, Berlin
  */
 public class TreeTableSortNPEIfNullSelectionModel extends Application {
+    TreeTableView<Locale> view;
+    
     private Parent getContent() {
         TreeItem<Locale> root = new TreeItem(null);
+        
+        for (Locale loc: Locale.getAvailableLocales()) {
+            TreeItem<Locale> ch = new TreeItem(loc);
+            root.getChildren().add(ch);
+        }
         
         // instantiate the table with null items
         TreeTableView<Locale> view = new TreeTableView<Locale>(root);
@@ -46,8 +54,29 @@ public class TreeTableSortNPEIfNullSelectionModel extends Application {
             c.setCellValueFactory(new TreeItemPropertyValueFactory<>("ISO3Language"));
             view.getColumns().add(c);
         }
+        {
+            TreeTableColumn<Locale, String> c = new TreeTableColumn<>("Children");
+            c.setCellValueFactory((cdf) -> {
+                TreeItem v = cdf.getValue();
+                if(v == null) {
+                    return new ReadOnlyStringWrapper("");
+                }
+                else {
+                    int n = v.getChildren().size();
+                    return new ReadOnlyStringWrapper(String.valueOf(n));
+                }
+            });
+            view.getColumns().add(c);
+        }
 
+        root.setExpanded(true);
+
+        view.setShowRoot(true);
+        
+//        view.getSelectionModel().clearSelection();
         view.setSelectionModel(null);
+        view.setEditable(true);
+        
         // or add column to sort order immediately
         //view.getSortOrder().add(column);
         BorderPane parent = new BorderPane();
