@@ -1,4 +1,4 @@
-package goryachev.bugs.fit_to_width;
+package goryachev.apps;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
@@ -32,9 +32,9 @@ JDK-8090167 TableView not layouted correctly in scene
 
 JDK-8087673 [TableView] TableView and TreeTableView menu button overlaps columns when using a constrained resize policy.
 */
-public class TestFitToWidth extends Application {
+public class FitToWidth extends Application {
     public static void main(String[] args) {
-        Application.launch(TestFitToWidth.class, args);
+        Application.launch(FitToWidth.class, args);
     }
 
     @Override
