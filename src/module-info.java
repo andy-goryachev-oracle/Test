@@ -7,4 +7,5 @@ module andy_test {
     requires javafx.base;
     requires javafx.controls;
     requires javafx.graphics;
+    requires java.desktop;
 }
