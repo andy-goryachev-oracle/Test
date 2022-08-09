@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Locale;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
@@ -88,7 +89,7 @@ public class ATreeTableViewTester extends Application {
         showLastColumnCheckbox.setSelected(true);
         lastTableColumn.visibleProperty().bind(showLastColumnCheckbox.selectedProperty());
         showLastColumnCheckbox.selectedProperty().addListener((src,p,c) -> {
-            dump();
+            Platform.runLater(this::dumpTable);
         });
         
         CheckBox nullTableSelectionModel = new CheckBox("null cell selection model");
@@ -177,7 +178,7 @@ public class ATreeTableViewTester extends Application {
         showLastTreeColumnCheckbox.setSelected(true);
         lastTreeColumn.visibleProperty().bind(showLastTreeColumnCheckbox.selectedProperty());
         showLastTreeColumnCheckbox.selectedProperty().addListener((src,prev,c) -> {
-            dump();
+            Platform.runLater(this::dumpTree);
         });
         
         CheckBox nullTreeSelectionModel = new CheckBox("null cell selection model");
@@ -215,11 +216,11 @@ public class ATreeTableViewTester extends Application {
         stage.show();
     }
     
-    protected void dump() {
+    protected void dumpTable() {
         StringBuilder sb = new StringBuilder();
         
         List<Integer> indexes = table.getSelectionModel().getSelectedIndices();
-        sb.append("selected indexes: [");
+        sb.append("table selected indexes: [");
         
         for(int ix: indexes) {
             sb.append(ix).append(' ');
@@ -229,7 +230,31 @@ public class ATreeTableViewTester extends Application {
         sb.append("isSelected(int): [");
         for(int i=0; i<table.getItems().size(); i++) {
             boolean sel = table.getSelectionModel().isSelected(i);
-            sb.append(sel ? "T " : "F ");
+            sb.append(sel ? "T" : "-");
+        }
+        sb.append("]\n");
+        
+        System.out.println(sb);
+    }
+    
+    protected void dumpTree() {
+        StringBuilder sb = new StringBuilder();
+        
+        List<Integer> indexes = tree.getSelectionModel().getSelectedIndices();
+        sb.append("tree selected indexes: [");
+        
+        for(int ix: indexes) {
+            sb.append(ix).append(' ');
+        }
+        sb.append("]\n");
+        
+        sb.append("isSelected(int): [");
+        for(int i=0; i<10000000; i++) {
+            if(tree.getTreeItem(i) == null) {
+                break;
+            }
+            boolean sel = tree.getSelectionModel().isSelected(i);
+            sb.append(sel ? "T" : "-");
         }
         sb.append("]\n");
         
