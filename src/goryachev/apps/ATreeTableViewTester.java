@@ -27,10 +27,10 @@ import javafx.stage.Stage;
 public class ATreeTableViewTester extends Application {
     protected TableView<Entry> table;
     protected TableColumn lastTableColumn;
-    TreeTableView<Locale> tree;
-    TreeTableColumn<Locale,String> lastTreeColumn;
-    private TreeTableViewSelectionModel<Locale> oldTreeSelectionModel;
-    private TableViewSelectionModel<Entry> oldTableSelectionModel;
+    protected TreeTableView<Locale> tree;
+    protected TreeTableColumn<Locale,String> lastTreeColumn;
+    protected TreeTableViewSelectionModel<Locale> oldTreeSelectionModel;
+    protected TableViewSelectionModel<Entry> oldTableSelectionModel;
     
     public static void main(String[] args) {
         Application.launch(ATreeTableViewTester.class, args);
@@ -104,13 +104,26 @@ public class ATreeTableViewTester extends Application {
             }
         });
         
+        CheckBox constrainedTableModel = new CheckBox("constrained model");
+        constrainedTableModel.setSelected(true);
+        constrainedTableModel.selectedProperty().addListener((src,prev,on) -> {
+            if(on) {
+                table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+            }
+            else
+            {
+                table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
+            }
+        });
+        
         VBox vb = new VBox();
         vb.setPadding(new Insets(5));
         vb.setSpacing(5);
         vb.getChildren().addAll(
                 tableCellSelectionEnabled,
                 showLastColumnCheckbox,
-                nullTableSelectionModel
+                nullTableSelectionModel,
+                constrainedTableModel
                 );
         
         BorderPane p = new BorderPane();
@@ -193,13 +206,25 @@ public class ATreeTableViewTester extends Application {
             }
         });
         
+        CheckBox constrainedTreeModel = new CheckBox("constrained model");
+        constrainedTreeModel.selectedProperty().addListener((src,prev,on) -> {
+            if(on) {
+                tree.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
+            }
+            else
+            {
+                tree.setColumnResizePolicy(TreeTableView.UNCONSTRAINED_RESIZE_POLICY);
+            }
+        });
+        
         VBox vb2 = new VBox();
         vb2.setPadding(new Insets(5));
         vb2.setSpacing(5);
         vb2.getChildren().addAll(
                 treeCellSelectionEnabled,
                 showLastTreeColumnCheckbox,
-                nullTreeSelectionModel
+                nullTreeSelectionModel,
+                constrainedTreeModel
                 );
         
         BorderPane p2 = new BorderPane();
