@@ -7,11 +7,15 @@ import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Skin;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.control.TreeItem;
@@ -21,10 +25,12 @@ import javafx.scene.control.TreeTableView.TreeTableViewSelectionModel;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class ATreeTableViewTester extends Application {
+    protected static final boolean SNAP_TO_PIXEL = false;
     protected TableView<Entry> table;
     protected TableColumn lastTableColumn;
     protected TreeTableView<Locale> tree;
@@ -44,10 +50,20 @@ public class ATreeTableViewTester extends Application {
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         table.setSkin(new TableViewSkin(table));
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        table.setSnapToPixel(SNAP_TO_PIXEL);
+        table.skinProperty().addListener((src,pre,cur) -> {
+            Skin<?> skin = table.getSkin();
+            if(skin != null) {
+                Node nd = skin.getNode();
+                if(nd instanceof Region r) {
+                    r.setSnapToPixel(SNAP_TO_PIXEL);
+                }
+            }
+        });
         
         {
             TableColumn<Entry,String> c = new TableColumn<>("Name");
-            c.setPrefWidth(50);
+             c.setPrefWidth(50);
             c.setCellValueFactory((f) ->
             {
                 return f.getValue().name;
@@ -72,6 +88,13 @@ public class ATreeTableViewTester extends Application {
                 return new ReadOnlyStringWrapper(String.valueOf(f.getValue().hashCode()));
             });
             table.getColumns().add(c);
+        }
+        
+        for(TableColumnBase<?,?> c: table.getVisibleLeafColumns()) {
+            Node nd = c.getStyleableNode();
+            if(nd instanceof Region r) {
+                r.setSnapToPixel(SNAP_TO_PIXEL);
+            }
         }
         
         table.getItems().addAll(
@@ -231,11 +254,29 @@ public class ATreeTableViewTester extends Application {
         p2.setCenter(tree);
         p2.setBottom(vb2);
         
+        // list view
+        
+        ListView list = new ListView();
+        list.getItems().addAll(
+                "One",
+                "Two",
+                "Three",
+                "Four"
+                );
+        list.getSelectionModel().selectAll();
+        list.setSelectionModel(null);
+        
+        BorderPane p3 = new BorderPane();
+        p3.setCenter(list);
+        p3.setBottom(vb2);
+        
         // layout
         
-        SplitPane split = new SplitPane(p, p2);
-        
+        SplitPane split = new SplitPane(p, p2, p3);
+        split.setSnapToPixel(SNAP_TO_PIXEL);
+
         Scene sc = new Scene(split);
+//        Scene sc = new Scene(p);
         stage.setScene(sc);
         stage.setTitle("Tree/TableView Tester " + System.getProperty("java.version"));
         stage.show();
