@@ -2,6 +2,7 @@ module andy_test {
     exports goryachev.apps;
     exports goryachev.research;
     exports goryachev.test;
+    exports goryachev.util;
 
     requires javafx.base;
     requires javafx.controls;

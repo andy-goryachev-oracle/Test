@@ -1,0 +1,34 @@
+.tree-table-cell:selected
+{
+	-fx-background-color: red;
+    -fx-background-insets: 0;
+}
+
+.tree-table-row-cell:filled > .tree-table-cell:selected
+{
+	-fx-background-color: red;
+    -fx-background-insets: 0;
+}
+
+.tree-table-view:focused > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell .tree-table-cell:selected {
+    -fx-background: red;
+    -fx-table-cell-border-color: derive(-fx-selection-bar, 20%);
+}
+
+.tree-table-view:focused:cell-selection > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell > .tree-table-cell:focused {
+    -fx-background-color: red;
+    -fx-background-insets: 0, 1, 2;
+}
+
+.tree-table-view > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell .tree-table-cell:selected {
+    -fx-background-color: red;
+    -fx-background-insets: 0, 0 0 1 0;
+}
+
+.tree-table-view:constrained-resize > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell > .tree-table-cell:last-visible {
+    -fx-border-color: red;
+}
+
+.yo {
+	-fx-background-color: green;
+}

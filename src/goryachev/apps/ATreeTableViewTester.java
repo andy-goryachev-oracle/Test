@@ -2,10 +2,12 @@ package goryachev.apps;
 import java.util.List;
 import java.util.Locale;
 
+import goryachev.util.D;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.SetChangeListener;
+import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -22,6 +24,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.TreeTableView.TreeTableViewSelectionModel;
+import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.layout.BorderPane;
@@ -65,7 +68,7 @@ public class ATreeTableViewTester extends Application {
         
         {
             TableColumn<Entry,String> c = new TableColumn<>("Name");
-             c.setPrefWidth(50);
+            c.setPrefWidth(50);
             c.setCellValueFactory((f) ->
             {
                 return f.getValue().name;
@@ -170,11 +173,13 @@ public class ATreeTableViewTester extends Application {
         {
             TreeTableColumn<Locale, String> c = new TreeTableColumn<>("Language");
             c.setCellValueFactory(new TreeItemPropertyValueFactory<>("displayLanguage"));
+            c.setCellFactory((col) -> createTreeTableCell());
             tree.getColumns().add(c);
         }
         {
             TreeTableColumn<Locale, String> c = new TreeTableColumn<>("ISO3Language");
             c.setCellValueFactory(new TreeItemPropertyValueFactory<>("ISO3Language"));
+            c.setCellFactory((col) -> createTreeTableCell());
             tree.getColumns().add(c);
         }
         {
@@ -190,6 +195,7 @@ public class ATreeTableViewTester extends Application {
                     return new ReadOnlyStringWrapper(String.valueOf(n));
                 }
             });
+            c.setCellFactory((col) -> createTreeTableCell());
             tree.getColumns().add(c);
         }
 
@@ -278,9 +284,12 @@ public class ATreeTableViewTester extends Application {
             split.getItems().add(p3);
         }
         split.setSnapToPixel(SNAP_TO_PIXEL);
+        
+        D.p(getClass().getResource("/goryachev/apps/ATreeTableViewTester.css").toExternalForm());
 
         Scene sc = new Scene(split);
-//        Scene sc = new Scene(p);
+        sc.getStylesheets().add(getClass().getResource("/goryachev/apps/ATreeTableViewTester.css").toExternalForm());
+        
         stage.setScene(sc);
         stage.setTitle("Tree/TableView Tester " + System.getProperty("java.version"));
         stage.show();
@@ -331,13 +340,22 @@ public class ATreeTableViewTester extends Application {
         System.out.println(sb);
     }
     
-    protected static class Entry {
-        public final SimpleStringProperty name = new SimpleStringProperty();
-        public final SimpleStringProperty text = new SimpleStringProperty();
-        
-        public Entry(String name, String text) {
-            this.name.set(name);
-            this.text.set(text);
-        }
+    protected TextFieldTreeTableCell createTreeTableCell() {
+        TextFieldTreeTableCell cell = new TextFieldTreeTableCell();
+        cell.selectedProperty().addListener((s,p,on) -> {
+            System.out.println("selected=" + on + " " + cell.getTableColumn().getText());
+            new Error().printStackTrace();
+        });
+        cell.focusedProperty().addListener((s,p,on) -> {
+            System.out.println("focused=" + on + " " + cell.getTableColumn().getText());
+        });
+        cell.getPseudoClassStates().addListener((SetChangeListener.Change<? extends PseudoClass> ch) -> {
+            System.out.println(cell.getPseudoClassStates() + " " + cell.getTableColumn().getText());
+//            new Error().printStackTrace();
+        });
+        cell.styleProperty().addListener((s,p,on) -> {
+            System.out.println(cell.getStyle() + " " + cell.getTableColumn().getText());
+         });
+        return cell;
     }
 }
