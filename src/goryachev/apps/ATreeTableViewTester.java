@@ -31,6 +31,8 @@ import javafx.stage.Stage;
 
 public class ATreeTableViewTester extends Application {
     protected static final boolean SNAP_TO_PIXEL = false;
+    protected static final boolean LIST_VIEW = false;
+    
     protected TableView<Entry> table;
     protected TableColumn lastTableColumn;
     protected TreeTableView<Locale> tree;
@@ -268,11 +270,13 @@ public class ATreeTableViewTester extends Application {
         
         BorderPane p3 = new BorderPane();
         p3.setCenter(list);
-        p3.setBottom(vb2);
         
         // layout
         
-        SplitPane split = new SplitPane(p, p2, p3);
+        SplitPane split = new SplitPane(p, p2);
+        if(LIST_VIEW) {
+            split.getItems().add(p3);
+        }
         split.setSnapToPixel(SNAP_TO_PIXEL);
 
         Scene sc = new Scene(split);
