@@ -1,17 +1,17 @@
 package goryachev.apps;
 import java.util.List;
 import java.util.Locale;
+
 import goryachev.util.D;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.collections.SetChangeListener;
-import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
@@ -38,7 +38,7 @@ import javafx.stage.Stage;
 public class ATreeTableViewTester extends Application {
     
     protected static final boolean CELLS_WITH_BINDINGS = !true;
-    
+    protected static final boolean LIST_VIEW = !true;   
     protected static final boolean SNAP_TO_PIXEL = false;
     
     protected TableView<Entry> table;
@@ -167,6 +167,9 @@ public class ATreeTableViewTester extends Application {
         
         SplitPane split = new SplitPane(p, p2);
         split.setSnapToPixel(SNAP_TO_PIXEL);
+        if(LIST_VIEW) {
+            split.getItems().add(listView());
+        }
         
         // FIX
         D.p(getClass().getResource("/goryachev/apps/ATreeTableViewTester.css").toExternalForm());
@@ -191,6 +194,23 @@ public class ATreeTableViewTester extends Application {
 //        m.getItems().add(new MenuItem("Open"));
 //        return b;
 //    }
+    
+    protected Node listView() {
+        ListView list = new ListView();
+        list.getItems().addAll(
+                "One",
+                "Two",
+                "Three",
+                "Four"
+                );
+        list.getSelectionModel().selectAll();
+        list.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+//        list.setSelectionModel(null);
+        
+        BorderPane p3 = new BorderPane();
+        p3.setCenter(list);
+        return p3;
+    }
     
     protected MenuButton createMenu() {
         MenuButton b = new MenuButton();
@@ -389,27 +409,23 @@ public class ATreeTableViewTester extends Application {
     protected TextFieldTreeTableCell createTreeTableCell2() {
         TextFieldTreeTableCell cell = new TextFieldTreeTableCell() ;
         
-        cell.selectedProperty().addListener((s,p,on) -> {
-            System.out.println("selected=" + on + info(cell));
-//            new Error().printStackTrace();
-        });
-        cell.focusedProperty().addListener((s,p,on) -> {
-            System.out.println("focused=" + on + info(cell));
-        });
-        cell.getPseudoClassStates().addListener((SetChangeListener.Change<? extends PseudoClass> ch) -> {
-            PseudoClass pc = ch.getElementAdded();
-            if(pc != null) {
-                D.p("+" + pc + " " + cell.getPseudoClassStates() + " " + info(cell));
-            }
-            
-            pc = ch.getElementRemoved();
-            if(pc != null) {
-                D.p("-" + pc + " " + cell.getPseudoClassStates() + " " + info(cell));
-            }
-            
-//            System.out.println(cell.getPseudoClassStates() + " " + info(cell));
-//            new Error().printStackTrace();
-        });
+//        cell.selectedProperty().addListener((s,p,on) -> {
+//            System.out.println("selected=" + on + info(cell));
+//        });
+//        cell.focusedProperty().addListener((s,p,on) -> {
+//            System.out.println("focused=" + on + info(cell));
+//        });
+//        cell.getPseudoClassStates().addListener((SetChangeListener.Change<? extends PseudoClass> ch) -> {
+//            PseudoClass pc = ch.getElementAdded();
+//            if(pc != null) {
+//                D.p("+" + pc + " " + cell.getPseudoClassStates() + " " + info(cell));
+//            }
+//            
+//            pc = ch.getElementRemoved();
+//            if(pc != null) {
+//                D.p("-" + pc + " " + cell.getPseudoClassStates() + " " + info(cell));
+//            }
+//        });
         
         return cell;
     }
