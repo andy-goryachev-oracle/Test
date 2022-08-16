@@ -12,7 +12,8 @@ import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ListView;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SplitPane;
@@ -35,7 +36,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class ATreeTableViewTester extends Application {
-    protected static final boolean CELLS_WITH_BINDINGS = false;
+    
+    protected static final boolean CELLS_WITH_BINDINGS = !true;
+    
     protected static final boolean SNAP_TO_PIXEL = false;
     
     protected TableView<Entry> table;
@@ -167,14 +170,33 @@ public class ATreeTableViewTester extends Application {
         
         // FIX
         D.p(getClass().getResource("/goryachev/apps/ATreeTableViewTester.css").toExternalForm());
+        
+        BorderPane mp = new BorderPane();
+//        mp.setTop(createMenu());
+        mp.setCenter(split);
 
-        Scene sc = new Scene(split);
+        Scene sc = new Scene(mp);
 //        sc.getStylesheets().add(getClass().getResource("/goryachev/apps/ATreeTableViewTester.css").toExternalForm());
         
         stage.setScene(sc);
         stage.setMinWidth(1500);
         stage.setTitle("Tree/TableView Tester " + System.getProperty("java.version"));
         stage.show();
+    }
+    
+//    protected MenuBar createMenu() {
+//        Menu m;
+//        MenuBar b = new MenuBar();
+//        b.getMenus().add(m = new Menu("File"));
+//        m.getItems().add(new MenuItem("Open"));
+//        return b;
+//    }
+    
+    protected MenuButton createMenu() {
+        MenuButton b = new MenuButton();
+        b.getItems().add(new MenuItem("Open"));
+        b.getItems().add(new MenuItem("Close"));
+        return b;
     }
     
     protected void dumpTable() {
@@ -221,30 +243,6 @@ public class ATreeTableViewTester extends Application {
         
         System.out.println(sb);
     }
-    
-    protected TextFieldTreeTableCell createTreeTableCell2() {
-        TextFieldTreeTableCell cell = new TextFieldTreeTableCell() ;
-        
-//        cell.selectedProperty().addListener((s,p,on) -> {
-//            System.out.println("selected=" + on + " " + cell.getTableColumn().getText());
-//            new Error().printStackTrace();
-//        });
-//        cell.focusedProperty().addListener((s,p,on) -> {
-//            System.out.println("focused=" + on + " " + cell.getTableColumn().getText());
-//        });
-//        cell.getPseudoClassStates().addListener((SetChangeListener.Change<? extends PseudoClass> ch) -> {
-//            System.out.println(cell.getPseudoClassStates() + " " + cell.getTableColumn().getText());
-////            new Error().printStackTrace();
-//        });
-//        cell.styleProperty().addListener((s,p,on) -> {
-//            System.out.println(cell.getStyle() + " " + cell.getTableColumn().getText());
-//        });
-//        
-//        cell.textProperty().bind(Bindings.createStringBinding(() -> generateText(cell), cell.focusedProperty(), cell.selectedProperty(), cell.getPseudoClassStates()));
-        
-        return cell;
-    }
-    
     
     protected TreeTableCell createTreeTableCell() {
         TreeTableCell cell = new TreeTableCell() {
@@ -388,6 +386,39 @@ public class ATreeTableViewTester extends Application {
         return p2;
     }
     
+    protected TextFieldTreeTableCell createTreeTableCell2() {
+        TextFieldTreeTableCell cell = new TextFieldTreeTableCell() ;
+        
+        cell.selectedProperty().addListener((s,p,on) -> {
+            System.out.println("selected=" + on + info(cell));
+//            new Error().printStackTrace();
+        });
+        cell.focusedProperty().addListener((s,p,on) -> {
+            System.out.println("focused=" + on + info(cell));
+        });
+        cell.getPseudoClassStates().addListener((SetChangeListener.Change<? extends PseudoClass> ch) -> {
+            PseudoClass pc = ch.getElementAdded();
+            if(pc != null) {
+                D.p("+" + pc + " " + cell.getPseudoClassStates() + " " + info(cell));
+            }
+            
+            pc = ch.getElementRemoved();
+            if(pc != null) {
+                D.p("-" + pc + " " + cell.getPseudoClassStates() + " " + info(cell));
+            }
+            
+//            System.out.println(cell.getPseudoClassStates() + " " + info(cell));
+//            new Error().printStackTrace();
+        });
+        
+        return cell;
+    }
+    
+    protected String info(TreeTableCell cell) {
+        return " R" + cell.getIndex() + ":" + cell.getTableColumn().getText();
+    }
+    
+    // FIX exhibits the issue
     protected Pane createTreeWithTextField() {
        TreeItem<Locale> root = new TreeItem(null);
         
@@ -400,19 +431,19 @@ public class ATreeTableViewTester extends Application {
         tree = new TreeTableView<Locale>(root);
         
         {
-            TreeTableColumn<Locale, String> c = new TreeTableColumn<>("Language");
+            TreeTableColumn<Locale, String> c = new TreeTableColumn<>("C1");
             c.setCellValueFactory(new TreeItemPropertyValueFactory<>("displayLanguage"));
             c.setCellFactory((col) -> createTreeTableCell2());
             tree.getColumns().add(c);
         }
         {
-            TreeTableColumn<Locale, String> c = new TreeTableColumn<>("ISO3Language");
+            TreeTableColumn<Locale, String> c = new TreeTableColumn<>("C2");
             c.setCellValueFactory(new TreeItemPropertyValueFactory<>("ISO3Language"));
             c.setCellFactory((col) -> createTreeTableCell2());
             tree.getColumns().add(c);
         }
         {
-            TreeTableColumn<Locale, String> c = new TreeTableColumn<>("Children");
+            TreeTableColumn<Locale, String> c = new TreeTableColumn<>("C3");
             lastTreeColumn = c;
             c.setCellValueFactory((cdf) -> {
                 TreeItem v = cdf.getValue();
