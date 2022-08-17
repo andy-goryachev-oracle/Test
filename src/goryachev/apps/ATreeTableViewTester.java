@@ -2,11 +2,11 @@ package goryachev.apps;
 import java.util.List;
 import java.util.Locale;
 
-import goryachev.util.D;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -170,9 +170,6 @@ public class ATreeTableViewTester extends Application {
         if(LIST_VIEW) {
             split.getItems().add(listView());
         }
-        
-        // FIX
-        D.p(getClass().getResource("/goryachev/apps/ATreeTableViewTester.css").toExternalForm());
         
         BorderPane mp = new BorderPane();
 //        mp.setTop(createMenu());
@@ -538,5 +535,17 @@ public class ATreeTableViewTester extends Application {
         p2.setCenter(tree);
         p2.setBottom(vb2);
         return p2;
+    }
+    
+    //
+    
+    protected static class Entry {
+        public final SimpleStringProperty name = new SimpleStringProperty();
+        public final SimpleStringProperty text = new SimpleStringProperty();
+        
+        public Entry(String name, String text) {
+            this.name.set(name);
+            this.text.set(text);
+        }
     }
 }
