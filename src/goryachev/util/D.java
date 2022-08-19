@@ -7,6 +7,6 @@ public class D {
     }
     
     public static void trace() {
-        // TODO
+       new Error("Stack Trace:").printStackTrace();
     }
 }

@@ -1,12 +1,14 @@
 package goryachev.apps;
 import java.util.List;
 import java.util.Locale;
-
+import goryachev.util.D;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.SetChangeListener;
+import javafx.css.PseudoClass;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -29,6 +31,7 @@ import javafx.scene.control.TreeTableView.TreeTableViewSelectionModel;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.control.skin.TableViewSkin;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -406,23 +409,27 @@ public class ATreeTableViewTester extends Application {
     protected TextFieldTreeTableCell createTreeTableCell2() {
         TextFieldTreeTableCell cell = new TextFieldTreeTableCell() ;
         
-//        cell.selectedProperty().addListener((s,p,on) -> {
-//            System.out.println("selected=" + on + info(cell));
-//        });
-//        cell.focusedProperty().addListener((s,p,on) -> {
-//            System.out.println("focused=" + on + info(cell));
-//        });
-//        cell.getPseudoClassStates().addListener((SetChangeListener.Change<? extends PseudoClass> ch) -> {
-//            PseudoClass pc = ch.getElementAdded();
-//            if(pc != null) {
-//                D.p("+" + pc + " " + cell.getPseudoClassStates() + " " + info(cell));
-//            }
-//            
-//            pc = ch.getElementRemoved();
-//            if(pc != null) {
-//                D.p("-" + pc + " " + cell.getPseudoClassStates() + " " + info(cell));
-//            }
-//        });
+        cell.selectedProperty().addListener((s,p,on) -> {
+            System.out.println("selected=" + on + info(cell));
+        });
+        cell.focusedProperty().addListener((s,p,on) -> {
+            System.out.println("focused=" + on + info(cell));
+        });
+        cell.getPseudoClassStates().addListener((SetChangeListener.Change<? extends PseudoClass> ch) -> {
+            PseudoClass pc = ch.getElementAdded();
+            if(pc != null) {
+                D.p("+" + pc + " " + cell.getPseudoClassStates() + " " + info(cell));
+
+//                if (cell.isSelected() && cell.getPseudoClassStates().contains(PseudoClass.getPseudoClass("selected"))) {
+//                    D.trace();
+//                }
+            }
+            
+            pc = ch.getElementRemoved();
+            if(pc != null) {
+                D.p("-" + pc + " " + cell.getPseudoClassStates() + " " + info(cell));
+            }
+        });
         
         return cell;
     }
@@ -475,6 +482,8 @@ public class ATreeTableViewTester extends Application {
         root.setExpanded(true);
 
         tree.setShowRoot(true);
+        
+//        tree.addEventFilter(MouseEvent.ANY, (ev) -> D.p(ev));
 
         boolean nullSelectionModel = false;
         if(nullSelectionModel) {
