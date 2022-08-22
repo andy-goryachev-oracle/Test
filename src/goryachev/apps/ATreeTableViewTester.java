@@ -2,6 +2,7 @@ package goryachev.apps;
 import java.util.List;
 import java.util.Locale;
 import goryachev.util.D;
+import goryachev.util.FxDebug;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -181,6 +182,7 @@ public class ATreeTableViewTester extends Application {
         Scene sc = new Scene(mp);
 //        sc.getStylesheets().add(getClass().getResource("/goryachev/apps/ATreeTableViewTester.css").toExternalForm());
         
+        FxDebug.attachNodeDumper(stage);
         stage.setScene(sc);
         stage.setMinWidth(1500);
         stage.setTitle("Tree/TableView Tester " + System.getProperty("java.version"));
@@ -469,8 +471,7 @@ public class ATreeTableViewTester extends Application {
                 TreeItem v = cdf.getValue();
                 if(v == null) {
                     return new ReadOnlyStringWrapper("");
-                }
-                else {
+                } else {
                     int n = v.getChildren().size();
                     return new ReadOnlyStringWrapper(String.valueOf(n));
                 }
@@ -486,10 +487,9 @@ public class ATreeTableViewTester extends Application {
 //        tree.addEventFilter(MouseEvent.ANY, (ev) -> D.p(ev));
 
         boolean nullSelectionModel = false;
-        if(nullSelectionModel) {
+        if (nullSelectionModel) {
             tree.setSelectionModel(null);
-        }
-        else {
+        } else {
             System.err.println("cell selection model is not null!");
             tree.getSelectionModel().setCellSelectionEnabled(true);
             tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -503,29 +503,25 @@ public class ATreeTableViewTester extends Application {
         CheckBox showLastTreeColumnCheckbox = new CheckBox("show last column");
         showLastTreeColumnCheckbox.setSelected(true);
         lastTreeColumn.visibleProperty().bind(showLastTreeColumnCheckbox.selectedProperty());
-        showLastTreeColumnCheckbox.selectedProperty().addListener((src,prev,c) -> {
+        showLastTreeColumnCheckbox.selectedProperty().addListener((src, prev, c) -> {
             Platform.runLater(this::dumpTree);
         });
-        
+
         CheckBox nullTreeSelectionModel = new CheckBox("null cell selection model");
-        nullTreeSelectionModel.selectedProperty().addListener((src,prev,on) -> {
-            if(on) {
+        nullTreeSelectionModel.selectedProperty().addListener((src, prev, on) -> {
+            if (on) {
                 oldTreeSelectionModel = tree.getSelectionModel();
                 tree.setSelectionModel(null);
-            }
-            else
-            {
+            } else {
                 tree.setSelectionModel(oldTreeSelectionModel);
             }
         });
-        
+
         CheckBox constrainedTreeModel = new CheckBox("constrained model");
-        constrainedTreeModel.selectedProperty().addListener((src,prev,on) -> {
-            if(on) {
+        constrainedTreeModel.selectedProperty().addListener((src, prev, on) -> {
+            if (on) {
                 tree.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
-            }
-            else
-            {
+            } else {
                 tree.setColumnResizePolicy(TreeTableView.UNCONSTRAINED_RESIZE_POLICY);
             }
         });
