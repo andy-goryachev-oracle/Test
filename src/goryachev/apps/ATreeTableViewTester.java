@@ -44,6 +44,7 @@ public class ATreeTableViewTester extends Application {
     protected static final boolean CELLS_WITH_BINDINGS = !true;
     protected static final boolean LIST_VIEW = !true;   
     protected static final boolean SNAP_TO_PIXEL = false;
+    protected static final boolean ADD_ROWS = false;
     
     protected TableView<Entry> table;
     protected TableColumn lastTableColumn;
@@ -85,7 +86,7 @@ public class ATreeTableViewTester extends Application {
         }
         {
             TableColumn<Entry,String> c = new TableColumn("Text");
-            c.setPrefWidth(200);
+            c.setPrefWidth(100);
             c.setCellValueFactory((f) -> {
                 return f.getValue().text;
             });
@@ -94,7 +95,7 @@ public class ATreeTableViewTester extends Application {
         {
             TableColumn<Entry,String> c = new TableColumn("Hash");
             lastTableColumn = c;
-            c.setPrefWidth(300);
+            c.setPrefWidth(200);
             c.setCellValueFactory((f) -> {
                 return new ReadOnlyStringWrapper(String.valueOf(f.getValue().hashCode()));
             });
@@ -108,13 +109,15 @@ public class ATreeTableViewTester extends Application {
             }
         }
         
-        table.getItems().addAll(
-            new Entry("1", "One"),
-            new Entry("2", "Two"),
-            new Entry("3", "Three"),
-            new Entry("4", "Four"),
-            new Entry("99", "Ninety Nine")
-            );
+        if (ADD_ROWS) {
+            table.getItems().addAll(
+                new Entry("1", "One"),
+                new Entry("2", "Two"),
+                new Entry("3", "Three"),
+                new Entry("4", "Four"),
+                new Entry("99", "Ninety Nine")
+                );
+        }
         
         CheckBox tableCellSelectionEnabled = new CheckBox("cell selection");
         table.getSelectionModel().cellSelectionEnabledProperty().bind(tableCellSelectionEnabled.selectedProperty());
@@ -306,9 +309,11 @@ public class ATreeTableViewTester extends Application {
     protected Pane createTreeWithBindings() {
         TreeItem<Locale> root = new TreeItem(null);
         
-        for (Locale loc: Locale.getAvailableLocales()) {
-            TreeItem<Locale> ch = new TreeItem(loc);
-            root.getChildren().add(ch);
+        if (ADD_ROWS) {
+            for (Locale loc: Locale.getAvailableLocales()) {
+                TreeItem<Locale> ch = new TreeItem(loc);
+                root.getChildren().add(ch);
+            }
         }
         
         // instantiate the table with null items
@@ -318,12 +323,14 @@ public class ATreeTableViewTester extends Application {
             TreeTableColumn<Locale, String> c = new TreeTableColumn<>("Column_0");
 //            c.setCellValueFactory(new TreeItemPropertyValueFactory<>("displayLanguage"));
             c.setCellFactory((col) -> createTreeTableCell());
+            c.setPrefWidth(50);
             tree.getColumns().add(c);
         }
         {
             TreeTableColumn<Locale, String> c = new TreeTableColumn<>("Column_2");
 //            c.setCellValueFactory(new TreeItemPropertyValueFactory<>("ISO3Language"));
             c.setCellFactory((col) -> createTreeTableCell());
+            c.setPrefWidth(100);
             tree.getColumns().add(c);
         }
         {
@@ -340,6 +347,7 @@ public class ATreeTableViewTester extends Application {
 //                }
 //            });
             c.setCellFactory((col) -> createTreeTableCell());
+            c.setPrefWidth(200);
             tree.getColumns().add(c);
         }
 
@@ -442,16 +450,18 @@ public class ATreeTableViewTester extends Application {
     
     // FIX exhibits the issue
     protected Pane createTreeWithTextField() {
-       TreeItem<Locale> root = new TreeItem(null);
-        
-        for (Locale loc: Locale.getAvailableLocales()) {
-            TreeItem<Locale> ch = new TreeItem(loc);
-            root.getChildren().add(ch);
+        TreeItem<Locale> root = new TreeItem(null);
+
+        if (ADD_ROWS) {
+            for (Locale loc: Locale.getAvailableLocales()) {
+                TreeItem<Locale> ch = new TreeItem(loc);
+                root.getChildren().add(ch);
+            }
         }
-        
+
         // instantiate the table with null items
         tree = new TreeTableView<Locale>(root);
-        
+
         {
             TreeTableColumn<Locale, String> c = new TreeTableColumn<>("C1");
             c.setCellValueFactory(new TreeItemPropertyValueFactory<>("displayLanguage"));
