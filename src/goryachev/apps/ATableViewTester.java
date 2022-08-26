@@ -65,10 +65,10 @@ public class ATableViewTester extends Application {
             createColumn("C2", 200));
 
         // https://bugs.openjdk.org/browse/JDK-8087673
-        {
-            table.setTableMenuButtonVisible(true);
-            table.getColumns().get(2).setGraphic(new Slider());
-        }
+//        {
+//            table.setTableMenuButtonVisible(true);
+//            table.getColumns().get(2).setGraphic(new Slider());
+//        }
         
         for (TableColumnBase<?,?> c: table.getVisibleLeafColumns()) {
             Node nd = c.getStyleableNode();
@@ -127,7 +127,7 @@ public class ATableViewTester extends Application {
 
         BorderPane p = new BorderPane();
         p.setCenter(table);
-//        p.setBottom(vb);
+        p.setBottom(vb);
 
         // text area
 
