@@ -3,38 +3,44 @@ package goryachev.apps;
 import goryachev.util.FxDebug;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.Skin;
-import javafx.scene.control.Slider;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
 import javafx.scene.control.TableView.TableViewSelectionModel;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class ATableViewTester extends Application {
+    
+    enum Demo {
+        ALL("all set: min, pref, max"),
+        CONSTRAINED("constrained with pref width"),
+        EMPTY("empty"),
+        MIN_WIDTH("constrained with min width"),
+        ;
 
-    protected static final boolean CELLS_WITH_BINDINGS = !true;
-    protected static final boolean SNAP_TO_PIXEL = false;
-    protected static final boolean MIN_WIDTH = !true;
+        private final String text;
+        Demo(String text) { this.text = text; }
+        public String toString() { return text; }
+    }
+    
+    enum Cmd {
+        CONSTRAINED,
+        ROWS,
+        COL,
+        MIN,
+        PREF,
+        MAX
+    }
 
-    protected TableView<String> table;
+    protected BorderPane contentPane;
     protected TableViewSelectionModel<String> oldTableSelectionModel;
-    protected TextArea textArea;
 
     public static void main(String[] args) {
         Application.launch(ATableViewTester.class, args);
@@ -42,110 +48,42 @@ public class ATableViewTester extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        // table
-        table = new TableView();
-        table.getSelectionModel().setCellSelectionEnabled(true);
-        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        table.setSkin(new TableViewSkin(table));
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        table.setSnapToPixel(SNAP_TO_PIXEL);
-        table.skinProperty().addListener((src, pre, cur) -> {
-            Skin<?> skin = table.getSkin();
-            if (skin != null) {
-                Node nd = skin.getNode();
-                if (nd instanceof Region r) {
-                    r.setSnapToPixel(SNAP_TO_PIXEL);
-                }
-            }
+        contentPane = new BorderPane();
+        
+        // selector
+        ComboBox<Demo> cb = new ComboBox<>();
+        cb.getItems().addAll(Demo.values());
+        cb.setEditable(false);
+        cb.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+            Pane n = createPane(c);
+            contentPane.setCenter(n);
         });
         
-        table.getColumns().addAll(
-            createColumn("C0", 50),
-            createColumn("C1", 100),
-            createColumn("C2", 200));
-
         // https://bugs.openjdk.org/browse/JDK-8087673
 //        {
 //            table.setTableMenuButtonVisible(true);
 //            table.getColumns().get(2).setGraphic(new Slider());
 //        }
         
-        for (TableColumnBase<?,?> c: table.getVisibleLeafColumns()) {
-            Node nd = c.getStyleableNode();
-            if (nd instanceof Region r) {
-                r.setSnapToPixel(SNAP_TO_PIXEL);
-            }
-        }
-
-        CheckBox addContent = new CheckBox("table content");
-        addContent.selectedProperty().addListener((s,p,on) -> {
-            if(on) {
-                table.getItems().addAll(
-                    "",
-                    "",
-                    "",
-                    "",
-                    ""
-                    );
-            } else {
-                table.getItems().clear();
-            }
-        });
-        addContent.setSelected(true);
-
-        CheckBox tableCellSelectionEnabled = new CheckBox("cell selection");
-        table.getSelectionModel().cellSelectionEnabledProperty().bind(tableCellSelectionEnabled.selectedProperty());
-
-        CheckBox nullTableSelectionModel = new CheckBox("null cell selection model");
-        nullTableSelectionModel.selectedProperty().addListener((src, prev, on) -> {
-            if (on) {
-                oldTableSelectionModel = table.getSelectionModel();
-                table.setSelectionModel(null);
-            } else {
-                table.setSelectionModel(oldTableSelectionModel);
-            }
-        });
-
-        CheckBox constrainedTableModel = new CheckBox("constrained resize policy");
-        constrainedTableModel.setSelected(true);
-        constrainedTableModel.selectedProperty().addListener((src, prev, on) -> {
-            if (on) {
-                table.setColumnResizePolicy(wrap(TableView.CONSTRAINED_RESIZE_POLICY));
-            } else {
-                table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
-            }
-        });
-
-        VBox vb = new VBox();
-        vb.setPadding(new Insets(5));
-        vb.setSpacing(5);
-        vb.getChildren().addAll(
-            addContent,
-            tableCellSelectionEnabled,
-            nullTableSelectionModel,
-            constrainedTableModel);
-
-        BorderPane p = new BorderPane();
-        p.setCenter(table);
-        p.setBottom(vb);
-
-        // text area
-
-        textArea = new TextArea();
-        textArea.setEditable(false);
 
         // layout
 
-        SplitPane split = new SplitPane(p, textArea);
-        split.setSnapToPixel(SNAP_TO_PIXEL);
+        SplitPane split = new SplitPane(contentPane, new BorderPane());
 
-        Scene sc = new Scene(split);
+        BorderPane bp = new BorderPane();
+        bp.setTop(cb);
+        bp.setCenter(split);
+        
+        Scene sc = new Scene(bp);
 
         FxDebug.attachNodeDumper(stage);
         stage.setScene(sc);
-        stage.setMinWidth(1500);
+        stage.setWidth(700);
+        stage.setHeight(300);
         stage.setTitle("TableView Tester " + System.getProperty("java.version"));
         stage.show();
+        
+        cb.getSelectionModel().selectFirst();
     }
 
     protected Callback<ResizeFeatures,Boolean> wrap(Callback<ResizeFeatures,Boolean> policy) {
@@ -164,21 +102,116 @@ public class ATableViewTester extends Application {
             }
         };
     }
-
-    protected MenuButton createMenu() {
-        MenuButton b = new MenuButton();
-        b.getItems().add(new MenuItem("Open"));
-        b.getItems().add(new MenuItem("Close"));
-        return b;
+    
+    protected String describe(TableColumn c) {
+        StringBuilder sb = new StringBuilder();
+        if(c.getMinWidth() != 10.0) {
+            sb.append("min=");
+            sb.append((int)c.getMinWidth());
+        }
+        if(c.getPrefWidth() != 80.0) {
+            sb.append(" pref=");
+            sb.append((int)c.getPrefWidth());
+        }
+        if(c.getMaxWidth() != 5000.0) {
+            sb.append(" max=");
+            sb.append((int)c.getMaxWidth());
+        }
+        return sb.toString();
+    }
+    
+    // min, pref, max, rows
+    protected Pane createTable(Object ... spec) {
+        TableView<String> table = new TableView();
+        table.getSelectionModel().setCellSelectionEnabled(true);
+        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        
+        TableColumn<String,String> lastColumn = null;
+        
+        for(int i=0; i<spec.length; ) {
+            Object x = spec[i++];
+            if(x instanceof Cmd cmd) {
+                switch(cmd) {
+                case CONSTRAINED:
+                    table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+                    break;
+                case COL:
+                    TableColumn<String,String> c = new TableColumn<>();
+                    table.getColumns().add(c);
+                    c.setText("C" + table.getColumns().size());
+                    c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
+                    lastColumn = c;
+                    break;
+                case MAX:
+                    {
+                        int w = (int)(spec[i++]);
+                        lastColumn.setMaxWidth(w);
+                    }
+                    break;
+                case MIN:
+                    {
+                        int w = (int)(spec[i++]);
+                        lastColumn.setMinWidth(w);
+                    }
+                    break;
+                case PREF:
+                    {
+                        int w = (int)(spec[i++]);
+                        lastColumn.setPrefWidth(w);
+                    }
+                    break;
+                case ROWS:
+                    int n = (int)(spec[i++]);
+                    for(int j=0; j<n; j++) {
+                        table.getItems().add("");
+                    }
+                    break;
+                default:
+                    throw new Error("?" + cmd);
+                }
+            }
+        }
+        
+        BorderPane bp = new BorderPane();
+        bp.setCenter(table);
+        return bp;
     }
 
-    protected static TableColumn<String,String> createColumn(String name, int prefWidth) {
-        TableColumn<String,String> c = new TableColumn<>(name);
-        c.setPrefWidth(prefWidth);
-        if(MIN_WIDTH) {
-            c.setMinWidth(0);
+    protected Pane createPane(Demo d) {
+        switch(d) {
+        case ALL:
+            return createTable(
+                Cmd.CONSTRAINED,
+                Cmd.ROWS, 3,
+                Cmd.COL, Cmd.MIN, 20, Cmd.PREF, 20, Cmd.MAX, 20,
+                Cmd.COL, Cmd.PREF, 200,
+                Cmd.COL, Cmd.PREF, 300, Cmd.MAX, 400
+                );           
+        case CONSTRAINED:
+            return createTable(
+                Cmd.CONSTRAINED,
+                Cmd.ROWS, 3,
+                Cmd.COL, Cmd.PREF, 100,
+                Cmd.COL, Cmd.PREF, 200,
+                Cmd.COL, Cmd.PREF, 300
+                );
+        case EMPTY:
+            return createTable(
+                Cmd.CONSTRAINED,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL
+                );
+        case MIN_WIDTH:
+            return createTable(
+                Cmd.CONSTRAINED,
+                Cmd.ROWS, 3,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL, Cmd.MIN, 300
+                );
+        default:
+            return new BorderPane();
         }
-        c.setCellValueFactory((f) -> new SimpleStringProperty("yo"));
-        return c;
     }
 }
