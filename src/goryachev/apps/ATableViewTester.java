@@ -1,12 +1,12 @@
 package goryachev.apps;
 
+import goryachev.research.JTableResize;
 import goryachev.util.FxDebug;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ConstrainedColumnResize;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
@@ -72,7 +72,6 @@ public class ATableViewTester extends Application {
 //            table.setTableMenuButtonVisible(true);
 //            table.getColumns().get(2).setGraphic(new Slider());
 //        }
-        
 
         // layout
 
@@ -138,7 +137,8 @@ public class ATableViewTester extends Application {
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         
         if (newPolicy.isSelected()) {
-           table.setColumnResizePolicy(ConstrainedColumnResize.forTable()); 
+            //table.setColumnResizePolicy(ConstrainedColumnResize.forTable());
+            table.setColumnResizePolicy(JTableResize.forTable(JTableResize.ResizeMode.AUTO_RESIZE_ALL_COLUMNS));
         } else {
             table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         }
