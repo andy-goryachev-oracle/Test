@@ -11,17 +11,17 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 
-public class JTableTest extends JFrame {
+public class JTableSelectionTest extends JFrame {
     protected JTable table;
     protected JCheckBox showCheckbox;
     
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
-            new JTableTest().setVisible(true);
+            new JTableSelectionTest().setVisible(true);
         });
     }
     
-    public JTableTest() {
+    public JTableSelectionTest() {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(400, 300);
         

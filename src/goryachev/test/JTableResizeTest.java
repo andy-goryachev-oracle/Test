@@ -36,7 +36,7 @@ import javax.swing.table.TableColumn;
 /**
  *
  */
-public class JTableTest {
+public class JTableResizeTest {
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> start());
     }
