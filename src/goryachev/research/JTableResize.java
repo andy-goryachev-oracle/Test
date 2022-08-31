@@ -89,9 +89,6 @@ public class JTableResize extends ConstrainedColumnResize {
         double totalColumnsWidth = getTotalColumnWidth(visibleLeafColumns);
         
         if (Math.abs(totalColumnsWidth - tableWidth) > EPSILON) {
-            double actualDelta = tableWidth - totalColumnsWidth;
-            resizeColumns(rf, visibleLeafColumns, actualDelta);
-            
             setWidthsFromPreferredWidths(rf, visibleLeafColumns, false);
         }
         

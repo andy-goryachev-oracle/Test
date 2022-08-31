@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ConstrainedColumnResize;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
@@ -23,7 +24,7 @@ public class ATableViewTester extends Application {
     enum Demo {
         ALL("all set: min, pref, max"),
         PREF("pref only"),
-        EMPTY("empty"),
+        EMPTY("empty with pref"),
         MIN_WIDTH("min width"),
         MAX_WIDTH("max width"),
         INCONSISTENT("inconsistent: pref < min")
@@ -116,16 +117,19 @@ public class ATableViewTester extends Application {
     protected String describe(TableColumn c) {
         StringBuilder sb = new StringBuilder();
         if(c.getMinWidth() != 10.0) {
-            sb.append("min=");
-            sb.append((int)c.getMinWidth());
+//            sb.append("min=");
+//            sb.append((int)c.getMinWidth());
+            sb.append("m");
         }
         if(c.getPrefWidth() != 80.0) {
-            sb.append(" pref=");
-            sb.append((int)c.getPrefWidth());
+//            sb.append(" pref=");
+//            sb.append((int)c.getPrefWidth());
+            sb.append("p");
         }
         if(c.getMaxWidth() != 5000.0) {
-            sb.append(" max=");
-            sb.append((int)c.getMaxWidth());
+//            sb.append(" max=");
+//            sb.append((int)c.getMaxWidth());
+            sb.append("X");
         }
         return sb.toString();
     }
@@ -137,7 +141,7 @@ public class ATableViewTester extends Application {
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         
         if (newPolicy.isSelected()) {
-            //table.setColumnResizePolicy(ConstrainedColumnResize.forTable());
+//            table.setColumnResizePolicy(ConstrainedColumnResize.forTable());
             table.setColumnResizePolicy(JTableResize.forTable(JTableResize.ResizeMode.AUTO_RESIZE_ALL_COLUMNS));
         } else {
             table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
@@ -221,9 +225,9 @@ public class ATableViewTester extends Application {
                 );
         case EMPTY:
             return createTable(
-                Cmd.COL,
-                Cmd.COL,
-                Cmd.COL
+                Cmd.COL, Cmd.PREF, 100,
+                Cmd.COL, Cmd.PREF, 200,
+                Cmd.COL, Cmd.PREF, 300
                 );
         case MIN_WIDTH:
             return createTable(
