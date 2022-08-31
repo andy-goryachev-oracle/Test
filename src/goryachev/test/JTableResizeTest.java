@@ -28,7 +28,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -51,15 +53,32 @@ public class JTableResizeTest {
         public int getValue() { return value; }
     }
     
+    enum Demo {
+        ALL("min, pref, max"),
+        MAX("middle columns with max set")
+        ;
+        
+        private final String text;
+        Demo(String text) { this.text = text; }
+        public String toString() { return text; }
+    }
+    
+    protected static JPanel content;
+    protected static JComponent current;
+    
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> start());
     }
     
     protected static void start() {
-        JComboBox<Mode> cb = new JComboBox<>(Mode.values());
-
+        JComboBox<Demo> demoSelector = new JComboBox<>(Demo.values());
+        JComboBox<Mode> resizeSelector = new JComboBox<>(Mode.values());
+        
         JPanel tb = new JPanel();
-        tb.add(cb);
+        tb.add(new JLabel("Data: "));
+        tb.add(demoSelector);
+        tb.add(new JLabel(" Policy: "));
+        tb.add(resizeSelector);
         
         JTable t = new JTable(100, 6);
         t.setShowHorizontalLines(true);
@@ -75,31 +94,74 @@ public class JTableResizeTest {
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scroll, new JPanel());
         split.setContinuousLayout(true);
         
-        JPanel p = new JPanel(new BorderLayout());
-        p.add(split, BorderLayout.CENTER);
-        p.add(tb, BorderLayout.NORTH);
+        content = new JPanel(new BorderLayout());
+//        content.add(split, BorderLayout.CENTER);
+        content.add(tb, BorderLayout.NORTH);
         
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        f.getContentPane().add(p);
+        f.getContentPane().add(content);
         f.setSize(900, 300);
         f.setTitle("JTable Test " + System.getProperty("java.version"));
         f.setVisible(true);
         
-        cb.setSelectedItem(null);
-        
-        cb.addItemListener((ev) -> {
-            Mode m = (Mode)cb.getSelectedItem();
-            t.setAutoResizeMode(m.getValue());
+        demoSelector.setSelectedItem(null);
+        demoSelector.addItemListener((ev) -> {
+           Demo d = (Demo)demoSelector.getSelectedItem();
+           updateTable(d);
         });
         
-        cb.setSelectedItem(
+        demoSelector.setSelectedIndex(0);
+        
+        resizeSelector.setSelectedItem(null);
+        resizeSelector.addItemListener((ev) -> {
+            Mode m = (Mode)resizeSelector.getSelectedItem();
+            t.setAutoResizeMode(m.getValue());
+        });
+        resizeSelector.setSelectedItem(
       Mode.AUTO_RESIZE_OFF
 //      Mode.AUTO_RESIZE_NEXT_COLUMN
 //      Mode.AUTO_RESIZE_SUBSEQUENT_COLUMNS
 //      Mode.AUTO_RESIZE_LAST_COLUMN
 //      Mode.AUTO_RESIZE_ALL_COLUMNS
             );
+    }
+    
+    protected static void updateTable(Demo d) {
+        JTable t = new JTable(100, 6);
+        t.setShowHorizontalLines(true);
+        t.setShowVerticalLines(true);
+        t.setGridColor(Color.LIGHT_GRAY);
+        
+        switch(d) {
+        case ALL:
+            conf(t, 0, 100, -1, -1);
+            conf(t, 1, -1, -1, 20);
+            conf(t, 4, -1, 500, -1);
+            break;
+        case MAX:
+            conf(t, 1, -1, -1, 20);
+            conf(t, 2, -1, -1, 30);
+            conf(t, 3, -1, -1, 40);
+            conf(t, 4, -1, -1, 50);
+            break;
+        default:
+            throw new Error("?" + d);
+        }
+        
+        JScrollPane scroll = new JScrollPane(t, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scroll, new JPanel());
+        split.setContinuousLayout(true);
+
+        if (current != null) {
+            content.remove(current);
+        }
+        content.add(split, BorderLayout.CENTER);
+        content.validate();
+        content.repaint();
+
+        current = split;
     }
     
     protected static void conf(JTable t, int col, int min, int pref, int max) {
