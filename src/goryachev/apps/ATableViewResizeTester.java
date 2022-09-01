@@ -42,7 +42,8 @@ public class ATableViewResizeTester extends Application {
         EMPTY("empty with pref"),
         MIN_WIDTH("min width"),
         MAX_WIDTH("max width"),
-        INCONSISTENT("inconsistent: pref < min")
+        INCONSISTENT("inconsistent: pref < min"),
+        MAX_IN_CENTER("max widths set in middle columns"),
         ;
 
         private final String text;
@@ -204,7 +205,8 @@ public class ATableViewResizeTester extends Application {
                 Cmd.ROWS, 3,
                 Cmd.COL, Cmd.PREF, 100,
                 Cmd.COL, Cmd.PREF, 200,
-                Cmd.COL, Cmd.PREF, 300
+                Cmd.COL, Cmd.PREF, 300,
+                Cmd.COL, Cmd.PREF, 400
             };
         case EMPTY:
             return new Object[] {
@@ -231,6 +233,19 @@ public class ATableViewResizeTester extends Application {
                 Cmd.ROWS, 3,
                 Cmd.COL, Cmd.PREF, 2000, Cmd.MAX, 200,
                 Cmd.COL, Cmd.MIN, 300, Cmd.PREF, 20
+            };
+        case MAX_IN_CENTER:
+            return new Object[] {
+                Cmd.ROWS, 3,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL, Cmd.MAX, 20,
+                Cmd.COL, Cmd.MAX, 30,
+                Cmd.COL, Cmd.MAX, 40,
+                Cmd.COL, Cmd.MAX, 50,
+                Cmd.COL, Cmd.MAX, 60,
+                Cmd.COL,
+                Cmd.COL
             };
         default:
             throw new Error("?" + d);

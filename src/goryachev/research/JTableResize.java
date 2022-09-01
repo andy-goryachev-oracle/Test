@@ -107,7 +107,9 @@ public class JTableResize extends ConstrainedColumnResize {
         }
         
         int columnIndex = visibleLeafColumns.indexOf(resizingColumn);
-        double delta = tableWidth - totalColumnsWidth; // FIX computing twice
+        double delta = 
+            -rf.getDelta();
+            //tableWidth - totalColumnsWidth; // FIX computing twice? is correct one?  belongs to the right column?
         accommodateDelta(rf, visibleLeafColumns, columnIndex, delta);
         delta = rf.getContentWidth() - getTotalColumnWidth(visibleLeafColumns);
 
@@ -222,8 +224,9 @@ public class JTableResize extends ConstrainedColumnResize {
                                               List<? extends TableColumnBase<?,?>> columns,
                                               boolean inverse) {
 
-        double target = !inverse ? rf.getContentWidth() : sumPreferredWidths(columns); // TODO or simply content width?
-
+//        double target = !inverse ? rf.getContentWidth() : sumPreferredWidths(columns); // TODO or simply content width?
+        double target = rf.getContentWidth();
+            
         Resizable3 r = new Resizable3() {
             public int getElementCount() {
                 return columns.size();
@@ -238,18 +241,18 @@ public class JTableResize extends ConstrainedColumnResize {
             }
 
             public double getMidPointAt(int i) {
-                if (!inverse) {
-                    return columns.get(i).getPrefWidth();
-                } else {
+                if (inverse) {
                     return columns.get(i).getWidth();
+                } else {
+                    return columns.get(i).getPrefWidth();
                 }
             }
 
             public void setSizeAt(double w, int i) {
-                if (!inverse) {
-                    rf.setColumnWidth(columns.get(i), w);
-                } else {
+                if (inverse) {
                     columns.get(i).setPrefWidth(w);
+                } else {
+                    rf.setColumnWidth(columns.get(i), w);
                 }
             }
         };
