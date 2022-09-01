@@ -40,7 +40,7 @@ import javax.swing.table.TableColumn;
 /**
  *
  */
-public class JTableResizeTest {
+public class JTableResizeTestSwing {
     enum Mode {
         AUTO_RESIZE_OFF(JTable.AUTO_RESIZE_OFF),
         AUTO_RESIZE_NEXT_COLUMN(JTable.AUTO_RESIZE_NEXT_COLUMN),
@@ -119,7 +119,7 @@ public class JTableResizeTest {
             t.setAutoResizeMode(m.getValue());
         });
         resizeSelector.setSelectedItem(
-      Mode.AUTO_RESIZE_OFF
+           Mode.AUTO_RESIZE_OFF
 //      Mode.AUTO_RESIZE_NEXT_COLUMN
 //      Mode.AUTO_RESIZE_SUBSEQUENT_COLUMNS
 //      Mode.AUTO_RESIZE_LAST_COLUMN

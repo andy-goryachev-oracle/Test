@@ -8,4 +8,5 @@ module andy_test {
     requires javafx.controls;
     requires javafx.graphics;
     requires java.desktop;
+    requires javafx.swing;
 }

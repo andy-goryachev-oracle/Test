@@ -87,13 +87,12 @@ public class JTableResize extends ConstrainedColumnResize {
         }
         
         double totalColumnsWidth = getTotalColumnWidth(visibleLeafColumns);
-        
-        if (Math.abs(totalColumnsWidth - tableWidth) > EPSILON) {
-            setWidthsFromPreferredWidths(rf, visibleLeafColumns, false);
-        }
-        
+                
         TableColumnBase<?,?> resizingColumn = rf.getColumn();
         if (resizingColumn == null) {
+            if (Math.abs(totalColumnsWidth - tableWidth) > EPSILON) {
+                setWidthsFromPreferredWidths(rf, visibleLeafColumns, false);
+            }
             return false;
         }
         
@@ -163,21 +162,25 @@ public class JTableResize extends ConstrainedColumnResize {
         int to;
 
         // Use the mode to determine how to absorb the changes.
-        switch(autoResizeMode) {
-            case AUTO_RESIZE_NEXT_COLUMN:
-                from = from + 1;
-                to = Math.min(from + 1, columnCount); break;
-            case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
-                from = from + 1;
-                to = columnCount; break;
-            case AUTO_RESIZE_LAST_COLUMN:
-                from = columnCount - 1;
-                to = from + 1; break;
-            case AUTO_RESIZE_ALL_COLUMNS:
-                from = 0;
-                to = columnCount; break;
-            default:
-                return;
+        switch (autoResizeMode) {
+        case AUTO_RESIZE_NEXT_COLUMN:
+            from = from + 1;
+            to = Math.min(from + 1, columnCount);
+            break;
+        case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
+            from = from + 1;
+            to = columnCount;
+            break;
+        case AUTO_RESIZE_LAST_COLUMN:
+            from = columnCount - 1;
+            to = from + 1;
+            break;
+        case AUTO_RESIZE_ALL_COLUMNS:
+            from = 0;
+            to = columnCount;
+            break;
+        default:
+            return;
         }
 
         final int start = from;
@@ -206,7 +209,7 @@ public class JTableResize extends ConstrainedColumnResize {
         };
 
         double totalWidth = 0.0;
-        for(int i = from; i < to; i++) {
+        for (int i = from; i < to; i++) {
             TableColumnBase<?,?> c = columns.get(i);
             double w = c.getWidth();
             totalWidth = totalWidth + w;
@@ -218,7 +221,8 @@ public class JTableResize extends ConstrainedColumnResize {
     private void setWidthsFromPreferredWidths(ResizeFeaturesBase rf,
                                               List<? extends TableColumnBase<?,?>> columns,
                                               boolean inverse) {
-        double target = !inverse ? rf.getContentWidth() : sumPreferredWidths(columns);
+
+        double target = !inverse ? rf.getContentWidth() : sumPreferredWidths(columns); // TODO or simply content width?
 
         Resizable3 r = new Resizable3() {
             public int getElementCount() {
@@ -302,11 +306,8 @@ public class JTableResize extends ConstrainedColumnResize {
             if (totalLowerBound == totalUpperBound) {
                 newSize = lowerBound;
             } else {
-                double f = (double)(target - totalLowerBound) / (totalUpperBound - totalLowerBound);
-                newSize = (int)Math.round(lowerBound + f * (upperBound - lowerBound));
-                // We'd need to round manually in an all integer version.
-                // size[i] = (int)(((totalUpperBound - target) * lowerBound +
-                //     (target - totalLowerBound) * upperBound)/(totalUpperBound-totalLowerBound));
+                double f = (target - totalLowerBound) / (totalUpperBound - totalLowerBound);
+                newSize = Math.round(lowerBound + f * (upperBound - lowerBound));
             }
             r.setSizeAt(newSize, i);
             target -= newSize;
