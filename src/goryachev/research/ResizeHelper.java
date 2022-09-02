@@ -26,6 +26,7 @@ package goryachev.research;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import javafx.scene.control.ResizeFeaturesBase;
@@ -66,10 +67,18 @@ public class ResizeHelper {
         
         for(int i=0; i<sz; i++) {
             TableColumnBase<?,?> c = columns.get(i);
-            size[i] = c.getWidth();
-            smin += (min[i] = c.getMinWidth());
-            spref += (pref[i] = clip(c.getPrefWidth(), c.getMinWidth(), c.getMaxWidth()));
-            smax += (max[i] = c.getMaxWidth());
+            double w = c.getWidth();
+            size[i] = w;
+            
+            if(c.isResizable()) {
+                smin += (min[i] = c.getMinWidth());
+                spref += (pref[i] = clip(c.getPrefWidth(), c.getMinWidth(), c.getMaxWidth()));
+                smax += (max[i] = c.getMaxWidth());
+            } else {
+                smin += w;
+                spref += w;
+                smax += w;
+            }
         }
         
         this.sumMin = smin;
@@ -81,14 +90,15 @@ public class ResizeHelper {
     }
     
     public int count() {
-        return size.length;
+        return columns.size();
     }
     
     public double sumWidths() {
+        // TODO sumWidths?
         return sum(size);
     }
     
-    protected double sum(double[] values) {
+    protected static double sum(double[] values) {
         double rv = 0.0;
         for(double w: values) {
             rv += w;
@@ -96,25 +106,23 @@ public class ResizeHelper {
         return rv;
     }
     
-    protected boolean eq(double a, double b) {
+    protected static boolean eq(double a, double b) {
         return Math.abs(a - b) > EPSILON;
     }
 
-    // TODO fixed size columns, skip non-resizeable columns
     public void resizeColumnsFromPref(double delta) {
-        // hit the min rail on all the columns
-//        if(target < sumMin) {
-//            
-//        }
         // compute shrinking/expanding ratio
         double f = (target - sumMin) / (sumPref - sumMin);
         if(f < 0.0) {
             f = 0.0;
         }
 
-        // TODO avoid accumulating rounding errors
         ArrayList<CCol> constrained = null;
         for (int i = 0; i < count(); i++) {
+            if(!columns.get(i).isResizable()) {
+                continue;
+            }
+
             double adj;
             double w = Math.round(min[i] + f * (pref[i] - min[i]));
             if(w < min[i]) {
@@ -145,41 +153,44 @@ public class ResizeHelper {
             // exceeds the totalAdjustment - these columns will remain at their constrained size
             double totalAdjustment = sum(size) - target;
             double adj = 0.0;
-            int i = constrained.size() - 1;
-            for (; i >= 0; --i) {
+            BitSet skip = new BitSet(count());
+            for (int i=0; i < constrained.size(); i++) {
+                CCol c = constrained.get(i);
+                skip.set(c.index);
                 adj += constrained.get(i).adj;
                 if(adj > Math.abs(totalAdjustment)) {
                     break;
                 }
             }
             
-            // distribute extra space between the remaining columns (except constrained)
+            // distribute extra space between the original columns (except constrained columns removed in step above)
             
-            if(i >= 0) {
-                double dumPref = sumPref(constrained, i);
-                    
-                for(; i>=0; --i) {
-                    int ix = constrained.get(i).index;
-                    // TODO avoid accumulating rounding errors
-                    double dw = Math.round(totalAdjustment * pref[ix] / sumPref);
-                    size[ix] += dw;
+            double sumPref = 0.0;
+            for (int i = 0; i < count(); i++) {
+                if(skip.get(i) || (!columns.get(i).isResizable())) {
+                    continue;
                 }
+                sumPref += pref[i];
+            }
+
+            // TODO avoid accumulating rounding errors
+            for (int i = 0; i < count(); i++) {
+                if(skip.get(i) || (!columns.get(i).isResizable())) {
+                    continue;
+                }
+                
+                double dw = Math.round(totalAdjustment * pref[i] / sumPref);
+                size[i] += dw;
             }
         }
 
         // apply sizes
         for (int i = 0; i < count(); i++) {
-            rf.setColumnWidth(columns.get(i), size[i]);
+            TableColumnBase<?,?> c = columns.get(i);
+            if (c.isResizable()) {
+                rf.setColumnWidth(c, size[i]);
+            }
         }
-    }
-    
-    protected double sumPref(List<CCol> constrained, int startIndex) {
-        double rv = 0.0;
-        for(int i=startIndex; i>=0; --i) {
-            int ix = constrained.get(i).index;
-            rv += pref[ix];
-        }
-        return rv;
     }
     
     protected static double clip(double v, double min, double max) {
@@ -216,7 +227,7 @@ public class ResizeHelper {
 
         @Override
         public int compareTo(CCol x) {
-            return (int)Math.signum(adj - x.adj);
+            return (int)Math.signum(x.adj - adj);
         }
     }
 }

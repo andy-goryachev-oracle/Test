@@ -8,7 +8,7 @@ import javafx.scene.control.TableView;
 import javafx.util.Callback;
 
 /**
- * Let's see it this works.
+ * FIX describe
  */
 public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
     private final ResizeMode mode;
