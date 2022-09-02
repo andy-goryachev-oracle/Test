@@ -24,6 +24,9 @@
  */
 package goryachev.research;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javafx.scene.control.ResizeFeaturesBase;
 import javafx.scene.control.TableColumnBase;
@@ -32,6 +35,8 @@ import javafx.scene.control.TableColumnBase;
  * Helps resize Tree/TableView columns.
  */
 public class ResizeHelper {
+    protected static final double EPSILON = 0.0000001;
+
     private final ResizeFeaturesBase rf;
     private final double target;
     private final List<? extends TableColumnBase<?,?>> columns;
@@ -63,13 +68,16 @@ public class ResizeHelper {
             TableColumnBase<?,?> c = columns.get(i);
             size[i] = c.getWidth();
             smin += (min[i] = c.getMinWidth());
-            spref += (pref[i] = c.getPrefWidth());
+            spref += (pref[i] = clip(c.getPrefWidth(), c.getMinWidth(), c.getMaxWidth()));
             smax += (max[i] = c.getMaxWidth());
         }
         
         this.sumMin = smin;
         this.sumPref = spref;
         this.sumMax = smax;
+        
+        // FIX
+        System.out.println(this);
     }
     
     public int count() {
@@ -87,6 +95,10 @@ public class ResizeHelper {
         }
         return rv;
     }
+    
+    protected boolean eq(double a, double b) {
+        return Math.abs(a - b) > EPSILON;
+    }
 
     // TODO fixed size columns, skip non-resizeable columns
     public void resizeColumnsFromPref(double delta) {
@@ -95,22 +107,116 @@ public class ResizeHelper {
 //            
 //        }
         // compute shrinking/expanding ratio
-        double f = (target - sumMin) / (sumMax - sumMin);
+        double f = (target - sumMin) / (sumPref - sumMin);
         if(f < 0.0) {
             f = 0.0;
-        } else if(f > 1.0) {
-            f = 1.0;
         }
-        
-        // TODO account for rounding error
-        for(int i=0; i<count(); i++) {
-            double w = Math.round(f * (pref[i] - min[i]));
+
+        // TODO avoid accumulating rounding errors
+        ArrayList<CCol> constrained = null;
+        for (int i = 0; i < count(); i++) {
+            double adj;
+            double w = Math.round(min[i] + f * (pref[i] - min[i]));
+            if(w < min[i]) {
+                adj = Math.abs(w - min[i]);
+                w = min[i];
+            } else if(w > max[i]) {
+                adj = Math.abs(w - max[i]);
+                w = max[i];
+            } else {
+                adj = 0.0;
+            }
+            
+            if(adj != 0.0) {
+                if(constrained == null) {
+                    constrained = new ArrayList(count());
+                }
+                constrained.add(new CCol(i, adj));
+            }
             size[i] = w;
         }
-        
+
+        // check if hit any constraints
+        if (constrained != null) {
+            // sort constrained columns by closeness
+            Collections.sort(constrained);
+            
+            // identify N columns with the largest adjustment, such that the sum of their adjustments
+            // exceeds the totalAdjustment - these columns will remain at their constrained size
+            double totalAdjustment = sum(size) - target;
+            double adj = 0.0;
+            int i = constrained.size() - 1;
+            for (; i >= 0; --i) {
+                adj += constrained.get(i).adj;
+                if(adj > Math.abs(totalAdjustment)) {
+                    break;
+                }
+            }
+            
+            // distribute extra space between the remaining columns (except constrained)
+            
+            if(i >= 0) {
+                double dumPref = sumPref(constrained, i);
+                    
+                for(; i>=0; --i) {
+                    int ix = constrained.get(i).index;
+                    // TODO avoid accumulating rounding errors
+                    double dw = Math.round(totalAdjustment * pref[ix] / sumPref);
+                    size[ix] += dw;
+                }
+            }
+        }
+
         // apply sizes
-        for(int i=0; i<count(); i++) {
+        for (int i = 0; i < count(); i++) {
             rf.setColumnWidth(columns.get(i), size[i]);
+        }
+    }
+    
+    protected double sumPref(List<CCol> constrained, int startIndex) {
+        double rv = 0.0;
+        for(int i=startIndex; i>=0; --i) {
+            int ix = constrained.get(i).index;
+            rv += pref[ix];
+        }
+        return rv;
+    }
+    
+    protected static double clip(double v, double min, double max) {
+        if(v < min) {
+            return min;
+        } else if(v > max) {
+            return max;
+        }
+        return v;
+    }
+    
+    @Override
+    public String toString() {
+        return
+            "sumMin=" + p(sumMin) +
+            " sumPref=" + p(sumPref) +
+            " sumMax=" + p(sumMax) +
+            " target=" + p(target);
+    }
+    
+    protected static String p(double x) {
+        return new DecimalFormat("0.#").format(x);
+    }
+
+    /** Constrained column */
+    protected static class CCol implements Comparable<CCol> {
+        public final int index;
+        public final double adj;
+        
+        public CCol(int index, double adj) {
+            this.index = index;
+            this.adj = adj;
+        }
+
+        @Override
+        public int compareTo(CCol x) {
+            return (int)Math.signum(adj - x.adj);
         }
     }
 }

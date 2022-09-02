@@ -197,13 +197,13 @@ public class ATableViewResizeTester extends Application {
         case AUTO_RESIZE_ALL_COLUMNS:
             return AndyConstrainedResizePolicy.forTable(ResizeMode.AUTO_RESIZE_ALL_COLUMNS);
         case AUTO_RESIZE_LAST_COLUMN:
-            return JTableResize.forTable(ResizeMode.AUTO_RESIZE_LAST_COLUMN);
+            return AndyConstrainedResizePolicy.forTable(ResizeMode.AUTO_RESIZE_LAST_COLUMN);
         case AUTO_RESIZE_NEXT_COLUMN:
-            return JTableResize.forTable(ResizeMode.AUTO_RESIZE_NEXT_COLUMN);
+            return AndyConstrainedResizePolicy.forTable(ResizeMode.AUTO_RESIZE_NEXT_COLUMN);
         case AUTO_RESIZE_OFF:
             return TableView.UNCONSTRAINED_RESIZE_POLICY;
         case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
-            return JTableResize.forTable(ResizeMode.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+            return AndyConstrainedResizePolicy.forTable(ResizeMode.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
         case CONSTRAINED_RESIZE_POLICY:
             return TableView.CONSTRAINED_RESIZE_POLICY;
         default:
@@ -247,7 +247,7 @@ public class ATableViewResizeTester extends Application {
                 Cmd.ROWS, 3,
                 Cmd.COL,
                 Cmd.COL,
-                Cmd.COL, Cmd.MAX, 300
+                Cmd.COL, Cmd.MAX, 100
             };
         case INCONSISTENT:
             return new Object[] {

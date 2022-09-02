@@ -358,8 +358,7 @@ public class ATreeTableViewTester extends Application {
         boolean nullSelectionModel = false;
         if(nullSelectionModel) {
             tree.setSelectionModel(null);
-        }
-        else {
+        } else {
             System.err.println("cell selection model is not null!");
             tree.getSelectionModel().setCellSelectionEnabled(true);
             tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
@@ -378,24 +377,20 @@ public class ATreeTableViewTester extends Application {
         });
         
         CheckBox nullTreeSelectionModel = new CheckBox("null cell selection model");
-        nullTreeSelectionModel.selectedProperty().addListener((src,prev,on) -> {
-            if(on) {
+        nullTreeSelectionModel.selectedProperty().addListener((src, prev, on) -> {
+            if (on) {
                 oldTreeSelectionModel = tree.getSelectionModel();
                 tree.setSelectionModel(null);
-            }
-            else
-            {
+            } else {
                 tree.setSelectionModel(oldTreeSelectionModel);
             }
         });
-        
+
         CheckBox constrainedTreeModel = new CheckBox("constrained model");
-        constrainedTreeModel.selectedProperty().addListener((src,prev,on) -> {
-            if(on) {
+        constrainedTreeModel.selectedProperty().addListener((src, prev, on) -> {
+            if (on) {
                 tree.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
-            }
-            else
-            {
+            } else {
                 tree.setColumnResizePolicy(TreeTableView.UNCONSTRAINED_RESIZE_POLICY);
             }
         });
@@ -408,7 +403,7 @@ public class ATreeTableViewTester extends Application {
             showLastTreeColumnCheckbox,
             nullTreeSelectionModel,
             constrainedTreeModel
-            );
+        );
         
         BorderPane p2 = new BorderPane();
         p2.setCenter(tree);
