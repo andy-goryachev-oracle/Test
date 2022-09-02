@@ -25,57 +25,28 @@
 package goryachev.research;
 
 import java.util.List;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import javafx.scene.control.ConstrainedColumnResize;
 import javafx.scene.control.ResizeFeaturesBase;
 import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableView;
-import javafx.scene.control.ConstrainedColumnResize.TablePolicy;
 import javafx.util.Callback;
 
 /**
  * Constrained column resize policy lifted from JTable.
  */
 public class JTableResize extends ConstrainedColumnResize {
-    
-    public enum ResizeMode {
-        AUTO_RESIZE_NEXT_COLUMN,
-        AUTO_RESIZE_SUBSEQUENT_COLUMNS,
-        AUTO_RESIZE_LAST_COLUMN,
-        AUTO_RESIZE_ALL_COLUMNS
-    }
-    
-    public static class ForTable
-        extends JTableResize
-        implements Callback<TableView.ResizeFeatures,Boolean> {
-        
-        public ForTable(ResizeMode m) {
-            super(m);
-        }
-    
-        @Override
-        public Boolean call(TableView.ResizeFeatures f) {
-            List<? extends TableColumnBase<?,?>> visibleLeafColumns = f.getTable().getVisibleLeafColumns();
-            return constrainedResize(f, f.getContentWidth(), visibleLeafColumns);
-        }
-        
-        @Override
-        public String toString() {
-            return "new-constrained-resize";
-        }
-    }
-    
-    public static ForTable forTable(ResizeMode m) {
-        return new ForTable(m);
-    }
-    
+
+    protected static final double EPSILON = 0.0000001;
     private final ResizeMode autoResizeMode;
     
     public JTableResize(ResizeMode m) {
         autoResizeMode = m;
     }
-    
+
+    public static ForTable forTable(ResizeMode m) {
+        return new ForTable(m);
+    }
+
     @Override
     public boolean constrainedResize(ResizeFeaturesBase rf,
         double contentWidth,
@@ -220,6 +191,7 @@ public class JTableResize extends ConstrainedColumnResize {
         adjustSizes(totalWidth + delta, r, false);
     }
     
+    // TODO inverse may not be necessary (always false)
     private void setWidthsFromPreferredWidths(ResizeFeaturesBase rf,
                                               List<? extends TableColumnBase<?,?>> columns,
                                               boolean inverse) {
@@ -309,6 +281,7 @@ public class JTableResize extends ConstrainedColumnResize {
             if (totalLowerBound == totalUpperBound) {
                 newSize = lowerBound;
             } else {
+                // TODO constant within the loop
                 double f = (target - totalLowerBound) / (totalUpperBound - totalLowerBound);
                 newSize = Math.round(lowerBound + f * (upperBound - lowerBound));
             }
@@ -328,5 +301,20 @@ public class JTableResize extends ConstrainedColumnResize {
 
     protected interface Resizable3 extends Resizable2 {
         public double getMidPointAt(int i);
+    }
+    
+    public static class ForTable
+        extends JTableResize
+        implements Callback<TableView.ResizeFeatures,Boolean> {
+        
+        public ForTable(ResizeMode m) {
+            super(m);
+        }
+    
+        @Override
+        public Boolean call(TableView.ResizeFeatures f) {
+            List<? extends TableColumnBase<?,?>> visibleLeafColumns = f.getTable().getVisibleLeafColumns();
+            return constrainedResize(f, f.getContentWidth(), visibleLeafColumns);
+        }
     }
 }

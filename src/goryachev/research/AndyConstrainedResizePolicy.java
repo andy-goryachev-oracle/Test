@@ -4,11 +4,18 @@ import java.util.List;
 import javafx.scene.control.ConstrainedColumnResize;
 import javafx.scene.control.ResizeFeaturesBase;
 import javafx.scene.control.TableColumnBase;
+import javafx.scene.control.TableView;
+import javafx.util.Callback;
 
 /**
  * Let's see it this works.
  */
 public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
+    private final ResizeMode mode;
+
+    public AndyConstrainedResizePolicy(ResizeMode m) {
+        this.mode = m;
+    }
     
     @Override
     public boolean constrainedResize(ResizeFeaturesBase rf,
@@ -20,14 +27,13 @@ public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
             return false;
         }
         
-        double colWidth = 0.0;
-        for (TableColumnBase<?,?> col: visibleLeafColumns) {
-            colWidth += col.getWidth();
-        }
+        ResizeHelper h = new ResizeHelper(rf, contentWidth, visibleLeafColumns);
         
-        if (Math.abs(colWidth - tableWidth) > EPSILON) {
-            double actualDelta = tableWidth - colWidth;
-            resizeColumns(rf, visibleLeafColumns, actualDelta);
+        double colWidth = h.sumWidths();
+        double delta = tableWidth - colWidth;
+        
+        if (Math.abs(delta) > EPSILON) {
+            h.resizeColumnsFromPref(delta);
         }
 
         TableColumnBase<?,?> column = rf.getColumn();
@@ -36,7 +42,7 @@ public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
         }
 
         // resize the specific column
-
+/*
         double delta = rf.getDelta();
         boolean isShrinking = delta < 0;
 
@@ -85,73 +91,26 @@ public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
         }
         // TODO EPSILON?
         return remainingDelta == 0;
+        */
+        return false;
     }
     
-    @Override // FIX remove override
-    protected double resizeColumns(ResizeFeaturesBase rf, List<? extends TableColumnBase<?,?>> columns, double delta) {
-        // FIX remove
-        int columnCount = columns.size();
-        double colDelta = delta / columnCount;
-        int col = 0;
-
-        // we maintain a count of the amount of delta remaining to ensure that
-        // the column resize operation accurately reflects the location of the
-        // mouse pointer. Every time this value is not 0, the UI is a teeny bit
-        // more inaccurate whilst the user continues to resize.
-        double remainingDelta = delta;
-
-        boolean isClean = true;
-        for (TableColumnBase<?,?> c: columns) {
-            col++;
-
-            // resize each child column
-            
-            // TODO if a column hit its constraint (min when shrining, max if expanding) - stop, needAnotherPass = true;
-            
-            double leftOverDelta = resize(rf, c, colDelta);
-
-            // calculate the remaining delta if the was anything left over in
-            // the last resize operation
-            remainingDelta = remainingDelta - colDelta + leftOverDelta;
-
-            if (leftOverDelta != 0) {
-                isClean = false;
-                // and recalculate the distribution of the remaining delta for
-                // the remaining siblings.
-                colDelta = remainingDelta / (columnCount - col);
-            }
-        }
-
-        // see isClean above for why this is done
-        return isClean ? 0.0 : remainingDelta;
+    public static TablePolicy forTable(ResizeMode m) {
+        return new TablePolicy(m);
     }
-    
-    @Override // FIX remove override
-    protected double resize(ResizeFeaturesBase rf, TableColumnBase column, double delta) {
-        if (delta == 0) {
-            return 0.0;
-        }
-        if (!column.isResizable()) {
-            return delta;
+
+    public static class TablePolicy
+        extends AndyConstrainedResizePolicy
+        implements Callback<TableView.ResizeFeatures,Boolean> {
+        
+        public TablePolicy(ResizeMode m) {
+            super(m);
         }
 
-        boolean isShrinking = delta < 0;
-        List<TableColumnBase<?,?>> resizingChildren = getResizableChildren(column, isShrinking);
-
-        if (resizingChildren.size() > 0) {
-            return resizeColumns(rf, resizingChildren, delta);
-        } else {
-            double w = column.getWidth() + delta;
-            if (w > column.getMaxWidth()) {
-                rf.setColumnWidth(column, column.getMaxWidth());
-                return w - column.getMaxWidth();
-            } else if (w < column.getMinWidth()) {
-                rf.setColumnWidth(column, column.getMinWidth());
-                return w - column.getMinWidth();
-            } else {
-                rf.setColumnWidth(column, w);
-                return 0.0F;
-            }
+        @Override
+        public Boolean call(TableView.ResizeFeatures f) {
+            List<? extends TableColumnBase<?,?>> visibleLeafColumns = f.getTable().getVisibleLeafColumns();
+            return constrainedResize(f, f.getContentWidth(), visibleLeafColumns);
         }
     }
 }

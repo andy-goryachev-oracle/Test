@@ -10,15 +10,15 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import goryachev.research.AndyConstrainedResizePolicy;
 import goryachev.research.JTableResize;
-import goryachev.research.JTableResize.ResizeMode;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.embed.swing.SwingNode;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ConstrainedColumnResize.ResizeMode;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
@@ -43,6 +43,7 @@ public class ATableViewResizeTester extends Application {
         MIN_WIDTH("min width"),
         MAX_WIDTH("max width"),
         INCONSISTENT("inconsistent: pref < min"),
+        FIXED_MIDDLE("fixed in the middle"),
         MAX_IN_CENTER("max widths set in middle columns"),
         ;
 
@@ -172,10 +173,29 @@ public class ATableViewResizeTester extends Application {
         return sb.toString();
     }
     
-    protected Callback<ResizeFeatures, Boolean> createPolicy(Policy p) {
+    protected Callback<ResizeFeatures, Boolean> createPolicy2(Policy p) {
         switch(p) {
         case AUTO_RESIZE_ALL_COLUMNS:
             return JTableResize.forTable(ResizeMode.AUTO_RESIZE_ALL_COLUMNS);
+        case AUTO_RESIZE_LAST_COLUMN:
+            return JTableResize.forTable(ResizeMode.AUTO_RESIZE_LAST_COLUMN);
+        case AUTO_RESIZE_NEXT_COLUMN:
+            return JTableResize.forTable(ResizeMode.AUTO_RESIZE_NEXT_COLUMN);
+        case AUTO_RESIZE_OFF:
+            return TableView.UNCONSTRAINED_RESIZE_POLICY;
+        case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
+            return JTableResize.forTable(ResizeMode.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+        case CONSTRAINED_RESIZE_POLICY:
+            return TableView.CONSTRAINED_RESIZE_POLICY;
+        default:
+            throw new Error("?" + p);
+        }
+    }
+    
+    protected Callback<ResizeFeatures, Boolean> createPolicy(Policy p) {
+        switch(p) {
+        case AUTO_RESIZE_ALL_COLUMNS:
+            return AndyConstrainedResizePolicy.forTable(ResizeMode.AUTO_RESIZE_ALL_COLUMNS);
         case AUTO_RESIZE_LAST_COLUMN:
             return JTableResize.forTable(ResizeMode.AUTO_RESIZE_LAST_COLUMN);
         case AUTO_RESIZE_NEXT_COLUMN:
@@ -198,7 +218,8 @@ public class ATableViewResizeTester extends Application {
                 Cmd.ROWS, 3,
                 Cmd.COL, Cmd.MIN, 20, Cmd.PREF, 20, Cmd.MAX, 20,
                 Cmd.COL, Cmd.PREF, 200,
-                Cmd.COL, Cmd.PREF, 300, Cmd.MAX, 400
+                Cmd.COL, Cmd.PREF, 300, Cmd.MAX, 400,
+                Cmd.COL
             };
         case PREF:
             return new Object[] {
@@ -244,6 +265,17 @@ public class ATableViewResizeTester extends Application {
                 Cmd.COL, Cmd.MAX, 40,
                 Cmd.COL, Cmd.MAX, 50,
                 Cmd.COL, Cmd.MAX, 60,
+                Cmd.COL,
+                Cmd.COL
+            };
+        case FIXED_MIDDLE:
+            return new Object[] {
+                Cmd.ROWS, 3,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL, Cmd.MIN, 100, Cmd.MAX, 100,
+                Cmd.COL,
                 Cmd.COL,
                 Cmd.COL
             };
