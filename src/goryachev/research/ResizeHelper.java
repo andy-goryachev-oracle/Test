@@ -43,11 +43,8 @@ public class ResizeHelper {
     private final double[] min;
     private final double[] pref;
     private final double[] max;
-    private final double sumMin;
-    private final double sumPref;
-    private final double sumMax;
     private final BitSet skip;
-    
+
     public ResizeHelper(ResizeFeaturesBase rf,
                         double target,
                         List<? extends TableColumnBase<?,?>> columns) {
@@ -60,36 +57,25 @@ public class ResizeHelper {
         pref = new double[sz];
         max = new double[sz];
         skip = new BitSet(sz);
-        
-        double smin = 0.0;
-        double spref = 0.0;
-        double smax = 0.0;
-        
-        for(int i=0; i<sz; i++) {
+
+        for (int i = 0; i < sz; i++) {
             TableColumnBase<?,?> c = columns.get(i);
             double w = c.getWidth();
             size[i] = w;
-            
-            if(c.isResizable()) {
-                smin += (min[i] = c.getMinWidth());
-                spref += (pref[i] = clip(c.getPrefWidth(), c.getMinWidth(), c.getMaxWidth()));
-                smax += (max[i] = c.getMaxWidth());
-            } else {
-                smin += w;
-                spref += w;
-                smax += w;
 
+            // TODO possibly check for min<pref<max
+            if (c.isResizable()) {
+                min[i] = c.getMinWidth();
+                pref[i] = clip(c.getPrefWidth(), c.getMinWidth(), c.getMaxWidth());
+                max[i] = c.getMaxWidth();
+            } else {
                 skip.set(i, true);
             }
         }
-        
-        this.sumMin = smin;
-        this.sumPref = spref;
-        this.sumMax = smax;
-        
+
         System.out.println(this); // FIX
     }
-    
+
     public int count() {
         return columns.size();
     }
@@ -114,51 +100,54 @@ public class ResizeHelper {
     /** returns true if one or more constraints have been hit and another pass is needed */
     public boolean resizeColumnsFromPref(double delta) {
         double remainingTarget = target;
-        double remainingPrefs = sumPref;
-        double remainingMin = sumMin;
-        boolean needsResize = false;
-        
+        double sumPref = 0.0;
+        double sumMin = 0.0;
+
         // remove fixed and skipped columns from consideration
         for (int i = 0; i < count(); i++) {
-            if(skip.get(i)) {
+            if (skip.get(i)) {
                 remainingTarget -= size[i];
-                remainingPrefs -= size[i];
-                remainingMin -= size[i];
+            } else {
+                sumMin += min[i];
+                sumPref += pref[i];
             }
         }
-        
+
+        boolean needsAnotherPass = false;
+
         for (int i = 0; i < count(); i++) {
-            if(skip.get(i)) {
+            if (skip.get(i)) {
                 continue;
             }
-            
+
             // compute shrinking/expanding ratio
-            double f = (remainingTarget - remainingMin) / (remainingPrefs - remainingMin);
-            if(f < 0.0) {
+            double f = (remainingTarget - sumMin) / (sumPref - sumMin);
+            if (f < 0.0) {
                 f = 0.0;
             }
 
             double w = Math.round(min[i] + f * (pref[i] - min[i]));
-            if(w < min[i]) {
+            if (w < min[i]) {
                 w = min[i];
                 skip.set(i, true);
-                needsResize = true;
-            } else if(w > max[i]) {
+                // TODO does not if went pass the visible area
+                needsAnotherPass = true;
+            } else if (w > max[i]) {
                 w = max[i];
                 skip.set(i, true);
-                needsResize = true;
+                // TODO does not if went pass the visible area
+                needsAnotherPass = true;
             }
 
             size[i] = w;
             remainingTarget -= w;
-            remainingPrefs -= w;
-            remainingMin -= w;
+            sumPref -= w;
+            sumMin -= w;
         }
-        
-        return needsResize;
+
+        return needsAnotherPass;
     }
-    
-    
+
     public void applySizes() {
         for (int i = 0; i < count(); i++) {
             TableColumnBase<?,?> c = columns.get(i);
@@ -167,26 +156,26 @@ public class ResizeHelper {
             }
         }
     }
-    
+
     protected static double clip(double v, double min, double max) {
-        if(v < min) {
+        if (v < min) {
             return min;
-        } else if(v > max) {
+        } else if (v > max) {
             return max;
         }
         return v;
     }
-    
+
     @Override
     public String toString() {
         return
-            "sumMin=" + p(sumMin) +
-            " sumPref=" + p(sumPref) +
-            " sumMax=" + p(sumMax) +
-            " target=" + p(target);
+        //            "sumMin=" + p(sumMin) +
+        //            " sumPref=" + p(sumPref) +
+        //            " sumMax=" + p(sumMax) +
+        " target=" + p(target);
     }
-    
-    protected static String p(double x) {
+
+    protected static String p(double x) { // FIX remove
         return new DecimalFormat("0.#").format(x);
     }
 }
