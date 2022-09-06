@@ -29,6 +29,7 @@ import java.util.BitSet;
 import java.util.List;
 import javafx.scene.control.ResizeFeaturesBase;
 import javafx.scene.control.TableColumnBase;
+import javafx.scene.control.ConstrainedColumnResize.ResizeMode;
 
 /**
  * Helps resize Tree/TableView columns.
@@ -39,18 +40,23 @@ public class ResizeHelper {
     private final ResizeFeaturesBase rf;
     private final double target;
     private final List<? extends TableColumnBase<?,?>> columns;
+    private final ResizeMode mode;
     private final double[] size;
     private final double[] min;
     private final double[] pref;
     private final double[] max;
     private final BitSet skip;
+    private final double sumWidths;
 
     public ResizeHelper(ResizeFeaturesBase rf,
                         double target,
-                        List<? extends TableColumnBase<?,?>> columns) {
+                        List<? extends TableColumnBase<?,?>> columns,
+                        ResizeMode mode) {
         this.rf = rf;
         this.target = target;
         this.columns = columns;
+        this.mode = mode;
+
         int sz = columns.size();
         size = new double[sz];
         min = new double[sz];
@@ -58,10 +64,12 @@ public class ResizeHelper {
         max = new double[sz];
         skip = new BitSet(sz);
 
+        double sum = 0.0;
         for (int i = 0; i < sz; i++) {
             TableColumnBase<?,?> c = columns.get(i);
             double w = c.getWidth();
             size[i] = w;
+            sum += w;
 
             // TODO possibly check for min<pref<max
             if (c.isResizable()) {
@@ -72,6 +80,8 @@ public class ResizeHelper {
                 skip.set(i, true);
             }
         }
+        
+        this.sumWidths = sum;
 
         System.out.println(this); // FIX
     }
@@ -81,8 +91,7 @@ public class ResizeHelper {
     }
     
     public double sumWidths() {
-        // TODO sumWidths?
-        return sum(size);
+        return sumWidths;
     }
     
     protected static double sum(double[] values) {
@@ -93,8 +102,8 @@ public class ResizeHelper {
         return rv;
     }
     
-    protected static boolean eq(double a, double b) {
-        return Math.abs(a - b) > EPSILON;
+    protected static boolean isZero(double x) {
+        return Math.abs(x) < EPSILON;
     }
 
     /** returns true if one or more constraints have been hit and another pass is needed */
@@ -177,5 +186,124 @@ public class ResizeHelper {
 
     protected static String p(double x) { // FIX remove
         return new DecimalFormat("0.#").format(x);
+    }
+
+    public boolean resizeColumn(TableColumnBase<?,?> column, double delta) {
+        // need to find the last leaf column of the given column - it is this
+        // column that we actually resize from. If this column is a leaf, then we
+        // use it.
+        TableColumnBase<?,?> leafColumn = column;
+        while (leafColumn.getColumns().size() > 0) {
+            leafColumn = leafColumn.getColumns().get(leafColumn.getColumns().size() - 1);
+        }
+        
+        if(!leafColumn.isResizable()) {
+            return false;
+        }
+        
+        int ix = columns.indexOf(leafColumn);
+        boolean expanding = delta > 0.0;
+        double allowedDelta = getAllowedDelta(ix, expanding);
+        if(isZero(allowedDelta)) {
+            return false;
+        }
+        
+        int ct = markOppositeColumns(ix);
+        if(ct == 0) {
+            return false;
+        }
+        
+        double d = computeAllowedDelta(!expanding);
+        if(isZero(d)) {
+            return false;
+        }
+        
+        allowedDelta = Math.min(allowedDelta, d);
+        
+        return resizeColumns(ix, expanding, allowedDelta);
+    }
+
+    /** non-negative */
+    protected double getAllowedDelta(int ix, boolean expanding) {
+        if(expanding) {
+            return Math.abs(max[ix] - size[ix]);
+        } else {
+            return Math.abs(min[ix] - size[ix]);
+        }
+    }
+    
+    /** updates skip bitset with columns that might be resized, and returns the number of the opposite columns */
+    protected int markOppositeColumns(int ix) {
+        switch(mode) {
+        case AUTO_RESIZE_NEXT_COLUMN:
+            skip(0, ix + 1);
+            skip(ix + 1, columns.size());
+            break;
+        case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
+            skip(0, ix + 1);
+            break;
+        case AUTO_RESIZE_LAST_COLUMN:
+            skip(0, Math.max(ix + 1, columns.size() - 1));
+            break;
+        case AUTO_RESIZE_ALL_COLUMNS:
+        default:
+            break;
+        }
+        
+        return count() - skip.cardinality();
+    }
+    
+    /** range set with limit check */
+    protected void skip(int fromInclusive, int toExclusive) {
+        int sz = skip.size();
+        int from = Math.min(sz - 1, fromInclusive);
+        if(from < 0) {
+            return;
+        }
+        int to = Math.min(sz, toExclusive);
+        if(to < from) {
+            skip.set(from, to);
+        }
+    }
+    
+    /** updates skip bitset with opposite columns, and returns the allowable delta for all of the opposite columns */
+    protected double computeAllowedDelta(boolean expanding) {
+        double delta = 0.0;
+        int i = 0;
+        for(;;) {
+            i = skip.nextClearBit(i);
+            // are we at the end?
+            if(i >= count()) {
+                break;
+            }
+            
+            if(expanding) {
+                delta += (max[i] - size[i]);
+            } else {
+                delta += (size[i] - min[i]);
+            }
+            
+            i++;
+        }
+        return delta;
+    }
+    
+    protected boolean resizeColumns(int ix, boolean expanding, double delta) {
+        delta = (expanding ? 1 : -1) * Math.floor(delta);
+
+        // FIX something is rotten in this code -
+        int ct = count() - skip.cardinality();
+        if(ct == 0) {
+            // should not happen
+            return false;
+        } else  if(ct == 1) {
+            int oppx = skip.nextClearBit(0);
+            size[ix] += delta;
+            size[oppx] -= delta;
+            return true;
+        } else {
+            // TODO
+            return false;
+        }
     }
 }

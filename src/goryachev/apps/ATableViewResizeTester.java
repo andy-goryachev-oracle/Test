@@ -275,6 +275,7 @@ public class ATableViewResizeTester extends Application {
                 Cmd.COL,
                 Cmd.COL,
                 Cmd.COL, Cmd.MIN, 100, Cmd.MAX, 100,
+                Cmd.COL, Cmd.MIN, 100, Cmd.MAX, 100,
                 Cmd.COL,
                 Cmd.COL,
                 Cmd.COL
