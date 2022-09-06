@@ -29,19 +29,29 @@ public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
         
         ResizeHelper h = new ResizeHelper(rf, contentWidth, visibleLeafColumns);
         
-        double colWidth = h.sumWidths();
-        double delta = tableWidth - colWidth;
-        
+        // phase 1: do a resize pass (possibly multiple in case one or more constraints have been hit)
+        double sumWidths = h.sumWidths();
+        double delta = tableWidth - sumWidths;
+
         if (Math.abs(delta) > EPSILON) {
-            h.resizeColumnsFromPref(delta);
+            boolean needResize;
+            do {
+                needResize = h.resizeColumnsFromPref(delta);
+                if(needResize) System.out.println("*** another pass"); // FIX
+            } while (needResize);
         }
 
-        TableColumnBase<?,?> column = rf.getColumn();
-        if (column == null) {
-            return false;
+        try
+        {
+            TableColumnBase<?,?> column = rf.getColumn();
+            if (column == null) {
+                return false;
+            }
+        } finally {
+            h.applySizes();
         }
 
-        // resize the specific column
+        // phase2: resize the specified column
 /*
         double delta = rf.getDelta();
         boolean isShrinking = delta < 0;

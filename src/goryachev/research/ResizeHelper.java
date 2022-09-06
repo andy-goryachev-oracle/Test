@@ -25,9 +25,7 @@
 package goryachev.research;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collections;
 import java.util.List;
 import javafx.scene.control.ResizeFeaturesBase;
 import javafx.scene.control.TableColumnBase;
@@ -48,6 +46,7 @@ public class ResizeHelper {
     private final double sumMin;
     private final double sumPref;
     private final double sumMax;
+    private final BitSet skip;
     
     public ResizeHelper(ResizeFeaturesBase rf,
                         double target,
@@ -60,6 +59,7 @@ public class ResizeHelper {
         min = new double[sz];
         pref = new double[sz];
         max = new double[sz];
+        skip = new BitSet(sz);
         
         double smin = 0.0;
         double spref = 0.0;
@@ -78,6 +78,8 @@ public class ResizeHelper {
                 smin += w;
                 spref += w;
                 smax += w;
+
+                skip.set(i, true);
             }
         }
         
@@ -85,8 +87,7 @@ public class ResizeHelper {
         this.sumPref = spref;
         this.sumMax = smax;
         
-        // FIX
-        System.out.println(this);
+        System.out.println(this); // FIX
     }
     
     public int count() {
@@ -110,81 +111,55 @@ public class ResizeHelper {
         return Math.abs(a - b) > EPSILON;
     }
 
-    public void resizeColumnsFromPref(double delta) {
-        // compute shrinking/expanding ratio
-        double f = (target - sumMin) / (sumPref - sumMin);
-        if(f < 0.0) {
-            f = 0.0;
-        }
-
-        ArrayList<CCol> constrained = null;
+    /** returns true if one or more constraints have been hit and another pass is needed */
+    public boolean resizeColumnsFromPref(double delta) {
+        double remainingTarget = target;
+        double remainingPrefs = sumPref;
+        double remainingMin = sumMin;
+        boolean needsResize = false;
+        
+        // remove fixed and skipped columns from consideration
         for (int i = 0; i < count(); i++) {
-            if(!columns.get(i).isResizable()) {
+            if(skip.get(i)) {
+                remainingTarget -= size[i];
+                remainingPrefs -= size[i];
+                remainingMin -= size[i];
+            }
+        }
+        
+        for (int i = 0; i < count(); i++) {
+            if(skip.get(i)) {
                 continue;
             }
+            
+            // compute shrinking/expanding ratio
+            double f = (remainingTarget - remainingMin) / (remainingPrefs - remainingMin);
+            if(f < 0.0) {
+                f = 0.0;
+            }
 
-            double adj;
             double w = Math.round(min[i] + f * (pref[i] - min[i]));
             if(w < min[i]) {
-                adj = Math.abs(w - min[i]);
                 w = min[i];
+                skip.set(i, true);
+                needsResize = true;
             } else if(w > max[i]) {
-                adj = Math.abs(w - max[i]);
                 w = max[i];
-            } else {
-                adj = 0.0;
+                skip.set(i, true);
+                needsResize = true;
             }
-            
-            if(adj != 0.0) {
-                if(constrained == null) {
-                    constrained = new ArrayList(count());
-                }
-                constrained.add(new CCol(i, adj));
-            }
+
             size[i] = w;
+            remainingTarget -= w;
+            remainingPrefs -= w;
+            remainingMin -= w;
         }
-
-        // check if hit any constraints
-        if (constrained != null) {
-            // sort constrained columns by closeness
-            Collections.sort(constrained);
-            
-            // identify N columns with the largest adjustment, such that the sum of their adjustments
-            // exceeds the totalAdjustment - these columns will remain at their constrained size
-            double totalAdjustment = sum(size) - target;
-            double adj = 0.0;
-            BitSet skip = new BitSet(count());
-            for (int i=0; i < constrained.size(); i++) {
-                CCol c = constrained.get(i);
-                skip.set(c.index);
-                adj += constrained.get(i).adj;
-                if(adj > Math.abs(totalAdjustment)) {
-                    break;
-                }
-            }
-            
-            // distribute extra space between the original columns (except constrained columns removed in step above)
-            
-            double sumPref = 0.0;
-            for (int i = 0; i < count(); i++) {
-                if(skip.get(i) || (!columns.get(i).isResizable())) {
-                    continue;
-                }
-                sumPref += pref[i];
-            }
-
-            // TODO avoid accumulating rounding errors
-            for (int i = 0; i < count(); i++) {
-                if(skip.get(i) || (!columns.get(i).isResizable())) {
-                    continue;
-                }
-                
-                double dw = Math.round(totalAdjustment * pref[i] / sumPref);
-                size[i] += dw;
-            }
-        }
-
-        // apply sizes
+        
+        return needsResize;
+    }
+    
+    
+    public void applySizes() {
         for (int i = 0; i < count(); i++) {
             TableColumnBase<?,?> c = columns.get(i);
             if (c.isResizable()) {
@@ -213,21 +188,5 @@ public class ResizeHelper {
     
     protected static String p(double x) {
         return new DecimalFormat("0.#").format(x);
-    }
-
-    /** Constrained column */
-    protected static class CCol implements Comparable<CCol> {
-        public final int index;
-        public final double adj;
-        
-        public CCol(int index, double adj) {
-            this.index = index;
-            this.adj = adj;
-        }
-
-        @Override
-        public int compareTo(CCol x) {
-            return (int)Math.signum(x.adj - adj);
-        }
     }
 }
