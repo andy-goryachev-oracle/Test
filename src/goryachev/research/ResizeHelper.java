@@ -27,9 +27,9 @@ package goryachev.research;
 import java.text.DecimalFormat;
 import java.util.BitSet;
 import java.util.List;
+import javafx.scene.control.ConstrainedColumnResize.ResizeMode;
 import javafx.scene.control.ResizeFeaturesBase;
 import javafx.scene.control.TableColumnBase;
-import javafx.scene.control.ConstrainedColumnResize.ResizeMode;
 
 /**
  * Helps resize Tree/TableView columns.
@@ -218,7 +218,7 @@ public class ResizeHelper {
             return false;
         }
         
-        allowedDelta = Math.min(allowedDelta, d);
+        allowedDelta = Math.min(Math.abs(delta), Math.min(allowedDelta, d));
         
         return resizeColumns(ix, expanding, allowedDelta);
     }
@@ -255,13 +255,13 @@ public class ResizeHelper {
     
     /** range set with limit check */
     protected void skip(int fromInclusive, int toExclusive) {
-        int sz = skip.size();
+        int sz = count();
         int from = Math.min(sz - 1, fromInclusive);
         if(from < 0) {
-            return;
+            from = 0;
         }
         int to = Math.min(sz, toExclusive);
-        if(to < from) {
+        if(from < to) {
             skip.set(from, to);
         }
     }
@@ -291,7 +291,6 @@ public class ResizeHelper {
     protected boolean resizeColumns(int ix, boolean expanding, double delta) {
         delta = (expanding ? 1 : -1) * Math.floor(delta);
 
-        // FIX something is rotten in this code -
         int ct = count() - skip.cardinality();
         if(ct == 0) {
             // should not happen
