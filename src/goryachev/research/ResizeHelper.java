@@ -82,26 +82,16 @@ public class ResizeHelper {
         }
         
         this.sumWidths = sum;
-
-        System.out.println(this); // FIX
     }
 
     public int count() {
         return columns.size();
     }
-    
+
     public double sumWidths() {
         return sumWidths;
     }
-    
-    protected static double sum(double[] values) {
-        double rv = 0.0;
-        for(double w: values) {
-            rv += w;
-        }
-        return rv;
-    }
-    
+
     protected static boolean isZero(double x) {
         return Math.abs(x) < EPSILON;
     }
@@ -150,8 +140,8 @@ public class ResizeHelper {
 
             size[i] = w;
             remainingTarget -= w;
-            sumPref -= w;
-            sumMin -= w;
+            sumPref -= pref[i]; // TODO
+            sumMin -= min[i];
         }
 
         return needsAnotherPass;
@@ -187,6 +177,21 @@ public class ResizeHelper {
     protected static String p(double x) { // FIX remove
         return new DecimalFormat("0.#").format(x);
     }
+    
+    public String dump() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("target=");
+        sb.append(p(target));
+        sb.append(" [");
+        for(int i=0; i<count(); i++) {
+            if(i > 0) {
+                sb.append(",");
+            }
+            sb.append(p(size[i]));
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 
     public boolean resizeColumn(TableColumnBase<?,?> column, double delta) {
         // need to find the last leaf column of the given column - it is this
@@ -220,7 +225,7 @@ public class ResizeHelper {
         
         allowedDelta = Math.min(Math.abs(delta), Math.min(allowedDelta, d));
         
-        return resizeColumns(ix, expanding, allowedDelta);
+        return distributeDelta(ix, expanding, allowedDelta);
     }
 
     /** non-negative */
@@ -237,7 +242,7 @@ public class ResizeHelper {
         switch(mode) {
         case AUTO_RESIZE_NEXT_COLUMN:
             skip(0, ix + 1);
-            skip(ix + 1, columns.size());
+            skip(ix + 2, columns.size());
             break;
         case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
             skip(0, ix + 1);
@@ -287,22 +292,65 @@ public class ResizeHelper {
         }
         return delta;
     }
-    
-    protected boolean resizeColumns(int ix, boolean expanding, double delta) {
-        delta = (expanding ? 1 : -1) * Math.floor(delta);
 
+    protected boolean distributeDelta(int ix, boolean expanding, double delta) {
+        delta = (expanding ? 1 : -1) * Math.floor(delta); // TODO may be use original value, round in ct==1 case
         int ct = count() - skip.cardinality();
-        if(ct == 0) {
+        if (ct == 0) {
             // should not happen
             return false;
-        } else  if(ct == 1) {
+        } else if (ct == 1) {
             int oppx = skip.nextClearBit(0);
             size[ix] += delta;
             size[oppx] -= delta;
             return true;
         } else {
-            // TODO
-            return false;
+            size[ix] += delta;
+            boolean needResize;
+            do {
+                needResize = resizeColumnsWithDelta(-delta);
+                if(needResize) System.out.println("*** another pass (delta)"); // FIX
+            } while (needResize);
+            return true;
         }
+    }
+
+    protected boolean resizeColumnsWithDelta(double delta) {
+        double remainingDelta = delta;
+        double sumPref = 0.0;
+        
+        for (int i = 0; i < count(); i++) {
+            if (!skip.get(i)) {
+                sumPref += pref[i];
+            }
+        }
+
+        boolean needsAnotherPass = false;
+
+        for (int i = 0; i < count(); i++) {
+            if (skip.get(i)) {
+                continue;
+            }
+
+            double dw = Math.round(remainingDelta * pref[i] / sumPref);
+            double w = size[i] + dw;
+            if (w < min[i]) {
+                dw -= (w - min[i]); // TODO check
+                w = min[i];
+                skip.set(i, true);
+                needsAnotherPass = true;
+            } else if (w > max[i]) {
+                dw -= (max[i] - w); // TODO check
+                w = max[i];
+                skip.set(i, true);
+                needsAnotherPass = true;
+            }
+
+            size[i] = w;
+            remainingDelta -= dw;
+            sumPref -= pref[i];
+        }
+
+        return needsAnotherPass;
     }
 }

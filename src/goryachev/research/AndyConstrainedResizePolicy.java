@@ -53,6 +53,8 @@ public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
 
         } finally {
             h.applySizes();
+            
+            System.out.println(h.dump()); // FIX
         }
     }
     
