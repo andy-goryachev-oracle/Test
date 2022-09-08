@@ -26,6 +26,7 @@ package goryachev.research;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javafx.scene.Node;
 import javafx.scene.control.ConstrainedColumnResize;
 import javafx.scene.control.ResizeFeaturesBase;
 import javafx.scene.control.TableColumnBase;
@@ -59,9 +60,12 @@ public class OriginalConstrainedColumnResize extends ConstrainedColumnResize {
         implements Callback<TableView.ResizeFeatures,Boolean> {
 
         @Override
-        public Boolean call(TableView.ResizeFeatures f) {
-            List<? extends TableColumnBase<?,?>> visibleLeafColumns = f.getTable().getVisibleLeafColumns();
-            return constrainedResize(f, f.getContentWidth(), visibleLeafColumns);
+        public Boolean call(TableView.ResizeFeatures rf) {
+            List<? extends TableColumnBase<?,?>> visibleLeafColumns = rf.getTable().getVisibleLeafColumns();
+            boolean firstRun = isFirstRun(rf.getTable());
+            boolean result = constrainedResize(firstRun, rf, rf.getContentWidth(), visibleLeafColumns);
+            setFirstRun(rf.getTable(), !firstRun ? false : !result);
+            return result;
         }
     }
     
@@ -70,9 +74,12 @@ public class OriginalConstrainedColumnResize extends ConstrainedColumnResize {
         implements Callback<TreeTableView.ResizeFeatures,Boolean> {
         
         @Override
-        public Boolean call(TreeTableView.ResizeFeatures f) {
-            List<? extends TableColumnBase<?,?>> visibleLeafColumns = f.getTable().getVisibleLeafColumns();
-            return constrainedResize(f, f.getContentWidth(), visibleLeafColumns);
+        public Boolean call(TreeTableView.ResizeFeatures rf) {
+            List<? extends TableColumnBase<?,?>> visibleLeafColumns = rf.getTable().getVisibleLeafColumns();
+            boolean firstRun = isFirstRun(rf.getTable());
+            boolean result = constrainedResize(firstRun, rf, rf.getContentWidth(), visibleLeafColumns);
+            setFirstRun(rf.getTable(), !firstRun ? false : !result);
+            return result;
         }
     }
 
@@ -80,12 +87,11 @@ public class OriginalConstrainedColumnResize extends ConstrainedColumnResize {
      * The constrained resize algorithm used by TableView and TreeTableView.
      * TODO meaning of return?
      */
-    public boolean constrainedResize(ResizeFeaturesBase rf,
+    public boolean constrainedResize(boolean firstRun,
+                                     ResizeFeaturesBase rf,
                                      double contentWidth,
                                      List<? extends TableColumnBase<?,?>> visibleLeafColumns) {
-        boolean result = constrainedResize(rf, firstRun, rf.getContentWidth(), visibleLeafColumns);
-        firstRun = !firstRun ? false : !result;
-        return result;
+        return constrainedResize(rf, firstRun, rf.getContentWidth(), visibleLeafColumns);
     }
 
     protected boolean constrainedResize(ResizeFeaturesBase rf,

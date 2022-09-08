@@ -1,6 +1,6 @@
 package goryachev.apps;
 
-import goryachev.research.JTableResize;
+import goryachev.research.AndyConstrainedResizePolicy;
 import goryachev.util.FxDebug;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
@@ -141,8 +141,7 @@ public class ATableViewTester extends Application {
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         
         if (newPolicy.isSelected()) {
-//            table.setColumnResizePolicy(ConstrainedColumnResize.forTable());
-            table.setColumnResizePolicy(JTableResize.forTable(JTableResize.ResizeMode.AUTO_RESIZE_ALL_COLUMNS));
+            table.setColumnResizePolicy(AndyConstrainedResizePolicy.forTable(ConstrainedColumnResize.ResizeMode.AUTO_RESIZE_ALL_COLUMNS));
         } else {
             table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         }

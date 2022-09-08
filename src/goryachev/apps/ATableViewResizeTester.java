@@ -11,7 +11,6 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import goryachev.research.AndyConstrainedResizePolicy;
-import goryachev.research.JTableResize;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.embed.swing.SwingNode;
@@ -171,25 +170,6 @@ public class ATableViewResizeTester extends Application {
             sb.append("X");
         }
         return sb.toString();
-    }
-    
-    protected Callback<ResizeFeatures, Boolean> createPolicy2(Policy p) {
-        switch(p) {
-        case AUTO_RESIZE_ALL_COLUMNS:
-            return JTableResize.forTable(ResizeMode.AUTO_RESIZE_ALL_COLUMNS);
-        case AUTO_RESIZE_LAST_COLUMN:
-            return JTableResize.forTable(ResizeMode.AUTO_RESIZE_LAST_COLUMN);
-        case AUTO_RESIZE_NEXT_COLUMN:
-            return JTableResize.forTable(ResizeMode.AUTO_RESIZE_NEXT_COLUMN);
-        case AUTO_RESIZE_OFF:
-            return TableView.UNCONSTRAINED_RESIZE_POLICY;
-        case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
-            return JTableResize.forTable(ResizeMode.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-        case CONSTRAINED_RESIZE_POLICY:
-            return TableView.CONSTRAINED_RESIZE_POLICY;
-        default:
-            throw new Error("?" + p);
-        }
     }
     
     protected Callback<ResizeFeatures, Boolean> createPolicy(Policy p) {

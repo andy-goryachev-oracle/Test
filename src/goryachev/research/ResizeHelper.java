@@ -83,18 +83,8 @@ public class ResizeHelper {
         
         this.sumWidths = sum;
     }
-
-    public int count() {
-        return columns.size();
-    }
-
-    public double sumWidths() {
-        return sumWidths;
-    }
-
-    protected static boolean isZero(double x) {
-        return Math.abs(x) < EPSILON;
-    }
+    
+    // TODO - need first run to force pref, use sizes otherwise
 
     /** returns true if one or more constraints have been hit and another pass is needed */
     public boolean resizeColumnsFromPref(double delta) {
@@ -129,12 +119,10 @@ public class ResizeHelper {
             if (w < min[i]) {
                 w = min[i];
                 skip.set(i, true);
-                // TODO does not if went pass the visible area
                 needsAnotherPass = true;
             } else if (w > max[i]) {
                 w = max[i];
                 skip.set(i, true);
-                // TODO does not if went pass the visible area
                 needsAnotherPass = true;
             }
 
@@ -154,6 +142,18 @@ public class ResizeHelper {
                 rf.setColumnWidth(c, size[i]);
             }
         }
+    }
+
+    public int count() {
+        return columns.size();
+    }
+
+    public double sumWidths() {
+        return sumWidths;
+    }
+
+    protected static boolean isZero(double x) {
+        return Math.abs(x) < EPSILON;
     }
 
     protected static double clip(double v, double min, double max) {
@@ -222,6 +222,8 @@ public class ResizeHelper {
         if(isZero(d)) {
             return false;
         }
+        
+        System.out.println("delta=" + delta + " allowedDelta=" + allowedDelta); // FIX
         
         allowedDelta = Math.min(Math.abs(delta), Math.min(allowedDelta, d));
         
@@ -316,6 +318,7 @@ public class ResizeHelper {
     }
 
     protected boolean resizeColumnsWithDelta(double delta) {
+        System.out.println("resizeColumnsWithDelta delta=" + delta); // FIX
         double remainingDelta = delta;
         double sumPref = 0.0;
         
