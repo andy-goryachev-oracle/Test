@@ -46,7 +46,6 @@ public class ResizeHelper {
     private final double[] pref;
     private final double[] max;
     private final BitSet skip;
-    private final double sumWidths;
 
     public ResizeHelper(ResizeFeaturesBase rf,
                         double target,
@@ -64,12 +63,10 @@ public class ResizeHelper {
         max = new double[sz];
         skip = new BitSet(sz);
 
-        double sum = 0.0;
         for (int i = 0; i < sz; i++) {
             TableColumnBase<?,?> c = columns.get(i);
             double w = c.getWidth();
             size[i] = w;
-            sum += w;
 
             if (c.isResizable()) {
                 min[i] = c.getMinWidth();
@@ -79,23 +76,36 @@ public class ResizeHelper {
                 skip.set(i, true);
             }
         }
-        
-        this.sumWidths = sum;
+    }
+    
+    public void resizeToWidth(boolean fromPrefs, double target) {
+        boolean needResize;
+        do {
+            needResize = resizeColumns(fromPrefs, target);
+            if(needResize) System.out.println("*** another pass"); // FIX
+        } while (needResize);
     }
     
     /** returns true if one or more constraints have been hit and another pass is needed */
-    public boolean resizeColumns(boolean fromPrefs) {
-        double remainingTarget = target;
+    protected boolean resizeColumns(boolean fromPrefs, double target) { // FIX combine
+        
+        double sumWidths = 0.0; // TODO rename (total)
+        for(double x: size) {
+            sumWidths += x;
+        }
+        
+        double delta = target - sumWidths;
+        if (Math.abs(delta) < EPSILON) {
+            return false;
+        }
+        
+        double remainingDelta = delta;
         double sumPref = 0.0;
-        double sumMin = 0.0;
         double[] wid = fromPrefs ? pref : size;
 
         // remove fixed and skipped columns from consideration
         for (int i = 0; i < count(); i++) {
-            if (skip.get(i)) {
-                remainingTarget -= size[i];
-            } else {
-                sumMin += min[i];
+            if (!skip.get(i)) {
                 sumPref += wid[i];
             }
         }
@@ -107,27 +117,27 @@ public class ResizeHelper {
                 continue;
             }
 
-            // compute shrinking/expanding ratio
-            double f = (remainingTarget - sumMin) / (sumPref - sumMin); // FIX fails when sumPref == sumMin. use delta?
-            if (f < 0.0) {
-                f = 0.0;
-            }
-
-            double w = Math.round(min[i] + f * (wid[i] - min[i]));
+            double dw = Math.round(remainingDelta * wid[i] / sumPref);
+            double w = size[i] + dw;
             if (w < min[i]) {
+                dw -= (w - min[i]); // TODO check
                 w = min[i];
                 skip.set(i, true);
                 needsAnotherPass = true;
             } else if (w > max[i]) {
+                dw -= (w - max[i]); // TODO check
                 w = max[i];
                 skip.set(i, true);
                 needsAnotherPass = true;
             }
 
-            remainingTarget -= w;
+            remainingDelta -= dw;
             sumPref -= wid[i];
-            sumMin -= min[i];
             size[i] = w;
+        }
+        
+        if(remainingDelta < 1.0) {
+            return false;
         }
 
         return needsAnotherPass;
@@ -144,10 +154,6 @@ public class ResizeHelper {
 
     public int count() {
         return columns.size();
-    }
-
-    public double sumWidths() {
-        return sumWidths;
     }
 
     protected static boolean isZero(double x) {
@@ -177,6 +183,11 @@ public class ResizeHelper {
     }
     
     public String dump() {
+        double sum = 0.0;
+        for(double x: size) {
+            sum += x;
+        }
+        
         StringBuilder sb = new StringBuilder();
         sb.append("target=");
         sb.append(p(target));
@@ -188,6 +199,8 @@ public class ResizeHelper {
             sb.append(p(size[i]));
         }
         sb.append("]");
+        sb.append(" sum=");
+        sb.append(sum);
         return sb.toString();
     }
 

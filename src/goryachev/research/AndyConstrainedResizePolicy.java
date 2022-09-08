@@ -9,8 +9,13 @@ import javafx.scene.control.TreeTableView;
 import javafx.util.Callback;
 
 /**
- * TODO to be moved to ConstrainedColumnResize
+ * Constrained columns resize algorithm which:
+ * - honors minimal, preferred, and maximum widths
+ * - unconditionally suppresses the horizontal scroll bar
+ * 
+ * @since 20
  */
+// TODO to be moved to ConstrainedColumnResize
 public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
     private final ResizeMode mode;
 
@@ -30,19 +35,9 @@ public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
         }
         
         ResizeHelper h = new ResizeHelper(rf, contentWidth, visibleLeafColumns, mode);
-        
         // phase 1: do a resize pass (possibly multiple in case one or more constraints have been hit)
-        double sumWidths = h.sumWidths();
-        double delta = tableWidth - sumWidths;
-
-        if (Math.abs(delta) > EPSILON) {
-            boolean needResize;
-            do {
-                needResize = h.resizeColumns(firstRun);
-                if(needResize) System.out.println("*** another pass"); // FIX
-            } while (needResize);
-        }
-
+        h.resizeToWidth(firstRun, tableWidth);
+        
         try
         {
             TableColumnBase<?,?> column = rf.getColumn();

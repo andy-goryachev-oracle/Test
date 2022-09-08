@@ -242,13 +242,11 @@ public class ATableViewResizeTester extends Application {
             return new Object[] {
                 Cmd.ROWS, 3,
                 Cmd.COL,
-                Cmd.COL,
                 Cmd.COL, Cmd.MAX, 20,
                 Cmd.COL, Cmd.MAX, 30,
                 Cmd.COL, Cmd.MAX, 40,
                 Cmd.COL, Cmd.MAX, 50,
                 Cmd.COL, Cmd.MAX, 60,
-                Cmd.COL,
                 Cmd.COL
             };
         case FIXED_MIDDLE:

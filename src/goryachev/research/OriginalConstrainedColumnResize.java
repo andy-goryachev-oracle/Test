@@ -35,13 +35,14 @@ import javafx.scene.control.TreeTableView;
 import javafx.util.Callback;
 
 /**
- * Constrained columns resize algorithm which:
+ * Original Constrained columns resize algorithm which:
  * - honors minimal, preferred, and maximum widths
  * - unconditionally suppresses the horizontal scroll bar
  * 
  * @since 20
  */
 public class OriginalConstrainedColumnResize extends ConstrainedColumnResize {
+    protected static final double EPSILON = 0.0000001; // FIX remove
     private boolean firstRun = true;
     
     public OriginalConstrainedColumnResize() {
