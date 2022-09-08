@@ -256,14 +256,14 @@ public class ResizeHelper {
     protected int markOppositeColumns(int ix) {
         switch(mode) {
         case AUTO_RESIZE_NEXT_COLUMN:
-            skip(0, ix + 1);
-            skip(ix + 2, columns.size());
+            setSkip(0, ix + 1);
+            setSkip(ix + 2, columns.size());
             break;
         case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
-            skip(0, ix + 1);
+            setSkip(0, ix + 1);
             break;
         case AUTO_RESIZE_LAST_COLUMN:
-            skip(0, Math.max(ix + 1, columns.size() - 1));
+            setSkip(0, Math.max(ix + 1, columns.size() - 1));
             break;
         case AUTO_RESIZE_ALL_COLUMNS:
         default:
@@ -272,20 +272,21 @@ public class ResizeHelper {
         
         return count() - skip.cardinality();
     }
-    
+
     /** range set with limit check */
-    protected void skip(int fromInclusive, int toExclusive) {
+    protected void setSkip(int from, int toExclusive) {
         int sz = count();
-        int from = Math.min(sz - 1, fromInclusive);
-        if(from < 0) {
+        if (from < 0) {
             from = 0;
+        } else if (from >= sz) {
+            return;
         }
         int to = Math.min(sz, toExclusive);
-        if(from < to) {
+        if (from < to) {
             skip.set(from, to);
         }
     }
-    
+
     /** updates skip bitset with opposite columns, and returns the allowable delta for all of the opposite columns */
     protected double computeAllowedDelta(boolean expanding) {
         double delta = 0.0;
