@@ -126,8 +126,8 @@ public class ATableViewResizeTester extends Application {
         sp.setOrientation(Orientation.VERTICAL);
         
         stage.setScene(new Scene(sp));
-        stage.setWidth(800);
-        stage.setHeight(600);
+        stage.setWidth(1000);
+        stage.setHeight(500);
         stage.setTitle("TableView/JTable Resize Tester " + System.getProperty("java.version"));
         stage.show();
         

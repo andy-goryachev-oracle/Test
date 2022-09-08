@@ -84,13 +84,14 @@ public class ResizeHelper {
         this.sumWidths = sum;
     }
     
-    // TODO - need first run to force pref, use sizes otherwise
+    // FIX modifies sizes!
 
     /** returns true if one or more constraints have been hit and another pass is needed */
-    public boolean resizeColumnsFromPref(double delta) {
+    public boolean resizeColumnsFromPref(double delta, boolean fromPrefs) {
         double remainingTarget = target;
         double sumPref = 0.0;
         double sumMin = 0.0;
+        double[] wid = fromPrefs ? pref : size;
 
         // remove fixed and skipped columns from consideration
         for (int i = 0; i < count(); i++) {
@@ -98,7 +99,7 @@ public class ResizeHelper {
                 remainingTarget -= size[i];
             } else {
                 sumMin += min[i];
-                sumPref += pref[i];
+                sumPref += wid[i];
             }
         }
 
@@ -115,7 +116,7 @@ public class ResizeHelper {
                 f = 0.0;
             }
 
-            double w = Math.round(min[i] + f * (pref[i] - min[i]));
+            double w = Math.round(min[i] + f * (wid[i] - min[i]));
             if (w < min[i]) {
                 w = min[i];
                 skip.set(i, true);
@@ -126,10 +127,10 @@ public class ResizeHelper {
                 needsAnotherPass = true;
             }
 
-            size[i] = w;
             remainingTarget -= w;
-            sumPref -= pref[i]; // TODO
+            sumPref -= wid[i];
             sumMin -= min[i];
+            size[i] = w;
         }
 
         return needsAnotherPass;
@@ -317,6 +318,7 @@ public class ResizeHelper {
         }
     }
 
+    // FIX modifies sizes while it's resizing
     protected boolean resizeColumnsWithDelta(double delta) {
         System.out.println("resizeColumnsWithDelta delta=" + delta); // FIX
         double remainingDelta = delta;
@@ -324,7 +326,7 @@ public class ResizeHelper {
         
         for (int i = 0; i < count(); i++) {
             if (!skip.get(i)) {
-                sumPref += pref[i];
+                sumPref += size[i];
             }
         }
 
@@ -335,7 +337,7 @@ public class ResizeHelper {
                 continue;
             }
 
-            double dw = Math.round(remainingDelta * pref[i] / sumPref);
+            double dw = Math.round(remainingDelta * size[i] / sumPref);
             double w = size[i] + dw;
             if (w < min[i]) {
                 dw -= (w - min[i]); // TODO check
@@ -349,9 +351,9 @@ public class ResizeHelper {
                 needsAnotherPass = true;
             }
 
-            size[i] = w;
             remainingDelta -= dw;
-            sumPref -= pref[i];
+            sumPref -= size[i];
+            size[i] = w;
         }
 
         return needsAnotherPass;

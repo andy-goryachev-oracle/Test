@@ -38,7 +38,7 @@ public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
         if (Math.abs(delta) > EPSILON) {
             boolean needResize;
             do {
-                needResize = h.resizeColumnsFromPref(delta);
+                needResize = h.resizeColumnsFromPref(delta, firstRun);
                 if(needResize) System.out.println("*** another pass"); // FIX
             } while (needResize);
         }
