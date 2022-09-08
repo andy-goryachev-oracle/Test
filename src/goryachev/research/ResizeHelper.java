@@ -84,7 +84,7 @@ public class ResizeHelper {
     }
     
     /** returns true if one or more constraints have been hit and another pass is needed */
-    public boolean resizeColumnsFromPref(double delta, boolean fromPrefs) {
+    public boolean resizeColumns(boolean fromPrefs) {
         double remainingTarget = target;
         double sumPref = 0.0;
         double sumMin = 0.0;
@@ -108,7 +108,7 @@ public class ResizeHelper {
             }
 
             // compute shrinking/expanding ratio
-            double f = (remainingTarget - sumMin) / (sumPref - sumMin);
+            double f = (remainingTarget - sumMin) / (sumPref - sumMin); // FIX fails when sumPref == sumMin. use delta?
             if (f < 0.0) {
                 f = 0.0;
             }
@@ -309,14 +309,14 @@ public class ResizeHelper {
             size[ix] += delta;
             boolean needResize;
             do {
-                needResize = resizeColumnsWithDelta(-delta);
+                needResize = distributeDeltaMultipleColumns(-delta);
                 if(needResize) System.out.println("*** another pass (delta)"); // FIX
             } while (needResize);
             return true;
         }
     }
 
-    protected boolean resizeColumnsWithDelta(double delta) {
+    protected boolean distributeDeltaMultipleColumns(double delta) {
         System.out.println("resizeColumnsWithDelta delta=" + delta); // FIX
         double remainingDelta = delta;
         double sumPref = 0.0;

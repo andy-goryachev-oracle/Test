@@ -44,6 +44,8 @@ public class ATableViewResizeTester extends Application {
         INCONSISTENT("inconsistent: pref < min"),
         FIXED_MIDDLE("fixed in the middle"),
         MAX_IN_CENTER("max widths set in middle columns"),
+        NO_NESTED("no nested columns"),
+        NESTED("nested columns"),
         ;
 
         private final String text;
@@ -69,7 +71,8 @@ public class ATableViewResizeTester extends Application {
         COL,
         MIN,
         PREF,
-        MAX
+        MAX,
+        COMBINE
     }
 
     protected BorderPane contentPane;
@@ -260,6 +263,34 @@ public class ATableViewResizeTester extends Application {
                 Cmd.COL,
                 Cmd.COL
             };
+        case NO_NESTED:
+            return new Object[] {
+                Cmd.ROWS, 3,
+                Cmd.COL, Cmd.PREF, 100,
+                Cmd.COL, Cmd.PREF, 200,
+                Cmd.COL, Cmd.PREF, 300,
+                Cmd.COL, Cmd.MIN, 100, Cmd.MAX, 100,
+                Cmd.COL, Cmd.PREF, 100,
+                Cmd.COL, Cmd.MIN, 100,
+                Cmd.COL, Cmd.MAX, 100,
+                Cmd.COL, Cmd.PREF, 400,
+                Cmd.COL
+            };
+        case NESTED:
+            return new Object[] {
+                Cmd.ROWS, 3,
+                Cmd.COL, Cmd.PREF, 100,
+                Cmd.COL, Cmd.PREF, 200,
+                Cmd.COL, Cmd.PREF, 300,
+                Cmd.COL, Cmd.MIN, 100, Cmd.MAX, 100,
+                Cmd.COL, Cmd.PREF, 100,
+                Cmd.COL, Cmd.MIN, 100,
+                Cmd.COL, Cmd.MAX, 100,
+                Cmd.COL, Cmd.PREF, 400,
+                Cmd.COL,
+                Cmd.COMBINE, 0, 3,
+                Cmd.COMBINE, 1, 2
+            };
         default:
             throw new Error("?" + d);
         }
@@ -277,6 +308,17 @@ public class ATableViewResizeTester extends Application {
             swingPanel.updatePane(p, spec);
         });
     }
+    
+    protected void combineColumns(TableView<String> t, int ix, int count, int name) {
+        TableColumn<String,String> tc = new TableColumn<>();
+        tc.setText("N" + name);
+        
+        for(int i=0; i<count; i++) {
+            TableColumn<String,String> c = (TableColumn<String,String>)t.getColumns().remove(ix);
+            tc.getColumns().add(c);
+        }
+        t.getColumns().add(ix, tc);
+    }
 
     protected Pane createPane(Policy policy, Object[] spec) {
         if((spec == null) || (policy == null)) {
@@ -291,6 +333,7 @@ public class ATableViewResizeTester extends Application {
         table.setColumnResizePolicy(p);
 
         TableColumn<String,String> lastColumn = null;
+        int id = 1;
         
         for(int i=0; i<spec.length; ) {
             Object x = spec[i++];
@@ -326,6 +369,11 @@ public class ATableViewResizeTester extends Application {
                     for(int j=0; j<n; j++) {
                         table.getItems().add("");
                     }
+                    break;
+                case COMBINE:
+                    int ix = (int)(spec[i++]);
+                    int ct = (int)(spec[i++]);
+                    combineColumns(table, ix, ct, id++);
                     break;
                 default:
                     throw new Error("?" + cmd);
@@ -423,6 +471,11 @@ public class ATableViewResizeTester extends Application {
                         for(int j=0; j<n; j++) {
                             m.addRow((Object[])null);
                         }
+                        break;
+                    case COMBINE:
+                        int ix = (int)(spec[i++]);
+                        int ct = (int)(spec[i++]);
+                        //combineColumns(ix, ct);
                         break;
                     default:
                         throw new Error("?" + cmd);
