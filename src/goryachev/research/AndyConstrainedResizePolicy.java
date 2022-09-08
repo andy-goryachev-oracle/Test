@@ -51,7 +51,7 @@ public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
             }
 
             // phase2: resize the specified column
-            return h.resizeColumn(column, rf.getDelta());
+            return h.resizeColumn(column);
 
         } finally {
             h.applySizes();

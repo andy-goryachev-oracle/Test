@@ -71,7 +71,6 @@ public class ResizeHelper {
             size[i] = w;
             sum += w;
 
-            // TODO possibly check for min<pref<max
             if (c.isResizable()) {
                 min[i] = c.getMinWidth();
                 pref[i] = clip(c.getPrefWidth(), c.getMinWidth(), c.getMaxWidth());
@@ -84,8 +83,6 @@ public class ResizeHelper {
         this.sumWidths = sum;
     }
     
-    // FIX modifies sizes!
-
     /** returns true if one or more constraints have been hit and another pass is needed */
     public boolean resizeColumnsFromPref(double delta, boolean fromPrefs) {
         double remainingTarget = target;
@@ -194,7 +191,8 @@ public class ResizeHelper {
         return sb.toString();
     }
 
-    public boolean resizeColumn(TableColumnBase<?,?> column, double delta) {
+    public boolean resizeColumn(TableColumnBase<?,?> column) {
+        double delta = rf.getDelta();
         // need to find the last leaf column of the given column - it is this
         // column that we actually resize from. If this column is a leaf, then we
         // use it.
@@ -227,8 +225,9 @@ public class ResizeHelper {
         System.out.println("delta=" + delta + " allowedDelta=" + allowedDelta); // FIX
         
         allowedDelta = Math.min(Math.abs(delta), Math.min(allowedDelta, d));
-        
-        return distributeDelta(ix, expanding, allowedDelta);
+        allowedDelta = (expanding ? 1 : -1) * Math.floor(allowedDelta); // TODO may be use original value, round in ct==1 case
+
+        return distributeDelta(ix, allowedDelta);
     }
 
     /** non-negative */
@@ -296,8 +295,7 @@ public class ResizeHelper {
         return delta;
     }
 
-    protected boolean distributeDelta(int ix, boolean expanding, double delta) {
-        delta = (expanding ? 1 : -1) * Math.floor(delta); // TODO may be use original value, round in ct==1 case
+    protected boolean distributeDelta(int ix, double delta) {
         int ct = count() - skip.cardinality();
         if (ct == 0) {
             // should not happen
@@ -318,7 +316,6 @@ public class ResizeHelper {
         }
     }
 
-    // FIX modifies sizes while it's resizing
     protected boolean resizeColumnsWithDelta(double delta) {
         System.out.println("resizeColumnsWithDelta delta=" + delta); // FIX
         double remainingDelta = delta;
