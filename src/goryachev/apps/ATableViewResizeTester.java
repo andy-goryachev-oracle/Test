@@ -50,6 +50,7 @@ public class ATableViewResizeTester extends Application {
         MAX_IN_CENTER("max widths set in middle columns"),
         NO_NESTED("no nested columns"),
         NESTED("nested columns"),
+        ALOT("many columns"),
         ;
 
         private final String text;
@@ -327,6 +328,26 @@ public class ATableViewResizeTester extends Application {
                 Cmd.COMBINE, 0, 3,
                 Cmd.COMBINE, 1, 2
             };
+        case ALOT:
+            return new Object[] {
+                Cmd.ROWS, 3,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL
+           };
         default:
             throw new Error("?" + d);
         }

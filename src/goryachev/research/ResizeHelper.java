@@ -102,6 +102,10 @@ public class ResizeHelper {
                     total += wid[i];
                 }
             }
+            
+            if(isZero(total)) {
+                return;
+            }
     
             for (int i = 0; i < count(); i++) {
                 if (skip.get(i)) {
@@ -351,6 +355,10 @@ public class ResizeHelper {
                 if (!skip.get(i)) {
                     total += size[i];
                 }
+            }
+            
+            if(isZero(total)) {
+                return;
             }
     
             for (int i = 0; i < count(); i++) {
