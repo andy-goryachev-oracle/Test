@@ -120,6 +120,8 @@ public class ResizeHelper {
                     w = max[i];
                     skip.set(i, true);
                     needsAnotherPass = true;
+                } else {
+                    dw = (w - size[i]);
                 }
     
                 remainingDelta -= dw;
@@ -332,55 +334,59 @@ public class ResizeHelper {
             return true;
         } else {
             size[ix] += delta;
-            boolean needResize;
-            do {
-                needResize = distributeDeltaMultipleColumns(-delta);
-                if(needResize) System.out.println("*** another pass (delta)"); // FIX
-            } while (needResize);
+            distributeDeltaMultipleColumns(-delta);
             return true;
         }
     }
 
-    protected boolean distributeDeltaMultipleColumns(double delta) {
+    protected void distributeDeltaMultipleColumns(double delta) {
         double remainingDelta = delta;
-        double total = 0.0;
-        
-        for (int i = 0; i < count(); i++) {
-            if (!skip.get(i)) {
-                total += size[i];
-            }
-        }
-
         boolean needsAnotherPass = false;
-
-        for (int i = 0; i < count(); i++) {
-            if (skip.get(i)) {
-                continue;
-            }
-
-            double dw = remainingDelta * size[i] / total;
-            double w = Math.round(size[i] + dw);
-            if (w < min[i]) {
-                dw -= (w - min[i]); // TODO check
-                w = min[i];
-                skip.set(i, true);
-                needsAnotherPass = true;
-            } else if (w > max[i]) {
-                dw -= (w - max[i]); // TODO check
-                w = max[i];
-                skip.set(i, true);
-                needsAnotherPass = true;
-            }
-
-            remainingDelta -= dw;
-            total -= size[i];
-            size[i] = w;
-        }
         
-        if(remainingDelta < 1.0) {
-            needsAnotherPass = false;
-        }
-
-        return needsAnotherPass;
+        do {
+            double total = 0.0;
+            for (int i = 0; i < count(); i++) {
+                if (!skip.get(i)) {
+                    total += size[i];
+                }
+            }
+    
+            for (int i = 0; i < count(); i++) {
+                if (skip.get(i)) {
+                    continue;
+                }
+    
+                double dw = remainingDelta * size[i] / total;
+                double w = Math.round(size[i] + dw);
+                if (w < min[i]) {
+                    double old = dw;
+                    dw -= (w - min[i]); // TODO check
+                    w = min[i];
+                    System.out.println("-- " + i + " hit min=" + w + " delta from=" + old + " to=" + dw);
+                    skip.set(i, true);
+                    needsAnotherPass = true;
+                } else if (w > max[i]) {
+                    double old = dw;
+                    dw -= (w - max[i]); // TODO check
+                    w = max[i];
+                    skip.set(i, true);
+                    needsAnotherPass = true;
+                    System.out.println("-- " + i + " hit max=" + w + " delta from=" + old + " to=" + dw);
+                } else {
+                    dw = (w - size[i]);
+                }
+    
+                remainingDelta -= dw;
+                total -= size[i];
+                size[i] = w;
+            }
+            
+            if(remainingDelta < 1.0) {
+                needsAnotherPass = false;
+            }
+            
+            if(needsAnotherPass) System.out.println("*** another pass (delta)"); // FIX
+            
+        } while(needsAnotherPass);
     }
 }
