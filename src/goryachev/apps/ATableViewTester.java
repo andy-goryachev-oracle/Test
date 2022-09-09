@@ -1,13 +1,11 @@
 package goryachev.apps;
 
-import goryachev.research.AndyConstrainedResizePolicy;
 import goryachev.util.FxDebug;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ConstrainedColumnResize;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
@@ -45,7 +43,7 @@ public class ATableViewTester extends Application {
 
     protected BorderPane contentPane;
     protected ComboBox<Demo> demoSelector;
-    protected CheckBox newPolicy;
+    protected CheckBox unconstrainedPolicy;
     
     public static void main(String[] args) {
         Application.launch(ATableViewTester.class, args);
@@ -63,8 +61,8 @@ public class ATableViewTester extends Application {
             updatePane();
         });
         
-        newPolicy = new CheckBox("new policy");
-        newPolicy.selectedProperty().addListener((s,p,c) -> {
+        unconstrainedPolicy = new CheckBox("unconstrained policy");
+        unconstrainedPolicy.selectedProperty().addListener((s,p,c) -> {
             updatePane();
         });
         
@@ -78,7 +76,7 @@ public class ATableViewTester extends Application {
 
         SplitPane split = new SplitPane(contentPane, new BorderPane());
         
-        HBox hb = new HBox(demoSelector, newPolicy);
+        HBox hb = new HBox(demoSelector, unconstrainedPolicy);
         hb.setSpacing(5);
         
         BorderPane bp = new BorderPane();
@@ -140,8 +138,8 @@ public class ATableViewTester extends Application {
         table.getSelectionModel().setCellSelectionEnabled(true);
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         
-        if (newPolicy.isSelected()) {
-            table.setColumnResizePolicy(AndyConstrainedResizePolicy.forTable(ConstrainedColumnResize.ResizeMode.AUTO_RESIZE_ALL_COLUMNS));
+        if (unconstrainedPolicy.isSelected()) {
+           table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY); 
         } else {
             table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         }
