@@ -129,12 +129,13 @@ public class ResizeHelper {
                 size[i] = w;
             }
             
-            if(remainingDelta < 1.0) {
+            if(Math.abs(remainingDelta) < 1.0) {
                 needsAnotherPass = false;
             }
             
             if(needsAnotherPass) System.out.println("*** another pass"); // FIX
             
+            check();
         } while(needsAnotherPass);
     }
 
@@ -381,12 +382,26 @@ public class ResizeHelper {
                 size[i] = w;
             }
             
-            if(remainingDelta < 1.0) {
+            if(Math.abs(remainingDelta) < 1.0) {
                 needsAnotherPass = false;
             }
             
             if(needsAnotherPass) System.out.println("*** another pass (delta)"); // FIX
             
+            check();
+            
         } while(needsAnotherPass);
+    }
+    
+    @Deprecated // FIX
+    protected void check() {
+        double total = 0.0;
+        for (int i = 0; i < count(); i++) {
+            total += size[i];
+        }
+        
+        if(!isZero(total - target)) {
+            System.out.println("  FAILED check total=" + total + " target=" + target); // FIX
+        }
     }
 }
