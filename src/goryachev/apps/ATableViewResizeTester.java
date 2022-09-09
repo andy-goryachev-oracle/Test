@@ -36,6 +36,7 @@ import javafx.util.Callback;
 public class ATableViewResizeTester extends Application {
     
     enum Demo {
+        SIMPLE("just many columns"),
         ALL("all set: min, pref, max"),
         PREF("pref only"),
         EMPTY("empty with pref"),
@@ -196,6 +197,18 @@ public class ATableViewResizeTester extends Application {
     
     protected Object[] createSpec(Demo d) {
         switch(d) {
+        case SIMPLE:
+            return new Object[] {
+                Cmd.ROWS, 3,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL
+            };
         case ALL:
             return new Object[] {
                 Cmd.ROWS, 3,
