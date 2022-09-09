@@ -36,12 +36,15 @@ import javafx.util.Callback;
 public class ATableViewResizeTester extends Application {
     
     enum Demo {
-        SIMPLE("just many columns"),
         ALL("all set: min, pref, max"),
         PREF("pref only"),
         EMPTY("empty with pref"),
         MIN_WIDTH("min width"),
         MAX_WIDTH("max width"),
+        MIN_WIDTH2("min width (middle)"),
+        MAX_WIDTH2("max width (middle)"),
+        MIN_WIDTH3("min width (beginning)"),
+        MAX_WIDTH3("max width (beginning)"),
         INCONSISTENT("inconsistent: pref < min"),
         FIXED_MIDDLE("fixed in the middle"),
         MAX_IN_CENTER("max widths set in middle columns"),
@@ -197,18 +200,6 @@ public class ATableViewResizeTester extends Application {
     
     protected Object[] createSpec(Demo d) {
         switch(d) {
-        case SIMPLE:
-            return new Object[] {
-                Cmd.ROWS, 3,
-                Cmd.COL,
-                Cmd.COL,
-                Cmd.COL,
-                Cmd.COL,
-                Cmd.COL,
-                Cmd.COL,
-                Cmd.COL,
-                Cmd.COL
-            };
         case ALL:
             return new Object[] {
                 Cmd.ROWS, 3,
@@ -236,6 +227,7 @@ public class ATableViewResizeTester extends Application {
                 Cmd.ROWS, 3,
                 Cmd.COL,
                 Cmd.COL,
+                Cmd.COL,
                 Cmd.COL, Cmd.MIN, 300
             };
         case MAX_WIDTH:
@@ -243,7 +235,40 @@ public class ATableViewResizeTester extends Application {
                 Cmd.ROWS, 3,
                 Cmd.COL,
                 Cmd.COL,
+                Cmd.COL,
                 Cmd.COL, Cmd.MAX, 100
+            };
+        case MIN_WIDTH2:
+            return new Object[] {
+                Cmd.ROWS, 3,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL, Cmd.MIN, 300,
+                Cmd.COL
+            };
+        case MAX_WIDTH2:
+            return new Object[] {
+                Cmd.ROWS, 3,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL, Cmd.MAX, 100,
+                Cmd.COL
+            };
+        case MIN_WIDTH3:
+            return new Object[] {
+                Cmd.ROWS, 3,
+                Cmd.COL, Cmd.MIN, 300,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL
+            };
+        case MAX_WIDTH3:
+            return new Object[] {
+                Cmd.ROWS, 3,
+                Cmd.COL, Cmd.MAX, 100,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL
             };
         case INCONSISTENT:
             return new Object[] {

@@ -216,6 +216,7 @@ public class ResizeHelper {
         
         int ix = columns.indexOf(leafColumn);
         boolean expanding = delta > 0.0;
+        // FIX don't need in case of multiple columns?
         double allowedDelta = getAllowedDelta(ix, expanding);
         if(isZero(allowedDelta)) {
             return false;
