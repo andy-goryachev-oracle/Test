@@ -10,14 +10,14 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
-import goryachev.research.AndyConstrainedResizePolicy;
-import goryachev.research.AndyConstrainedResizePolicy.ResizeMode;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.embed.swing.SwingNode;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ConstrainedColumnResize;
+import javafx.scene.control.ConstrainedColumnResize.ResizeMode;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
@@ -117,7 +117,7 @@ public class ATableViewResizeTester extends Application {
             demoSelector,
             new Label(" Policy:"),
             policySelector
-            );
+        );
         hb.setSpacing(5);
         
         BorderPane bp = new BorderPane();
@@ -163,18 +163,12 @@ public class ATableViewResizeTester extends Application {
     protected String describe(TableColumn c) {
         StringBuilder sb = new StringBuilder();
         if(c.getMinWidth() != 10.0) {
-//            sb.append("min=");
-//            sb.append((int)c.getMinWidth());
             sb.append("m");
         }
         if(c.getPrefWidth() != 80.0) {
-//            sb.append(" pref=");
-//            sb.append((int)c.getPrefWidth());
             sb.append("p");
         }
         if(c.getMaxWidth() != 5000.0) {
-//            sb.append(" max=");
-//            sb.append((int)c.getMaxWidth());
             sb.append("X");
         }
         return sb.toString();
@@ -183,15 +177,15 @@ public class ATableViewResizeTester extends Application {
     protected Callback<ResizeFeatures, Boolean> createPolicy(Policy p) {
         switch(p) {
         case AUTO_RESIZE_ALL_COLUMNS:
-            return AndyConstrainedResizePolicy.forTable(ResizeMode.AUTO_RESIZE_ALL_COLUMNS);
+            return ConstrainedColumnResize.forTable(ResizeMode.AUTO_RESIZE_ALL_COLUMNS);
         case AUTO_RESIZE_LAST_COLUMN:
-            return AndyConstrainedResizePolicy.forTable(ResizeMode.AUTO_RESIZE_LAST_COLUMN);
+            return ConstrainedColumnResize.forTable(ResizeMode.AUTO_RESIZE_LAST_COLUMN);
         case AUTO_RESIZE_NEXT_COLUMN:
-            return AndyConstrainedResizePolicy.forTable(ResizeMode.AUTO_RESIZE_NEXT_COLUMN);
+            return ConstrainedColumnResize.forTable(ResizeMode.AUTO_RESIZE_NEXT_COLUMN);
         case AUTO_RESIZE_OFF:
             return TableView.UNCONSTRAINED_RESIZE_POLICY;
         case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
-            return AndyConstrainedResizePolicy.forTable(ResizeMode.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+            return ConstrainedColumnResize.forTable(ResizeMode.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
         case CONSTRAINED_RESIZE_POLICY:
             return TableView.CONSTRAINED_RESIZE_POLICY;
         default:
@@ -530,9 +524,9 @@ public class ATableViewResizeTester extends Application {
                         }
                         break;
                     case COMBINE:
+                        // ignored
                         int ix = (int)(spec[i++]);
                         int ct = (int)(spec[i++]);
-                        //combineColumns(ix, ct);
                         break;
                     default:
                         throw new Error("?" + cmd);
@@ -550,7 +544,6 @@ public class ATableViewResizeTester extends Application {
             
             JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scroll, new JPanel());
             split.setContinuousLayout(true);
-//            split.setBorder(b);
             return split;
         }
     }
