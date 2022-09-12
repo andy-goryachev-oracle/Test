@@ -17,6 +17,14 @@ import javafx.util.Callback;
  */
 // TODO to be moved to ConstrainedColumnResize
 public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
+
+    public enum ResizeMode {
+        AUTO_RESIZE_NEXT_COLUMN,
+        AUTO_RESIZE_SUBSEQUENT_COLUMNS,
+        AUTO_RESIZE_LAST_COLUMN,
+        AUTO_RESIZE_ALL_COLUMNS
+    }
+
     private final ResizeMode mode;
 
     public AndyConstrainedResizePolicy(ResizeMode m) {

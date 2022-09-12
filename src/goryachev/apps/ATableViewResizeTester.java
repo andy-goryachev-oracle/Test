@@ -11,13 +11,13 @@ import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import goryachev.research.AndyConstrainedResizePolicy;
+import goryachev.research.AndyConstrainedResizePolicy.ResizeMode;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.embed.swing.SwingNode;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ConstrainedColumnResize.ResizeMode;
 import javafx.scene.control.Label;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
@@ -64,7 +64,7 @@ public class ATableViewResizeTester extends Application {
         AUTO_RESIZE_SUBSEQUENT_COLUMNS(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS),
         AUTO_RESIZE_LAST_COLUMN(JTable.AUTO_RESIZE_LAST_COLUMN),
         AUTO_RESIZE_ALL_COLUMNS(JTable.AUTO_RESIZE_ALL_COLUMNS),
-        CONSTRAINED_RESIZE_POLICY(JTable.AUTO_RESIZE_NEXT_COLUMN);
+        CONSTRAINED_RESIZE_POLICY(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
         
         private final int value;
         Policy(int v) { this.value = v; }

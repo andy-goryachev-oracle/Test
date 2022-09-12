@@ -27,7 +27,7 @@ package goryachev.research;
 import java.text.DecimalFormat;
 import java.util.BitSet;
 import java.util.List;
-import javafx.scene.control.ConstrainedColumnResize.ResizeMode;
+import goryachev.research.AndyConstrainedResizePolicy.ResizeMode;
 import javafx.scene.control.ResizeFeaturesBase;
 import javafx.scene.control.TableColumnBase;
 
@@ -109,16 +109,15 @@ public class ResizeHelper {
                     continue;
                 }
     
-                double wid = pref[i];
-                double dw = delta * wid / total;
+                double dw = delta * pref[i] / total;
                 double w = Math.round(size[i] + dw);
                 if (w < min[i]) {
-                    dw -= (w - min[i]); // TODO check
+                    dw -= (w - min[i]);
                     w = min[i];
                     skip.set(i, true);
                     needsAnotherPass = true;
                 } else if (w > max[i]) {
-                    dw -= (w - max[i]); // TODO check
+                    dw -= (w - max[i]);
                     w = max[i];
                     skip.set(i, true);
                     needsAnotherPass = true;
@@ -127,7 +126,7 @@ public class ResizeHelper {
                 }
     
                 delta -= dw;
-                total -= wid;
+                total -= pref[i];
                 size[i] = w;
             }
             
@@ -344,7 +343,6 @@ public class ResizeHelper {
     }
 
     protected void distributeDeltaMultipleColumns(double delta) {
-        double remainingDelta = delta;
         boolean needsAnotherPass = false;
         
         do {
@@ -364,32 +362,28 @@ public class ResizeHelper {
                     continue;
                 }
     
-                double dw = remainingDelta * size[i] / total;
+                double dw = delta * size[i] / total;
                 double w = Math.round(size[i] + dw);
                 if (w < min[i]) {
-                    double old = dw;
-                    dw -= (w - min[i]); // TODO check
+                    dw -= (w - min[i]);
                     w = min[i];
-                    System.out.println("-- " + i + " hit min=" + w + " delta from=" + old + " to=" + dw);
                     skip.set(i, true);
                     needsAnotherPass = true;
                 } else if (w > max[i]) {
-                    double old = dw;
-                    dw -= (w - max[i]); // TODO check
+                    dw -= (w - max[i]);
                     w = max[i];
                     skip.set(i, true);
                     needsAnotherPass = true;
-                    System.out.println("-- " + i + " hit max=" + w + " delta from=" + old + " to=" + dw);
                 } else {
                     dw = (w - size[i]);
                 }
     
-                remainingDelta -= dw;
+                delta -= dw;
                 total -= size[i];
                 size[i] = w;
             }
             
-            if(Math.abs(remainingDelta) < 1.0) {
+            if(Math.abs(delta) < 1.0) {
                 needsAnotherPass = false;
             }
             
