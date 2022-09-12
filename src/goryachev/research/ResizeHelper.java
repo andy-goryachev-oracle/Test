@@ -129,8 +129,8 @@ public class ResizeHelper {
                 total -= pref[i];
                 size[i] = w;
             }
-            
-            if(Math.abs(delta) < 1.0) {
+
+            if (isZero(delta)) {
                 needsAnotherPass = false;
             }
             
@@ -382,8 +382,8 @@ public class ResizeHelper {
                 total -= size[i];
                 size[i] = w;
             }
-            
-            if(Math.abs(delta) < 1.0) {
+
+            if (isZero(delta)) {
                 needsAnotherPass = false;
             }
             
