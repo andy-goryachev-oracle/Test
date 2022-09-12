@@ -135,9 +135,9 @@ public class ResizeHelper {
             }
             
             if(needsAnotherPass) System.out.println("*** another pass"); // FIX
-            
-            check();
         } while(needsAnotherPass);
+        
+        check();
     }
 
     public void applySizes() {
@@ -389,9 +389,9 @@ public class ResizeHelper {
             
             if(needsAnotherPass) System.out.println("*** another pass (delta)"); // FIX
             
-            check();
-            
         } while(needsAnotherPass);
+        
+        check();
     }
     
     @Deprecated // FIX
