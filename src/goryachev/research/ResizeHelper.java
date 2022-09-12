@@ -78,32 +78,29 @@ public class ResizeHelper {
         }
     }
     
-    public void resizeToWidth(boolean fromPrefs, double target) {
+    public void resizeToContentWidth() {
         boolean needsAnotherPass = false;
-        
+
         do {
             double sumWidths = 0.0;
-            for(double x: size) {
+            for (double x: size) {
                 sumWidths += x;
             }
-            
+
             double delta = target - sumWidths;
-            if (Math.abs(delta) < EPSILON) {
+            if (isZero(delta)) {
                 return;
             }
-            
-            double remainingDelta = delta;
-            double total = 0.0;
-            double[] wid = fromPrefs ? pref : size;
-    
+
             // remove fixed and skipped columns from consideration
+            double total = 0.0;
             for (int i = 0; i < count(); i++) {
                 if (!skip.get(i)) {
-                    total += wid[i];
+                    total += pref[i];
                 }
             }
-            
-            if(isZero(total)) {
+
+            if (isZero(total)) {
                 return;
             }
     
@@ -112,7 +109,8 @@ public class ResizeHelper {
                     continue;
                 }
     
-                double dw = remainingDelta * wid[i] / total;
+                double wid = pref[i];
+                double dw = delta * wid / total;
                 double w = Math.round(size[i] + dw);
                 if (w < min[i]) {
                     dw -= (w - min[i]); // TODO check
@@ -128,12 +126,12 @@ public class ResizeHelper {
                     dw = (w - size[i]);
                 }
     
-                remainingDelta -= dw;
-                total -= wid[i];
+                delta -= dw;
+                total -= wid;
                 size[i] = w;
             }
             
-            if(Math.abs(remainingDelta) < 1.0) {
+            if(Math.abs(delta) < 1.0) {
                 needsAnotherPass = false;
             }
             

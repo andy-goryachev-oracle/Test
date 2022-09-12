@@ -24,35 +24,28 @@ public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
     }
     
     @Override
-    public boolean constrainedResize(boolean firstRun,
-        ResizeFeaturesBase rf,
-        double contentWidth,
+    public boolean constrainedResize(ResizeFeaturesBase rf,
         List<? extends TableColumnBase<?,?>> visibleLeafColumns) {
         
-        double tableWidth = rf.getContentWidth();
-        if (tableWidth == 0.0) { 
+        double contentWidth = rf.getContentWidth();
+        if (contentWidth == 0.0) { 
             return false;
         }
         
         ResizeHelper h = new ResizeHelper(rf, contentWidth, visibleLeafColumns, mode);
-        // phase 1: do a resize pass (possibly multiple in case one or more constraints have been hit)
-        h.resizeToWidth(firstRun, tableWidth);
+        h.resizeToContentWidth();
         
-        try
-        {
-            TableColumnBase<?,?> column = rf.getColumn();
-            if (column == null) {
-                return false;
-            }
-
-            // phase2: resize the specified column
-            return h.resizeColumn(column);
-
-        } finally {
-            h.applySizes();
-            
-            System.out.println(h.dump()); // FIX
+        boolean rv;
+        TableColumnBase<?,?> column = rf.getColumn();
+        if (column == null) {
+            rv = false;
+        } else {
+            rv = h.resizeColumn(column);
         }
+
+        h.applySizes();
+        System.out.println(h.dump()); // FIX
+        return rv;
     }
     
     public static TablePolicy forTable(ResizeMode m) {
@@ -74,10 +67,7 @@ public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
         @Override
         public Boolean call(TableView.ResizeFeatures rf) {
             List<? extends TableColumnBase<?,?>> visibleLeafColumns = rf.getTable().getVisibleLeafColumns();
-            boolean firstRun = isFirstRun(rf.getTable());
-            boolean result = constrainedResize(firstRun, rf, rf.getContentWidth(), visibleLeafColumns);
-            setFirstRun(rf.getTable(), !firstRun ? false : !result);
-            return result;
+            return constrainedResize(rf, visibleLeafColumns);
         }
     }
 
@@ -92,10 +82,7 @@ public class AndyConstrainedResizePolicy extends ConstrainedColumnResize {
         @Override
         public Boolean call(TreeTableView.ResizeFeatures rf) {
             List<? extends TableColumnBase<?,?>> visibleLeafColumns = rf.getTable().getVisibleLeafColumns();
-            boolean firstRun = isFirstRun(rf.getTable());
-            boolean result = constrainedResize(firstRun, rf, rf.getContentWidth(), visibleLeafColumns);
-            setFirstRun(rf.getTable(), !firstRun ? false : !result);
-            return result;
+            return constrainedResize(rf, visibleLeafColumns);
         }
     }
 }
