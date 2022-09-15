@@ -4,14 +4,15 @@ import goryachev.util.FxDebug;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
-import javafx.scene.control.TableView.TableViewSelectionModel;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -20,9 +21,11 @@ public class ATableViewTester extends Application {
     
     enum Demo {
         ALL("all set: min, pref, max"),
-        CONSTRAINED("constrained with pref width"),
+        PREF("pref only"),
         EMPTY("empty"),
-        MIN_WIDTH("constrained with min width"),
+        MIN_WIDTH("min width"),
+        MAX_WIDTH("max width"),
+        INCONSISTENT("inconsistent: pref < min")
         ;
 
         private final String text;
@@ -31,7 +34,6 @@ public class ATableViewTester extends Application {
     }
     
     enum Cmd {
-        CONSTRAINED,
         ROWS,
         COL,
         MIN,
@@ -40,8 +42,9 @@ public class ATableViewTester extends Application {
     }
 
     protected BorderPane contentPane;
-    protected TableViewSelectionModel<String> oldTableSelectionModel;
-
+    protected ComboBox<Demo> demoSelector;
+    protected CheckBox unconstrainedPolicy;
+    
     public static void main(String[] args) {
         Application.launch(ATableViewTester.class, args);
     }
@@ -51,12 +54,16 @@ public class ATableViewTester extends Application {
         contentPane = new BorderPane();
         
         // selector
-        ComboBox<Demo> cb = new ComboBox<>();
-        cb.getItems().addAll(Demo.values());
-        cb.setEditable(false);
-        cb.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
-            Pane n = createPane(c);
-            contentPane.setCenter(n);
+        demoSelector = new ComboBox<>();
+        demoSelector.getItems().addAll(Demo.values());
+        demoSelector.setEditable(false);
+        demoSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+            updatePane();
+        });
+        
+        unconstrainedPolicy = new CheckBox("unconstrained policy");
+        unconstrainedPolicy.selectedProperty().addListener((s,p,c) -> {
+            updatePane();
         });
         
         // https://bugs.openjdk.org/browse/JDK-8087673
@@ -64,26 +71,28 @@ public class ATableViewTester extends Application {
 //            table.setTableMenuButtonVisible(true);
 //            table.getColumns().get(2).setGraphic(new Slider());
 //        }
-        
 
         // layout
 
         SplitPane split = new SplitPane(contentPane, new BorderPane());
-
+        
+        HBox hb = new HBox(demoSelector, unconstrainedPolicy);
+        hb.setSpacing(5);
+        
         BorderPane bp = new BorderPane();
-        bp.setTop(cb);
+        bp.setTop(hb);
         bp.setCenter(split);
         
         Scene sc = new Scene(bp);
 
         FxDebug.attachNodeDumper(stage);
         stage.setScene(sc);
-        stage.setWidth(700);
+        stage.setWidth(800);
         stage.setHeight(300);
         stage.setTitle("TableView Tester " + System.getProperty("java.version"));
         stage.show();
         
-        cb.getSelectionModel().selectFirst();
+        demoSelector.getSelectionModel().selectFirst();
     }
 
     protected Callback<ResizeFeatures,Boolean> wrap(Callback<ResizeFeatures,Boolean> policy) {
@@ -126,15 +135,18 @@ public class ATableViewTester extends Application {
         table.getSelectionModel().setCellSelectionEnabled(true);
         table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         
+        if (unconstrainedPolicy.isSelected()) {
+           table.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY); 
+        } else {
+            table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        }
+        
         TableColumn<String,String> lastColumn = null;
         
         for(int i=0; i<spec.length; ) {
             Object x = spec[i++];
             if(x instanceof Cmd cmd) {
                 switch(cmd) {
-                case CONSTRAINED:
-                    table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-                    break;
                 case COL:
                     TableColumn<String,String> c = new TableColumn<>();
                     table.getColumns().add(c);
@@ -169,6 +181,8 @@ public class ATableViewTester extends Application {
                 default:
                     throw new Error("?" + cmd);
                 }
+            } else {
+                throw new Error("?" + x);
             }
         }
         
@@ -176,20 +190,28 @@ public class ATableViewTester extends Application {
         bp.setCenter(table);
         return bp;
     }
+    
+    protected void updatePane() {
+        Demo d = demoSelector.getSelectionModel().getSelectedItem();
+        Pane n = createPane(d);
+        contentPane.setCenter(n);
+    }
 
     protected Pane createPane(Demo d) {
+        if(d == null) {
+            return new BorderPane();
+        }
+        
         switch(d) {
         case ALL:
             return createTable(
-                Cmd.CONSTRAINED,
                 Cmd.ROWS, 3,
                 Cmd.COL, Cmd.MIN, 20, Cmd.PREF, 20, Cmd.MAX, 20,
                 Cmd.COL, Cmd.PREF, 200,
                 Cmd.COL, Cmd.PREF, 300, Cmd.MAX, 400
-                );           
-        case CONSTRAINED:
+                );
+        case PREF:
             return createTable(
-                Cmd.CONSTRAINED,
                 Cmd.ROWS, 3,
                 Cmd.COL, Cmd.PREF, 100,
                 Cmd.COL, Cmd.PREF, 200,
@@ -197,18 +219,29 @@ public class ATableViewTester extends Application {
                 );
         case EMPTY:
             return createTable(
-                Cmd.CONSTRAINED,
                 Cmd.COL,
                 Cmd.COL,
                 Cmd.COL
                 );
         case MIN_WIDTH:
             return createTable(
-                Cmd.CONSTRAINED,
                 Cmd.ROWS, 3,
                 Cmd.COL,
                 Cmd.COL,
                 Cmd.COL, Cmd.MIN, 300
+                );
+        case MAX_WIDTH:
+            return createTable(
+                Cmd.ROWS, 3,
+                Cmd.COL,
+                Cmd.COL,
+                Cmd.COL, Cmd.MAX, 300
+                );
+        case INCONSISTENT:
+            return createTable(
+                Cmd.ROWS, 3,
+                Cmd.COL, Cmd.PREF, 2000, Cmd.MAX, 200,
+                Cmd.COL, Cmd.MIN, 300, Cmd.PREF, 20
                 );
         default:
             return new BorderPane();
