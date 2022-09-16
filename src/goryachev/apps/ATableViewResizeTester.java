@@ -206,7 +206,7 @@ public class ATableViewResizeTester extends Application {
     protected Callback<ResizeFeatures, Boolean> createPolicy(Policy p) {
         switch(p) {
         case AUTO_RESIZE_NEW:
-            return ConstrainedColumnResize.forTable(ResizeMode.AUTO_RESIZE_NEW);
+            return ConstrainedColumnResize.forTable(ResizeMode.AUTO_RESIZE_FLEX);
         case AUTO_RESIZE_ALL_COLUMNS:
             return ConstrainedColumnResize.forTable(ResizeMode.AUTO_RESIZE_ALL_COLUMNS);
         case AUTO_RESIZE_LAST_COLUMN:
