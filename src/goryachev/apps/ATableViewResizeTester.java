@@ -44,7 +44,7 @@ import javafx.scene.control.ConstrainedColumnResize;
 import javafx.scene.control.ConstrainedColumnResize.ResizeMode;
 import javafx.scene.control.ConstrainedColumnResizeBase;
 import javafx.scene.control.Label;
-import javafx.scene.control.ResizeFeaturesBase;
+import javafx.scene.control.ResizeHelper;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
@@ -115,6 +115,7 @@ public class ATableViewResizeTester extends Application {
     protected SwingPanel swingPanel;
 
     public static void main(String[] args) {
+        ResizeHelper.print = true;
         Application.launch(ATableViewResizeTester.class, args);
     }
 
@@ -434,9 +435,9 @@ public class ATableViewResizeTester extends Application {
                     TableColumn<String,String> c = new TableColumn<>();
                     table.getColumns().add(c);
                     c.setText("C" + table.getColumns().size());
-                    if (table.getColumns().size() == 1) {
-                        c.setText("Really really really really really really really really really really really really really long");
-                    }
+//                    if (table.getColumns().size() == 1) {
+//                        c.setText("Really really really really really really really really really really really really really long");
+//                    }
                     c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
                     lastColumn = c;
                     break;
