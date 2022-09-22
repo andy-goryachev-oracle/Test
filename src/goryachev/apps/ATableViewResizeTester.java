@@ -78,7 +78,8 @@ public class ATableViewResizeTester extends Application {
         NO_NESTED("no nested columns"),
         NESTED("nested columns"),
         MILLION("million rows"),
-        ALOT("many columns");
+        MANY_COLUMNS("many columns"),
+        MANY_COLUMNS_SAME("many columns, same pref");
 
         private final String text;
         Demo(String text) { this.text = text; }
@@ -86,7 +87,8 @@ public class ATableViewResizeTester extends Application {
     }
 
     public enum Policy {
-        AUTO_RESIZE_NEW(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS),
+        AUTO_RESIZE_FLEX_HEAD(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS),
+        AUTO_RESIZE_FLEX_TAIL(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS),
         AUTO_RESIZE_NEXT_COLUMN(JTable.AUTO_RESIZE_NEXT_COLUMN),
         AUTO_RESIZE_SUBSEQUENT_COLUMNS(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS),
         AUTO_RESIZE_LAST_COLUMN(JTable.AUTO_RESIZE_LAST_COLUMN),
@@ -169,7 +171,8 @@ public class ATableViewResizeTester extends Application {
         stage.setTitle("TableView/JTable Resize Tester " + System.getProperty("java.version"));
         stage.show();
 
-        demoSelector.getSelectionModel().selectFirst();
+//        demoSelector.getSelectionModel().selectFirst();
+        demoSelector.getSelectionModel().select(Demo.MANY_COLUMNS);
         policySelector.getSelectionModel().selectFirst();
     }
 
@@ -206,8 +209,10 @@ public class ATableViewResizeTester extends Application {
 
     protected Callback<ResizeFeatures, Boolean> createPolicy(Policy p) {
         switch(p) {
-        case AUTO_RESIZE_NEW:
-            return ConstrainedColumnResize.forTable(ResizeMode.AUTO_RESIZE_FLEX);
+        case AUTO_RESIZE_FLEX_HEAD:
+            return ConstrainedColumnResize.forTable(ResizeMode.AUTO_RESIZE_FLEX_HEAD);
+        case AUTO_RESIZE_FLEX_TAIL:
+            return ConstrainedColumnResize.forTable(ResizeMode.AUTO_RESIZE_FLEX_TAIL);
         case AUTO_RESIZE_ALL_COLUMNS:
             return ConstrainedColumnResize.forTable(ResizeMode.AUTO_RESIZE_ALL_COLUMNS);
         case AUTO_RESIZE_LAST_COLUMN:
@@ -357,7 +362,7 @@ public class ATableViewResizeTester extends Application {
                 Cmd.COMBINE, 0, 3,
                 Cmd.COMBINE, 1, 2
             };
-        case ALOT:
+        case MANY_COLUMNS:
             return new Object[] {
                 Cmd.ROWS, 300,
                 Cmd.COL,
@@ -376,6 +381,30 @@ public class ATableViewResizeTester extends Application {
                 Cmd.COL,
                 Cmd.COL,
                 Cmd.COL
+            };
+        case MANY_COLUMNS_SAME:
+            return new Object[] {
+                Cmd.ROWS, 300,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30,
+                Cmd.COL, Cmd.PREF, 30
             };
         case MILLION:
             return new Object[] {
