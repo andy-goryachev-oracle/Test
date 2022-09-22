@@ -72,8 +72,8 @@ public class ATableViewResizeTester extends Application {
         MAX_WIDTH2("max width (middle)"),
         MIN_WIDTH3("min width (beginning)"),
         MAX_WIDTH3("max width (beginning)"),
-        INCONSISTENT("inconsistent: pref < min"),
         FIXED_MIDDLE("fixed in the middle"),
+        MIN_IN_CENTER("min widths set in middle columns"),
         MAX_IN_CENTER("max widths set in middle columns"),
         NO_NESTED("no nested columns"),
         NESTED("nested columns"),
@@ -171,8 +171,7 @@ public class ATableViewResizeTester extends Application {
         stage.setTitle("TableView/JTable Resize Tester " + System.getProperty("java.version"));
         stage.show();
 
-//        demoSelector.getSelectionModel().selectFirst();
-        demoSelector.getSelectionModel().select(Demo.MANY_COLUMNS);
+        demoSelector.getSelectionModel().selectFirst();
         policySelector.getSelectionModel().selectFirst();
     }
 
@@ -305,11 +304,16 @@ public class ATableViewResizeTester extends Application {
                 Cmd.COL,
                 Cmd.COL
             };
-        case INCONSISTENT:
+        case MIN_IN_CENTER:
             return new Object[] {
                 Cmd.ROWS, 3,
-                Cmd.COL, Cmd.PREF, 2000, Cmd.MAX, 200,
-                Cmd.COL, Cmd.MIN, 300, Cmd.PREF, 20
+                Cmd.COL,
+                Cmd.COL, Cmd.MIN, 20,
+                Cmd.COL, Cmd.MIN, 30,
+                Cmd.COL, Cmd.MIN, 40,
+                Cmd.COL, Cmd.MIN, 50,
+                Cmd.COL, Cmd.MIN, 60,
+                Cmd.COL
             };
         case MAX_IN_CENTER:
             return new Object[] {
