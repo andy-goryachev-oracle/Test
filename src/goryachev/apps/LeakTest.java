@@ -34,6 +34,9 @@ public class LeakTest extends Application {
         TEXTFIELD
     }
     
+    /** set the skin we are testing */
+    protected final Type WE_ARE_TESTING = Type.MENUBAR;
+    
     interface Test<T extends Control> {
         public T createNode();
         
@@ -46,11 +49,7 @@ public class LeakTest extends Application {
     
     @Override
     public void start(final Stage stage) throws Exception {
-        // change type
-        Type t =
-//          Type.MENUBAR;
-            Type.TEXTFIELD;
-        createStage(stage, createTest(t));
+        createStage(stage, createTest(WE_ARE_TESTING));
     }
     
     public Test<?> createTest(Type t) {
@@ -123,7 +122,7 @@ public class LeakTest extends Application {
         rootPane.setTop(c);
         rootPane.setBottom(button);
         stage.setScene(new Scene(rootPane, 800, 600));
-        stage.setTitle("Memory Leak Test " + System.getProperty("java.version"));
+        stage.setTitle("Skin Change Memory Leak Test " + System.getProperty("java.version"));
         stage.show();
     }
 }
