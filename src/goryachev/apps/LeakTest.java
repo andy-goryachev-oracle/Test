@@ -89,7 +89,13 @@ public class LeakTest extends Application {
 
                 @Override
                 public Skin<TextField> createSkin(TextField control) {
-                    return new TextFieldSkin(control);
+                    class AATextFieldSkin extends TextFieldSkin {
+
+                        public AATextFieldSkin(TextField control) {
+                            super(control);
+                        }
+                    }
+                    return new AATextFieldSkin(control);
                 }
             };
         default:
