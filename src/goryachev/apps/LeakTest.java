@@ -17,6 +17,15 @@ import javafx.stage.Stage;
 
 /**
  * Tests memory leak when replacing the skin.
+ * 
+ * To test using VisualVM:
+ * - launch the app
+ * - exercise control functionality
+ * - click on [Change Skin] button as many times as you like
+ * - exercise control some more
+ * - in VisualVM, Monitor -> [Perform GC] -> [Heap Dump]
+ * - in heap dump, select Objects pulldown (instead of Summary)
+ * - type in Class Filter: "aa"
  */
 public class LeakTest extends Application {
     
@@ -90,7 +99,6 @@ public class LeakTest extends Application {
                 @Override
                 public Skin<TextField> createSkin(TextField control) {
                     class AATextFieldSkin extends TextFieldSkin {
-
                         public AATextFieldSkin(TextField control) {
                             super(control);
                         }
