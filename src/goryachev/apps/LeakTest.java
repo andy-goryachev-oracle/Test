@@ -1,18 +1,20 @@
 package goryachev.apps;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
 import javafx.scene.control.TextField;
 import javafx.scene.control.skin.MenuBarSkin;
 import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 /**
@@ -36,6 +38,7 @@ public class LeakTest extends Application {
     
     /** set the skin we are testing */
     protected final Type WE_ARE_TESTING = Type.MENUBAR;
+    private Stage currentStage;
     
     interface Test<T extends Control> {
         public T createNode();
@@ -68,6 +71,7 @@ public class LeakTest extends Application {
                     m = new Menu("menu");
                     b.getMenus().add(m);
                     Menu m2;
+                    MenuItem mi;
                     m.getItems().add(m2 = new Menu("item 1"));
                     m.getItems().add(new MenuItem("item 2"));
                     m.getItems().add(new MenuItem("item 3"));
@@ -75,6 +79,8 @@ public class LeakTest extends Application {
                     m2.getItems().add(new MenuItem("item 21"));
                     m2.getItems().add(new MenuItem("item 22"));
                     m2.getItems().add(new MenuItem("item 23"));
+                    m2.getItems().add(mi = new MenuItem("With Action"));
+                    mi.setOnAction((ev) -> System.out.println("yo, action!"));
                     return b;
                 }
 
@@ -113,16 +119,52 @@ public class LeakTest extends Application {
     protected <T extends Control> void createStage(Stage stage, Test<T> test) {
         T c = test.createNode();
          
-        Button button = new Button("Replace Skin");
-        button.setOnAction(e -> {
+        Button replaceSkinButton = new Button("Replace Skin");
+        replaceSkinButton.setOnAction(e -> {
             c.setSkin(test.createSkin(c));
         });
         
+        Button newWindowButton = new Button("New Window");
+        
+        HBox bp = new HBox(
+            replaceSkinButton,
+            newWindowButton
+            );
+        
         BorderPane rootPane = new BorderPane();
         rootPane.setTop(c);
-        rootPane.setBottom(button);
-        stage.setScene(new Scene(rootPane, 800, 600));
+        rootPane.setBottom(bp);
+
+        Scene scene = new Scene(rootPane, 800, 600);
+        
+        currentStage = stage;
+        stage.setScene(scene);
         stage.setTitle("Skin Change Memory Leak Test " + System.getProperty("java.version"));
         stage.show();
+        
+        newWindowButton.setOnAction(e -> {
+            newWindow();
+      });
+    }
+    
+    protected void newWindow() {
+        Scene oldScene = currentStage.getScene();
+
+        Parent root = oldScene.getRoot();
+        oldScene.setRoot(new BorderPane());
+        
+        Platform.runLater(() -> {
+            Scene s = new Scene(root, oldScene.getWidth(), oldScene.getHeight());
+            Stage st = new Stage();
+            st.setScene(s);
+            st.setTitle(currentStage.getTitle());
+            st.setWidth(currentStage.getWidth());
+            st.setHeight(currentStage.getHeight());
+            st.show();
+            
+            currentStage.hide();
+            
+            currentStage = st;
+        });
     }
 }
