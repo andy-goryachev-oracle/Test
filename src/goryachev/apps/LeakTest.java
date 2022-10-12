@@ -10,8 +10,10 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Skin;
+import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.skin.MenuBarSkin;
+import javafx.scene.control.skin.SplitPaneSkin;
 import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -33,11 +35,12 @@ public class LeakTest extends Application {
     
     enum Type {
         MENUBAR,
+        SPLITPANE,
         TEXTFIELD
     }
     
     /** set the skin we are testing */
-    protected final Type WE_ARE_TESTING = Type.MENUBAR;
+    protected final Type WE_ARE_TESTING = Type.SPLITPANE;
     private Stage currentStage;
     
     interface Test<T extends Control> {
@@ -92,6 +95,26 @@ public class LeakTest extends Application {
                         }
                     }
                     return new AA_MenuBarSkin(control);
+                }
+            };
+        case SPLITPANE:
+            return new Test<SplitPane>() {
+                @Override
+                public SplitPane createNode() {
+                    SplitPane sp = new SplitPane(new BorderPane(), new BorderPane());
+                    sp.setMinHeight(100);
+                    sp.setMinWidth(100);
+                    return sp;
+                }
+
+                @Override
+                public Skin<SplitPane> createSkin(SplitPane control) {
+                    class AASplitPaneSkin extends SplitPaneSkin {
+                        public AASplitPaneSkin(SplitPane control) {
+                            super(control);
+                        }
+                    }
+                    return new AASplitPaneSkin(control);
                 }
             };
         case TEXTFIELD:
@@ -160,6 +183,8 @@ public class LeakTest extends Application {
             st.setTitle(currentStage.getTitle());
             st.setWidth(currentStage.getWidth());
             st.setHeight(currentStage.getHeight());
+            st.setX(currentStage.getX());
+            st.setY(currentStage.getY());
             st.show();
             
             currentStage.hide();
