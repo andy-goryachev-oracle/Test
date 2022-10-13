@@ -2,6 +2,7 @@ package goryachev.apps;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Orientation;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,10 +10,12 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.skin.MenuBarSkin;
+import javafx.scene.control.skin.ScrollBarSkin;
 import javafx.scene.control.skin.SplitPaneSkin;
 import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.layout.BorderPane;
@@ -35,12 +38,13 @@ public class LeakTest extends Application {
     
     enum Type {
         MENUBAR,
+        SCROLLBAR,
         SPLITPANE,
         TEXTFIELD
     }
     
     /** set the skin we are testing */
-    protected final Type WE_ARE_TESTING = Type.SPLITPANE;
+    protected final Type WE_ARE_TESTING = Type.SCROLLBAR;
     private Stage currentStage;
     
     interface Test<T extends Control> {
@@ -97,6 +101,25 @@ public class LeakTest extends Application {
                     return new AA_MenuBarSkin(control);
                 }
             };
+        case SCROLLBAR:
+            return new Test<ScrollBar>() {
+                @Override
+                public ScrollBar createNode() {
+                    ScrollBar s = new ScrollBar();
+                    s.setOrientation(Orientation.HORIZONTAL);
+                    return s;
+                }
+
+                @Override
+                public Skin<ScrollBar> createSkin(ScrollBar control) {
+                    class AAScrollBarSkin extends ScrollBarSkin {
+                        public AAScrollBarSkin(ScrollBar control) {
+                            super(control);
+                        }
+                    }
+                    return new AAScrollBarSkin(control);
+                }
+            };
         case SPLITPANE:
             return new Test<SplitPane>() {
                 @Override
@@ -141,6 +164,7 @@ public class LeakTest extends Application {
     
     protected <T extends Control> void createStage(Stage stage, Test<T> test) {
         T c = test.createNode();
+        c.setFocusTraversable(true);
          
         Button replaceSkinButton = new Button("Replace Skin");
         replaceSkinButton.setOnAction(e -> {
