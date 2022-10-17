@@ -13,11 +13,13 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Skin;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.skin.MenuBarSkin;
 import javafx.scene.control.skin.MenuButtonSkin;
 import javafx.scene.control.skin.ScrollBarSkin;
+import javafx.scene.control.skin.SplitMenuButtonSkin;
 import javafx.scene.control.skin.SplitPaneSkin;
 import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.layout.BorderPane;
@@ -42,12 +44,13 @@ public class LeakTest extends Application {
         MENUBAR,
         MENU_BUTTON,
         SCROLLBAR,
-        SPLITPANE,
+        SPLIT_MENU_BUTTON,
+        SPLIT_PANE,
         TEXTFIELD
     }
     
     /** set the skin we are testing */
-    protected final Type WE_ARE_TESTING = Type.MENU_BUTTON;
+    protected final Type WE_ARE_TESTING = Type.SPLIT_MENU_BUTTON;
     private Stage currentStage;
     
     interface Test<T extends Control> {
@@ -104,6 +107,7 @@ public class LeakTest extends Application {
                     return new AA_MenuBarSkin(control);
                 }
             };
+            
         case MENU_BUTTON:
             return new Test<MenuButton>() {
                 @Override
@@ -141,6 +145,7 @@ public class LeakTest extends Application {
                     return new AAMenuButtonSkin(control);
                 }
             };
+            
         case SCROLLBAR:
             return new Test<ScrollBar>() {
                 @Override
@@ -160,7 +165,46 @@ public class LeakTest extends Application {
                     return new AAScrollBarSkin(control);
                 }
             };
-        case SPLITPANE:
+            
+        case SPLIT_MENU_BUTTON:
+            return new Test<SplitMenuButton>() {
+                @Override
+                public SplitMenuButton createNode() {
+                    SplitMenuButton b = new SplitMenuButton();
+                    Menu m = new Menu("menu");
+                    b.getItems().add(m);
+                    m.getItems().add(new MenuItem("item 1"));
+                    m.getItems().add(new MenuItem("item 2"));
+                    m.getItems().add(new MenuItem("item 3"));
+                    
+                    m = new Menu("menu");
+                    b.getItems().add(m);
+                    Menu m2;
+                    MenuItem mi;
+                    m.getItems().add(m2 = new Menu("item 1"));
+                    m.getItems().add(new MenuItem("item 2"));
+                    m.getItems().add(new MenuItem("item 3"));
+                    
+                    m2.getItems().add(new MenuItem("item 21"));
+                    m2.getItems().add(new MenuItem("item 22"));
+                    m2.getItems().add(new MenuItem("item 23"));
+                    m2.getItems().add(mi = new MenuItem("With Action"));
+                    mi.setOnAction((ev) -> System.out.println("yo, action!"));
+                    return b;
+                }
+
+                @Override
+                public Skin<SplitMenuButton> createSkin(SplitMenuButton control) {
+                    class AASplitMenuButtonSkin extends SplitMenuButtonSkin {
+                        public AASplitMenuButtonSkin(SplitMenuButton control) {
+                            super(control);
+                        }
+                    };
+                    return new AASplitMenuButtonSkin(control);
+                }
+            };
+            
+        case SPLIT_PANE:
             return new Test<SplitPane>() {
                 @Override
                 public SplitPane createNode() {
@@ -197,6 +241,7 @@ public class LeakTest extends Application {
                     return new AATextFieldSkin(control);
                 }
             };
+            
         default:
             throw new Error("?" + t);
         }
