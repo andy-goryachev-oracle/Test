@@ -9,12 +9,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Control;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.skin.MenuBarSkin;
+import javafx.scene.control.skin.MenuButtonSkin;
 import javafx.scene.control.skin.ScrollBarSkin;
 import javafx.scene.control.skin.SplitPaneSkin;
 import javafx.scene.control.skin.TextFieldSkin;
@@ -38,13 +40,14 @@ public class LeakTest extends Application {
     
     enum Type {
         MENUBAR,
+        MENU_BUTTON,
         SCROLLBAR,
         SPLITPANE,
         TEXTFIELD
     }
     
     /** set the skin we are testing */
-    protected final Type WE_ARE_TESTING = Type.SCROLLBAR;
+    protected final Type WE_ARE_TESTING = Type.MENU_BUTTON;
     private Stage currentStage;
     
     interface Test<T extends Control> {
@@ -99,6 +102,43 @@ public class LeakTest extends Application {
                         }
                     }
                     return new AA_MenuBarSkin(control);
+                }
+            };
+        case MENU_BUTTON:
+            return new Test<MenuButton>() {
+                @Override
+                public MenuButton createNode() {
+                    MenuButton b = new MenuButton("Menu Button");
+                    Menu m = new Menu("menu");
+                    b.getItems().add(m);
+                    m.getItems().add(new MenuItem("item 1"));
+                    m.getItems().add(new MenuItem("item 2"));
+                    m.getItems().add(new MenuItem("item 3"));
+                    
+                    m = new Menu("menu");
+                    b.getItems().add(m);
+                    Menu m2;
+                    MenuItem mi;
+                    m.getItems().add(m2 = new Menu("item 1"));
+                    m.getItems().add(new MenuItem("item 2"));
+                    m.getItems().add(new MenuItem("item 3"));
+                    
+                    m2.getItems().add(new MenuItem("item 21"));
+                    m2.getItems().add(new MenuItem("item 22"));
+                    m2.getItems().add(new MenuItem("item 23"));
+                    m2.getItems().add(mi = new MenuItem("With Action"));
+                    mi.setOnAction((ev) -> System.out.println("yo, action!"));
+                    return b;
+                }
+
+                @Override
+                public Skin<MenuButton> createSkin(MenuButton control) {
+                    class AAMenuButtonSkin extends MenuButtonSkin {
+                        public AAMenuButtonSkin(MenuButton control) {
+                            super(control);
+                        }
+                    };
+                    return new AAMenuButtonSkin(control);
                 }
             };
         case SCROLLBAR:
