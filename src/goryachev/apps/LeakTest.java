@@ -5,8 +5,10 @@ import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Control;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuButton;
@@ -16,6 +18,8 @@ import javafx.scene.control.Skin;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.skin.AccordionSkin;
 import javafx.scene.control.skin.MenuBarSkin;
 import javafx.scene.control.skin.MenuButtonSkin;
 import javafx.scene.control.skin.ScrollBarSkin;
@@ -41,6 +45,7 @@ import javafx.stage.Stage;
 public class LeakTest extends Application {
     
     enum Type {
+        ACCORDION,
         MENUBAR,
         MENU_BUTTON,
         SCROLLBAR,
@@ -50,7 +55,7 @@ public class LeakTest extends Application {
     }
     
     /** set the skin we are testing */
-    protected final Type WE_ARE_TESTING = Type.SPLIT_MENU_BUTTON;
+    protected final Type WE_ARE_TESTING = Type.ACCORDION;
     private Stage currentStage;
     
     interface Test<T extends Control> {
@@ -70,6 +75,29 @@ public class LeakTest extends Application {
     
     public Test<?> createTest(Type t) {
         switch(t) {
+        case ACCORDION:
+            return  new Test<Accordion>() {
+                @Override
+                public Accordion createNode() {
+                    Accordion a = new Accordion(
+                        new TitledPane("Panel A", new Label("aaa")),
+                        new TitledPane("Panel B", new Label("bbb")),
+                        new TitledPane("Panel C", new Label("ccc"))
+                    );
+                    return a;
+                }
+
+                @Override
+                public Skin<Accordion> createSkin(Accordion control) {
+                    class QQAccordionSkin extends AccordionSkin {
+                        public QQAccordionSkin(Accordion control) {
+                            super(control);
+                        }
+                    };
+                    return new QQAccordionSkin(control);
+                }
+            };
+
         case MENUBAR:
             return  new Test<MenuBar>() {
                 @Override
@@ -99,12 +127,12 @@ public class LeakTest extends Application {
 
                 @Override
                 public Skin<MenuBar> createSkin(MenuBar control) {
-                    class AA_MenuBarSkin extends MenuBarSkin {
-                        public AA_MenuBarSkin(MenuBar control) {
+                    class QQMenuBarSkin extends MenuBarSkin {
+                        public QQMenuBarSkin(MenuBar control) {
                             super(control);
                         }
                     }
-                    return new AA_MenuBarSkin(control);
+                    return new QQMenuBarSkin(control);
                 }
             };
             
@@ -137,12 +165,12 @@ public class LeakTest extends Application {
 
                 @Override
                 public Skin<MenuButton> createSkin(MenuButton control) {
-                    class AAMenuButtonSkin extends MenuButtonSkin {
-                        public AAMenuButtonSkin(MenuButton control) {
+                    class QQMenuButtonSkin extends MenuButtonSkin {
+                        public QQMenuButtonSkin(MenuButton control) {
                             super(control);
                         }
                     };
-                    return new AAMenuButtonSkin(control);
+                    return new QQMenuButtonSkin(control);
                 }
             };
             
@@ -157,12 +185,12 @@ public class LeakTest extends Application {
 
                 @Override
                 public Skin<ScrollBar> createSkin(ScrollBar control) {
-                    class AAScrollBarSkin extends ScrollBarSkin {
-                        public AAScrollBarSkin(ScrollBar control) {
+                    class QQScrollBarSkin extends ScrollBarSkin {
+                        public QQScrollBarSkin(ScrollBar control) {
                             super(control);
                         }
                     }
-                    return new AAScrollBarSkin(control);
+                    return new QQScrollBarSkin(control);
                 }
             };
             
@@ -195,12 +223,12 @@ public class LeakTest extends Application {
 
                 @Override
                 public Skin<SplitMenuButton> createSkin(SplitMenuButton control) {
-                    class AASplitMenuButtonSkin extends SplitMenuButtonSkin {
-                        public AASplitMenuButtonSkin(SplitMenuButton control) {
+                    class QQSplitMenuButtonSkin extends SplitMenuButtonSkin {
+                        public QQSplitMenuButtonSkin(SplitMenuButton control) {
                             super(control);
                         }
                     };
-                    return new AASplitMenuButtonSkin(control);
+                    return new QQSplitMenuButtonSkin(control);
                 }
             };
             
@@ -216,12 +244,12 @@ public class LeakTest extends Application {
 
                 @Override
                 public Skin<SplitPane> createSkin(SplitPane control) {
-                    class AASplitPaneSkin extends SplitPaneSkin {
-                        public AASplitPaneSkin(SplitPane control) {
+                    class QQSplitPaneSkin extends SplitPaneSkin {
+                        public QQSplitPaneSkin(SplitPane control) {
                             super(control);
                         }
                     }
-                    return new AASplitPaneSkin(control);
+                    return new QQSplitPaneSkin(control);
                 }
             };
         case TEXTFIELD:
@@ -233,12 +261,12 @@ public class LeakTest extends Application {
 
                 @Override
                 public Skin<TextField> createSkin(TextField control) {
-                    class AATextFieldSkin extends TextFieldSkin {
-                        public AATextFieldSkin(TextField control) {
+                    class QQTextFieldSkin extends TextFieldSkin {
+                        public QQTextFieldSkin(TextField control) {
                             super(control);
                         }
                     }
-                    return new AATextFieldSkin(control);
+                    return new QQTextFieldSkin(control);
                 }
             };
             
@@ -264,6 +292,7 @@ public class LeakTest extends Application {
             );
         
         BorderPane rootPane = new BorderPane();
+        // FIX rootPane.setTop(cm());
         rootPane.setTop(c);
         rootPane.setBottom(bp);
 
@@ -277,6 +306,25 @@ public class LeakTest extends Application {
         newWindowButton.setOnAction(e -> {
             newWindow();
       });
+    }
+    
+    protected MenuBar cm() {
+        Menu menu1 = new Menu("Menu1");
+        Menu menu2 = new Menu("Menu2");
+        Menu menu3 = new Menu("Menu3");
+
+        MenuItem menuItem1 = new MenuItem("MenuItem1");
+        MenuItem menuItem2 = new MenuItem("MenuItem2");
+        MenuItem menuItem3 = new MenuItem("MenuItem3");
+
+        menu1.getItems().add(menuItem1);
+        menu2.getItems().add(menuItem2);
+        menu3.getItems().add(menuItem3);
+
+        MenuBar mb = new MenuBar();
+        mb.getMenus().addAll(menu1, menu2, menu3);
+        menu2.setDisable(true);
+        return mb;
     }
     
     protected void newWindow() {
