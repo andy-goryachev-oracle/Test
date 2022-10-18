@@ -7,6 +7,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
@@ -20,6 +21,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.skin.AccordionSkin;
+import javafx.scene.control.skin.ButtonBarSkin;
 import javafx.scene.control.skin.MenuBarSkin;
 import javafx.scene.control.skin.MenuButtonSkin;
 import javafx.scene.control.skin.ScrollBarSkin;
@@ -46,6 +48,7 @@ public class LeakTest extends Application {
     
     enum Type {
         ACCORDION,
+        BUTTON_BAR,
         MENUBAR,
         MENU_BUTTON,
         SCROLLBAR,
@@ -55,7 +58,7 @@ public class LeakTest extends Application {
     }
     
     /** set the skin we are testing */
-    protected final Type WE_ARE_TESTING = Type.ACCORDION;
+    protected final Type WE_ARE_TESTING = Type.BUTTON_BAR;
     private Stage currentStage;
     
     interface Test<T extends Control> {
@@ -95,6 +98,30 @@ public class LeakTest extends Application {
                         }
                     };
                     return new QQAccordionSkin(control);
+                }
+            };
+            
+        case BUTTON_BAR:
+            return  new Test<ButtonBar>() {
+                @Override
+                public ButtonBar createNode() {
+                    ButtonBar b = new ButtonBar();
+                    b.getButtons().addAll(
+                        new Button("OK"),
+                        new Button("Cancel"),
+                        new Button("Help")
+                    );
+                    return b;
+                }
+
+                @Override
+                public Skin<ButtonBar> createSkin(ButtonBar control) {
+                    class QQButtonBarSkin extends ButtonBarSkin {
+                        public QQButtonBarSkin(ButtonBar control) {
+                            super(control);
+                        }
+                    }
+                    return new QQButtonBarSkin(control);
                 }
             };
 
