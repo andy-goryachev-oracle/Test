@@ -1,5 +1,7 @@
 package goryachev.apps;
 
+import java.time.LocalDate;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Orientation;
@@ -8,7 +10,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ComboBoxBase;
 import javafx.scene.control.Control;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -22,6 +28,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.skin.AccordionSkin;
 import javafx.scene.control.skin.ButtonBarSkin;
+import javafx.scene.control.skin.ColorPickerSkin;
+import javafx.scene.control.skin.ComboBoxListViewSkin;
+import javafx.scene.control.skin.DatePickerSkin;
 import javafx.scene.control.skin.MenuBarSkin;
 import javafx.scene.control.skin.MenuButtonSkin;
 import javafx.scene.control.skin.ScrollBarSkin;
@@ -30,6 +39,7 @@ import javafx.scene.control.skin.SplitPaneSkin;
 import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 /**
@@ -42,13 +52,16 @@ import javafx.stage.Stage;
  * - exercise control some more
  * - in VisualVM, Monitor -> [Perform GC] -> [Heap Dump]
  * - in heap dump, select Objects pulldown (instead of Summary)
- * - type in Class Filter: "aa"
+ * - type in Class Filter: "qq" (all dummy skin classes are named starting with QQ)
  */
 public class LeakTest extends Application {
     
     enum Type {
         ACCORDION,
         BUTTON_BAR,
+        COLOR_PICKER,
+        COMBO_BOX,
+        DATE_PICKER,
         MENUBAR,
         MENU_BUTTON,
         SCROLLBAR,
@@ -58,7 +71,7 @@ public class LeakTest extends Application {
     }
     
     /** set the skin we are testing */
-    protected final Type WE_ARE_TESTING = Type.BUTTON_BAR;
+    protected final Type WE_ARE_TESTING = Type.COMBO_BOX;
     private Stage currentStage;
     
     interface Test<T extends Control> {
@@ -124,9 +137,70 @@ public class LeakTest extends Application {
                     return new QQButtonBarSkin(control);
                 }
             };
+            
+        case COLOR_PICKER:
+            return new Test<ComboBoxBase<Color>>() {
+                @Override
+                public ComboBoxBase<Color> createNode() {
+                    return new ColorPicker();
+                }
+
+                @Override
+                public Skin<ComboBoxBase<Color>> createSkin(ComboBoxBase<Color> control) {
+                    class QQColorPickerSkin extends ColorPickerSkin {
+                        public QQColorPickerSkin(ColorPicker control) {
+                            super(control);
+                        }
+                    }
+                    return new QQColorPickerSkin((ColorPicker)control);
+                }
+            };
+            
+        case COMBO_BOX:
+            return new Test<ComboBoxBase<Object>>() {
+                @Override
+                public ComboBoxBase<Object> createNode() {
+                    ComboBox<Object> cb = new ComboBox<Object>();
+                    cb.getItems().addAll(
+                        "1",
+                        "2",
+                        "3"
+                    );
+                    cb.setEditable(true);
+                    return cb;
+                }
+
+                @Override
+                public Skin<ComboBoxBase<Object>> createSkin(ComboBoxBase<Object> control) {
+                    class QQComboBoxSkin extends ComboBoxListViewSkin {
+                        public QQComboBoxSkin(ComboBox control) {
+                            super(control);
+                        }
+                    }
+                    return new QQComboBoxSkin((ComboBox)control);
+                }
+            };
+            
+        case DATE_PICKER:
+            return new Test<ComboBoxBase<LocalDate>>() {
+                @Override
+                public ComboBoxBase<LocalDate> createNode() {
+                    return new DatePicker();
+                }
+
+                @Override
+                public Skin<ComboBoxBase<LocalDate>> createSkin(ComboBoxBase<LocalDate> control) {
+                    class QQDatePickerSkin extends DatePickerSkin {
+                        public QQDatePickerSkin(DatePicker control) {
+                            super(control);
+                        }
+                    }
+                    return new QQDatePickerSkin((DatePicker)control);
+                }
+            };
 
         case MENUBAR:
-            return  new Test<MenuBar>() {
+            return new Test<MenuBar>() {
                 @Override
                 public MenuBar createNode() {
                     MenuBar b = new MenuBar();
