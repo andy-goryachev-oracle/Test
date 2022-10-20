@@ -73,6 +73,7 @@ public class LeakTest extends Application {
     /** set the skin we are testing */
     protected final Type WE_ARE_TESTING = Type.COMBO_BOX;
     private Stage currentStage;
+    private BorderPane rootPane;
     
     interface Test<T extends Control> {
         public T createNode();
@@ -387,12 +388,15 @@ public class LeakTest extends Application {
         
         Button newWindowButton = new Button("New Window");
         
+        Button clearButton = new Button("Remove Controls");
+        
         HBox bp = new HBox(
             replaceSkinButton,
-            newWindowButton
+            newWindowButton,
+            clearButton
             );
         
-        BorderPane rootPane = new BorderPane();
+        rootPane = new BorderPane();
         // FIX rootPane.setTop(cm());
         rootPane.setTop(c);
         rootPane.setBottom(bp);
@@ -401,14 +405,20 @@ public class LeakTest extends Application {
         
         currentStage = stage;
         stage.setScene(scene);
-        stage.setTitle("Skin Change Memory Leak Test " + System.getProperty("java.version"));
+        stage.setTitle("Skin Change Memory Leak Test - " + WE_ARE_TESTING + " - " + System.getProperty("java.version"));
         stage.show();
         
         newWindowButton.setOnAction(e -> {
             newWindow();
-      });
+        });
+        
+        clearButton.setOnAction(e -> {
+            rootPane.setTop(null);
+            replaceSkinButton.setOnAction(null);
+        });
     }
     
+    @Deprecated // not used anymore
     protected MenuBar cm() {
         Menu menu1 = new Menu("Menu1");
         Menu menu2 = new Menu("Menu2");
