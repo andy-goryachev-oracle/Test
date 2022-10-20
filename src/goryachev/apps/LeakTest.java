@@ -2,9 +2,13 @@ package goryachev.apps;
 
 import java.time.LocalDate;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
@@ -20,6 +24,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Pagination;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SplitMenuButton;
@@ -33,6 +38,7 @@ import javafx.scene.control.skin.ComboBoxListViewSkin;
 import javafx.scene.control.skin.DatePickerSkin;
 import javafx.scene.control.skin.MenuBarSkin;
 import javafx.scene.control.skin.MenuButtonSkin;
+import javafx.scene.control.skin.PaginationSkin;
 import javafx.scene.control.skin.ScrollBarSkin;
 import javafx.scene.control.skin.SplitMenuButtonSkin;
 import javafx.scene.control.skin.SplitPaneSkin;
@@ -41,6 +47,8 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.util.Callback;
+import javafx.util.Duration;
 
 /**
  * Tests memory leak when replacing the skin.
@@ -64,6 +72,7 @@ public class LeakTest extends Application {
         DATE_PICKER,
         MENUBAR,
         MENU_BUTTON,
+        PAGINATION,
         SCROLLBAR,
         SPLIT_MENU_BUTTON,
         SPLIT_PANE,
@@ -71,7 +80,7 @@ public class LeakTest extends Application {
     }
     
     /** set the skin we are testing */
-    protected final Type WE_ARE_TESTING = Type.COMBO_BOX;
+    protected final Type WE_ARE_TESTING = Type.PAGINATION;
     private Stage currentStage;
     private BorderPane rootPane;
     
@@ -276,6 +285,52 @@ public class LeakTest extends Application {
                 }
             };
             
+        case PAGINATION:
+            return new Test<Pagination>() {
+                @Override
+                public Pagination createNode() {
+                    Pagination p = new Pagination(100, 0);
+                    p.setPageFactory(new Callback<Integer, Node>() {
+                        @Override
+                        public Node call(Integer pageIndex) {
+                            return new Label(pageIndex + 1 + ".\nLorem ipsum dolor sit amet,\n"
+                                         + "consectetur adipiscing elit,\n"
+                                         + "sed do eiusmod tempor incididunt ut\n"
+                                         + "labore et dolore magna aliqua.");
+                        }
+                    });
+                    new Timeline(
+                        new KeyFrame(Duration.seconds(2), (ev) -> {
+                            System.out.println("on");
+                            p.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
+                        }),
+                        new KeyFrame(Duration.seconds(4), (ev) -> {
+                            System.out.println("off");
+                            p.getStyleClass().remove(Pagination.STYLE_CLASS_BULLET);
+                        }),
+                        new KeyFrame(Duration.seconds(6), (ev) -> {
+                            System.out.println("on");
+                            p.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
+                        }),
+                        new KeyFrame(Duration.seconds(8), (ev) -> {
+                            System.out.println("off");
+                            p.getStyleClass().remove(Pagination.STYLE_CLASS_BULLET);
+                        })
+                    ).play();
+                    return p;
+                }
+
+                @Override
+                public Skin<Pagination> createSkin(Pagination control) {
+                    class QQPaginationSkin extends PaginationSkin {
+                        public QQPaginationSkin(Pagination control) {
+                            super(control);
+                        }
+                    }
+                    return new QQPaginationSkin(control);
+                }
+            };
+            
         case SCROLLBAR:
             return new Test<ScrollBar>() {
                 @Override
@@ -383,7 +438,9 @@ public class LeakTest extends Application {
          
         Button replaceSkinButton = new Button("Replace Skin");
         replaceSkinButton.setOnAction(e -> {
+            //System.out.println("before: " + c.getChildrenUnmodifiable());
             c.setSkin(test.createSkin(c));
+            //System.out.println("after:  " + c.getChildrenUnmodifiable());
         });
         
         Button newWindowButton = new Button("New Window");
