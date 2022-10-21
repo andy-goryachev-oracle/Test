@@ -29,8 +29,13 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableColumn;
+import javafx.scene.control.TreeTableView;
 import javafx.scene.control.skin.AccordionSkin;
 import javafx.scene.control.skin.ButtonBarSkin;
 import javafx.scene.control.skin.ColorPickerSkin;
@@ -43,7 +48,9 @@ import javafx.scene.control.skin.ScrollBarSkin;
 import javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.scene.control.skin.SplitMenuButtonSkin;
 import javafx.scene.control.skin.SplitPaneSkin;
+import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.TextFieldSkin;
+import javafx.scene.control.skin.TreeTableViewSkin;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -79,7 +86,9 @@ public class LeakTest extends Application {
         SCROLL_PANE,
         SPLIT_MENU_BUTTON,
         SPLIT_PANE,
-        TEXTFIELD
+        TABLE_VIEW,
+        TEXT_FIELD,
+        TREE_TABLE_VIEW
     }
     
     private Stage currentStage;
@@ -481,7 +490,37 @@ public class LeakTest extends Application {
                     return new QQSplitPaneSkin(control);
                 }
             };
-        case TEXTFIELD:
+            
+        case TABLE_VIEW:
+            return new Test<TableView>() {
+                @Override
+                public TableView createNode() {
+                    TableView t = new TableView();
+                    t.getColumns().addAll(
+                        new TableColumn("Key"),
+                        new TableColumn("Value"),
+                        new TableColumn("Goats per Second")
+                    );
+                    t.getItems().addAll(
+                        "",
+                        " ",
+                        "  "
+                    );
+                    return t;
+                }
+
+                @Override
+                public Skin<TableView> createSkin(TableView control) {
+                    class QQTableViewSkin extends TableViewSkin {
+                        public QQTableViewSkin(TableView control) {
+                            super(control);
+                        }
+                    }
+                    return new QQTableViewSkin(control);
+                }
+            };
+            
+        case TEXT_FIELD:
             return new Test<TextField>() {
                 @Override
                 public TextField createNode() {
@@ -496,6 +535,40 @@ public class LeakTest extends Application {
                         }
                     }
                     return new QQTextFieldSkin(control);
+                }
+            };
+            
+        case TREE_TABLE_VIEW:
+            return new Test<TreeTableView>() {
+                @Override
+                public TreeTableView createNode() {
+                    TreeItem root = new TreeItem(null);
+                    root.setExpanded(true);
+                    root.getChildren().addAll(
+                        new TreeItem(" "),
+                        new TreeItem("  "),
+                        new TreeItem("   "),
+                        new TreeItem("    "),
+                        new TreeItem("     ")
+                    );
+                    
+                    TreeTableView t = new TreeTableView(root);
+                    t.getColumns().addAll(
+                        new TreeTableColumn("Key"),
+                        new TreeTableColumn("Value"),
+                        new TreeTableColumn("Goats per Second")
+                    );
+                    return t;
+                }
+
+                @Override
+                public Skin<TreeTableView> createSkin(TreeTableView control) {
+                    class QQTreeTableViewSkin extends TreeTableViewSkin {
+                        public QQTreeTableViewSkin(TreeTableView control) {
+                            super(control);
+                        }
+                    }
+                    return new QQTreeTableViewSkin(control);
                 }
             };
             
