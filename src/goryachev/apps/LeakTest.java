@@ -6,7 +6,6 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -26,6 +25,7 @@ import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
@@ -40,6 +40,7 @@ import javafx.scene.control.skin.MenuBarSkin;
 import javafx.scene.control.skin.MenuButtonSkin;
 import javafx.scene.control.skin.PaginationSkin;
 import javafx.scene.control.skin.ScrollBarSkin;
+import javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.scene.control.skin.SplitMenuButtonSkin;
 import javafx.scene.control.skin.SplitPaneSkin;
 import javafx.scene.control.skin.TextFieldSkin;
@@ -73,14 +74,13 @@ public class LeakTest extends Application {
         MENUBAR,
         MENU_BUTTON,
         PAGINATION,
-        SCROLLBAR,
+        SCROLL_BAR,
+        SCROLL_PANE,
         SPLIT_MENU_BUTTON,
         SPLIT_PANE,
         TEXTFIELD
     }
     
-    /** set the skin we are testing */
-    protected final Type WE_ARE_TESTING = Type.PAGINATION;
     private Stage currentStage;
     private BorderPane rootPane;
     private BorderPane content;
@@ -380,7 +380,7 @@ public class LeakTest extends Application {
                 }
             };
             
-        case SCROLLBAR:
+        case SCROLL_BAR:
             return new Test<ScrollBar>() {
                 @Override
                 public ScrollBar createNode() {
@@ -397,6 +397,28 @@ public class LeakTest extends Application {
                         }
                     }
                     return new QQScrollBarSkin(control);
+                }
+            };
+            
+        case SCROLL_PANE:
+            return new Test<ScrollPane>() {
+                @Override
+                public ScrollPane createNode() {
+                    Label p = new Label("scroll pane yo");
+                    p.setPrefHeight(1000);
+                    p.setPrefWidth(1000);
+                    ScrollPane s = new ScrollPane(p);
+                    return s;
+                }
+
+                @Override
+                public Skin<ScrollPane> createSkin(ScrollPane control) {
+                    class QQScrollPaneSkin extends ScrollPaneSkin {
+                        public QQScrollPaneSkin(ScrollPane control) {
+                            super(control);
+                        }
+                    }
+                    return new QQScrollPaneSkin(control);
                 }
             };
             
