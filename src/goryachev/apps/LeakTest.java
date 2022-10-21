@@ -6,6 +6,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -26,9 +27,11 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Pagination;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Skin;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
@@ -497,15 +500,17 @@ public class LeakTest extends Application {
                 public TableView createNode() {
                     TableView t = new TableView();
                     t.getColumns().addAll(
-                        new TableColumn("Key"),
-                        new TableColumn("Value"),
-                        new TableColumn("Goats per Second")
+                        tableColumn("Key"),
+                        tableColumn("Value"),
+                        tableColumn("Goats per Second")
                     );
                     t.getItems().addAll(
                         "",
                         " ",
                         "  "
                     );
+                    t.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+                    t.getSelectionModel().setCellSelectionEnabled(true);
                     return t;
                 }
 
@@ -636,5 +641,31 @@ public class LeakTest extends Application {
             
             currentStage = st;
         });
+    }
+    
+    protected static TableColumn tableColumn(String name) {
+        TableColumn c = new TableColumn(name);
+        c.setCellValueFactory((f) -> {
+            return f == null ? null : new SimpleStringProperty("yo");
+        });
+        c.setCellFactory((cell) -> {
+            return new TableCell() {
+                @Override
+                protected void updateItem(Object item, boolean empty) {
+//                    if (item == getItem()) {
+//                        return;
+//                    }
+
+                    super.updateItem(item, empty);
+
+                    if (item == null) {
+                        super.setText(null);
+                    } else {
+                        super.setText("yo");
+                    }
+                }
+            };
+        });
+        return c;
     }
 }
