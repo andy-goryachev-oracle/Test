@@ -83,6 +83,11 @@ public class LeakTest extends Application {
     protected final Type WE_ARE_TESTING = Type.PAGINATION;
     private Stage currentStage;
     private BorderPane rootPane;
+    private BorderPane content;
+    private ComboBox<Type> choiceField;
+    private Type type;
+    private Test test;
+    private Control control;
     
     interface Test<T extends Control> {
         public T createNode();
@@ -96,7 +101,51 @@ public class LeakTest extends Application {
     
     @Override
     public void start(final Stage stage) throws Exception {
-        createStage(stage, createTest(WE_ARE_TESTING));
+        Button replaceSkinButton = new Button("Replace Skin");
+        replaceSkinButton.setOnAction(e -> {
+            replaceSkin();
+        });
+        
+        Button newWindowButton = new Button("New Window");
+        
+        Button clearButton = new Button("Remove Controls");
+        
+        content = new BorderPane();
+        
+        choiceField = new ComboBox<Type>();
+        choiceField.getItems().addAll(Type.values());
+        
+        HBox tb = new HBox(
+            5,
+            choiceField,
+            replaceSkinButton,
+            newWindowButton,
+            clearButton
+        );
+            
+        rootPane = new BorderPane();
+        rootPane.setTop(tb);
+        rootPane.setCenter(content);
+
+        Scene scene = new Scene(rootPane, 800, 600);
+        
+        currentStage = stage;
+        stage.setScene(scene);
+        stage.show();
+        
+        updateTitle();
+        
+        newWindowButton.setOnAction(e -> {
+            newWindow();
+        });
+        
+        clearButton.setOnAction(e -> {
+            clearControl();
+        });
+        
+        choiceField.getSelectionModel().selectedItemProperty().addListener((s,p,cur) -> {
+            setTest(cur);
+        });
     }
     
     public Test<?> createTest(Type t) {
@@ -432,67 +481,37 @@ public class LeakTest extends Application {
         }
     }
     
-    protected <T extends Control> void createStage(Stage stage, Test<T> test) {
-        T c = test.createNode();
-        c.setFocusTraversable(true);
-         
-        Button replaceSkinButton = new Button("Replace Skin");
-        replaceSkinButton.setOnAction(e -> {
-            //System.out.println("before: " + c.getChildrenUnmodifiable());
-            c.setSkin(test.createSkin(c));
-            //System.out.println("after:  " + c.getChildrenUnmodifiable());
-        });
-        
-        Button newWindowButton = new Button("New Window");
-        
-        Button clearButton = new Button("Remove Controls");
-        
-        HBox bp = new HBox(
-            replaceSkinButton,
-            newWindowButton,
-            clearButton
-            );
-        
-        rootPane = new BorderPane();
-        // FIX rootPane.setTop(cm());
-        rootPane.setTop(c);
-        rootPane.setBottom(bp);
-
-        Scene scene = new Scene(rootPane, 800, 600);
-        
-        currentStage = stage;
-        stage.setScene(scene);
-        stage.setTitle("Skin Change Memory Leak Test - " + WE_ARE_TESTING + " - " + System.getProperty("java.version"));
-        stage.show();
-        
-        newWindowButton.setOnAction(e -> {
-            newWindow();
-        });
-        
-        clearButton.setOnAction(e -> {
-            rootPane.setTop(null);
-            replaceSkinButton.setOnAction(null);
-        });
+    protected void clearControl() {
+        content.setCenter(null);
     }
     
-    @Deprecated // not used anymore
-    protected MenuBar cm() {
-        Menu menu1 = new Menu("Menu1");
-        Menu menu2 = new Menu("Menu2");
-        Menu menu3 = new Menu("Menu3");
-
-        MenuItem menuItem1 = new MenuItem("MenuItem1");
-        MenuItem menuItem2 = new MenuItem("MenuItem2");
-        MenuItem menuItem3 = new MenuItem("MenuItem3");
-
-        menu1.getItems().add(menuItem1);
-        menu2.getItems().add(menuItem2);
-        menu3.getItems().add(menuItem3);
-
-        MenuBar mb = new MenuBar();
-        mb.getMenus().addAll(menu1, menu2, menu3);
-        menu2.setDisable(true);
-        return mb;
+    protected void replaceSkin() {
+        content.setCenter(control);
+        //System.out.println("before: " + c.getChildrenUnmodifiable());
+        control.setSkin(test.createSkin(control));
+        //System.out.println("after:  " + c.getChildrenUnmodifiable());
+    }
+    
+    protected void setTest(Type t) {
+        type = t;
+        test = createTest(t);
+        control = test.createNode();
+        control.setFocusTraversable(true);
+        
+        content.setCenter(control);
+        updateTitle();
+    }
+    
+    protected void updateTitle() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Skin Change Memory Leak Test ");
+        if(type != null) {
+            sb.append("- ");
+            sb.append(type);
+            sb.append(" - ");
+        }
+        sb.append(System.getProperty("java.version"));
+        currentStage.setTitle(sb.toString());
     }
     
     protected void newWindow() {
