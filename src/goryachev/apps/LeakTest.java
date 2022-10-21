@@ -56,12 +56,13 @@ import javafx.util.Duration;
  * 
  * To test using VisualVM:
  * - launch the app
+ * - select the control to test
  * - exercise control functionality
  * - click on [Change Skin] button as many times as you like
  * - exercise control some more
  * - in VisualVM, Monitor -> [Perform GC] -> [Heap Dump]
  * - in heap dump, select Objects pulldown (instead of Summary)
- * - type in Class Filter: "qq" (all dummy skin classes are named starting with QQ)
+ * - type in Class Filter: "qq" (notice how all dummy skin classes are named starting with QQ)
  */
 public class LeakTest extends Application {
     
@@ -504,10 +505,15 @@ public class LeakTest extends Application {
     }
     
     protected void clearControl() {
+        control = null;
         content.setCenter(null);
     }
     
     protected void replaceSkin() {
+        if(control == null) {
+            setTest(type);
+        }
+        
         content.setCenter(control);
         //System.out.println("before: " + c.getChildrenUnmodifiable());
         control.setSkin(test.createSkin(control));
