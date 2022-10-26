@@ -37,6 +37,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableCell;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.skin.AccordionSkin;
@@ -559,9 +560,15 @@ public class LeakTest extends Application {
                     
                     TreeTableView t = new TreeTableView(root);
                     t.getColumns().addAll(
-                        new TreeTableColumn("Key"),
-                        new TreeTableColumn("Value"),
-                        new TreeTableColumn("Goats per Second")
+                        treeTableColumn("Key"),
+                        treeTableColumn("Value"),
+                        treeTableColumn("Goats per Second"),
+                        treeTableColumn("1"),
+                        treeTableColumn("2"),
+                        treeTableColumn("3"),
+                        treeTableColumn("4"),
+                        treeTableColumn("5"),
+                        treeTableColumn("6")
                     );
                     return t;
                 }
@@ -652,10 +659,6 @@ public class LeakTest extends Application {
             return new TableCell() {
                 @Override
                 protected void updateItem(Object item, boolean empty) {
-//                    if (item == getItem()) {
-//                        return;
-//                    }
-
                     super.updateItem(item, empty);
 
                     if (item == null) {
@@ -666,6 +669,29 @@ public class LeakTest extends Application {
                 }
             };
         });
+        return c;
+    }
+    
+    protected static TreeTableColumn treeTableColumn(String name) {
+        TreeTableColumn c = new TreeTableColumn(name);
+        c.setCellValueFactory((f) -> {
+            return f == null ? null : new SimpleStringProperty("yo");
+        });
+        c.setCellFactory((cell) -> {
+            return new TreeTableCell() {
+                @Override
+                protected void updateItem(Object item, boolean empty) {
+                    super.updateItem(item, empty);
+
+                    if (item == null) {
+                        super.setText(null);
+                    } else {
+                        super.setText("yo");
+                    }
+                }
+            };
+        });
+        c.setPrefWidth(200);
         return c;
     }
 }
