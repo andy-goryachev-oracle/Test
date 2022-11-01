@@ -1,5 +1,6 @@
 // Copyright © 2018-2019 Andy Goryachev <andy@goryachev.com>
 // https://github.com/andy-goryachev/JavaBugs/blob/master/src/goryachev/bugs/fx/DualFocus.java
+// https://bugs.openjdk.org/browse/JDK-8292933
 package goryachev.apps;
 import javafx.application.Application;
 import javafx.geometry.Point2D;
