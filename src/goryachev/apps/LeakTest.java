@@ -1,7 +1,6 @@
 package goryachev.apps;
 
 import java.time.LocalDate;
-
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -34,6 +33,7 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeItem;
@@ -53,6 +53,7 @@ import javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.scene.control.skin.SplitMenuButtonSkin;
 import javafx.scene.control.skin.SplitPaneSkin;
 import javafx.scene.control.skin.TableViewSkin;
+import javafx.scene.control.skin.TextAreaSkin;
 import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.control.skin.TreeTableViewSkin;
 import javafx.scene.layout.BorderPane;
@@ -91,6 +92,7 @@ public class LeakTest extends Application {
         SPLIT_MENU_BUTTON,
         SPLIT_PANE,
         TABLE_VIEW,
+        TEXT_AREA,
         TEXT_FIELD,
         TREE_TABLE_VIEW
     }
@@ -523,6 +525,24 @@ public class LeakTest extends Application {
                         }
                     }
                     return new QQTableViewSkin(control);
+                }
+            };
+            
+        case TEXT_AREA:
+            return new Test<TextArea>() {
+                @Override
+                public TextArea createNode() {
+                    return new TextArea();
+                }
+
+                @Override
+                public Skin<TextArea> createSkin(TextArea control) {
+                    class QQTextAreaSkin extends TextAreaSkin {
+                        public QQTextAreaSkin(TextArea control) {
+                            super(control);
+                        }
+                    }
+                    return new QQTextAreaSkin(control);
                 }
             };
             
