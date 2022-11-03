@@ -44,7 +44,7 @@ import javafx.stage.Stage;
  */
 public class UnicodeFail extends Application {
     public enum Demo {
-        ARABIC,
+        ARABIC, // JDK-8296342 TextArea/Text: Fails to render Arabic
         BROKEN_NAV, // JDK-8296266 Navigation breaks for complex unicode strings
     }
 
