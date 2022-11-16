@@ -75,7 +75,7 @@ public class TestEnsemble extends Application {
 
     protected void updatePage(DemoPage p) {
         currentPage = p;
-        contentPane.setCenter(p.createPane());
+        contentPane.setCenter(p == null ? null : p.createPane());
         updateTitle();
     }
     

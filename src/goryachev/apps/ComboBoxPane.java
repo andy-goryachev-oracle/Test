@@ -24,8 +24,11 @@
  */
 package goryachev.apps;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 
 /**
@@ -36,7 +39,7 @@ public class ComboBoxPane extends ToolPane {
 
     public ComboBoxPane() {
         comboBox = new ComboBox();
-        comboBox.getItems().addAll("0","1","2","3","4","5","6","7","8","9");
+        comboBox.getItems().setAll("0","1","2","3","4","5","6","7","8","9");
         
         VBox b = new VBox();
         b.getChildren().add(comboBox);
@@ -55,6 +58,23 @@ public class ComboBoxPane extends ToolPane {
                     return "fromString" + t;
                 }
             });
+        });
+        
+        addButton("Change Item Count", () -> {
+            new Timeline(
+                new KeyFrame(Duration.seconds(1.0), (ev) -> {
+                    System.out.println("2");
+                    comboBox.setVisibleRowCount(2);
+                }),
+                new KeyFrame(Duration.seconds(2.0), (ev) -> {
+                    System.out.println("20");
+                    comboBox.setVisibleRowCount(20);
+                }),
+                new KeyFrame(Duration.seconds(3.0), (ev) -> {
+                    System.out.println("2");
+                    comboBox.setVisibleRowCount(2);
+                })
+            ).play();
         });
     }
 }
