@@ -34,10 +34,10 @@ import javafx.util.StringConverter;
 /**
  *
  */
-public class ComboBoxPane extends ToolPane {
+public class ComboBoxPage extends ToolPane {
     private ComboBox comboBox;
 
-    public ComboBoxPane() {
+    public ComboBoxPage() {
         comboBox = new ComboBox();
         comboBox.getItems().setAll("0","1","2","3","4","5","6","7","8","9");
         

@@ -92,7 +92,8 @@ public class TestEnsemble extends Application {
     
     protected DemoPage[] createPages() {
         return new DemoPage[] {
-            new DemoPage("ComboBox", () -> new ComboBoxPane()),
+            new DemoPage("ComboBox", ComboBoxPage::new),
+            new DemoPage("HtmlEditor", HtmlEditorPage::new),
             new DemoPage("NULL", () -> null)
         };
     }
