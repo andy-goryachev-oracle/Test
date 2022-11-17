@@ -94,7 +94,7 @@ public class TestEnsemble extends Application {
         return new DemoPage[] {
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("HtmlEditor", HtmlEditorPage::new),
-            new DemoPage("NULL", () -> null)
+            new DemoPage("TableView", TableViewPage::new),
         };
     }
 }
