@@ -297,7 +297,12 @@ public class UnicodeFail extends Application {
                   + "rYEcNGAbVA4Ksm/bGsiLBmyDyou27Lq2BnLQgG1QOSjIvm1rIC8asA0qL9qy69oayEEDtkHl"
                   + "oCD7tq2BvGjANqi8aMuua2sgBw3YBpWDguzbtgbyogHboPKiLbuurYEcNPA/hiPAN+sqVBQA"
                   + "AAAASUVORK5CYII=");
-            return new ImageView(new Image(new ByteArrayInputStream(b)));
+            //return new ImageView(new Image(new ByteArrayInputStream(b)));
+            String s = Base64.getEncoder().encodeToString(b);
+            String url =
+                "data:image/png;base64," + s;
+                //"data:image/png," + s;
+            return new ImageView(new Image(url));
         case BROKEN_NAV:
             return 
                 "To reproduce:\n" +
