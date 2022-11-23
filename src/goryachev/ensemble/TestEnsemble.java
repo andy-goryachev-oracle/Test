@@ -22,8 +22,10 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.apps;
+package goryachev.ensemble;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -91,10 +93,18 @@ public class TestEnsemble extends Application {
     }
     
     protected DemoPage[] createPages() {
-        return new DemoPage[] {
+        DemoPage[] pages = new DemoPage[] {
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("HtmlEditor", HtmlEditorPage::new),
             new DemoPage("TableView", TableViewPage::new),
+            new DemoPage("Dual Focus", DualFocusPage::new),
         };
+        Arrays.sort(pages, new Comparator<DemoPage>() {
+            @Override
+            public int compare(DemoPage a, DemoPage b) {
+                return a.getTitle().compareTo(b.getTitle());
+            }
+        });
+        return pages;
     }
 }
