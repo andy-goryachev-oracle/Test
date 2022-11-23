@@ -24,7 +24,7 @@
  */
 package goryachev.ensemble.pages;
 
-import goryachev.apps.ToolPane;
+import goryachev.ensemble.util.ToolPane;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;

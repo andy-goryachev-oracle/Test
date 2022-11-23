@@ -24,7 +24,7 @@
  */
 package goryachev.ensemble.pages;
 
-import goryachev.apps.ToolPane;
+import goryachev.ensemble.util.ToolPane;
 import javafx.scene.web.HTMLEditor;
 
 /**

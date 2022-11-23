@@ -3,7 +3,7 @@
 // https://bugs.openjdk.org/browse/JDK-8292933
 package goryachev.ensemble.pages;
 
-import goryachev.apps.ToolPane;
+import goryachev.ensemble.util.ToolPane;
 import javafx.geometry.Point2D;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.PopupControl;

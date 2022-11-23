@@ -33,7 +33,7 @@ public class AllPages {
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("HtmlEditor", HtmlEditorPage::new),
             new DemoPage("TableView", TableViewPage::new),
-            new DemoPage("Dual Focus", DualFocusPage::new),
+            new DemoPage("Dual Focus JDK-8292933", DualFocusPage::new),
         };
     }
 }
