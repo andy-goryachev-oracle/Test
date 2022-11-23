@@ -26,6 +26,8 @@ package goryachev.ensemble;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import goryachev.ensemble.pages.AllPages;
+import goryachev.ensemble.pages.DemoPage;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,9 +38,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
- * Test Ensemble
+ * Test Ensemble Application
  */
-public class TestEnsemble extends Application {
+public class TestEnsembleApp extends Application {
     
     protected Stage stage;
     protected ObservableList<DemoPage> pages = FXCollections.observableArrayList();
@@ -47,7 +49,7 @@ public class TestEnsemble extends Application {
     protected DemoPage currentPage;
     
     public static void main(String[] args) {
-        Application.launch(TestEnsemble.class, args);
+        Application.launch(TestEnsembleApp.class, args);
     }
 
     @Override
@@ -93,12 +95,7 @@ public class TestEnsemble extends Application {
     }
     
     protected DemoPage[] createPages() {
-        DemoPage[] pages = new DemoPage[] {
-            new DemoPage("ComboBox", ComboBoxPage::new),
-            new DemoPage("HtmlEditor", HtmlEditorPage::new),
-            new DemoPage("TableView", TableViewPage::new),
-            new DemoPage("Dual Focus", DualFocusPage::new),
-        };
+        DemoPage[] pages = AllPages.create();
         Arrays.sort(pages, new Comparator<DemoPage>() {
             @Override
             public int compare(DemoPage a, DemoPage b) {

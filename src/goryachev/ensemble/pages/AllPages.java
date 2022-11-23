@@ -22,32 +22,18 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.ensemble;
-
-import java.util.function.Supplier;
-import javafx.scene.layout.Pane;
+package goryachev.ensemble.pages;
 
 /**
  *
  */
-public class DemoPage {
-    private final String title;
-    private final Supplier<Pane> generator;
-    
-    public DemoPage(String title, Supplier<Pane> generator) {
-        this.title = title;
-        this.generator = generator;
-    }
-    
-    public Pane createPane() {
-        return generator.get();
-    }
-    
-    public String toString() {
-        return title;
-    }
-
-    public String getTitle() {
-        return title;
+public class AllPages {
+    public static DemoPage[] create() {
+        return new DemoPage[] {
+            new DemoPage("ComboBox", ComboBoxPage::new),
+            new DemoPage("HtmlEditor", HtmlEditorPage::new),
+            new DemoPage("TableView", TableViewPage::new),
+            new DemoPage("Dual Focus", DualFocusPage::new),
+        };
     }
 }
