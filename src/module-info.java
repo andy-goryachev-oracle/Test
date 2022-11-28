@@ -10,4 +10,5 @@ module andy_test {
     requires javafx.graphics;
     requires javafx.web;
     requires java.desktop;
+    requires javafx.swing;
 }
