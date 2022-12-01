@@ -1,6 +1,7 @@
 module andy_test {
     exports goryachev.apps;
     exports goryachev.research;
+    exports goryachev.rich;
     exports goryachev.test;
     exports goryachev.util;
 
