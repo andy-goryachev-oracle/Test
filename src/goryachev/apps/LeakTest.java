@@ -126,6 +126,8 @@ public class LeakTest extends Application {
         
         Button clearButton = new Button("Remove Controls");
         
+        Button cloneButton = new Button("Clone Window");
+        
         content = new BorderPane();
         
         choiceField = new ComboBox<Type>();
@@ -136,7 +138,8 @@ public class LeakTest extends Application {
             choiceField,
             replaceSkinButton,
             newWindowButton,
-            clearButton
+            clearButton,
+            cloneButton
         );
             
         rootPane = new BorderPane();
@@ -157,6 +160,10 @@ public class LeakTest extends Application {
         
         clearButton.setOnAction(e -> {
             clearControl();
+        });
+        
+        cloneButton.setOnAction(e -> {
+            cloneWindow();
         });
         
         choiceField.getSelectionModel().selectedItemProperty().addListener((s,p,cur) -> {
@@ -297,7 +304,7 @@ public class LeakTest extends Application {
                     m2.getItems().add(new MenuItem("item 22"));
                     m2.getItems().add(new MenuItem("item 23"));
                     m2.getItems().add(mi = new MenuItem("With Action"));
-                    mi.setOnAction((ev) -> System.out.println("yo, action!"));
+                    mi.setOnAction((ev) -> System.out.println("yo, action!" + mi));
                     return b;
                 }
 
@@ -635,7 +642,7 @@ public class LeakTest extends Application {
         updateTitle();
     }
     
-    protected void updateTitle() {
+    protected String generateTitle() {
         StringBuilder sb = new StringBuilder();
         sb.append("Skin Change Memory Leak Test ");
         if(type != null) {
@@ -644,7 +651,12 @@ public class LeakTest extends Application {
             sb.append(" - ");
         }
         sb.append(System.getProperty("java.version"));
-        currentStage.setTitle(sb.toString());
+        return sb.toString();
+    }
+    
+    protected void updateTitle() {
+        String title = generateTitle();
+        currentStage.setTitle(title);
     }
     
     protected void newWindow() {
@@ -667,6 +679,29 @@ public class LeakTest extends Application {
             currentStage.hide();
             
             currentStage = st;
+        });
+    }
+    
+    protected void cloneWindow() {
+        Scene oldScene = currentStage.getScene();
+        
+        Platform.runLater(() -> {
+            Test test = createTest(type);
+            Node control = test.createNode();
+            control.setFocusTraversable(true);
+            BorderPane root = new BorderPane();
+            root.setCenter(control);
+
+            Scene s = new Scene(root, oldScene.getWidth(), oldScene.getHeight());
+            Stage st = new Stage();
+            st.setScene(s);
+            st.setTitle(currentStage.getTitle());
+            st.setWidth(currentStage.getWidth());
+            st.setHeight(currentStage.getHeight());
+            st.setX(currentStage.getX() + 5);
+            st.setY(currentStage.getY() + 5);
+            st.setTitle(generateTitle());
+            st.show();
         });
     }
     
