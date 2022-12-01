@@ -22,16 +22,18 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.apps;
-
-import javafx.scene.web.HTMLEditor;
+package goryachev.ensemble.pages;
 
 /**
  *
  */
-public class HtmlEditorPage extends ToolPane {
-    public HtmlEditorPage() {
-        HTMLEditor ed = new HTMLEditor();
-        setCenter(ed);
+public class AllPages {
+    public static DemoPage[] create() {
+        return new DemoPage[] {
+            new DemoPage("ComboBox", ComboBoxPage::new),
+            new DemoPage("HtmlEditor", HtmlEditorPage::new),
+            new DemoPage("TableView", TableViewPage::new),
+            new DemoPage("Dual Focus JDK-8292933", DualFocusPage::new),
+        };
     }
 }

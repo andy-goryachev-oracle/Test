@@ -1,5 +1,6 @@
 module andy_test {
     exports goryachev.apps;
+    exports goryachev.ensemble;
     exports goryachev.research;
     exports goryachev.rich;
     exports goryachev.test;
@@ -10,4 +11,5 @@ module andy_test {
     requires javafx.graphics;
     requires javafx.web;
     requires java.desktop;
+    requires javafx.swing;
 }
