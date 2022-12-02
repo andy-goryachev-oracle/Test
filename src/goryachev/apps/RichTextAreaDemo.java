@@ -22,20 +22,44 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.apps;
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+
+import goryachev.rich.RichTextArea;
 
 /**
- * Behavior.
- * FIX BehaviorBase and InputMap are not public!
+ * RichTextArea demo.
  */
-public class RichTextAreaBehavior {
-    private final RichTextArea textArea;
-
-    public RichTextAreaBehavior(RichTextArea textArea) {
-        this.textArea = textArea;
+public class RichTextAreaDemo extends Application {
+    public static void main(String[] args) {
+        Application.launch(RichTextAreaDemo.class, args);
     }
-    
-    public void dispose() {
-        // TODO
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        RichTextArea textField = new RichTextArea();
+        
+        MenuBar mb = new MenuBar();
+        FX.menu(mb, "File");
+        FX.item(mb, "Quit", () -> Platform.exit());
+        
+        Label status = new Label();
+        
+        BorderPane bp = new BorderPane();
+        bp.setTop(mb);
+        bp.setCenter(textField);
+        bp.setBottom(status);
+
+        stage.setScene(new Scene(bp));
+        stage.setTitle("RichTextArea Demo " + System.getProperty("java.version"));
+        stage.setWidth(800);
+        stage.setHeight(500);
+        stage.show();
     }
 }

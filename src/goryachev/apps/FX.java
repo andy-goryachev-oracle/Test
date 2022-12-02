@@ -22,20 +22,28 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.apps;
+
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 
 /**
- * Behavior.
- * FIX BehaviorBase and InputMap are not public!
+ * Poor man replacement of my FX hacks.
  */
-public class RichTextAreaBehavior {
-    private final RichTextArea textArea;
-
-    public RichTextAreaBehavior(RichTextArea textArea) {
-        this.textArea = textArea;
+public class FX {
+    public static Menu menu(MenuBar mb, String text) {
+        Menu m = new Menu(text);
+        mb.getMenus().add(m);
+        return m;
     }
-    
-    public void dispose() {
-        // TODO
+
+    public static MenuItem item(MenuBar mb, String text, Runnable action) {
+        int ct = mb.getMenus().size();
+        Menu m = mb.getMenus().get(ct - 1);
+        MenuItem mi = new MenuItem(text);
+        mi.setOnAction((ev) -> action.run());
+        m.getItems().add(mi);
+        return mi;
     }
 }

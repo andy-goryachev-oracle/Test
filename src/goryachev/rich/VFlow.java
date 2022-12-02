@@ -24,18 +24,43 @@
  */
 package goryachev.rich;
 
-/**
- * Behavior.
- * FIX BehaviorBase and InputMap are not public!
- */
-public class RichTextAreaBehavior {
-    private final RichTextArea textArea;
+import javafx.scene.layout.Region;
+import javafx.scene.shape.Rectangle;
 
-    public RichTextAreaBehavior(RichTextArea textArea) {
-        this.textArea = textArea;
+/**
+ * Virtual text flow, manages text LineBoxes, scroll bars, and conversion
+ * between model and screen coordinates.
+ * 
+ * TODO specific for the rich text control, or generic for any kind of virtual
+ * flow?
+ */
+public class VFlow extends Region {
+    private final RichTextArea control;
+    private final Rectangle clip;
+
+    public VFlow(RichTextArea control) {
+        this.control = control;
+
+        clip = new Rectangle();
+        setClip(clip);
     }
-    
-    public void dispose() {
+
+    @Override
+    protected void layoutChildren() {
+        populate();
+        updateCaretAndSelection();
+    }
+
+    public void populate() {
+        double height = getHeight();
+        clip.setWidth(getWidth());
+        clip.setHeight(height);
+
+        StyledTextModel model = control.getModel();
+        // TODO
+    }
+
+    public void updateCaretAndSelection() {
         // TODO
     }
 }

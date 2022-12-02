@@ -24,9 +24,11 @@
  */
 package goryachev.rich;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.Control;
@@ -34,20 +36,27 @@ import javafx.scene.control.Control;
 public class RichTextArea extends Control {
     private ObjectProperty<StyledTextModel> model;
     private final ReadOnlyIntegerWrapper currentLine = new ReadOnlyIntegerWrapper(-1);
+    private final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(true);
+    private final SimpleBooleanProperty wrapLinesProperty = new SimpleBooleanProperty();
 
     public RichTextArea() {
         getStyleClass().add("rich-text-area");
         getStyleClass().add("text-input");
         setAccessibleRole(AccessibleRole.TEXT_AREA);
-        setSkin(new RichTextAreaSkin(this));
+        setSkin(createDefaultSkin());
+    }
+
+    @Override
+    protected RichTextAreaSkin createDefaultSkin() {
+        return new RichTextAreaSkin(this);
     }
 
     public void setModel(StyledTextModel m) {
-        model.set(m);
+        modelProperty().set(m);
     }
 
     public StyledTextModel getModel() {
-        return model.get();
+        return (model == null ? null : model.get());
     }
 
     public ObjectProperty<StyledTextModel> modelProperty() {
@@ -60,6 +69,30 @@ public class RichTextArea extends Control {
             };
         }
         return model;
+    }
+    
+    public void setWrapLines(boolean on) {
+        wrapLinesProperty.set(on);
+    }
+
+    public boolean isWrapLines() {
+        return wrapLinesProperty.get();
+    }
+
+    public BooleanProperty wrapLinesProperty() {
+        return wrapLinesProperty;
+    }
+    
+    public void setDisplayCaret(boolean on) {
+        displayCaretProperty.set(on);
+    }
+
+    public boolean isDisplayCaret() {
+        return displayCaretProperty.get();
+    }
+
+    public BooleanProperty displayCaretProperty() {
+        return displayCaretProperty;
     }
     
     public int getCurrentLine() {
