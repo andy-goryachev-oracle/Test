@@ -55,7 +55,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         hscroll.setMin(0.0);
         hscroll.setMax(1.0);
         hscroll.addEventFilter(ScrollEvent.ANY, (ev) -> ev.consume());
-        hscroll.visibleProperty().bind(control.wrapLinesProperty().not());
+        hscroll.visibleProperty().bind(control.wrapTextProperty().not());
         
         getChildren().addAll(vflow, vscroll, hscroll);
         
