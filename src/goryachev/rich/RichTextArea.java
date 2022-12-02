@@ -52,9 +52,11 @@ public class RichTextArea extends Control {
 
     public RichTextArea() {
         getStyleClass().add("rich-text-area");
-        getStyleClass().add("text-input");
         setAccessibleRole(AccessibleRole.TEXT_AREA);
         setSkin(createDefaultSkin());
+        // TODO move to main stylesheet
+        // TODO focus border around content area, not the whole thing?
+        getStylesheets().add(Util.getResourceURL(getClass(), "RichTextArea.css"));
     }
 
     @Override

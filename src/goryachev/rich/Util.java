@@ -30,7 +30,6 @@ import java.util.List;
 
 import javafx.css.CssMetaData;
 import javafx.css.Styleable;
-import javafx.scene.control.Control;
 
 /**
  * Utility methods to be moved to com.sun.javafx hierarchy.
@@ -55,5 +54,13 @@ public class Util {
             rv.add(p);
         }
         return Collections.unmodifiableList(rv);
+    }
+
+    public static String getResourceURL(Class<?> c, String name) {
+        String pkg = c.getPackage().getName().replace(".", "/");
+        if (pkg.length() != 0) {
+            name = "/" + pkg + "/" + name;
+        }
+        return c.getResource(name).toExternalForm();
     }
 }

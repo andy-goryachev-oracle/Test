@@ -95,7 +95,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
 
         double hscrollHeight = 0.0;
         if (hscroll.isVisible()) {
-            hscrollHeight = vscroll.prefWidth(-1);
+            hscrollHeight = hscroll.prefHeight(-1);
         }
         
         double w = snapSizeX(width - vscrollWidth - 1.0);
