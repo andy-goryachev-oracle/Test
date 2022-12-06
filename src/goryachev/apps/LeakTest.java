@@ -30,6 +30,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Skin;
 import javafx.scene.control.Slider;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableCell;
@@ -54,6 +55,7 @@ import javafx.scene.control.skin.PaginationSkin;
 import javafx.scene.control.skin.ScrollBarSkin;
 import javafx.scene.control.skin.ScrollPaneSkin;
 import javafx.scene.control.skin.SliderSkin;
+import javafx.scene.control.skin.SpinnerSkin;
 import javafx.scene.control.skin.SplitMenuButtonSkin;
 import javafx.scene.control.skin.SplitPaneSkin;
 import javafx.scene.control.skin.TableViewSkin;
@@ -94,6 +96,7 @@ public class LeakTest extends Application {
         SCROLL_BAR,
         SCROLL_PANE,
         SLIDER,
+        SPINNER,
         SPLIT_MENU_BUTTON,
         SPLIT_PANE,
         TABLE_VIEW,
@@ -470,6 +473,24 @@ public class LeakTest extends Application {
                         }
                     }
                     return new QQSliderSkin(control);
+                }
+            };
+            
+        case SPINNER:
+            return new Test<Spinner>() {
+                @Override
+                public Spinner createNode() {
+                    return new Spinner(-10, 10, 0);
+                }
+
+                @Override
+                public Skin<Spinner> createSkin(Spinner control) {
+                    class QQSpinnerSkin extends SpinnerSkin {
+                        public QQSpinnerSkin(Spinner control) {
+                            super(control);
+                        }
+                    }
+                    return new QQSpinnerSkin(control);
                 }
             };
             
