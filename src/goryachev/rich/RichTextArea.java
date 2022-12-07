@@ -63,6 +63,7 @@ public class RichTextArea extends Control {
     private final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(true);
 
     public RichTextArea() {
+        setFocusTraversable(true);
         getStyleClass().add("rich-text-area");
         setAccessibleRole(AccessibleRole.TEXT_AREA);
         setSkin(createDefaultSkin());

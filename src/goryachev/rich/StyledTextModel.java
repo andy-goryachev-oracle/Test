@@ -26,9 +26,15 @@ package goryachev.rich;
 
 import javafx.collections.ObservableList;
 
+/**
+ * Represents a line-oriented styled text model.
+ * 
+ * TODO events
+ * TODO listeners
+ * TODO editing
+ * TODO is read only
+ * TODO isModified()
+ */
 public interface StyledTextModel {
     public ObservableList<? extends StyledTextLine> getTextLines();
-    
-    // TODO events
-    // TODO listeners
 }

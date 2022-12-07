@@ -25,9 +25,11 @@
 package goryachev.apps;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -50,9 +52,6 @@ public class RichTextAreaDemo extends Application {
         RichTextArea textField = new RichTextArea();
         textField.setModel(m);
         textField.setWrapText(true);
-        textField.widthProperty().addListener((x) -> {
-           System.out.println(textField.getWidth()); 
-        });
         
         RichTextArea textField2 = new RichTextArea();
         textField2.setModel(m);
@@ -74,8 +73,10 @@ public class RichTextAreaDemo extends Application {
 //        VBox.setVgrow(textField2, Priority.ALWAYS);
 //        vb.getChildren().addAll(textField, textField2);
         
-        // FIX even this resizes slowly, why?
-        VerticalGridPane p = new VerticalGridPane(textField, textField2);
+        SplitPane p = new SplitPane(textField, textField2);
+        p.setOrientation(Orientation.VERTICAL);
+        
+        //VerticalGridPane p = new VerticalGridPane(textField, textField2);
         
         BorderPane bp = new BorderPane();
         bp.setTop(mb);

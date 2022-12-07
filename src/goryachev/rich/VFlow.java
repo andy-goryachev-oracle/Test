@@ -34,7 +34,7 @@ import javafx.scene.shape.Rectangle;
 
 /**
  * Virtual text flow, manages text LineBoxes, scroll bars, and conversion
- * between model and screen coordinates.
+ * between the model and the screen coordinates.
  * 
  * TODO specific for the rich text control, or generic for any kind of virtual
  * flow?
@@ -81,8 +81,6 @@ public class VFlow extends Region {
         double maxWidth = wrap ? width : -1;
         double unwrappedWidth = -1;
         
-        System.out.println("maxWidth=" + maxWidth);
-        
         // TODO size from previous layout
         ArrayList<LineBox> boxes = new ArrayList<>(32);
         for(int i=topBoxIndex; i<lines.size(); i++)
@@ -128,8 +126,6 @@ public class VFlow extends Region {
             // TODO actual box height might be different from h due to snapping?
             y += box.getPreferredHeight();
         }
-
-        // TODO
     }
 
     public void updateCaretAndSelection() {
