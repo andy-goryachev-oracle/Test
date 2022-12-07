@@ -32,7 +32,7 @@ import goryachev.rich.StyledTextModel;
 
 public class SimpleStyledTextModel implements StyledTextModel {
     private final ObservableList<StyledTextLine> lines = FXCollections.observableArrayList();
-    
+
     public SimpleStyledTextModel() {
     }
 
@@ -40,19 +40,25 @@ public class SimpleStyledTextModel implements StyledTextModel {
     public ObservableList<? extends StyledTextLine> getTextLines() {
         return lines;
     }
-    
-    public SimpleStyledTextModel addSegment(String text, String style, String ... css) {
-        if(lines.size() == 0) {
+
+    public SimpleStyledTextModel addSegment(String text, String style, String... css) {
+        if (lines.size() == 0) {
             lines.add(new SimpleStyledTextLine());
         }
-        
+
         SimpleStyledTextLine t = (SimpleStyledTextLine)lines.get(lines.size() - 1);
         t.addSegment(text, style, css);
         return this;
     }
-    
+
     public SimpleStyledTextModel nl() {
-        lines.add(new SimpleStyledTextLine());
+        return nl(1);
+    }
+
+    public SimpleStyledTextModel nl(int count) {
+        for (int i = 0; i < count; i++) {
+            lines.add(new SimpleStyledTextLine());
+        }
         return this;
     }
 }

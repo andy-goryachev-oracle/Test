@@ -10,3 +10,6 @@
     -fx-font-family: "Monospace";
 }
 
+.underline {
+    -fx-underline: true;
+}

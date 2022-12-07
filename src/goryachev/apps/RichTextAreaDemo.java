@@ -33,7 +33,6 @@ import javafx.stage.Stage;
 
 import goryachev.rich.RichTextArea;
 import goryachev.rich.StyledTextModel;
-import goryachev.rich.simple.SimpleStyledTextModel;
 import goryachev.util.VerticalGridPane;
 
 /**
@@ -46,7 +45,7 @@ public class RichTextAreaDemo extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        StyledTextModel m = createModel();
+        StyledTextModel m = new RichTextAreaDemoModel();
         
         RichTextArea textField = new RichTextArea();
         textField.setModel(m);
@@ -69,11 +68,13 @@ public class RichTextAreaDemo extends Application {
 //        g.add(new BorderPane(textField), 0, 0);
 //        g.add(new BorderPane(textField2), 0, 1);
         
+        // cannot do fill
 //        VBox vb = new VBox();
 //        VBox.setVgrow(textField, Priority.ALWAYS);
 //        VBox.setVgrow(textField2, Priority.ALWAYS);
 //        vb.getChildren().addAll(textField, textField2);
         
+        // FIX even this resizes slowly, why?
         VerticalGridPane p = new VerticalGridPane(textField, textField2);
         
         BorderPane bp = new BorderPane();
@@ -89,28 +90,5 @@ public class RichTextAreaDemo extends Application {
         stage.setWidth(800);
         stage.setHeight(500);
         stage.show();
-    }
-    
-    protected StyledTextModel createModel() {
-        String CODE = "code";
-        String RED = "red";
-        String GREEN = "green";
-
-        SimpleStyledTextModel m = new SimpleStyledTextModel();
-        m.addSegment("RichTextArea Demo", "-fx-font-size:200%;");
-        m.nl();
-        m.addSegment("This text is styled with inline style.", "-fx-font-size:100%; -fx-font-style:italic;");
-        m.nl();
-        m.addSegment("The following text is styled with a CSS stylesheet:", null, null);
-        m.nl().nl();
-        m.addSegment("/**", null, RED, CODE);
-        m.addSegment(" * RichTextArea demo.", null, RED, CODE);
-        m.addSegment(" */", null, RED, CODE).nl();
-        m.addSegment("public class ", null, GREEN, CODE);
-        m.addSegment("RichTextAreaDemo ", null, CODE);
-        m.addSegment("extends ", null, GREEN, CODE);
-        m.addSegment("Application {", null, CODE).nl();
-        m.addSegment("}", null, CODE).nl();
-        return m;
     }
 }

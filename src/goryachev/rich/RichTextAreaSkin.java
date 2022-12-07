@@ -88,6 +88,8 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     
     @Override
     protected void layoutChildren(double x0, double y0, double width, double height) {
+        System.out.println("skin w=" + width);
+        
         double vscrollWidth = 0.0;
         if (vscroll.isVisible()) {
             vscrollWidth = vscroll.prefWidth(-1);
