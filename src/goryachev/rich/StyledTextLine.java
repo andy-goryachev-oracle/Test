@@ -24,6 +24,12 @@
  */
 package goryachev.rich;
 
+/**
+ * Represents a single text line with styles ("a paragraph"?).
+ * Should be light-weight.
+ */
 public interface StyledTextLine {
 
+    /** creates Nodes representing the paragraph placed in a LineBox */
+    public LineBox createBox();
 }

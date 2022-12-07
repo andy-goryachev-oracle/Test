@@ -22,13 +22,33 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.rich.simple;
 
-import javafx.collections.ObservableList;
+import java.util.ArrayList;
 
-public interface StyledTextModel {
-    public ObservableList<? extends StyledTextLine> getTextLines();
+import goryachev.rich.LineBox;
+import goryachev.rich.StyledTextLine;
+
+public class SimpleStyledTextLine implements StyledTextLine {
+
+    public record Segment(String text, String style, String[] css) { }
+
+    private ArrayList<Segment> segments = new ArrayList<>();
+
+    public SimpleStyledTextLine() {
+    }
     
-    // TODO events
-    // TODO listeners
+    @Override
+    public LineBox createBox() {
+        LineBox b = new LineBox();
+        for(Segment s: segments) {
+            b.addSegment(s.text, s.style, s.css);
+        }
+        return b;
+    }
+
+    public void addSegment(String text, String style, String[] css) {
+        // TODO check for newlines/formfeeds in the text
+        segments.add(new Segment(text, style, css));
+    }
 }

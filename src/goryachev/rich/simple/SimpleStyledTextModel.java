@@ -22,13 +22,35 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.rich.simple;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public interface StyledTextModel {
-    public ObservableList<? extends StyledTextLine> getTextLines();
+import goryachev.rich.StyledTextLine;
+import goryachev.rich.StyledTextModel;
+
+public class SimpleStyledTextModel implements StyledTextModel {
+    private final ObservableList<StyledTextLine> lines = FXCollections.observableArrayList();
     
-    // TODO events
-    // TODO listeners
+    public SimpleStyledTextModel() {
+    }
+
+    @Override
+    public ObservableList<? extends StyledTextLine> getTextLines() {
+        return lines;
+    }
+    
+    public void addSegment(String text, String style, String ... css) {
+        if(lines.size() == 0) {
+            lines.add(new SimpleStyledTextLine());
+        }
+        
+        SimpleStyledTextLine t = (SimpleStyledTextLine)lines.get(lines.size() - 1);
+        t.addSegment(text, style, css);
+    }
+    
+    public void nl() {
+        lines.add(new SimpleStyledTextLine());
+    }
 }

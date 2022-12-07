@@ -32,6 +32,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import goryachev.rich.RichTextArea;
+import goryachev.rich.simple.SimpleStyledTextModel;
 
 /**
  * RichTextArea demo.
@@ -43,7 +44,15 @@ public class RichTextAreaDemo extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        SimpleStyledTextModel m = new SimpleStyledTextModel();
+        m.addSegment("RichTextArea Demo", "-fx-font-size:200%;");
+        m.nl();
+        m.addSegment("This text is styled with inline style.", "-fx-font-size:100%;");
+        m.nl();
+        m.addSegment("And this text line is styled with a different inline style.", "-fx-font-size:80%;");
+        
         RichTextArea textField = new RichTextArea();
+        textField.setModel(m);
         
         MenuBar mb = new MenuBar();
         FX.menu(mb, "File");

@@ -24,6 +24,10 @@
  */
 package goryachev.rich;
 
+import java.util.List;
+
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 
@@ -33,6 +37,9 @@ import javafx.scene.shape.Rectangle;
  * 
  * TODO specific for the rich text control, or generic for any kind of virtual
  * flow?
+ * 
+ * TODO an interface, to allow for different (optimized) implementations?
+ * TODO or a VFlowPolicy ?
  */
 public class VFlow extends Region {
     private final RichTextArea control;
@@ -55,8 +62,54 @@ public class VFlow extends Region {
         double height = getHeight();
         clip.setWidth(getWidth());
         clip.setHeight(height);
+        
+        getChildren().clear();
 
         StyledTextModel model = control.getModel();
+        List<? extends StyledTextLine> lines = model.getTextLines();
+        
+        double boxOffsetY = 0;
+        double boxOffsetX = 0;
+        int topBoxIndex = 0;
+        double x = boxOffsetX;
+        double y = boxOffsetY;
+        double width = getWidth();
+        
+        boolean wrap = control.isWrapText();
+        double maxWidth = wrap ? width : -1;
+        double unwrappedWidth = -1;
+        
+        for(int i=topBoxIndex; i<lines.size(); i++)
+        {
+            // TODO can use cache
+            StyledTextLine tline = lines.get(i);
+            LineBox box = tline.createBox();
+            Region r = box.getContent();
+                        
+            getChildren().add(r);
+            r.applyCss();
+            
+            r.setMaxWidth(maxWidth);
+            double h = r.prefHeight(maxWidth);
+            
+            if(!wrap) {
+                double w = r.prefWidth(-1);
+                if(unwrappedWidth < w) {
+                    unwrappedWidth = w;
+                }
+            }
+            
+            layoutInArea(r, x, y, width, h, 0, HPos.CENTER, VPos.CENTER);
+            
+            // TODO actual box height might be different from h due to snapping?
+            h = r.getHeight();
+            
+            y += h;
+            if(y > getHeight()) {
+                break;
+            }
+        }
+        
         // TODO
     }
 

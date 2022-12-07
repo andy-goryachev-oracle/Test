@@ -24,11 +24,24 @@
  */
 package goryachev.rich;
 
-import javafx.collections.ObservableList;
+import javafx.scene.layout.Region;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
-public interface StyledTextModel {
-    public ObservableList<? extends StyledTextLine> getTextLines();
-    
-    // TODO events
-    // TODO listeners
+public class LineBox {
+    private TextFlow flow = new TextFlow();
+
+    public LineBox() {
+    }
+
+    public Region getContent() {
+        return flow;
+    }
+
+    public void addSegment(String text, String style, String[] css) {
+        Text t = new Text(text);
+        t.setStyle(style);
+        t.getStyleClass().addAll(css);
+        flow.getChildren().add(t);
+    }
 }
