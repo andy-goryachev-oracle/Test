@@ -22,48 +22,30 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.util;
 
-import javafx.scene.layout.Region;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
+import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 
-public class LineBox {
-    private TextFlow flow = new TextFlow();
-    private double width;
-    private double height;
-
-    public LineBox() {
+public class VerticalGridPane extends Pane {
+    public VerticalGridPane(Node ... children) {
+        getChildren().addAll(children);
     }
-
-    public Region getContent() {
-        return flow;
-    }
-
-    public void addSegment(String text, String style, String[] css) {
-        Text t = new Text(text);
-        if (style != null) {
-            t.setStyle(style);
+    
+    protected void layoutChildren() {
+        double x = snappedLeftInset();
+        double y = snappedTopInset();
+        double w = getWidth() - snappedRightInset();
+        double h = getHeight() - snappedBottomInset();
+        
+        int count = getChildren().size();
+        double d = snapSizeY(h / count);
+        
+        for(int i=0; i<count; i++) {
+            Node ch = getChildren().get(i);
+            layoutInArea(ch, x, y + (i * d), w, d, -1, null, true, true, HPos.CENTER, VPos.CENTER);
         }
-        if (css != null) {
-            t.getStyleClass().addAll(css);
-        }
-        flow.getChildren().add(t);
-    }
-
-    public void setPreferredHeight(double height) {
-        this.height = height;
-    }
-
-    public double getPreferredHeight() {
-        return height;
-    }
-
-    public void setPreferredWidth(double width) {
-        this.width = width;
-    }
-
-    public double getPreferredWidth() {
-        return width;
     }
 }

@@ -9,7 +9,7 @@
     -fx-background-insets: 0, 1;
     -fx-background-radius: 3, 2;
     -fx-cursor: text;
-    -fx-padding: 0.333333em 0.583em 0.333333em 0.583em; /* 4 7 4 7 */
+    -fx-padding: 0;
 }
 
 .rich-text-area:disabled {

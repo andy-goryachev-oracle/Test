@@ -24,6 +24,7 @@
  */
 package goryachev.rich;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javafx.geometry.HPos;
@@ -68,6 +69,7 @@ public class VFlow extends Region {
         StyledTextModel model = control.getModel();
         List<? extends StyledTextLine> lines = model.getTextLines();
         
+        // TODO properties
         double boxOffsetY = 0;
         double boxOffsetX = 0;
         int topBoxIndex = 0;
@@ -79,11 +81,16 @@ public class VFlow extends Region {
         double maxWidth = wrap ? width : -1;
         double unwrappedWidth = -1;
         
+        System.out.println("maxWidth=" + maxWidth);
+        
+        // TODO size from previous layout
+        ArrayList<LineBox> boxes = new ArrayList<>(32);
         for(int i=topBoxIndex; i<lines.size(); i++)
         {
             // TODO can use cache
             StyledTextLine tline = lines.get(i);
             LineBox box = tline.createBox();
+            boxes.add(box);
             Region r = box.getContent();
                         
             getChildren().add(r);
@@ -91,15 +98,17 @@ public class VFlow extends Region {
             
             r.setMaxWidth(maxWidth);
             double h = r.prefHeight(maxWidth);
+            box.setPreferredHeight(h);
             
-            if(!wrap) {
+            if(wrap) {
+                box.setPreferredWidth(-1.0);
+            } else {
                 double w = r.prefWidth(-1);
+                box.setPreferredWidth(w);
                 if(unwrappedWidth < w) {
                     unwrappedWidth = w;
                 }
             }
-            
-            layoutInArea(r, x, y, width, h, 0, HPos.CENTER, VPos.CENTER);
             
             // TODO actual box height might be different from h due to snapping?
             h = r.getHeight();
@@ -110,6 +119,16 @@ public class VFlow extends Region {
             }
         }
         
+        for (LineBox box : boxes) {
+            Region r = box.getContent();
+            double w = wrap ? maxWidth : unwrappedWidth;
+            double h = box.getPreferredHeight();
+            layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
+
+            // TODO actual box height might be different from h due to snapping?
+            y += box.getPreferredHeight();
+        }
+
         // TODO
     }
 

@@ -101,8 +101,8 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         double w = snapSizeX(width - vscrollWidth - 1.0);
         double h = snapSizeY(height - hscrollHeight - 1.0);
         
-        layoutInArea(vscroll, w, y0 + 1.0, vscrollWidth, h, 0.0, null, true, true, HPos.RIGHT, VPos.TOP);
-        layoutInArea(hscroll, x0 + 1, h, w, hscrollHeight, 0.0, null, true, true, HPos.LEFT, VPos.BOTTOM);
-        layoutInArea(vflow, x0, y0, w, h, 0.0, null, true, true, HPos.LEFT, VPos.TOP);
+        layoutInArea(vscroll, w, y0 + 1.0, vscrollWidth, h, -1, null, true, true, HPos.RIGHT, VPos.TOP);
+        layoutInArea(hscroll, x0 + 1, h, w, hscrollHeight, -1, null, true, true, HPos.LEFT, VPos.BOTTOM);
+        layoutInArea(vflow, x0, y0, w, h, -1, null, true, true, HPos.LEFT, VPos.TOP);
     }
 }

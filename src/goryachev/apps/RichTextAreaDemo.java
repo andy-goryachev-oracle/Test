@@ -32,7 +32,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 import goryachev.rich.RichTextArea;
+import goryachev.rich.StyledTextModel;
 import goryachev.rich.simple.SimpleStyledTextModel;
+import goryachev.util.VerticalGridPane;
 
 /**
  * RichTextArea demo.
@@ -44,15 +46,17 @@ public class RichTextAreaDemo extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        SimpleStyledTextModel m = new SimpleStyledTextModel();
-        m.addSegment("RichTextArea Demo", "-fx-font-size:200%;");
-        m.nl();
-        m.addSegment("This text is styled with inline style.", "-fx-font-size:100%;");
-        m.nl();
-        m.addSegment("And this text line is styled with a different inline style.", "-fx-font-size:80%;");
+        StyledTextModel m = createModel();
         
         RichTextArea textField = new RichTextArea();
         textField.setModel(m);
+        textField.setWrapText(true);
+        textField.widthProperty().addListener((x) -> {
+           System.out.println(textField.getWidth()); 
+        });
+        
+        RichTextArea textField2 = new RichTextArea();
+        textField2.setModel(m);
         
         MenuBar mb = new MenuBar();
         FX.menu(mb, "File");
@@ -60,15 +64,53 @@ public class RichTextAreaDemo extends Application {
         
         Label status = new Label();
         
+        // grid pane does not work as expected
+//        GridPane g = new GridPane();
+//        g.add(new BorderPane(textField), 0, 0);
+//        g.add(new BorderPane(textField2), 0, 1);
+        
+//        VBox vb = new VBox();
+//        VBox.setVgrow(textField, Priority.ALWAYS);
+//        VBox.setVgrow(textField2, Priority.ALWAYS);
+//        vb.getChildren().addAll(textField, textField2);
+        
+        VerticalGridPane p = new VerticalGridPane(textField, textField2);
+        
         BorderPane bp = new BorderPane();
         bp.setTop(mb);
-        bp.setCenter(textField);
+        bp.setCenter(p);
         bp.setBottom(status);
+        
+        Scene scene = new Scene(bp);
+        scene.getStylesheets().add(HelloTooltip.class.getResource("RichTextAreaDemo.css").toExternalForm());
 
-        stage.setScene(new Scene(bp));
+        stage.setScene(scene);
         stage.setTitle("RichTextArea Demo " + System.getProperty("java.version"));
         stage.setWidth(800);
         stage.setHeight(500);
         stage.show();
+    }
+    
+    protected StyledTextModel createModel() {
+        String CODE = "code";
+        String RED = "red";
+        String GREEN = "green";
+
+        SimpleStyledTextModel m = new SimpleStyledTextModel();
+        m.addSegment("RichTextArea Demo", "-fx-font-size:200%;");
+        m.nl();
+        m.addSegment("This text is styled with inline style.", "-fx-font-size:100%; -fx-font-style:italic;");
+        m.nl();
+        m.addSegment("The following text is styled with a CSS stylesheet:", null, null);
+        m.nl().nl();
+        m.addSegment("/**", null, RED, CODE);
+        m.addSegment(" * RichTextArea demo.", null, RED, CODE);
+        m.addSegment(" */", null, RED, CODE).nl();
+        m.addSegment("public class ", null, GREEN, CODE);
+        m.addSegment("RichTextAreaDemo ", null, CODE);
+        m.addSegment("extends ", null, GREEN, CODE);
+        m.addSegment("Application {", null, CODE).nl();
+        m.addSegment("}", null, CODE).nl();
+        return m;
     }
 }

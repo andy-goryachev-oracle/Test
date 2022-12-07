@@ -41,16 +41,18 @@ public class SimpleStyledTextModel implements StyledTextModel {
         return lines;
     }
     
-    public void addSegment(String text, String style, String ... css) {
+    public SimpleStyledTextModel addSegment(String text, String style, String ... css) {
         if(lines.size() == 0) {
             lines.add(new SimpleStyledTextLine());
         }
         
         SimpleStyledTextLine t = (SimpleStyledTextLine)lines.get(lines.size() - 1);
         t.addSegment(text, style, css);
+        return this;
     }
     
-    public void nl() {
+    public SimpleStyledTextModel nl() {
         lines.add(new SimpleStyledTextLine());
+        return this;
     }
 }

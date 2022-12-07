@@ -45,6 +45,18 @@ import javafx.scene.AccessibleRole;
 import javafx.scene.control.Control;
 import javafx.scene.control.TextInputControl;
 
+/**
+ * Styled Text Area.
+ * 
+ * TODO line spacing property
+ * TODO content padding property
+ * TODO focus enabled property
+ * TODO cater enabled property
+ * TODO set preferred size to content property
+ * TODO current position r/o property
+ * TODO highlight current line property
+ * TODO tab size property
+ */
 public class RichTextArea extends Control {
     private ObjectProperty<StyledTextModel> model;
     private final ReadOnlyIntegerWrapper currentLine = new ReadOnlyIntegerWrapper(-1);
