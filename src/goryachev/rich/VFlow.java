@@ -129,6 +129,9 @@ public class VFlow extends Region {
     }
 
     public void updateCaretAndSelection() {
+        if(control.isHighlightCurrentLine()) {
+            
+        }
         // TODO
     }
 }

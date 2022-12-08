@@ -50,8 +50,12 @@ public class RichTextAreaDemoModel extends SimpleStyledTextModel {
         addSegment("Application {", null, CODE).nl();
         addSegment("}", null, CODE).nl();
         nl(2);
-        addSegment("Mongolian ᠨᠢᠷᠤᠭᠤ niruγu (нуруу nuruu)", null, null).nl();
-        addSegment("Arabic العربية", null, null).nl();
-        addSegment("Japanese 日本語", null, null).nl();
+        // TODO unicode codepoints
+//        addSegment("Mongolian ᠨᠢᠷᠤᠭᠤ niruγu (нуруу nuruu)", null, null).nl();
+//        addSegment("Arabic العربية", null, null).nl();
+//        addSegment("Japanese 日本語", null, null).nl();
+        addSegment("Mongolian \u1828\u1822\u1837\u1824\u182d\u1824 niru\u03b3u (\u043d\u0443\u0440\u0443\u0443 nuruu)", null, null).nl();
+        addSegment("Arabic \u0627\u0644\u0639\u0631\u0628\u064a\u0629", null, null).nl();
+        addSegment("Japanese \u65e5\u672c\u8a9e", null, null).nl();
     }
 }

@@ -147,6 +147,11 @@ public class RichTextArea extends Control {
         return false;
     }
     
+    public boolean isHighlightCurrentLine() {
+        // TODO
+        return true;
+    }
+    
     protected void updateModel() {
         // TODO
     }
