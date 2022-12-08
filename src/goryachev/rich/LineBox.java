@@ -28,16 +28,24 @@ import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+/**
+ * Represents a text flow cell - contains either a TextFlow or a Region. 
+ */
 public class LineBox {
-    private TextFlow flow = new TextFlow();
+    private final Region content;
     private double width;
     private double height;
 
+    public LineBox(Region content) {
+        this.content = content;
+    }
+
     public LineBox() {
+        this(new TextFlow());
     }
 
     public Region getContent() {
-        return flow;
+        return content;
     }
 
     public void addSegment(String text, String style, String[] css) {
@@ -48,7 +56,15 @@ public class LineBox {
         if (css != null) {
             t.getStyleClass().addAll(css);
         }
-        flow.getChildren().add(t);
+        flow().getChildren().add(t);
+    }
+    
+    protected TextFlow flow() {
+        if(content instanceof TextFlow f) {
+            return f;
+        } else {
+            throw new IllegalArgumentException("Not a TextFlow: " + content.getClass());
+        }
     }
 
     public void setPreferredHeight(double height) {

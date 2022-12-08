@@ -48,7 +48,7 @@ public class SimpleStyledTextLine implements StyledTextLine {
     }
 
     public void addSegment(String text, String style, String[] css) {
-        // TODO check for newlines/formfeeds in the text
+        // TODO check for newlines/formfeed chars
         segments.add(new Segment(text, style, css));
     }
 }

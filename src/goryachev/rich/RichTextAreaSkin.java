@@ -32,6 +32,16 @@ import javafx.scene.control.SkinBase;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 
+/**
+ * Provides visual representation for RichTextArea.
+ * <p>
+ * This skin manages a number of components:
+ * <ul>
+ * <li>virtual flow Region
+ * <li>horizontal scroll bar
+ * <li>vertical scroll bar
+ * </ul>
+ */
 public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     private final RichTextAreaBehavior behavior;
     private final VFlow vflow;
@@ -58,8 +68,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         hscroll.addEventFilter(ScrollEvent.ANY, (ev) -> ev.consume());
         hscroll.visibleProperty().bind(control.wrapTextProperty().not());
 
-        // avoid weird animation during layout
-        getChildren().addAll(new Pane(vflow, vscroll, hscroll) {
+        getChildren().add(new Pane(vflow, vscroll, hscroll) {
             protected void layoutChildren() {
                 double x0 = snappedLeftInset();
                 double y0 = snappedTopInset();
