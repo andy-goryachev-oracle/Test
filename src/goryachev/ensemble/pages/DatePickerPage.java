@@ -24,17 +24,40 @@
  */
 package goryachev.ensemble.pages;
 
+import java.time.LocalDate;
+import goryachev.ensemble.util.ToolPane;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
+import javafx.stage.StageStyle;
+
 /**
  *
  */
-public class AllPages {
-    public static DemoPage[] create() {
-        return new DemoPage[] {
-            new DemoPage("ComboBox", ComboBoxPage::new),
-            new DemoPage("HtmlEditor", HtmlEditorPage::new),
-            new DemoPage("TableView", TableViewPage::new),
-            new DemoPage("Dual Focus JDK-8292933", DualFocusPage::new),
-            new DemoPage("DatePicker in Alert", DatePickerPage::new),
-        };
+public class DatePickerPage extends ToolPane {
+    private final Button button;
+    private DatePicker datePicker;
+    private Alert dialog;
+    
+    public DatePickerPage() {
+        button = new Button("Show Dialog");
+        toolbar().add(button);
+        
+        datePicker = new DatePicker(LocalDate.now());
+        datePicker.valueProperty().addListener(event -> {
+            dialog.close();
+        });
+
+        button.setOnAction(event -> {
+            dialog = new Alert(AlertType.INFORMATION);
+            dialog.initStyle(StageStyle.UNDECORATED);
+            dialog.initOwner(getWindow());
+            dialog.getDialogPane().setContent(datePicker);
+            dialog.show();
+            
+            LocalDate v = datePicker.getValue();
+            System.out.println(v);
+        });
     }
 }
