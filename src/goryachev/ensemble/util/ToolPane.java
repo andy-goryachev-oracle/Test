@@ -25,9 +25,11 @@
 package goryachev.ensemble.util;
 
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Window;
 
 /**
  *
@@ -56,9 +58,17 @@ public class ToolPane  extends BorderPane {
         return t;
     }
     
+    public Window getWindow() {
+        Scene s = getScene();
+        if(s != null) {
+            return s.getWindow();
+        }
+        return null;
+    }
+    
     //
     
-    static class TBar extends HBox {
+    public static class TBar extends HBox {
         public <T extends Node> T add(T n) {
             getChildren().add(n);
             return n;
