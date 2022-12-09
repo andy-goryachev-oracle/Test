@@ -26,10 +26,10 @@ package goryachev.rich.simple;
 
 import java.util.ArrayList;
 
-import goryachev.rich.LineBox;
-import goryachev.rich.StyledTextLine;
+import goryachev.rich.TextCell;
+import goryachev.rich.StyledParagraph;
 
-public class SimpleStyledTextLine implements StyledTextLine {
+public class SimpleStyledTextLine implements StyledParagraph {
 
     public record Segment(String text, String style, String[] css) { }
 
@@ -39,8 +39,8 @@ public class SimpleStyledTextLine implements StyledTextLine {
     }
     
     @Override
-    public LineBox createBox() {
-        LineBox b = new LineBox();
+    public TextCell createTextCell() {
+        TextCell b = new TextCell();
         for(Segment s: segments) {
             b.addSegment(s.text, s.style, s.css);
         }

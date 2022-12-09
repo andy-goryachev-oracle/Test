@@ -36,5 +36,5 @@ import javafx.collections.ObservableList;
  * TODO isModified()
  */
 public interface StyledTextModel {
-    public ObservableList<? extends StyledTextLine> getTextLines();
+    public ObservableList<? extends StyledParagraph> getParagraphs();
 }

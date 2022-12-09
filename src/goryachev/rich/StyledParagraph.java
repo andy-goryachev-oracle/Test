@@ -25,11 +25,10 @@
 package goryachev.rich;
 
 /**
- * Represents a single text line with styles ("a paragraph"?).
- * Should be light-weight.
+ * Represents a single styled text paragraph, a light weight item in a model.
  */
-public interface StyledTextLine {
+public interface StyledParagraph {
 
-    /** creates Nodes representing the paragraph placed in a LineBox */
-    public LineBox createBox();
+    /** creates Nodes corresponding to the text in the model */
+    public TextCell createTextCell();
 }

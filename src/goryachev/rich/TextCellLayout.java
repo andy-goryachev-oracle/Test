@@ -31,7 +31,7 @@ import java.util.ArrayList;
  */
 public class TextCellLayout {
     private final VFlow flow;
-    private final ArrayList<LineBox> boxes = new ArrayList<>(32);
+    private final ArrayList<TextCell> boxes = new ArrayList<>(32);
     private double width;
     private double height;
     private int topLineIndex;
@@ -48,7 +48,7 @@ public class TextCellLayout {
             (f.getTopLineIndex() == topLineIndex);
     }
 
-    public void addBox(LineBox box) {
+    public void addBox(TextCell box) {
         boxes.add(box);
     }
     

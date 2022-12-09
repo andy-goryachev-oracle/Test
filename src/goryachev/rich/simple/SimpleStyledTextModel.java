@@ -27,17 +27,17 @@ package goryachev.rich.simple;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import goryachev.rich.StyledTextLine;
+import goryachev.rich.StyledParagraph;
 import goryachev.rich.StyledTextModel;
 
 public class SimpleStyledTextModel implements StyledTextModel {
-    private final ObservableList<StyledTextLine> lines = FXCollections.observableArrayList();
+    private final ObservableList<StyledParagraph> lines = FXCollections.observableArrayList();
 
     public SimpleStyledTextModel() {
     }
 
     @Override
-    public ObservableList<? extends StyledTextLine> getTextLines() {
+    public ObservableList<? extends StyledParagraph> getParagraphs() {
         return lines;
     }
 

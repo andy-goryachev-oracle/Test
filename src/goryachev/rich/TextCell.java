@@ -31,16 +31,16 @@ import javafx.scene.text.TextFlow;
 /**
  * Represents a text flow cell - contains either a TextFlow or a Region. 
  */
-public class LineBox {
+public class TextCell {
     private final Region content;
     private double width;
     private double height;
 
-    public LineBox(Region content) {
+    public TextCell(Region content) {
         this.content = content;
     }
 
-    public LineBox() {
+    public TextCell() {
         this(new TextFlow());
     }
 

@@ -105,6 +105,8 @@ public class VFlow extends Pane {
     }
     
     // TODO resizing should try keep the current line at the same level
+    // TODO update topBoxOffset
+    // TODO update scrollbars
     protected TextCellLayout createLayout(TextCellLayout previous) {
         if(previous != null) {
             clear();
@@ -115,7 +117,7 @@ public class VFlow extends Pane {
         clip.setHeight(height);
 
         StyledTextModel model = control.getModel();
-        List<? extends StyledTextLine> lines = model.getTextLines();
+        List<? extends StyledParagraph> lines = model.getParagraphs();
         TextCellLayout la = new TextCellLayout(this);
         
         // TODO properties
@@ -131,12 +133,12 @@ public class VFlow extends Pane {
         double unwrappedWidth = -1;
         
         // TODO size from previous layout
-        ArrayList<LineBox> boxes = new ArrayList<>(32);
+        ArrayList<TextCell> boxes = new ArrayList<>(32);
         for(int i=topBoxIndex; i<lines.size(); i++)
         {
             // TODO can use cache
-            StyledTextLine tline = lines.get(i);
-            LineBox box = tline.createBox();
+            StyledParagraph tline = lines.get(i);
+            TextCell box = tline.createTextCell();
             boxes.add(box);
             Region r = box.getContent();
                         
@@ -169,7 +171,7 @@ public class VFlow extends Pane {
         
         la.setUnwrappedWidth(unwrappedWidth);
         
-        for (LineBox box : boxes) {
+        for (TextCell box : boxes) {
             Region r = box.getContent();
             double w = wrap ? maxWidth : unwrappedWidth;
             double h = box.getPreferredHeight();
