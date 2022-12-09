@@ -59,11 +59,14 @@ import javafx.scene.control.TextInputControl;
  * TODO current position r/o property
  * TODO highlight current line property
  * TODO tab size property
+ * TODO selection model property
  */
 public class RichTextArea extends Control {
     private ObjectProperty<StyledTextModel> model;
     private final ReadOnlyIntegerWrapper currentLine = new ReadOnlyIntegerWrapper(-1);
     private final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(true);
+    // TODO property, pluggable models
+    private final SelectionModel selectionModel = new SingleSelectionModel();
 
     public RichTextArea() {
         setFocusTraversable(true);
@@ -98,6 +101,10 @@ public class RichTextArea extends Control {
             };
         }
         return model;
+    }
+
+    public SelectionModel getSelectionModel() {
+        return selectionModel;
     }
     
     /**

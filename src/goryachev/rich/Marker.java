@@ -24,18 +24,19 @@
  */
 package goryachev.rich;
 
-import javafx.collections.ObservableList;
-
 /**
- * Represents a styled text model.  The text is considered to be a collection of paragraphs,
- * represented by {@link StyledParagraph} class.
+ * Tracks position in the text document.
  * 
- * TODO events
- * TODO listeners
- * TODO editing
- * TODO is read only
- * TODO isModified()
+ * TODO control maintains a weak list of these markers - what is someone creates a binding to one of the
+ * marker's property?  will it break the binding?
  */
-public interface StyledTextModel {
-    public ObservableList<? extends StyledParagraph> getParagraphs();
+public class Marker implements Comparable<Marker> {
+    public Marker() {
+        // TODO
+    }
+
+    @Override
+    public int compareTo(Marker x) {
+        return 0;
+    }
 }

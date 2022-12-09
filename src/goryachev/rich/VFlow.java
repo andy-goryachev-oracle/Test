@@ -37,15 +37,10 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 
 /**
- * Virtual text flow, manages text LineBoxes, scroll bars, and conversion
+ * Virtual text flow deals with TextCells, scroll bars, and conversion
  * between the model and the screen coordinates.
  * 
- * TODO specific for the rich text control, or generic for any kind of virtual
- * flow?
- * 
- * TODO an interface, to allow for different (optimized) implementations?
  * TODO or a VFlowPolicy ?
- * 
  * TODO left paragraph component (line numbers)
  * TODO right paragraph component (annotation?)
  */
@@ -88,7 +83,7 @@ public class VFlow extends Pane {
     protected void layoutChildren() {
         // do we need to rebuild layout?
         if((layout == null) || !layout.isValid(this)) {
-            layout = createLayout(layout);
+            layout = layoutCells(layout);
             updateCaretAndSelection();
         }
     }
@@ -107,7 +102,7 @@ public class VFlow extends Pane {
     // TODO resizing should try keep the current line at the same level
     // TODO update topBoxOffset
     // TODO update scrollbars
-    protected TextCellLayout createLayout(TextCellLayout previous) {
+    protected TextCellLayout layoutCells(TextCellLayout previous) {
         if(previous != null) {
             clear();
         }

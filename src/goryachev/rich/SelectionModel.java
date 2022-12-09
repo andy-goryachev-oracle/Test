@@ -24,18 +24,6 @@
  */
 package goryachev.rich;
 
-import javafx.collections.ObservableList;
+public interface SelectionModel {
 
-/**
- * Represents a styled text model.  The text is considered to be a collection of paragraphs,
- * represented by {@link StyledParagraph} class.
- * 
- * TODO events
- * TODO listeners
- * TODO editing
- * TODO is read only
- * TODO isModified()
- */
-public interface StyledTextModel {
-    public ObservableList<? extends StyledParagraph> getParagraphs();
 }

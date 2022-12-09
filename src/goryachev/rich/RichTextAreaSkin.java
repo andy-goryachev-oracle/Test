@@ -97,6 +97,8 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         });
 
         this.behavior = new RichTextAreaBehavior(control);
+        
+        createMouseHandler().register(control, vflow);
     }
 
     @Override
@@ -121,5 +123,9 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
 
     protected ScrollBar createHScrollBar() {
         return new ScrollBar();
+    }
+    
+    protected MouseHandler createMouseHandler() {
+        return new MouseHandler(getSkinnable());
     }
 }
