@@ -24,24 +24,31 @@
  */
 package goryachev.apps;
 
+import java.awt.EventQueue;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
 
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingNode;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
  * Many different Unicode scripts in TextArea/JTextArea.
  */
 public class UnicodeFailAll extends Application {
+    protected TextArea textField;
+    protected JTextArea jtextArea;
+    
     public static void main(String[] args) {
         Application.launch(UnicodeFailAll.class, args);
     }
@@ -50,29 +57,73 @@ public class UnicodeFailAll extends Application {
     public void start(Stage stage) throws Exception {
         String text = generateText();
         
-        TextArea textField = new TextArea(text);
+        textField = new TextArea(text);
 //        textField.setStyle("-fx-font-size:150%;");
         
-        BorderPane bp = new BorderPane();
+        BorderPane rightPane = new BorderPane();
 
         SwingNode swingNode = new SwingNode();
-        SwingUtilities.invokeLater(() -> {
-            JTextArea t = new JTextArea(text);
-            swingNode.setContent(new JScrollPane(t));
+        EventQueue.invokeLater(() -> {
+            jtextArea = new JTextArea(text);
+            swingNode.setContent(new JScrollPane(jtextArea));
             
             Platform.runLater(() -> {
-                bp.setCenter(swingNode);
+                rightPane.setCenter(swingNode);
             });
         });
 
-        SplitPane split = new SplitPane(textField, bp);
+        SplitPane split = new SplitPane(textField, rightPane);
         split.setOrientation(Orientation.HORIZONTAL);
+        
+        ComboBox<String> fontField = new ComboBox<>();
+        fontField.getSelectionModel().selectedItemProperty().addListener((s,p,font) -> {
+           setFont(font); 
+        });
+        Platform.runLater(() -> {
+            populateFonts(fontField);
+        });
+        
+        ToolBar tb = new ToolBar(
+                fontField
+        );
 
-        stage.setScene(new Scene(split));
+        BorderPane bp = new BorderPane();
+        bp.setTop(tb);
+        bp.setCenter(split);
+        
+        Scene scene = new Scene(bp);
+        
+        stage.setScene(scene);
         stage.setTitle("Unicode Failure 2 " + System.getProperty("java.version"));
         stage.setWidth(1200);
         stage.setHeight(1200);
         stage.show();
+    }
+    
+    private void populateFonts(ComboBox c) {
+        // https://docs.oracle.com/javase/8/javafx/api/javafx/scene/doc-files/cssref.html#fontprops
+        c.getItems().setAll(
+            "system", // not in CSS reference
+            "serif",
+            "sans-serif",
+            "cursive",
+            "fantasy",
+            "monospace"
+        );
+        c.getItems().addAll(Font.getFontNames());
+    }
+
+    private void setFont(String fontFamily) {
+        Font f = new Font(fontFamily, 12);
+        textField.setFont(f);
+        
+        String name = f.getName();
+        int size = (int)f.getSize();
+
+        EventQueue.invokeLater(() -> {
+            java.awt.Font ff = new java.awt.Font(name, java.awt.Font.PLAIN, size);
+            jtextArea.setFont(ff);
+        });
     }
 
     private String generateText() {
