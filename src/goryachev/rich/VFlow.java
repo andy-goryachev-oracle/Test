@@ -27,8 +27,12 @@ package goryachev.rich;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 
@@ -41,33 +45,78 @@ import javafx.scene.shape.Rectangle;
  * 
  * TODO an interface, to allow for different (optimized) implementations?
  * TODO or a VFlowPolicy ?
+ * 
+ * TODO left paragraph component (line numbers)
+ * TODO right paragraph component (annotation?)
  */
-public class VFlow extends Region {
+public class VFlow extends Pane {
     private final RichTextArea control;
+    private final ScrollBar vscroll;
+    private final ScrollBar hscroll;
+    private final Pane contentPane;
     private final Rectangle clip;
+    private TextCellLayout layout;
+    private final SimpleIntegerProperty topLineIndex = new SimpleIntegerProperty(0);
 
-    public VFlow(RichTextArea control) {
+    public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = control;
+        this.vscroll = vscroll;
+        this.hscroll = hscroll;
+
+        // do not set padding on this pane!
+        contentPane = new Pane();
 
         clip = new Rectangle();
-        setClip(clip);
+        contentPane.setClip(clip);
+        
+        getChildren().addAll(contentPane);
     }
-
+    
+    public int getTopLineIndex() {
+        return topLineIndex.get();
+    }
+    
+    public void setTopLineIndex(int ix) {
+        topLineIndex.set(ix);
+    }
+    
+    public IntegerProperty topLineIndexProperty() {
+        return topLineIndex;
+    }
+    
     @Override
     protected void layoutChildren() {
-        populate();
-        updateCaretAndSelection();
+        // do we need to rebuild layout?
+        if((layout == null) || !layout.isValid(this)) {
+            layout = createLayout(layout);
+            updateCaretAndSelection();
+        }
     }
-
-    public void populate() {
+    
+    public void invalidateLayout() {
+        if(layout != null) {
+            clear();
+            layout = null;
+        }
+    }
+    
+    protected void clear() {
+        getChildren().clear();
+    }
+    
+    // TODO resizing should try keep the current line at the same level
+    protected TextCellLayout createLayout(TextCellLayout previous) {
+        if(previous != null) {
+            clear();
+        }
+        
         double height = getHeight();
         clip.setWidth(getWidth());
         clip.setHeight(height);
-        
-        getChildren().clear();
 
         StyledTextModel model = control.getModel();
         List<? extends StyledTextLine> lines = model.getTextLines();
+        TextCellLayout la = new TextCellLayout(this);
         
         // TODO properties
         double boxOffsetY = 0;
@@ -93,6 +142,7 @@ public class VFlow extends Region {
                         
             getChildren().add(r);
             r.applyCss();
+            la.addBox(box);
             
             r.setMaxWidth(maxWidth);
             double h = r.prefHeight(maxWidth);
@@ -117,6 +167,8 @@ public class VFlow extends Region {
             }
         }
         
+        la.setUnwrappedWidth(unwrappedWidth);
+        
         for (LineBox box : boxes) {
             Region r = box.getContent();
             double w = wrap ? maxWidth : unwrappedWidth;
@@ -126,6 +178,8 @@ public class VFlow extends Region {
             // TODO actual box height might be different from h due to snapping?
             y += box.getPreferredHeight();
         }
+        
+        return la;
     }
 
     public void updateCaretAndSelection() {

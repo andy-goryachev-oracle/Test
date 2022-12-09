@@ -51,8 +51,6 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     protected RichTextAreaSkin(RichTextArea control) {
         super(control);
         
-        vflow = new VFlow(control);
-
         vscroll = createVScrollBar();
         vscroll.setOrientation(Orientation.VERTICAL);
         vscroll.setManaged(true);
@@ -68,7 +66,11 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         hscroll.addEventFilter(ScrollEvent.ANY, (ev) -> ev.consume());
         hscroll.visibleProperty().bind(control.wrapTextProperty().not());
 
-        getChildren().add(new Pane(vflow, vscroll, hscroll) {
+        vflow = new VFlow(control, vscroll, hscroll);
+
+        // TODO corner? only when both scroll bars are visible
+
+        getChildren().addAll(new Pane(vflow, vscroll, hscroll) {
             protected void layoutChildren() {
                 double x0 = snappedLeftInset();
                 double y0 = snappedTopInset();

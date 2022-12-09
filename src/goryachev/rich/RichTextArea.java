@@ -22,6 +22,9 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// this code borrows heavily from two projects, with permission from the author:
+// https://github.com/andy-goryachev/FxEditor
+// https://github.com/andy-goryachev/FxTextEditor
 package goryachev.rich;
 
 import java.util.ArrayList;
