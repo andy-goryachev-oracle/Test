@@ -28,3 +28,7 @@
     -fx-background-radius: 3, 2, 4, 0;
     -fx-prompt-text-fill: transparent;
 }
+
+.rich-text-area .caret {
+    -fx-stroke: black;
+}

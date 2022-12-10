@@ -34,6 +34,8 @@ import javafx.geometry.VPos;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 
 /**
@@ -51,6 +53,7 @@ public class VFlow extends Pane {
     private final Pane contentPane;
     private final Rectangle clip;
     private TextCellLayout layout;
+    private final Path caretPath;
     private final SimpleIntegerProperty topLineIndex = new SimpleIntegerProperty(0);
 
     public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
@@ -64,7 +67,11 @@ public class VFlow extends Pane {
         clip = new Rectangle();
         contentPane.setClip(clip);
         
-        getChildren().addAll(contentPane);
+        caretPath = new Path();
+        caretPath.getStyleClass().add("caret");
+        caretPath.setManaged(false);
+        
+        getChildren().addAll(contentPane, caretPath);
     }
     
     public int getTopLineIndex() {

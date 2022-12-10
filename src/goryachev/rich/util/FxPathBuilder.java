@@ -22,24 +22,48 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+// this code borrows heavily from two projects, with permission from the author:
+// https://github.com/andy-goryachev/FxEditor
+// https://github.com/andy-goryachev/FxTextEditor
+package goryachev.rich.util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
 
 /**
- * Tracks position in the text document.
- * 
- * TODO control maintains a weak list of these markers - what is someone creates a binding to one of the
- * marker's property?  will it break the binding?
- * 
- * Another altenative is to create an immutable position (similar to HitInfo, but w/o String text) and
- * have a single property in the Marker.
+ * Conventient utility for building javafx {@link Path}
  */
-public class Marker implements Comparable<Marker> {
-    public Marker() {
-        // TODO
+public class FxPathBuilder {
+    private final ArrayList<PathElement> elements = new ArrayList<>();
+    
+    
+    public FxPathBuilder() {
     }
-
-    @Override
-    public int compareTo(Marker x) {
-        return 0;
+    
+    public void add(PathElement em) {
+        elements.add(em);
+    }
+    
+    public void addAll(PathElement ... es) {
+        for(PathElement em: es) {
+            elements.add(em);
+        }
+    }
+    
+    public void moveto(double x, double y) {
+        add(new MoveTo(x, y));
+    }
+    
+    public void lineto(double x, double y) {
+        add(new LineTo(x, y));
+    }
+    
+    public List<PathElement> getPathElements() {
+        return elements;
     }
 }

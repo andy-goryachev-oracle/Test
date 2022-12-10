@@ -48,6 +48,8 @@ import javafx.scene.AccessibleRole;
 import javafx.scene.control.Control;
 import javafx.scene.control.TextInputControl;
 
+import goryachev.rich.util.Util;
+
 /**
  * Styled Text Area.
  * 
