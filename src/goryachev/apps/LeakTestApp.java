@@ -62,6 +62,7 @@ import javafx.scene.control.skin.TableViewSkin;
 import javafx.scene.control.skin.TextAreaSkin;
 import javafx.scene.control.skin.TextFieldSkin;
 import javafx.scene.control.skin.TreeTableViewSkin;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -82,7 +83,7 @@ import javafx.util.Duration;
  * - in heap dump, select Objects pulldown (instead of Summary)
  * - type in Class Filter: "qq" (notice how all dummy skin classes are named starting with QQ)
  */
-public class LeakTest extends Application {
+public class LeakTestApp extends Application {
     
     enum Type {
         ACCORDION,
@@ -120,7 +121,7 @@ public class LeakTest extends Application {
     }
     
     public static void main(String[] args) {
-        Application.launch(LeakTest.class, args);
+        Application.launch(LeakTestApp.class, args);
     }
     
     @Override
@@ -294,16 +295,19 @@ public class LeakTest extends Application {
                 @Override
                 public MenuBar createNode() {
                     MenuBar b = new MenuBar();
+                    MenuItem mi;
+
                     Menu m = new Menu("menu");
                     b.getMenus().add(m);
                     m.getItems().add(new MenuItem("item 1"));
                     m.getItems().add(new MenuItem("item 2"));
-                    m.getItems().add(new MenuItem("item 3"));
+                    m.getItems().add(mi = new MenuItem("item 3 acc"));
+                    mi.setAccelerator(KeyCombination.valueOf("Ctrl+C"));
+                    mi.setOnAction((ev) -> System.out.println("ctrl-C"));
                     
                     m = new Menu("menu");
                     b.getMenus().add(m);
                     Menu m2;
-                    MenuItem mi;
                     m.getItems().add(m2 = new Menu("item 1"));
                     m.getItems().add(new MenuItem("item 2"));
                     m.getItems().add(new MenuItem("item 3"));
@@ -312,7 +316,7 @@ public class LeakTest extends Application {
                     m2.getItems().add(new MenuItem("item 22"));
                     m2.getItems().add(new MenuItem("item 23"));
                     m2.getItems().add(mi = new MenuItem("With Action"));
-                    mi.setOnAction((ev) -> System.out.println("yo, action!" + mi));
+                    mi.setOnAction((ev) -> System.out.println("yo, action!"));
                     return b;
                 }
 
