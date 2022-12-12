@@ -82,7 +82,7 @@ import javafx.util.Duration;
  * - in heap dump, select Objects pulldown (instead of Summary)
  * - type in Class Filter: "qq" (notice how all dummy skin classes are named starting with QQ)
  */
-public class LeakTest extends Application {
+public class LeakTestApp extends Application {
     
     enum Type {
         ACCORDION,
@@ -120,7 +120,7 @@ public class LeakTest extends Application {
     }
     
     public static void main(String[] args) {
-        Application.launch(LeakTest.class, args);
+        Application.launch(LeakTestApp.class, args);
     }
     
     @Override
