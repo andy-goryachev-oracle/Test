@@ -22,9 +22,26 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// this code borrows heavily from the following project, with permission from the author:
+// https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
 public class SingleSelectionModel implements SelectionModel {
     public SingleSelectionModel() {
+    }
+
+    @Override
+    public void clear() {
+        // TODO
+    }
+
+    @Override
+    public void setSelection(Marker anchor, Marker caret) {
+        // TODO
+    }
+
+    @Override
+    public void clearAndExtendLastSegment(Marker pos) {
+        // TODO
     }
 }

@@ -22,6 +22,8 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// this code borrows heavily from the following project, with permission from the author:
+// https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
 import javafx.scene.layout.Region;
@@ -32,16 +34,18 @@ import javafx.scene.text.TextFlow;
  * Represents a text flow cell - contains either a TextFlow or a Region. 
  */
 public class TextCell {
+    private final int index;
     private final Region content;
     private double width;
     private double height;
 
-    public TextCell(Region content) {
+    public TextCell(int index, Region content) {
+        this.index = index;
         this.content = content;
     }
 
-    public TextCell() {
-        this(new TextFlow());
+    public TextCell(int index) {
+        this(index, new TextFlow());
     }
 
     public Region getContent() {
@@ -81,5 +85,9 @@ public class TextCell {
 
     public double getPreferredWidth() {
         return width;
+    }
+
+    public int getLineIndex() {
+        return index;
     }
 }

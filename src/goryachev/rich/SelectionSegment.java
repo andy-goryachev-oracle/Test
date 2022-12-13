@@ -27,13 +27,55 @@
 package goryachev.rich;
 
 /**
- * Represents a single styled text paragraph, a light weight item in a model.
+ * Text selection segment.
  */
-public interface StyledParagraph {
-
-    /** creates Nodes corresponding to the text in the model */
-    public TextCell createTextCell();
+public class SelectionSegment implements Cloneable {
+    private final Marker min;
+    private final Marker max;
+    private final boolean caretAtMin;
     
-    /** returns model line index */
-    public int getIndex();
+    public SelectionSegment(Marker min, Marker max, boolean caretAtMin) {
+        this.min = min;
+        this.max = max;
+        this.caretAtMin = caretAtMin;
+    }
+    
+    @Override
+    public int hashCode() {
+        int h = SelectionSegment.class.hashCode();
+        h = h * 31 + min.hashCode();
+        h = h * 31 + max.hashCode();
+        h = h * 31 + Boolean.hashCode(caretAtMin);
+        return h;
+    }
+    
+    @Override
+    public boolean equals(Object x) {
+        if(x == this) {
+            return true;
+        } else if(x instanceof SelectionSegment s) {
+            return
+                (caretAtMin == s.caretAtMin) &&
+                min.equals(s.min) &&
+                max.equals(s.max);
+        } else {
+            return false;
+        }
+    }
+    
+    public Marker getAnchor() {
+        return caretAtMin ? max : min;
+    }
+    
+    public Marker getCaret() {
+        return caretAtMin ? min : max;
+    }
+    
+    public Marker getMin() {
+        return min;
+    }
+    
+    public Marker getMax() {
+        return max;
+    }
 }

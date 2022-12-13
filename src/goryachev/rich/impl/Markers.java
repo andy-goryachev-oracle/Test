@@ -24,16 +24,34 @@
  */
 // this code borrows heavily from the following project, with permission from the author:
 // https://github.com/andy-goryachev/FxEditor
-package goryachev.rich;
+package goryachev.rich.impl;
+
+import goryachev.rich.Marker;
+import goryachev.rich.util.WeakList;
 
 /**
- * Represents a single styled text paragraph, a light weight item in a model.
+ * Manages Markers.
  */
-public interface StyledParagraph {
-
-    /** creates Nodes corresponding to the text in the model */
-    public TextCell createTextCell();
+public class Markers {
+    private static final int LIMIT_MARKER_COUNT_SAFEGUARD = 1_000_000;
+    private final WeakList<Marker> markers;
     
-    /** returns model line index */
-    public int getIndex();
+    public Markers(int size ) {
+        markers = new WeakList<>(size);
+    }
+    
+    public Marker newMarker(int lineIndex, int charIndex, boolean leading) {
+        Marker m = Marker.create(this, lineIndex, charIndex, leading);
+        markers.add(m);
+        
+        // safeguard
+        if (markers.size() > LIMIT_MARKER_COUNT_SAFEGUARD) {
+            markers.gc();
+            if (markers.size() > LIMIT_MARKER_COUNT_SAFEGUARD) {
+                throw new RuntimeException("too many markers");
+            }
+        }
+        
+        return m;
+    }
 }

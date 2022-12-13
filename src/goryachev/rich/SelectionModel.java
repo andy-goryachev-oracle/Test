@@ -22,8 +22,18 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// this code borrows heavily from the following project, with permission from the author:
+// https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
 public interface SelectionModel {
+    /** clears the selection */
+    public void clear();
 
+    /** clears existing selection, if any, and sets a new selection */
+    public void setSelection(Marker anchor, Marker caret);
+
+ // expand selection from the anchor point to the current position
+    // clearing existing (possibly multiple) selection
+    public void clearAndExtendLastSegment(Marker pos);
 }

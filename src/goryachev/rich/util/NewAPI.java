@@ -24,16 +24,24 @@
  */
 // this code borrows heavily from the following project, with permission from the author:
 // https://github.com/andy-goryachev/FxEditor
-package goryachev.rich;
+package goryachev.rich.util;
+
+import javafx.scene.Node;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
 /**
- * Represents a single styled text paragraph, a light weight item in a model.
+ * These APIs should be added to JavaFX.
  */
-public interface StyledParagraph {
+public class NewAPI {
+    public static String getText(TextFlow f) {
+        StringBuilder sb = new StringBuilder();
+        for(Node n: f.getChildrenUnmodifiable()) {
+            if(n instanceof Text t) {
+                sb.append(t.getText());
+            }
+        }
+        return sb.toString();
+    }
 
-    /** creates Nodes corresponding to the text in the model */
-    public TextCell createTextCell();
-    
-    /** returns model line index */
-    public int getIndex();
 }

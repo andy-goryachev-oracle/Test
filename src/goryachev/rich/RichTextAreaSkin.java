@@ -22,6 +22,8 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// this code borrows heavily from the following project, with permission from the author:
+// https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
 import javafx.geometry.HPos;
@@ -127,5 +129,9 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     
     protected MouseHandler createMouseHandler() {
         return new MouseHandler(getSkinnable());
+    }
+
+    public VFlow getVFlow() {
+        return vflow;
     }
 }

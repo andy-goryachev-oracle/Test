@@ -24,16 +24,41 @@
  */
 // this code borrows heavily from the following project, with permission from the author:
 // https://github.com/andy-goryachev/FxEditor
-package goryachev.rich;
+package goryachev.rich.util;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 
 /**
- * Represents a single styled text paragraph, a light weight item in a model.
+ * Unsynchronized list of WeakReferences.
  */
-public interface StyledParagraph {
-
-    /** creates Nodes corresponding to the text in the model */
-    public TextCell createTextCell();
+public class WeakList<T> {
+    private ArrayList<WeakReference<T>> list;
     
-    /** returns model line index */
-    public int getIndex();
+    public WeakList() {
+        this(8);
+    }
+    
+    public WeakList(int capacity) {
+        list = new ArrayList<>(capacity);
+    }
+    
+    public int size() {
+        return list.size();
+    }
+    
+    public void add(T item) {
+        list.add(new WeakReference<>(item));
+    }
+    
+    public void gc() {
+        int sz = list.size();
+        for (int i = sz - 1; i >= 0; --i) {
+            WeakReference<T> ref = list.get(i);
+            T item = ref.get();
+            if(item == null) {
+                list.remove(i);
+            }
+        }
+    }
 }

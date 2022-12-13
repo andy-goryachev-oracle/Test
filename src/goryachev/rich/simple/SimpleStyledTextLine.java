@@ -22,6 +22,8 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// this code borrows heavily from the following project, with permission from the author:
+// https://github.com/andy-goryachev/FxEditor
 package goryachev.rich.simple;
 
 import java.util.ArrayList;
@@ -33,18 +35,26 @@ public class SimpleStyledTextLine implements StyledParagraph {
 
     public record Segment(String text, String style, String[] css) { }
 
+    private int index;
     private ArrayList<Segment> segments = new ArrayList<>();
 
-    public SimpleStyledTextLine() {
+    public SimpleStyledTextLine(int index) {
+        this.index = index;
     }
     
     @Override
     public TextCell createTextCell() {
-        TextCell b = new TextCell();
+        int ix = getIndex();
+        TextCell b = new TextCell(ix);
         for(Segment s: segments) {
             b.addSegment(s.text, s.style, s.css);
         }
         return b;
+    }
+    
+    @Override
+    public int getIndex() {
+        return index;
     }
 
     public void addSegment(String text, String style, String[] css) {

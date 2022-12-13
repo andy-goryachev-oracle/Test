@@ -22,6 +22,8 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// this code borrows heavily from the following project, with permission from the author:
+// https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
 import javafx.scene.input.MouseEvent;
@@ -56,13 +58,20 @@ public class MouseHandler {
             return;
         }
         
-        // TODO Marker pos = getTextPosition(ev);
-        // TODO control.setSuppressBlink(true);
+        SelectionModel sm = control.getSelectionModel();
+        if(sm == null) {
+            return;
+        }
+        
+        Marker pos = getTextPosition(ev);
+        control.setSuppressBlink(true);
         
         if(ev.isShiftDown()) {
-            // TODO clear selection, add selection from the anchor point to the current position
+            // expand selection from the anchor point to the current position
+            // clearing existing (possibly multiple) selection
+            sm.clearAndExtendLastSegment(pos);
         } else {
-            // TODO clear, setAnchor(pos), setSelection(pos)
+            sm.setSelection(pos, pos);
         }
         
         control.requestFocus();
@@ -78,5 +87,11 @@ public class MouseHandler {
     
     protected void handleScrollEvent(ScrollEvent ev) {
         // TODO
+    }
+    
+    protected Marker getTextPosition(MouseEvent ev) {
+        double x = ev.getScreenX();
+        double y = ev.getScreenY();
+        return control.getTextPosition(x, y);
     }
 }

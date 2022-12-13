@@ -22,6 +22,8 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// this code borrows heavily from the following project, with permission from the author:
+// https://github.com/andy-goryachev/FxEditor
 package goryachev.rich.simple;
 
 import javafx.collections.FXCollections;
@@ -43,7 +45,7 @@ public class SimpleStyledTextModel implements StyledTextModel {
 
     public SimpleStyledTextModel addSegment(String text, String style, String... css) {
         if (lines.size() == 0) {
-            lines.add(new SimpleStyledTextLine());
+            lines.add(new SimpleStyledTextLine(0));
         }
 
         SimpleStyledTextLine t = (SimpleStyledTextLine)lines.get(lines.size() - 1);
@@ -57,7 +59,8 @@ public class SimpleStyledTextModel implements StyledTextModel {
 
     public SimpleStyledTextModel nl(int count) {
         for (int i = 0; i < count; i++) {
-            lines.add(new SimpleStyledTextLine());
+            int ix = lines.size();
+            lines.add(new SimpleStyledTextLine(ix));
         }
         return this;
     }

@@ -22,7 +22,11 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// this code borrows heavily from the following project, with permission from the author:
+// https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
+
+import goryachev.rich.impl.Markers;
 
 /**
  * Tracks position in the text document.
@@ -32,14 +36,38 @@ package goryachev.rich;
  * 
  * Another altenative is to create an immutable position (similar to HitInfo, but w/o String text) and
  * have a single property in the Marker.
+ * 
+ * TODO three properties or a single immutable TextPos?
  */
 public class Marker implements Comparable<Marker> {
-    public Marker() {
-        // TODO
+    public static final Marker ZERO = new Marker(true);
+    private int lineIndex;
+    private int charIndex;
+    private boolean leading;
+    
+    private Marker() {
+    }
+    
+    private Marker(boolean leading) {
+        this.leading = leading;
+    }
+    
+    public static Marker create(Markers owner, int lineIndex, int charIndex, boolean leading) {
+        if(owner == null) {
+            throw new IllegalArgumentException("must specify the owner");
+        }
+        
+        Marker m = new Marker();
+        m.lineIndex = lineIndex;
+        m.charIndex = charIndex;
+        m.leading = leading;
+        return m;
     }
 
     @Override
     public int compareTo(Marker x) {
         return 0;
     }
+
+
 }

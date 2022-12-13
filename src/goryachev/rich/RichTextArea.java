@@ -22,13 +22,10 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-// this code borrows heavily from two projects, with permission from the author:
+// this code borrows heavily from the following project, with permission from the author:
 // https://github.com/andy-goryachev/FxEditor
-// https://github.com/andy-goryachev/FxTextEditor
 package goryachev.rich;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javafx.beans.property.BooleanProperty;
@@ -42,12 +39,11 @@ import javafx.css.StyleConverter;
 import javafx.css.Styleable;
 import javafx.css.StyleableBooleanProperty;
 import javafx.css.StyleableProperty;
-import javafx.css.converter.SizeConverter;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.Control;
-import javafx.scene.control.TextInputControl;
 
+import goryachev.rich.impl.Markers;
 import goryachev.rich.util.Util;
 
 /**
@@ -69,6 +65,7 @@ public class RichTextArea extends Control {
     private final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(true);
     // TODO property, pluggable models
     private final SelectionModel selectionModel = new SingleSelectionModel();
+    private Markers markers = new Markers(32);
 
     public RichTextArea() {
         setFocusTraversable(true);
@@ -231,5 +228,18 @@ public class RichTextArea extends Control {
     @Override
     public List<CssMetaData<? extends Styleable, ?>> getControlCssMetaData() {
         return getClassCssMetaData();
+    }
+    
+    protected VFlow vflow() {
+        return ((RichTextAreaSkin)getSkin()).getVFlow();
+    }
+
+    public Marker getTextPosition(double screenX, double screenY) {
+        return vflow().getTextPosition(screenX, screenY, markers);
+    }
+
+    // temporarily suppresses blinking when caret is being moved
+    protected void setSuppressBlink(boolean b) {
+        // TODO
     }
 }

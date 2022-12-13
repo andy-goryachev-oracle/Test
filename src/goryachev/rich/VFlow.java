@@ -22,6 +22,8 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// this code borrows heavily from the following project, with permission from the author:
+// https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
 import java.util.ArrayList;
@@ -37,6 +39,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
+
+import goryachev.rich.impl.Markers;
 
 /**
  * Virtual text flow deals with TextCells, scroll bars, and conversion
@@ -135,28 +139,28 @@ public class VFlow extends Pane {
         double unwrappedWidth = -1;
         
         // TODO size from previous layout
-        ArrayList<TextCell> boxes = new ArrayList<>(32);
+        ArrayList<TextCell> cells = new ArrayList<>(32);
         for(int i=topBoxIndex; i<lines.size(); i++)
         {
             // TODO can use cache
             StyledParagraph tline = lines.get(i);
-            TextCell box = tline.createTextCell();
-            boxes.add(box);
-            Region r = box.getContent();
+            TextCell cell = tline.createTextCell();
+            cells.add(cell);
+            Region r = cell.getContent();
                         
             getChildren().add(r);
             r.applyCss();
-            la.addBox(box);
+            la.addBox(cell);
             
             r.setMaxWidth(maxWidth);
             double h = r.prefHeight(maxWidth);
-            box.setPreferredHeight(h);
+            cell.setPreferredHeight(h);
             
             if(wrap) {
-                box.setPreferredWidth(-1.0);
+                cell.setPreferredWidth(-1.0);
             } else {
                 double w = r.prefWidth(-1);
-                box.setPreferredWidth(w);
+                cell.setPreferredWidth(w);
                 if(unwrappedWidth < w) {
                     unwrappedWidth = w;
                 }
@@ -173,7 +177,7 @@ public class VFlow extends Pane {
         
         la.setUnwrappedWidth(unwrappedWidth);
         
-        for (TextCell box : boxes) {
+        for (TextCell box : cells) {
             Region r = box.getContent();
             double w = wrap ? maxWidth : unwrappedWidth;
             double h = box.getPreferredHeight();
@@ -191,5 +195,13 @@ public class VFlow extends Pane {
             
         }
         // TODO
+    }
+
+    public Marker getTextPosition(double screenX, double screenY, Markers markers) {
+        if (layout == null) {
+            return null;
+        }
+
+        return layout.getTextPosition(screenX, screenY, markers);
     }
 }
