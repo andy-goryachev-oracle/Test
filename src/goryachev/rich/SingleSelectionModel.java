@@ -26,6 +26,14 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+/**
+ * This SelectionModel support a single selection segment.
+ * 
+ * TODO selectedItemProperty
+ * TODO selectedIndexProperty
+ * TODO selectedItemsProperty
+ * TODO selectedIndexesProperty
+ */
 public class SingleSelectionModel implements SelectionModel {
     public SingleSelectionModel() {
     }

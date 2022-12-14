@@ -27,13 +27,19 @@
 package goryachev.rich;
 
 public interface SelectionModel {
-    /** clears the selection */
+    /**
+     * clears the selection
+     */
     public void clear();
 
-    /** clears existing selection, if any, and sets a new selection */
+    /**
+     * clears existing selection, if any, and sets a new selection
+     */
     public void setSelection(Marker anchor, Marker caret);
 
- // expand selection from the anchor point to the current position
-    // clearing existing (possibly multiple) selection
+    /**
+     * clears existing selection if any,
+     * then selects from the anchor point to the current position.
+     */
     public void clearAndExtendLastSegment(Marker pos);
 }

@@ -65,9 +65,41 @@ public class Marker implements Comparable<Marker> {
     }
 
     @Override
-    public int compareTo(Marker x) {
-        return 0;
+    public int compareTo(Marker m) {
+        int d = lineIndex - m.lineIndex;
+        if(d == 0) {
+            d = getLineOffset() - m.getLineOffset();
+            if(d == 0) {
+                if(leading != m.leading) {
+                    return leading ? -1 : 1;
+                }
+            }
+        }
+        return d;
     }
-
-
+    
+    @Override
+    public int hashCode() {
+        int h = Marker.class.hashCode();
+        h = h * 31 + lineIndex;
+        h = h * 31 + charIndex;
+        h = h * 31 + Boolean.hashCode(leading);
+        return h;
+    }
+    
+    public int getLineIndex() {
+        return lineIndex;
+    }
+    
+    public int getCharIndex() {
+        return charIndex;
+    }
+    
+    public boolean isLeading() {
+        return leading;
+    }
+    
+    public int getLineOffset() {
+        return leading ? charIndex : (charIndex + 1);
+    }
 }

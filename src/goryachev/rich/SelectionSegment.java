@@ -26,6 +26,8 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import goryachev.rich.util.Util;
+
 /**
  * Text selection segment.
  */
@@ -33,13 +35,32 @@ public class SelectionSegment implements Cloneable {
     private final Marker min;
     private final Marker max;
     private final boolean caretAtMin;
-    
+
     public SelectionSegment(Marker min, Marker max, boolean caretAtMin) {
+        Util.notNull(min, "min");
+        Util.notNull(max, "max");
+        Util.isLessThanOrEqual(min, max, "min", "max");
+
         this.min = min;
         this.max = max;
         this.caretAtMin = caretAtMin;
     }
-    
+
+    public SelectionSegment(Marker anchor, Marker caret) {
+        Util.notNull(anchor, "anchor");
+        Util.notNull(caret, "caret");
+
+        if (anchor.compareTo(caret) <= 0) {
+            this.min = anchor;
+            this.max = caret;
+            this.caretAtMin = false;
+        } else {
+            this.min = caret;
+            this.max = anchor;
+            this.caretAtMin = true;
+        }
+    }
+
     @Override
     public int hashCode() {
         int h = SelectionSegment.class.hashCode();

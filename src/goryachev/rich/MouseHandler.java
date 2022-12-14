@@ -54,7 +54,7 @@ public class MouseHandler {
     protected void handleMousePressed(MouseEvent ev) {
         // TODO
         if(ev.isPopupTrigger()) {
-            // TODO something about clearing the selection if hapepened outside of said selection?
+            // TODO clear selection if click happened outside of said selection?
             return;
         }
         

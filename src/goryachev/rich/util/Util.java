@@ -31,6 +31,8 @@ import java.util.List;
 import javafx.css.CssMetaData;
 import javafx.css.Styleable;
 
+import goryachev.rich.Marker;
+
 /**
  * Utility methods to be moved to com.sun.javafx hierarchy.
  */
@@ -62,5 +64,18 @@ public class Util {
             name = "/" + pkg + "/" + name;
         }
         return c.getResource(name).toExternalForm();
+    }
+
+    public static <T> T notNull(T item, String name) {
+        if(item == null) {
+            throw new IllegalArgumentException(name + " must not be null.");
+        }
+        return item;
+    }
+    
+    public static <T extends Comparable<T>> void isLessThanOrEqual(T min, T max, String nameMin, String nameMax) {
+        if(min.compareTo(max) > 0) {
+            throw new IllegalArgumentException(nameMin + " must be less or equal to " + nameMax);
+        }
     }
 }
