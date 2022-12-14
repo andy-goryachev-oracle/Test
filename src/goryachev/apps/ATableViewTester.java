@@ -1,6 +1,5 @@
 package goryachev.apps;
 
-import goryachev.util.FxDebug;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
@@ -8,24 +7,30 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+
+import goryachev.util.FxDebug;
 
 public class ATableViewTester extends Application {
     
     enum Demo {
+        LARGE("large model"),
         ALL("all set: min, pref, max"),
         PREF("pref only"),
         EMPTY("empty"),
         MIN_WIDTH("min width"),
         MAX_WIDTH("max width"),
-        INCONSISTENT("inconsistent: pref < min")
+        INCONSISTENT("inconsistent: pref < min"),
         ;
 
         private final String text;
@@ -36,6 +41,7 @@ public class ATableViewTester extends Application {
     enum Cmd {
         ROWS,
         COL,
+        COL_WITH_GRAPHICS,
         MIN,
         PREF,
         MAX
@@ -148,11 +154,34 @@ public class ATableViewTester extends Application {
             if(x instanceof Cmd cmd) {
                 switch(cmd) {
                 case COL:
-                    TableColumn<String,String> c = new TableColumn<>();
-                    table.getColumns().add(c);
-                    c.setText("C" + table.getColumns().size());
-                    c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
-                    lastColumn = c;
+                    {
+                        TableColumn<String,String> c = new TableColumn<>();
+                        table.getColumns().add(c);
+                        c.setText("C" + table.getColumns().size());
+                        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
+                        lastColumn = c;
+                    }
+                    break;
+                case COL_WITH_GRAPHICS:
+                    {
+                        TableColumn<String,String> c = new TableColumn<>();
+                        table.getColumns().add(c);
+                        c.setText("C" + table.getColumns().size());
+                        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
+                        c.setCellFactory((r) -> {
+                            return new TableCell<>() {
+                                @Override
+                                protected void updateItem(String item, boolean empty) {
+                                    super.updateItem(item, empty);
+                                    Text t = new Text("11111111111111111111111111111111111111111111111111111111111111111111111111111111111111\n2\n3\n");
+                                    t.wrappingWidthProperty().bind(widthProperty());
+                                    setPrefHeight(USE_COMPUTED_SIZE);
+                                    setGraphic(t);
+                                }
+                            };
+                        });
+                        lastColumn = c;
+                    }
                     break;
                 case MAX:
                     {
@@ -175,7 +204,7 @@ public class ATableViewTester extends Application {
                 case ROWS:
                     int n = (int)(spec[i++]);
                     for(int j=0; j<n; j++) {
-                        table.getItems().add("");
+                        table.getItems().add(String.valueOf(i));
                     }
                     break;
                 default:
@@ -209,40 +238,47 @@ public class ATableViewTester extends Application {
                 Cmd.COL, Cmd.MIN, 20, Cmd.PREF, 20, Cmd.MAX, 20,
                 Cmd.COL, Cmd.PREF, 200,
                 Cmd.COL, Cmd.PREF, 300, Cmd.MAX, 400
-                );
+            );
         case PREF:
             return createTable(
                 Cmd.ROWS, 3,
                 Cmd.COL, Cmd.PREF, 100,
                 Cmd.COL, Cmd.PREF, 200,
                 Cmd.COL, Cmd.PREF, 300
-                );
+            );
         case EMPTY:
             return createTable(
                 Cmd.COL,
                 Cmd.COL,
                 Cmd.COL
-                );
+            );
         case MIN_WIDTH:
             return createTable(
                 Cmd.ROWS, 3,
                 Cmd.COL,
                 Cmd.COL,
                 Cmd.COL, Cmd.MIN, 300
-                );
+            );
         case MAX_WIDTH:
             return createTable(
                 Cmd.ROWS, 3,
                 Cmd.COL,
                 Cmd.COL,
                 Cmd.COL, Cmd.MAX, 300
-                );
+            );
         case INCONSISTENT:
             return createTable(
                 Cmd.ROWS, 3,
                 Cmd.COL, Cmd.PREF, 2000, Cmd.MAX, 200,
                 Cmd.COL, Cmd.MIN, 300, Cmd.PREF, 20
-                );
+            );
+        case LARGE:
+            return createTable(
+                Cmd.ROWS, 3000,
+                Cmd.COL_WITH_GRAPHICS,
+                Cmd.COL_WITH_GRAPHICS,
+                Cmd.COL_WITH_GRAPHICS
+            );
         default:
             return new BorderPane();
         }
