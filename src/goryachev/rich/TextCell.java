@@ -30,6 +30,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+import goryachev.rich.util.FxPathBuilder;
+
 /**
  * Represents a text flow cell - contains either a TextFlow or a Region. 
  */
@@ -89,5 +91,16 @@ public class TextCell {
 
     public int getLineIndex() {
         return index;
+    }
+
+    public void addBoxOutline(FxPathBuilder b, double x, double w) {
+        double y0 = content.getLayoutY();
+        double y1 = y0 + content.getHeight();
+        
+        b.moveto(x, y0);
+        b.lineto(w, y0);
+        b.lineto(w, y1);
+        b.lineto(x, y1);
+        b.lineto(x, y0);
     }
 }

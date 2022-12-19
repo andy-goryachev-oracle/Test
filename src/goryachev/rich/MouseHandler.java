@@ -39,7 +39,7 @@ public class MouseHandler {
         this.control = control;
     }
     
-    public void register(RichTextArea control, VFlow f) {
+    public void register(VFlow f) {
         f.addEventFilter(MouseEvent.MOUSE_CLICKED, this::handleMouseClicked);
         f.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
         f.addEventFilter(MouseEvent.MOUSE_RELEASED, this::handleMouseReleased);

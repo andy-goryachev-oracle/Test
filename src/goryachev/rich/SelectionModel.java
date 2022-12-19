@@ -26,7 +26,14 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import javafx.beans.property.ReadOnlyProperty;
+
 public interface SelectionModel {
+    /**
+     * Sets anchor.
+     */
+    public void setAnchor(Marker anchor);
+
     /**
      * clears the selection
      */
@@ -42,4 +49,14 @@ public interface SelectionModel {
      * then selects from the anchor point to the current position.
      */
     public void clearAndExtendLastSegment(Marker pos);
+    
+    /**
+     * Selection segment property.  The value can be null.
+     */
+    public ReadOnlyProperty<SelectionSegment> selectionSegmentProperty();
+
+    /**
+     * returns current selection segment, or null.
+     */
+    public SelectionSegment getSelectionSegment();
 }

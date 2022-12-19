@@ -32,3 +32,13 @@
 .rich-text-area .caret {
     -fx-stroke: black;
 }
+
+.rich-text-area .caret-line {
+    -fx-stroke: null;
+    -fx-fill: #ff00ff;
+}
+
+.rich-text-area .selection-highlight {
+    -fx-stroke: null;
+    -fx-fill: #ffff00;
+}

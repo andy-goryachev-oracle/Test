@@ -41,6 +41,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 
 import goryachev.rich.impl.Markers;
+import goryachev.rich.util.FxPathBuilder;
 
 /**
  * Virtual text flow deals with TextCells, scroll bars, and conversion
@@ -54,10 +55,11 @@ public class VFlow extends Pane {
     private final RichTextArea control;
     private final ScrollBar vscroll;
     private final ScrollBar hscroll;
-    private final Pane contentPane;
     private final Rectangle clip;
     private TextCellLayout layout;
     private final Path caretPath;
+    private final Path caretLineHighlight;
+    private final Path selectionHighlight;
     private final SimpleIntegerProperty topLineIndex = new SimpleIntegerProperty(0);
 
     public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
@@ -65,17 +67,23 @@ public class VFlow extends Pane {
         this.vscroll = vscroll;
         this.hscroll = hscroll;
 
-        // do not set padding on this pane!
-        contentPane = new Pane();
-
         clip = new Rectangle();
-        contentPane.setClip(clip);
+        setClip(clip);
         
         caretPath = new Path();
         caretPath.getStyleClass().add("caret");
         caretPath.setManaged(false);
         
-        getChildren().addAll(contentPane, caretPath);
+        caretLineHighlight = new Path();
+        caretLineHighlight.getStyleClass().add("caret-line");
+        caretLineHighlight.setManaged(false);
+        caretLineHighlight.setFill(Color.rgb(255, 0, 255, 0.02)); // FIX
+
+        selectionHighlight = new Path();
+        selectionHighlight.getStyleClass().add("selection-highlight");
+        selectionHighlight.setManaged(false);
+        
+        getChildren().addAll(caretLineHighlight, selectionHighlight, caretPath);
     }
     
     public int getTopLineIndex() {
@@ -93,7 +101,7 @@ public class VFlow extends Pane {
     @Override
     protected void layoutChildren() {
         // do we need to rebuild layout?
-        if((layout == null) || !layout.isValid(this)) {
+        if ((layout == null) || !layout.isValid(this)) {
             layout = layoutCells(layout);
             updateCaretAndSelection();
         }
@@ -191,10 +199,49 @@ public class VFlow extends Pane {
     }
 
     public void updateCaretAndSelection() {
-        if(control.isHighlightCurrentLine()) {
-            
+        SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
+        if(sel == null) {
+            return;
         }
+        
+        Marker caret = sel.getCaret();
+
+        // current line highlight
+        if (control.isHighlightCurrentLine()) {
+            FxPathBuilder caretLineBuilder = new FxPathBuilder();
+            createCurrentLineHighlight(caretLineBuilder, caret);
+            caretLineHighlight.getElements().setAll(caretLineBuilder.getPathElements());
+        }
+
+        // selection and caret
+        FxPathBuilder selectionBuilder = new FxPathBuilder();
+        FxPathBuilder caretBuilder = new FxPathBuilder();
+        Marker start = sel.getMin();
+        Marker end = sel.getMax();
+        createSelectionHighlight(selectionBuilder, start, end);
+        createCaretPath(caretBuilder, caret);
+        selectionHighlight.getElements().setAll(selectionBuilder.getPathElements());
+        caretPath.getElements().setAll(caretBuilder.getPathElements());
+    }
+
+    protected void createCaretPath(FxPathBuilder caretBuilder, Marker caret) {
         // TODO
+    }
+
+    protected void createSelectionHighlight(FxPathBuilder b, Marker start, Marker end) {
+        // TODO
+    }
+
+    protected void createCurrentLineHighlight(FxPathBuilder b, Marker caret) {
+        int ix = caret.getLineIndex();
+        TextCell cell = layout.getCell(ix);
+        if(cell != null) {
+            if(control.isWrapText()) {
+                cell.addBoxOutline(b, snappedLeftInset(), snapPositionX(getWidth() - snappedLeftInset() - snappedRightInset()));
+            } else {
+                cell.addBoxOutline(b, snappedLeftInset(), snapPositionX(layout.getTotalWidth()));
+            }
+        }
     }
 
     public Marker getTextPosition(double screenX, double screenY, Markers markers) {

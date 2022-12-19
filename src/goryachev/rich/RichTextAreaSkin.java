@@ -100,7 +100,11 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
 
         this.behavior = new RichTextAreaBehavior(control);
         
-        createMouseHandler().register(control, vflow);
+        createMouseHandler().register(vflow);
+        
+        control.getSelectionModel().selectionSegmentProperty().addListener((s,p,sel) -> {
+            vflow.updateCaretAndSelection();
+        });
     }
 
     @Override

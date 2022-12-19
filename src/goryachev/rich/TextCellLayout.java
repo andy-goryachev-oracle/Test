@@ -50,6 +50,9 @@ public class TextCellLayout {
     
     public TextCellLayout(VFlow flow) {
         this.flow = flow;
+        this.width = flow.getWidth();
+        this.height = flow.getHeight();
+        this.topLineIndex = flow.getTopLineIndex();
     }
 
     public boolean isValid(VFlow f) {
@@ -65,6 +68,11 @@ public class TextCellLayout {
     
     public void setUnwrappedWidth(double w) {
         unwrappedWidth = w;
+    }
+    
+    public double getTotalWidth() {
+        // TODO add line number section width + any other gutters widths
+        return unwrappedWidth;
     }
     
     protected TextCell getLastCell() {
@@ -95,17 +103,25 @@ public class TextCellLayout {
                 }
             }
         }
-        
+
         TextCell cell = getLastCell();
-        if(cell == null) {
+        if (cell == null) {
             return Marker.ZERO;
         }
-        
+
         Region r = cell.getContent();
         int ix = 0;
-        if(r instanceof TextFlow f) {
+        if (r instanceof TextFlow f) {
             ix = Math.max(0, NewAPI.getText(f).length() - 1);
         }
         return markers.newMarker(cell.getLineIndex(), ix, false);
+    }
+
+    public TextCell getCell(int modelIndex) {
+        int ix = modelIndex - topLineIndex;
+        if ((ix >= 0) && (ix < cells.size())) {
+            return cells.get(ix);
+        }
+        return null;
     }
 }
