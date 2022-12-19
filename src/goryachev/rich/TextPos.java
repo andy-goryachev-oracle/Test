@@ -22,37 +22,29 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-// this code borrows heavily from the following project, with permission from the author:
-// https://github.com/andy-goryachev/FxEditor
-package goryachev.rich.impl;
-
-import goryachev.rich.Marker;
-import goryachev.rich.TextPos;
-import goryachev.rich.util.WeakList;
+package goryachev.rich;
 
 /**
- * Manages Markers.
+ * An immutable text position.
+ * Because it is immutable, it cannot track locations in the document which is being edited.
+ * For that, use {@link Marker}. 
  */
-public class Markers {
-    private static final int LIMIT_MARKER_COUNT_SAFEGUARD = 1_000_000;
-    private final WeakList<Marker> markers;
-    
-    public Markers(int size ) {
-        markers = new WeakList<>(size);
+public record TextPos(int lineIndex, int charIndex, boolean leading) implements Comparable<TextPos> {
+    public int getLineOffset() {
+        return leading ? charIndex : (charIndex + 1);
     }
     
-    public Marker newMarker(int lineIndex, int charIndex, boolean leading) {
-        Marker m = Marker.create(this, new TextPos(lineIndex, charIndex, leading));
-        markers.add(m);
-        
-        // safeguard
-        if (markers.size() > LIMIT_MARKER_COUNT_SAFEGUARD) {
-            markers.gc();
-            if (markers.size() > LIMIT_MARKER_COUNT_SAFEGUARD) {
-                throw new RuntimeException("too many markers");
+    @Override
+    public int compareTo(TextPos p) {
+        int d = lineIndex - p.lineIndex;
+        if(d == 0) {
+            d = getLineOffset() - p.getLineOffset();
+            if(d == 0) {
+                if(leading != p.leading) {
+                    return leading ? -1 : 1;
+                }
             }
         }
-        
-        return m;
+        return d;
     }
 }

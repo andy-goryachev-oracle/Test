@@ -26,80 +26,63 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
+
 import goryachev.rich.impl.Markers;
 
 /**
- * Tracks position in the text document.
- * 
- * TODO control maintains a weak list of these markers - what is someone creates a binding to one of the
- * marker's property?  will it break the binding?
- * 
- * Another altenative is to create an immutable position (similar to HitInfo, but w/o String text) and
- * have a single property in the Marker.
- * 
- * TODO three properties or a single immutable TextPos?
+ * Tracks text position in the text document in the presence of edits.
  */
 public class Marker implements Comparable<Marker> {
-    public static final Marker ZERO = new Marker(true);
-    private int lineIndex;
-    private int charIndex;
-    private boolean leading;
+    public static final Marker ZERO = new Marker(new TextPos(0, 0, true));
+    private final ReadOnlyObjectWrapper<TextPos> pos;
     
-    private Marker() {
+    private Marker(TextPos pos) {
+        this.pos = new ReadOnlyObjectWrapper<>(pos);
     }
     
-    private Marker(boolean leading) {
-        this.leading = leading;
-    }
-    
-    public static Marker create(Markers owner, int lineIndex, int charIndex, boolean leading) {
+    public static Marker create(Markers owner, TextPos pos) {
         if(owner == null) {
             throw new IllegalArgumentException("must specify the owner");
         }
         
-        Marker m = new Marker();
-        m.lineIndex = lineIndex;
-        m.charIndex = charIndex;
-        m.leading = leading;
-        return m;
+        return new Marker(pos);
+    }
+    
+    public ReadOnlyObjectProperty<TextPos> textPosProperty() {
+        return pos.getReadOnlyProperty();
     }
 
     @Override
     public int compareTo(Marker m) {
-        int d = lineIndex - m.lineIndex;
-        if(d == 0) {
-            d = getLineOffset() - m.getLineOffset();
-            if(d == 0) {
-                if(leading != m.leading) {
-                    return leading ? -1 : 1;
-                }
-            }
-        }
-        return d;
+        return getTextPos().compareTo(m.getTextPos());
     }
     
     @Override
     public int hashCode() {
         int h = Marker.class.hashCode();
-        h = h * 31 + lineIndex;
-        h = h * 31 + charIndex;
-        h = h * 31 + Boolean.hashCode(leading);
+        h = h * 31 + getTextPos().hashCode();
         return h;
     }
     
+    public TextPos getTextPos() {
+        return pos.get();
+    }
+    
     public int getLineIndex() {
-        return lineIndex;
+        return getTextPos().lineIndex();
     }
     
     public int getCharIndex() {
-        return charIndex;
+        return getTextPos().charIndex();
     }
     
     public boolean isLeading() {
-        return leading;
+        return getTextPos().leading();
     }
     
     public int getLineOffset() {
-        return leading ? charIndex : (charIndex + 1);
+        return getTextPos().getLineOffset();
     }
 }

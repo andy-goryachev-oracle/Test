@@ -37,12 +37,12 @@ public class RichTextAreaDemoModel extends SimpleStyledTextModel {
 
         addSegment("RichTextArea Control", "-fx-font-size:200%;", UNDER);
         nl();
-        addSegment("This text is styled with inline style.", "-fx-font-size:100%; -fx-font-style:italic;");
+        addSegment("This text is styled with inline style.", "-fx-font-size:75%; -fx-font-style:italic; -fx-fill:magenta;");
         nl();
         addSegment("The following text is styled with a CSS stylesheet:", null, null);
         nl().nl();
-        addSegment("/**", null, RED, CODE);
-        addSegment(" * RichTextArea demo.", null, RED, CODE);
+        addSegment("/**", null, RED, CODE).nl();
+        addSegment(" * RichTextArea demo.", null, RED, CODE).nl();
         addSegment(" */", null, RED, CODE).nl();
         addSegment("public class ", null, GREEN, CODE);
         addSegment("RichTextAreaDemo ", null, CODE);
