@@ -22,12 +22,19 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.ensemble.pages;
+package goryachev.ensemble;
+
+import goryachev.ensemble.pages.ComboBoxPage;
+import goryachev.ensemble.pages.DatePickerPage;
+import goryachev.ensemble.pages.DemoPage;
+import goryachev.ensemble.pages.DualFocusPage;
+import goryachev.ensemble.pages.HtmlEditorPage;
+import goryachev.ensemble.pages.TableViewPage;
 
 /**
- *
+ * Ensemble pages.
  */
-public class AllPages {
+public class Pages {
     public static DemoPage[] create() {
         return new DemoPage[] {
             new DemoPage("ComboBox", ComboBoxPage::new),

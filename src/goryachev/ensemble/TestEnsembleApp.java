@@ -26,7 +26,7 @@ package goryachev.ensemble;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import goryachev.ensemble.pages.AllPages;
+
 import goryachev.ensemble.pages.DemoPage;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -95,7 +95,7 @@ public class TestEnsembleApp extends Application {
     }
     
     protected DemoPage[] createPages() {
-        DemoPage[] pages = AllPages.create();
+        DemoPage[] pages = Pages.create();
         Arrays.sort(pages, new Comparator<DemoPage>() {
             @Override
             public int compare(DemoPage a, DemoPage b) {
