@@ -24,12 +24,7 @@
  */
 package goryachev.ensemble;
 
-import goryachev.ensemble.pages.ComboBoxPage;
-import goryachev.ensemble.pages.DatePickerPage;
-import goryachev.ensemble.pages.DemoPage;
-import goryachev.ensemble.pages.DualFocusPage;
-import goryachev.ensemble.pages.HtmlEditorPage;
-import goryachev.ensemble.pages.TableViewPage;
+import goryachev.ensemble.pages.*;
 
 /**
  * Ensemble pages.
@@ -40,6 +35,7 @@ public class Pages {
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("HtmlEditor", HtmlEditorPage::new),
             new DemoPage("TableView", TableViewPage::new),
+            new DemoPage("TextField", TextFieldPage::new),
             new DemoPage("Dual Focus JDK-8292933", DualFocusPage::new),
             new DemoPage("DatePicker in Alert", DatePickerPage::new),
         };
