@@ -47,6 +47,7 @@ public class TextFieldPage extends ToolPane {
     public TextFieldPage() {
         textField = new TextField();
         textField.setAlignment(Pos.BASELINE_RIGHT);
+        textField.setPromptText("<prompt>");
         
         ComboBox<TextChoice> textChoice = new ComboBox<>();
         textChoice.getItems().setAll(TextChoice.values());
@@ -55,18 +56,30 @@ public class TextFieldPage extends ToolPane {
             textField.setText(text);
         });
         
+        ComboBox<Pos> posChoice = new ComboBox<>();
+        posChoice.getItems().setAll(Pos.values());
+        posChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+            Pos a = posChoice.getSelectionModel().getSelectedItem();
+            textField.setAlignment(a);
+        });
+        
         GridPane p = new GridPane();
-        p.add(new Label("Text:"), 0, 0);
-        p.add(textChoice, 1, 0);
+        int r = 0;
+        p.add(new Label("Text:"), 0, r++);
+        p.add(textChoice, 0, r++);
+        p.add(new Label("Alignment:"), 0, r++);
+        p.add(posChoice, 0, r++);
         
         setCenter(textField);
         setRight(p);
+        
+        posChoice.getSelectionModel().select(Pos.BASELINE_RIGHT);
     }
     
     protected String getText(TextChoice ch) {
         switch(ch) {
         case LONG:
-            return "slfjghldfjkghsdfkjbhlsdfuhgldgjhbdsfughfldsiuhgkduhfbldfajgladufhglkjsfdbvladfhvgladsfbh";
+            return "<beg-01234567890123456789012345678901234567890123456789012345678901234567890123456789-end>";
         case SHORT:
             return "yo";
         case NULL:
