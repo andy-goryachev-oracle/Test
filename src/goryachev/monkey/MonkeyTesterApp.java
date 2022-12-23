@@ -26,7 +26,6 @@ package goryachev.monkey;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import goryachev.monkey.pages.AllPages;
 import goryachev.monkey.pages.DemoPage;
 import goryachev.monkey.util.FX;
 import javafx.application.Application;
@@ -134,7 +133,7 @@ public class MonkeyTesterApp extends Application {
     }
     
     protected DemoPage[] createPages() {
-        DemoPage[] pages = AllPages.create();
+        DemoPage[] pages = Pages.create();
         Arrays.sort(pages, new Comparator<DemoPage>() {
             @Override
             public int compare(DemoPage a, DemoPage b) {

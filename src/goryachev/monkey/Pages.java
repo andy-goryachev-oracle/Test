@@ -22,17 +22,20 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.monkey.pages;
+package goryachev.monkey;
+
+import goryachev.monkey.pages.*;
 
 /**
- *
+ * Ensemble pages.
  */
-public class AllPages {
+public class Pages {
     public static DemoPage[] create() {
         return new DemoPage[] {
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("HtmlEditor", HtmlEditorPage::new),
             new DemoPage("TableView", TableViewPage::new),
+            new DemoPage("TextField", TextFieldPage::new),
             new DemoPage("Dual Focus JDK-8292933", DualFocusPage::new),
             new DemoPage("DatePicker in Alert", DatePickerPage::new),
         };
