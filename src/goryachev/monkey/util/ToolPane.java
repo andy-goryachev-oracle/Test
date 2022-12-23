@@ -38,7 +38,27 @@ import javafx.stage.Window;
  *
  */
 public class ToolPane  extends BorderPane {
+    private final BorderPane contentPane;
+
     public ToolPane() {
+        contentPane = new BorderPane();
+        contentPane.setOpacity(1.0);
+        
+        SplitPane hsplit = new SplitPane(contentPane, pane());
+        hsplit.setDividerPositions(0.9);
+        hsplit.setOrientation(Orientation.HORIZONTAL);
+        
+        SplitPane vsplit = new SplitPane(hsplit, pane());
+        vsplit.setDividerPositions(0.9);
+        vsplit.setOrientation(Orientation.VERTICAL);
+        
+        setCenter(vsplit);
+    }
+    
+    protected static Pane pane() {
+        Pane p = new Pane();
+        p.setStyle("-fx-background-color:#dddddd;");
+        return p;
     }
     
     public Button addButton(String name, Runnable action) {
@@ -70,13 +90,7 @@ public class ToolPane  extends BorderPane {
     }
     
     public void setContent(Node content) {
-        SplitPane hsplit = new SplitPane(content, new Pane());
-        hsplit.setDividerPositions(0.9);
-        hsplit.setOrientation(Orientation.HORIZONTAL);
-        SplitPane vsplit = new SplitPane(hsplit, new Pane());
-        vsplit.setDividerPositions(0.9);
-        vsplit.setOrientation(Orientation.VERTICAL);
-        setCenter(vsplit);
+        contentPane.setCenter(content);
     }
     
     public void setOptions(Node n) {

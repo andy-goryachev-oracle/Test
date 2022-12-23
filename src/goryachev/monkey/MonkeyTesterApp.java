@@ -83,8 +83,8 @@ public class MonkeyTesterApp extends Application {
         bp.setBottom(status);
         
         stage.setScene(new Scene(bp));
-        stage.setWidth(1000);
-        stage.setHeight(600);
+        stage.setWidth(1200);
+        stage.setHeight(800);
         
         stage.renderScaleXProperty().addListener((s,p,c) -> updateStatus());
         updateTitle();

@@ -24,15 +24,14 @@
  */
 package goryachev.monkey.pages;
 
+import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.ToolPane;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
 
 /**
- * TextField page
+ * TextField Page
  */
 public class TextFieldPage extends ToolPane {
     enum TextChoice {
@@ -62,12 +61,11 @@ public class TextFieldPage extends ToolPane {
             textField.setAlignment(a);
         });
         
-        GridPane p = new GridPane();
-        int r = 0;
-        p.add(new Label("Text:"), 0, r++);
-        p.add(textChoice, 0, r++);
-        p.add(new Label("Alignment:"), 0, r++);
-        p.add(posChoice, 0, r++);
+        OptionPane p = new OptionPane();
+        p.label("Text:");
+        p.option(textChoice);
+        p.label("Alignment:");
+        p.option(posChoice);
         
         setContent(textField);
         setOptions(p);
