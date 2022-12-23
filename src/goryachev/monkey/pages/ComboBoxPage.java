@@ -44,7 +44,7 @@ public class ComboBoxPage extends ToolPane {
         
         VBox b = new VBox();
         b.getChildren().add(comboBox);
-        setCenter(b);
+        setContent(b);
         
         addButton("Set Converter", () -> {
             comboBox.setConverter(new StringConverter() {

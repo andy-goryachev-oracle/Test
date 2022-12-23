@@ -24,11 +24,14 @@
  */
 package goryachev.monkey.util;
 
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 
 /**
@@ -64,6 +67,20 @@ public class ToolPane  extends BorderPane {
             return s.getWindow();
         }
         return null;
+    }
+    
+    public void setContent(Node content) {
+        SplitPane hsplit = new SplitPane(content, new Pane());
+        hsplit.setDividerPositions(0.9);
+        hsplit.setOrientation(Orientation.HORIZONTAL);
+        SplitPane vsplit = new SplitPane(hsplit, new Pane());
+        vsplit.setDividerPositions(0.9);
+        vsplit.setOrientation(Orientation.VERTICAL);
+        setCenter(vsplit);
+    }
+    
+    public void setOptions(Node n) {
+        setRight(n);
     }
     
     //

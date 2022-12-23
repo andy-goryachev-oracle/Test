@@ -60,7 +60,7 @@ public class TableViewPage extends ToolPane {
             createColumn("col4")
         );
         
-        setCenter(table);
+        setContent(table);
         
         // TableViewKeyInputTest:860
         sm.setSelectionMode(SelectionMode.MULTIPLE);

@@ -69,8 +69,8 @@ public class TextFieldPage extends ToolPane {
         p.add(new Label("Alignment:"), 0, r++);
         p.add(posChoice, 0, r++);
         
-        setCenter(textField);
-        setRight(p);
+        setContent(textField);
+        setOptions(p);
         
         posChoice.getSelectionModel().select(Pos.BASELINE_RIGHT);
     }

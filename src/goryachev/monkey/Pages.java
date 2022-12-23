@@ -27,7 +27,7 @@ package goryachev.monkey;
 import goryachev.monkey.pages.*;
 
 /**
- * Ensemble pages.
+ * Monkey Tester Pages.
  */
 public class Pages {
     public static DemoPage[] create() {

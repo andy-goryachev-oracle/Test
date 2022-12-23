@@ -33,6 +33,6 @@ import javafx.scene.web.HTMLEditor;
 public class HtmlEditorPage extends ToolPane {
     public HtmlEditorPage() {
         HTMLEditor ed = new HTMLEditor();
-        setCenter(ed);
+        setContent(ed);
     }
 }

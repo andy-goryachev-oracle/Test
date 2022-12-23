@@ -38,7 +38,7 @@ public class DualFocusPage extends ToolPane {
         bp.setTop(textField);
         bp.setCenter(textArea);
 
-        setCenter(bp);
+        setContent(bp);
     }
 
     protected void handleFocus(boolean on) {
