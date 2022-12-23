@@ -30,11 +30,13 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import javafx.util.Callback;
 
 /**
@@ -43,6 +45,7 @@ import javafx.util.Callback;
 public class TableViewPage extends ToolPane {
     enum Demo {
         PREF("pref only"),
+        VARIABLE("variable cell height"),
         ALL("all set: min, pref, max"),
         EMPTY("empty with pref"),
         MIN_WIDTH("min width"),
@@ -67,7 +70,7 @@ public class TableViewPage extends ToolPane {
         public String toString() { return text; }
     }
 
-    public enum Policy {
+    public enum ResizePolicy {
 // TODO
 //        AUTO_RESIZE_FLEX_NEXT_COLUMN,
 //        AUTO_RESIZE_FLEX_LAST_COLUMN,
@@ -98,11 +101,12 @@ public class TableViewPage extends ToolPane {
         MIN,
         PREF,
         MAX,
-        COMBINE
+        COMBINE,
+        COL_WITH_GRAPHIC
     }
 
     protected final ComboBox<Demo> demoSelector;
-    protected final ComboBox<Policy> policySelector;
+    protected final ComboBox<ResizePolicy> policySelector;
     protected final ComboBox<Selection> selectionSelector;
     protected final CheckBox nullFocusModel;
     
@@ -116,7 +120,7 @@ public class TableViewPage extends ToolPane {
         });
 
         policySelector = new ComboBox<>();
-        policySelector.getItems().addAll(Policy.values());
+        policySelector.getItems().addAll(ResizePolicy.values());
         policySelector.setEditable(false);
         policySelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             updatePane();
@@ -186,7 +190,7 @@ public class TableViewPage extends ToolPane {
         return sb.toString();
     }
 
-    protected Callback<ResizeFeatures, Boolean> createPolicy(Policy p) {
+    protected Callback<ResizeFeatures, Boolean> createPolicy(ResizePolicy p) {
         switch(p) {
 // TODO
 //        case AUTO_RESIZE_FLEX_NEXT_COLUMN:
@@ -231,6 +235,13 @@ public class TableViewPage extends ToolPane {
                 Cmd.COL, Cmd.PREF, 200,
                 Cmd.COL, Cmd.PREF, 300,
                 Cmd.COL, Cmd.PREF, 400
+            };
+        case VARIABLE:
+            return new Object[] {
+                Cmd.ROWS, 10_000,
+                Cmd.COL_WITH_GRAPHIC,
+                Cmd.COL_WITH_GRAPHIC,
+                Cmd.COL_WITH_GRAPHIC
             };
         case EMPTY:
             return new Object[] {
@@ -418,11 +429,11 @@ public class TableViewPage extends ToolPane {
     }
 
     protected void updatePane() {
-        Policy p = policySelector.getSelectionModel().getSelectedItem();
         Demo d = demoSelector.getSelectionModel().getSelectedItem();
+        ResizePolicy p = policySelector.getSelectionModel().getSelectedItem();
         Object[] spec = createSpec(d);
 
-        Pane n = createPane(p, spec);
+        Pane n = createPane(d, p, spec);
         setContent(n);
     }
 
@@ -437,8 +448,8 @@ public class TableViewPage extends ToolPane {
         t.getColumns().add(ix, tc);
     }
 
-    protected Pane createPane(Policy policy, Object[] spec) {
-        if ((spec == null) || (policy == null)) {
+    protected Pane createPane(Demo demo, ResizePolicy policy, Object[] spec) {
+        if ((demo == null) || (spec == null) || (policy == null)) {
             return new BorderPane();
         }
         
@@ -489,34 +500,59 @@ public class TableViewPage extends ToolPane {
             if (x instanceof Cmd cmd) {
                 switch (cmd) {
                 case COL:
-                    TableColumn<String,String> c = new TableColumn<>();
-                    table.getColumns().add(c);
-                    c.setText("C" + table.getColumns().size());
-//                    if (table.getColumns().size() == 1) {
-//                        c.setText("Really really really really really really really really really really really really really long");
-//                    }
-                    c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
-                    lastColumn = c;
+                    {
+                        TableColumn<String,String> c = new TableColumn<>();
+                        table.getColumns().add(c);
+                        c.setText("C" + table.getColumns().size());
+                        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
+                        lastColumn = c;
+                    }
                     break;
-                case MAX: {
-                    int w = (int)(spec[i++]);
-                    lastColumn.setMaxWidth(w);
-                }
+                case COL_WITH_GRAPHIC:
+                    {
+                        TableColumn<String,String> c = new TableColumn<>();
+                        table.getColumns().add(c);
+                        c.setText("C" + table.getColumns().size());
+                        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
+                        c.setCellFactory((r) -> {
+                            return new TableCell<>() {
+                                @Override
+                                protected void updateItem(String item, boolean empty) {
+                                    super.updateItem(item, empty);
+                                    Text t = new Text("11111111111111111111111111111111111111111111111111111111111111111111111111111111111111\n2\n3\n");
+                                    t.wrappingWidthProperty().bind(widthProperty());
+                                    setPrefHeight(USE_COMPUTED_SIZE);
+                                    setGraphic(t);
+                                }
+                            };
+                        });
+                        lastColumn = c;
+                    }
                     break;
-                case MIN: {
-                    int w = (int)(spec[i++]);
-                    lastColumn.setMinWidth(w);
-                }
+                case MAX:
+                    {
+                        int w = (int)(spec[i++]);
+                        lastColumn.setMaxWidth(w);
+                    }
                     break;
-                case PREF: {
-                    int w = (int)(spec[i++]);
-                    lastColumn.setPrefWidth(w);
-                }
+                case MIN: 
+                    {
+                        int w = (int)(spec[i++]);
+                        lastColumn.setMinWidth(w);
+                    }
+                    break;
+                case PREF:
+                    {
+                        int w = (int)(spec[i++]);
+                        lastColumn.setPrefWidth(w);
+                    }
                     break;
                 case ROWS:
-                    int n = (int)(spec[i++]);
-                    for (int j = 0; j < n; j++) {
-                        table.getItems().add(String.valueOf(n));
+                    {
+                        int n = (int)(spec[i++]);
+                        for (int j = 0; j < n; j++) {
+                            table.getItems().add(String.valueOf(n));
+                        }
                     }
                     break;
                 case COMBINE:
