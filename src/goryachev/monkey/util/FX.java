@@ -22,56 +22,32 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.ensemble.util;
+package goryachev.monkey.util;
 
-import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.stage.Window;
+import java.util.List;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 
 /**
- *
+ * Shortcuts and convenience methods that should be a part of JavaFX.
  */
-public class ToolPane  extends BorderPane {
-    public ToolPane() {
+public class FX {
+    public static Menu menu(MenuBar b, String text) {
+        Menu m = new Menu(text);
+        b.getMenus().add(m);
+        return m;
     }
-    
-    public Button addButton(String name, Runnable action) {
-        Button b = new Button(name);
-        b.setOnAction((ev) -> {
-            action.run();
-        });
-        
-        toolbar().add(b);
-        return b;
+
+    public static MenuItem item(MenuBar b, String text, Runnable action) {
+        MenuItem mi = new MenuItem(text);
+        mi.setOnAction((ev) -> action.run());
+        lastMenu(b).getItems().add(mi);
+        return mi;
     }
-    
-    public TBar toolbar() {
-        if(getTop() instanceof TBar) {
-            return (TBar)getTop();
-        }
-        
-        TBar t = new TBar();
-        setTop(t);
-        return t;
-    }
-    
-    public Window getWindow() {
-        Scene s = getScene();
-        if(s != null) {
-            return s.getWindow();
-        }
-        return null;
-    }
-    
-    //
-    
-    public static class TBar extends HBox {
-        public <T extends Node> T add(T n) {
-            getChildren().add(n);
-            return n;
-        }
+
+    private static Menu lastMenu(MenuBar b) {
+        List<Menu> ms = b.getMenus();
+        return ms.get(ms.size() - 1);
     }
 }

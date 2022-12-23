@@ -22,19 +22,56 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.ensemble.pages;
+package goryachev.monkey.util;
+
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
+import javafx.stage.Window;
 
 /**
  *
  */
-public class AllPages {
-    public static DemoPage[] create() {
-        return new DemoPage[] {
-            new DemoPage("ComboBox", ComboBoxPage::new),
-            new DemoPage("HtmlEditor", HtmlEditorPage::new),
-            new DemoPage("TableView", TableViewPage::new),
-            new DemoPage("Dual Focus JDK-8292933", DualFocusPage::new),
-            new DemoPage("DatePicker in Alert", DatePickerPage::new),
-        };
+public class ToolPane  extends BorderPane {
+    public ToolPane() {
+    }
+    
+    public Button addButton(String name, Runnable action) {
+        Button b = new Button(name);
+        b.setOnAction((ev) -> {
+            action.run();
+        });
+        
+        toolbar().add(b);
+        return b;
+    }
+    
+    public TBar toolbar() {
+        if(getTop() instanceof TBar) {
+            return (TBar)getTop();
+        }
+        
+        TBar t = new TBar();
+        setTop(t);
+        return t;
+    }
+    
+    public Window getWindow() {
+        Scene s = getScene();
+        if(s != null) {
+            return s.getWindow();
+        }
+        return null;
+    }
+    
+    //
+    
+    public static class TBar extends HBox {
+        public <T extends Node> T add(T n) {
+            getChildren().add(n);
+            return n;
+        }
     }
 }

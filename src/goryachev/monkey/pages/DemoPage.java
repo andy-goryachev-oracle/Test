@@ -22,17 +22,32 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.ensemble.pages;
+package goryachev.monkey.pages;
 
-import goryachev.ensemble.util.ToolPane;
-import javafx.scene.web.HTMLEditor;
+import java.util.function.Supplier;
+import javafx.scene.layout.Pane;
 
 /**
  *
  */
-public class HtmlEditorPage extends ToolPane {
-    public HtmlEditorPage() {
-        HTMLEditor ed = new HTMLEditor();
-        setCenter(ed);
+public class DemoPage {
+    private final String title;
+    private final Supplier<Pane> generator;
+    
+    public DemoPage(String title, Supplier<Pane> generator) {
+        this.title = title;
+        this.generator = generator;
+    }
+    
+    public Pane createPane() {
+        return generator.get();
+    }
+    
+    public String toString() {
+        return title;
+    }
+
+    public String getTitle() {
+        return title;
     }
 }

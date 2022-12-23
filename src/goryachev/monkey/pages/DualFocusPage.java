@@ -1,9 +1,9 @@
 // Copyright © 2018-2019 Andy Goryachev <andy@goryachev.com>
 // https://github.com/andy-goryachev/JavaBugs/blob/master/src/goryachev/bugs/fx/DualFocus.java
 // https://bugs.openjdk.org/browse/JDK-8292933
-package goryachev.ensemble.pages;
+package goryachev.monkey.pages;
 
-import goryachev.ensemble.util.ToolPane;
+import goryachev.monkey.util.ToolPane;
 import javafx.geometry.Point2D;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.PopupControl;

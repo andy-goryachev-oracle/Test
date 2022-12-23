@@ -22,9 +22,9 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.ensemble.pages;
+package goryachev.monkey.pages;
 
-import goryachev.ensemble.util.ToolPane;
+import goryachev.monkey.util.ToolPane;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;

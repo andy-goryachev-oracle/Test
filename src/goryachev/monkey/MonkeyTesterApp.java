@@ -22,39 +22,48 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.ensemble;
+package goryachev.monkey;
 
 import java.util.Arrays;
 import java.util.Comparator;
-import goryachev.ensemble.pages.AllPages;
-import goryachev.ensemble.pages.DemoPage;
+import goryachev.monkey.pages.AllPages;
+import goryachev.monkey.pages.DemoPage;
+import goryachev.monkey.util.FX;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
- * Test Ensemble Application
+ * Monkey Tester Application
  */
-public class TestEnsembleApp extends Application {
+public class MonkeyTesterApp extends Application {
     
     protected Stage stage;
     protected ObservableList<DemoPage> pages = FXCollections.observableArrayList();
     protected ListView<DemoPage> listField;
     protected BorderPane contentPane;
     protected DemoPage currentPage;
+    protected Label status;
     
     public static void main(String[] args) {
-        Application.launch(TestEnsembleApp.class, args);
+        Application.launch(MonkeyTesterApp.class, args);
     }
 
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
+        
+        status = new Label();
+        status.setPadding(new Insets(2, 2, 2, 2));
         
         pages.setAll(createPages());
         
@@ -69,12 +78,27 @@ public class TestEnsembleApp extends Application {
         split.setDividerPositions(0.4); // the end result does not look like 0.4
         SplitPane.setResizableWithParent(listField, Boolean.FALSE);
         
-        stage.setScene(new Scene(split));
+        BorderPane bp = new BorderPane();
+        bp.setTop(createMenu());
+        bp.setCenter(split);
+        bp.setBottom(status);
+        
+        stage.setScene(new Scene(bp));
         stage.setWidth(1000);
         stage.setHeight(600);
-        stage.show();
         
+        stage.renderScaleXProperty().addListener((s,p,c) -> updateStatus());
         updateTitle();
+        updateStatus();
+
+        stage.show();
+    }
+    
+    protected MenuBar createMenu() {
+        MenuBar b = new MenuBar();
+        FX.menu(b, "File");
+        FX.item(b, "Quit", Platform::exit);
+        return b;
     }
 
     protected void updatePage(DemoPage p) {
@@ -85,13 +109,28 @@ public class TestEnsembleApp extends Application {
     
     protected void updateTitle() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Test Ensemble ");
+        sb.append("Monkey Tester");
         if(currentPage != null) {
+            sb.append(" - ");
             sb.append(currentPage.toString());
         }
-        sb.append(" - ");
-        sb.append(System.getProperty("java.runtime.version"));
         stage.setTitle(sb.toString());
+    }
+    
+    protected void updateStatus() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(System.getProperty("java.runtime.version"));
+        
+        if(stage.getRenderScaleX() == stage.getRenderScaleY()) {
+            sb.append("  scale=");
+            sb.append(stage.getRenderScaleX());
+        } else {
+            sb.append("  scaleX=");
+            sb.append(stage.getRenderScaleX());
+            sb.append("  scaleY=");
+            sb.append(stage.getRenderScaleY());
+        }
+        status.setText(sb.toString());
     }
     
     protected DemoPage[] createPages() {
