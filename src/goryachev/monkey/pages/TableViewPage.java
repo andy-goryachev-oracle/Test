@@ -24,24 +24,12 @@
  */
 package goryachev.monkey.pages;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.util.List;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTable;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableModel;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.ToolPane;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ConstrainedColumnResizeBase;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
 import javafx.scene.layout.BorderPane;
@@ -79,19 +67,16 @@ public class TableViewPage extends ToolPane {
     }
 
     public enum Policy {
-        AUTO_RESIZE_FLEX_NEXT_COLUMN(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS),
-        AUTO_RESIZE_FLEX_LAST_COLUMN(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS),
-        AUTO_RESIZE_NEXT_COLUMN(JTable.AUTO_RESIZE_NEXT_COLUMN),
-        AUTO_RESIZE_SUBSEQUENT_COLUMNS(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS),
-        AUTO_RESIZE_LAST_COLUMN(JTable.AUTO_RESIZE_LAST_COLUMN),
-        AUTO_RESIZE_ALL_COLUMNS(JTable.AUTO_RESIZE_ALL_COLUMNS),
-        USER_DEFINED_EQUAL_WIDTHS(JTable.AUTO_RESIZE_ALL_COLUMNS),
-        UNCONSTRAINED_RESIZE_POLICY(JTable.AUTO_RESIZE_OFF),
-        CONSTRAINED_RESIZE_POLICY(JTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
-
-        private final int value;
-        Policy(int v) { this.value = v; }
-        public int getValue() { return value; }
+// TODO
+//        AUTO_RESIZE_FLEX_NEXT_COLUMN,
+//        AUTO_RESIZE_FLEX_LAST_COLUMN,
+//        AUTO_RESIZE_NEXT_COLUMN,
+//        AUTO_RESIZE_SUBSEQUENT_COLUMNS,
+//        AUTO_RESIZE_LAST_COLUMN,
+//        AUTO_RESIZE_ALL_COLUMNS,
+//        USER_DEFINED_EQUAL_WIDTHS,
+        UNCONSTRAINED_RESIZE_POLICY,
+        CONSTRAINED_RESIZE_POLICY;
     }
 
     public enum Cmd {
@@ -172,24 +157,26 @@ public class TableViewPage extends ToolPane {
 
     protected Callback<ResizeFeatures, Boolean> createPolicy(Policy p) {
         switch(p) {
-        case AUTO_RESIZE_FLEX_NEXT_COLUMN:
-            return TableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN;
-        case AUTO_RESIZE_FLEX_LAST_COLUMN:
-            return TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN;
-        case AUTO_RESIZE_ALL_COLUMNS:
-            return TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS;
-        case AUTO_RESIZE_LAST_COLUMN:
-            return TableView.CONSTRAINED_RESIZE_POLICY_LAST_COLUMN;
-        case AUTO_RESIZE_NEXT_COLUMN:
-            return TableView.CONSTRAINED_RESIZE_POLICY_NEXT_COLUMN;
-        case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
-            return TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS;
+// TODO
+//        case AUTO_RESIZE_FLEX_NEXT_COLUMN:
+//            return TableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN;
+//        case AUTO_RESIZE_FLEX_LAST_COLUMN:
+//            return TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN;
+//        case AUTO_RESIZE_ALL_COLUMNS:
+//            return TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS;
+//        case AUTO_RESIZE_LAST_COLUMN:
+//            return TableView.CONSTRAINED_RESIZE_POLICY_LAST_COLUMN;
+//        case AUTO_RESIZE_NEXT_COLUMN:
+//            return TableView.CONSTRAINED_RESIZE_POLICY_NEXT_COLUMN;
+//        case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
+//            return TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS;
         case CONSTRAINED_RESIZE_POLICY:
             return TableView.CONSTRAINED_RESIZE_POLICY;
         case UNCONSTRAINED_RESIZE_POLICY:
             return TableView.UNCONSTRAINED_RESIZE_POLICY;
-        case USER_DEFINED_EQUAL_WIDTHS:
-            return new UserDefinedResizePolicy();
+// TODO
+//        case USER_DEFINED_EQUAL_WIDTHS:
+//            return new UserDefinedResizePolicy();
         default:
             throw new Error("?" + p);
         }
@@ -487,110 +474,11 @@ public class TableViewPage extends ToolPane {
         return bp;
     }
 
-    protected static class SwingPanel extends JPanel {
-        public SwingPanel() {
-            super(new BorderLayout());
-        }
-
-        public void updatePane(Policy policy, Object[] spec) {
-            JComponent p = createPanel(policy, spec);
-            removeAll();
-            if (p != null) {
-                add(p);
-            }
-            validate();
-            repaint();
-        }
-
-        private int createHSBPolicy(Policy p) {
-            switch (p) {
-            case UNCONSTRAINED_RESIZE_POLICY:
-                return JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED;
-            default:
-                return JScrollPane.HORIZONTAL_SCROLLBAR_NEVER;
-            }
-        }
-
-        protected JComponent createPanel(Policy policy, Object[] spec) {
-            if ((spec == null) || (policy == null)) {
-                return null;
-            }
-
-            DefaultTableModel m = new DefaultTableModel() {
-                @Override
-                public Object getValueAt(int row, int column) {
-                    return "";
-                }
-            };
-
-            JTable t = new JTable(m);
-            t.setShowHorizontalLines(true);
-            t.setShowVerticalLines(true);
-            t.setGridColor(Color.LIGHT_GRAY);
-            t.setAutoResizeMode(policy.getValue());
-
-            javax.swing.table.TableColumn lastColumn = null;
-
-            for (int i = 0; i < spec.length;) {
-                Object x = spec[i++];
-                if (x instanceof Cmd cmd) {
-                    switch (cmd) {
-                    case COL:
-                        javax.swing.table.TableColumn c = new javax.swing.table.TableColumn();
-                        t.getColumnModel().addColumn(c);
-                        c.setHeaderValue("C" + t.getColumnCount());
-                        lastColumn = c;
-                        break;
-                    case MAX: {
-                        int w = (int)(spec[i++]);
-                        lastColumn.setMaxWidth(w);
-                    }
-                        break;
-                    case MIN: {
-                        int w = (int)(spec[i++]);
-                        lastColumn.setMinWidth(w);
-                    }
-                        break;
-                    case PREF: {
-                        int w = (int)(spec[i++]);
-                        lastColumn.setPreferredWidth(w);
-                    }
-                        break;
-                    case ROWS:
-                        int n = (int)(spec[i++]);
-                        for (int j = 0; j < n; j++) {
-                            m.addRow((Object[])null);
-                        }
-                        break;
-                    case COMBINE:
-                        // ignored
-                        int ix = (int)(spec[i++]);
-                        int ct = (int)(spec[i++]);
-                        break;
-                    default:
-                        throw new Error("?" + cmd);
-                    }
-                } else {
-                    throw new Error("?" + x);
-                }
-            }
-
-            EmptyBorder b = new EmptyBorder(0, 0, 0, 0);
-
-            int hsp = createHSBPolicy(policy);
-            JScrollPane scroll = new JScrollPane(t, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, hsp);
-            scroll.setBorder(b);
-
-            JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scroll, new JPanel());
-            split.setContinuousLayout(true);
-            return split;
-        }
-    }
-
     /**
      * a user-defined policy demonstrates that we can indeed create a custom policy using the new API.
      * this policy simply sizes all columns equally.
      */
+    /** TODO
     protected static class UserDefinedResizePolicy
         extends ConstrainedColumnResizeBase
         implements Callback<TableView.ResizeFeatures,Boolean> {
@@ -609,4 +497,5 @@ public class TableViewPage extends ToolPane {
             return false;
         }
     }
+    */
 }
