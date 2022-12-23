@@ -27,6 +27,7 @@ package goryachev.monkey.pages;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.ToolPane;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
@@ -78,6 +79,18 @@ public class TableViewPage extends ToolPane {
         UNCONSTRAINED_RESIZE_POLICY,
         CONSTRAINED_RESIZE_POLICY;
     }
+    
+    public enum Selection {
+        SINGLE_ROW("single row selection"),
+        MULTIPLE_ROW("multiple row selection"),
+        SINGLE_CELL("single cell selection"),
+        MULTIPLE_CELL("multiple cell selection"),
+        NULL("null selection model");
+        
+        private final String text;
+        Selection(String text) { this.text = text; }
+        public String toString() { return text; }
+    }
 
     public enum Cmd {
         ROWS,
@@ -88,8 +101,10 @@ public class TableViewPage extends ToolPane {
         COMBINE
     }
 
-    protected ComboBox<Demo> demoSelector;
-    protected ComboBox<Policy> policySelector;
+    protected final ComboBox<Demo> demoSelector;
+    protected final ComboBox<Policy> policySelector;
+    protected final ComboBox<Selection> selectionSelector;
+    protected final CheckBox nullFocusModel;
     
     public TableViewPage() {
         // selector
@@ -106,14 +121,29 @@ public class TableViewPage extends ToolPane {
         policySelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             updatePane();
         });
+        
+        selectionSelector = new ComboBox<>();
+        selectionSelector.getItems().addAll(Selection.values());
+        selectionSelector.setEditable(false);
+        selectionSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+            updatePane();
+        });
+        
+        nullFocusModel = new CheckBox("null focus model");
+        nullFocusModel.selectedProperty().addListener((s,p,c) -> {
+            updatePane();
+        });
 
         // layout
 
         OptionPane p = new OptionPane();
         p.label("Data:");
         p.option(demoSelector);
-        p.label("Policy:");
+        p.label("Column Resize Policy:");
         p.option(policySelector);
+        p.label("Selection Model:");
+        p.option(selectionSelector);
+        p.option(nullFocusModel);
         setOptions(p);
 
         demoSelector.getSelectionModel().
@@ -122,6 +152,7 @@ public class TableViewPage extends ToolPane {
         policySelector.getSelectionModel().
             selectFirst();
             //select(Policy.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+        selectionSelector.getSelectionModel().select(Selection.MULTIPLE_CELL);
     }
 
     protected Callback<ResizeFeatures,Boolean> wrap(Callback<ResizeFeatures,Boolean> policy) {
@@ -410,11 +441,43 @@ public class TableViewPage extends ToolPane {
         if ((spec == null) || (policy == null)) {
             return new BorderPane();
         }
+        
+        boolean cellSelection = false;
+        boolean nullSelectionModel = false;
+        SelectionMode selectionMode = SelectionMode.SINGLE;
+        Selection sel = selectionSelector.getSelectionModel().getSelectedItem();
+        if(sel != null) {
+            switch(sel) {
+            case MULTIPLE_CELL:
+                selectionMode = SelectionMode.MULTIPLE;
+                cellSelection = true;
+                break;
+            case MULTIPLE_ROW:
+                selectionMode = SelectionMode.MULTIPLE;
+                break;
+            case NULL:
+                nullSelectionModel = true;
+                break;
+            case SINGLE_CELL:
+                cellSelection = true;
+                break;
+            case SINGLE_ROW:
+                break;
+            default:
+                throw new Error("?" + sel);
+            }
+        }
 
         TableView<String> table = new TableView<>();
-        table.getSelectionModel().setCellSelectionEnabled(true);
-        table.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
+        table.getSelectionModel().setCellSelectionEnabled(cellSelection);
+        table.getSelectionModel().setSelectionMode(selectionMode);
+        if(nullSelectionModel) {
+            table.setSelectionModel(null);
+        }
+        if(nullFocusModel.isSelected()) {
+            table.setFocusModel(null);
+        }
+        
         Callback<ResizeFeatures,Boolean> p = createPolicy(policy);
         table.setColumnResizePolicy(p);
 

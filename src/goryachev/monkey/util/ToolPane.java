@@ -45,10 +45,12 @@ public class ToolPane  extends BorderPane {
         contentPane.setOpacity(1.0);
         
         SplitPane hsplit = new SplitPane(contentPane, pane());
+        hsplit.setBorder(null);
         hsplit.setDividerPositions(0.9);
         hsplit.setOrientation(Orientation.HORIZONTAL);
         
         SplitPane vsplit = new SplitPane(hsplit, pane());
+        vsplit.setBorder(null);
         vsplit.setDividerPositions(0.9);
         vsplit.setOrientation(Orientation.VERTICAL);
         
