@@ -35,6 +35,11 @@ import javafx.scene.layout.HBox;
 
 import goryachev.monkey.util.ToolPane;
 
+/**
+ * Test code from CheckBoxTreeEditor, see https://bugs.openjdk.org/browse/JDK-8209017
+ * 
+ * FIX don't see checkboxes for some reason!
+ */
 public class TreeViewPage extends ToolPane {
     private TreeView<String> tree;
     private int childNum;
@@ -74,15 +79,17 @@ public class TreeViewPage extends ToolPane {
         setContent(tree);
     }
 
-    private CheckBoxTreeItem<String> addChild(boolean indeterminate, boolean selected) {
+    private void addChild(boolean indeterminate, boolean selected) {
         CheckBoxTreeItem<String> item = new CheckBoxTreeItem<>("child " + childNum++);
         Button button = new Button("" + childNum);
         item.setGraphic(button);
         item.setSelected(selected);
         item.setIndeterminate(indeterminate);
         item.setExpanded(true);
-        tree.getSelectionModel().getSelectedItem().getChildren().add(item);
-        return item;
+
+        if (tree.getSelectionModel().getSelectedItem() != null) {
+            tree.getSelectionModel().getSelectedItem().getChildren().add(item);
+        }
     }
 
     private void removeChild() {
