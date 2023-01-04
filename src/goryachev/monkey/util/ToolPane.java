@@ -25,6 +25,7 @@
 package goryachev.monkey.util;
 
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -102,13 +103,21 @@ public class ToolPane  extends BorderPane {
     //
     
     public static class TBar extends HBox {
+        public TBar() {
+            setFillHeight(true);
+            setAlignment(Pos.CENTER_LEFT);
+            setSpacing(2);
+        }
+
         public <T extends Node> T add(T n) {
             getChildren().add(n);
             return n;
         }
 
         public void addAll(Node... nodes) {
-            getChildren().addAll(nodes);
+            for (Node n : nodes) {
+                add(n);
+            }
         }
     }
 }
