@@ -106,5 +106,9 @@ public class ToolPane  extends BorderPane {
             getChildren().add(n);
             return n;
         }
+
+        public void addAll(Node... nodes) {
+            getChildren().addAll(nodes);
+        }
     }
 }
