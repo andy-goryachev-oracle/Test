@@ -76,7 +76,7 @@ public class TextFieldPage extends ToolPane {
     protected String getText(TextChoice ch) {
         switch(ch) {
         case LONG:
-            return "<beg-01234567890123456789012345678901234567890123456789012345678901234567890123456789-end>";
+            return "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>";
         case SHORT:
             return "yo";
         case NULL:
