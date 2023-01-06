@@ -27,6 +27,7 @@ package goryachev.monkey.pages;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.ToolPane;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.SelectionMode;
@@ -109,6 +110,7 @@ public class TableViewPage extends ToolPane {
     protected final ComboBox<ResizePolicy> policySelector;
     protected final ComboBox<Selection> selectionSelector;
     protected final CheckBox nullFocusModel;
+    protected TableView<String> table;
     
     public TableViewPage() {
         // selector
@@ -137,12 +139,24 @@ public class TableViewPage extends ToolPane {
         nullFocusModel.selectedProperty().addListener((s,p,c) -> {
             updatePane();
         });
+        
+        Button addButton = new Button("Add Item");
+        addButton.setOnAction((ev) -> {
+            table.getItems().add(newItem());
+        });
+        
+        Button clearButton = new Button("Clear Items");
+        clearButton.setOnAction((ev) -> {
+            table.getItems().clear();
+        });
 
         // layout
 
         OptionPane p = new OptionPane();
         p.label("Data:");
         p.option(demoSelector);
+        p.option(addButton);
+        p.option(clearButton);
         p.label("Column Resize Policy:");
         p.option(policySelector);
         p.label("Selection Model:");
@@ -150,12 +164,8 @@ public class TableViewPage extends ToolPane {
         p.option(nullFocusModel);
         setOptions(p);
 
-        demoSelector.getSelectionModel().
-            selectFirst();
-            //select(Demo.FIXED_MIDDLE);
-        policySelector.getSelectionModel().
-            selectFirst();
-            //select(Policy.AUTO_RESIZE_SUBSEQUENT_COLUMNS);
+        demoSelector.getSelectionModel().selectFirst();
+        policySelector.getSelectionModel().selectFirst();
         selectionSelector.getSelectionModel().select(Selection.MULTIPLE_CELL);
     }
 
@@ -479,7 +489,7 @@ public class TableViewPage extends ToolPane {
             }
         }
 
-        TableView<String> table = new TableView<>();
+        table = new TableView<>();
         table.getSelectionModel().setCellSelectionEnabled(cellSelection);
         table.getSelectionModel().setSelectionMode(selectionMode);
         if(nullSelectionModel) {
@@ -551,7 +561,7 @@ public class TableViewPage extends ToolPane {
                     {
                         int n = (int)(spec[i++]);
                         for (int j = 0; j < n; j++) {
-                            table.getItems().add(String.valueOf(n));
+                            table.getItems().add(newItem());
                         }
                     }
                     break;
@@ -571,6 +581,10 @@ public class TableViewPage extends ToolPane {
         BorderPane bp = new BorderPane();
         bp.setCenter(table);
         return bp;
+    }
+
+    protected String newItem() {
+        return System.currentTimeMillis() + "." + System.nanoTime();
     }
 
     /**
