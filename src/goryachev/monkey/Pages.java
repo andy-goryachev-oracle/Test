@@ -39,6 +39,7 @@ public class Pages {
             new DemoPage("Dual Focus JDK-8292933", DualFocusPage::new),
             new DemoPage("DatePicker in Alert", DatePickerPage::new),
             new DemoPage("TreeView", TreeViewPage::new),
+            new DemoPage("Canvas", CanvasPage::new),
         };
     }
 }
