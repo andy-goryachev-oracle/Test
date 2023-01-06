@@ -86,7 +86,8 @@ public class MonkeyTesterApp extends Application {
         stage.setWidth(1200);
         stage.setHeight(800);
         
-        stage.renderScaleXProperty().addListener((s,p,c) -> updateStatus());
+        stage.renderScaleXProperty().addListener((x) -> updateStatus());
+        stage.renderScaleYProperty().addListener((x) -> updateStatus());
         updateTitle();
         updateStatus();
 
