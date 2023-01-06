@@ -26,6 +26,7 @@ package goryachev.monkey.pages;
 
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.ToolPane;
+import java.util.Locale;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -37,10 +38,12 @@ public class TextFieldPage extends ToolPane {
     enum TextChoice {
         NULL,
         SHORT,
-        LONG
+        LONG,
+        RIGHT_TO_LEFT,
     }
     
     private TextField textField;
+    private Locale defaultLocale;
 
     public TextFieldPage() {
         textField = new TextField();
@@ -51,7 +54,9 @@ public class TextFieldPage extends ToolPane {
         textChoice.getItems().setAll(TextChoice.values());
         textChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             String text = getText(c);
+            Locale loc = getLocale(c);
             textField.setText(text);
+            Locale.setDefault(loc);
         });
         
         ComboBox<Pos> posChoice = new ComboBox<>();
@@ -74,15 +79,30 @@ public class TextFieldPage extends ToolPane {
     }
     
     protected String getText(TextChoice ch) {
-        switch(ch) {
+        switch (ch) {
         case LONG:
             return "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>";
         case SHORT:
             return "yo";
         case NULL:
             return null;
+        case RIGHT_TO_LEFT:
+            return "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די";
         default:
             return "?" + ch;
+        }
+    }
+
+    protected Locale getLocale(TextChoice ch) {
+        if (defaultLocale == null) {
+            defaultLocale = Locale.getDefault();
+        }
+
+        switch (ch) {
+        case RIGHT_TO_LEFT:
+            return Locale.forLanguageTag("he");
+        default:
+            return defaultLocale;
         }
     }
 }
