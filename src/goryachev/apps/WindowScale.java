@@ -30,6 +30,9 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
+/**
+ * https://bugs.openjdk.org/browse/JDK-8299758
+ */
 public class WindowScale extends Application {
     private Label label;
 
