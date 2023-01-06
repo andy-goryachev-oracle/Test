@@ -50,6 +50,8 @@ public class WindowScale extends Application {
         stage.renderScaleYProperty().addListener((x) -> updateInfo(stage));
 
         stage.show();
+        
+        updateInfo(stage);
     }
 
     protected void updateInfo(Stage s) {
