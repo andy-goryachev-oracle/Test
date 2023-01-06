@@ -33,11 +33,12 @@ public class Pages {
     public static DemoPage[] create() {
         return new DemoPage[] {
             new DemoPage("ComboBox", ComboBoxPage::new),
-            new DemoPage("HtmlEditor", HtmlEditorPage::new),
-            new DemoPage("TableView", TableViewPage::new),
-            new DemoPage("TextField", TextFieldPage::new),
             new DemoPage("Dual Focus JDK-8292933", DualFocusPage::new),
             new DemoPage("DatePicker in Alert", DatePickerPage::new),
+            new DemoPage("HtmlEditor", HtmlEditorPage::new),
+            new DemoPage("ListView", ListViewPage::new),
+            new DemoPage("TableView", TableViewPage::new),
+            new DemoPage("TextField", TextFieldPage::new),
             new DemoPage("TreeView", TreeViewPage::new),
             new DemoPage("TreeTableView", TreeTableViewPage::new),
             new DemoPage("Canvas", CanvasPage::new),
