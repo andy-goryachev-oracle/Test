@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.ensemble.pages;
+package goryachev.monkey.pages;
 
 import java.util.function.Supplier;
 import javafx.scene.layout.Pane;

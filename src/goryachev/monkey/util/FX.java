@@ -22,19 +22,32 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.ensemble.pages;
+package goryachev.monkey.util;
+
+import java.util.List;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 
 /**
- *
+ * Shortcuts and convenience methods that should be a part of JavaFX.
  */
-public class AllPages {
-    public static DemoPage[] create() {
-        return new DemoPage[] {
-            new DemoPage("ComboBox", ComboBoxPage::new),
-            new DemoPage("HtmlEditor", HtmlEditorPage::new),
-            new DemoPage("TableView", TableViewPage::new),
-            new DemoPage("Dual Focus JDK-8292933", DualFocusPage::new),
-            new DemoPage("DatePicker in Alert", DatePickerPage::new),
-        };
+public class FX {
+    public static Menu menu(MenuBar b, String text) {
+        Menu m = new Menu(text);
+        b.getMenus().add(m);
+        return m;
+    }
+
+    public static MenuItem item(MenuBar b, String text, Runnable action) {
+        MenuItem mi = new MenuItem(text);
+        mi.setOnAction((ev) -> action.run());
+        lastMenu(b).getItems().add(mi);
+        return mi;
+    }
+
+    private static Menu lastMenu(MenuBar b) {
+        List<Menu> ms = b.getMenus();
+        return ms.get(ms.size() - 1);
     }
 }

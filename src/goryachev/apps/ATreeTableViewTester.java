@@ -1,11 +1,8 @@
 package goryachev.apps;
 import java.util.List;
 import java.util.Locale;
-import goryachev.util.D;
-import goryachev.util.FxDebug;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.SetChangeListener;
@@ -32,19 +29,19 @@ import javafx.scene.control.TreeTableView.TreeTableViewSelectionModel;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.scene.control.cell.TreeItemPropertyValueFactory;
 import javafx.scene.control.skin.TableViewSkin;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import goryachev.util.D;
+import goryachev.util.FxDebug;
 
 public class ATreeTableViewTester extends Application {
     
-    protected static final boolean CELLS_WITH_BINDINGS = !true;
     protected static final boolean LIST_VIEW = !true;   
     protected static final boolean SNAP_TO_PIXEL = false;
-    protected static final boolean ADD_ROWS = false;
+    protected static final boolean ADD_ROWS = !false;
     
     protected TableView<Entry> table;
     protected TableColumn lastTableColumn;
@@ -167,8 +164,7 @@ public class ATreeTableViewTester extends Application {
         
         // tree
         
-        // FIX
-        Pane p2 = CELLS_WITH_BINDINGS ? createTreeWithBindings() : createTreeWithTextField();
+        Pane p2 = createTreeWithTextField();
         
         // layout
         
@@ -269,34 +265,6 @@ public class ATreeTableViewTester extends Application {
         System.out.println(sb);
     }
     
-    protected TreeTableCell createTreeTableCell() {
-        TreeTableCell cell = new TreeTableCell() {
-            @Override public void updateItem(Object item, boolean empty) {
-                super.updateItem(item, empty);
-//                setText(generateText(this));
-            }
-        };
-        
-//        cell.selectedProperty().addListener((s,p,on) -> {
-//            System.out.println("selected=" + on + " " + cell.getTableColumn().getText());
-//            new Error().printStackTrace();
-//        });
-//        cell.focusedProperty().addListener((s,p,on) -> {
-//            System.out.println("focused=" + on + " " + cell.getTableColumn().getText());
-//        });
-//        cell.getPseudoClassStates().addListener((SetChangeListener.Change<? extends PseudoClass> ch) -> {
-//            System.out.println(cell.getPseudoClassStates() + " " + cell.getTableColumn().getText());
-////            new Error().printStackTrace();
-//        });
-//        cell.styleProperty().addListener((s,p,on) -> {
-//            System.out.println(cell.getStyle() + " " + cell.getTableColumn().getText());
-//        });
-//        
-        cell.textProperty().bind(Bindings.createStringBinding(() -> generateText(cell), cell.focusedProperty(), cell.selectedProperty(), cell.getPseudoClassStates()));
-        
-        return cell;
-    }
-    
     protected String generateText(TreeTableCell c) {
         StringBuilder sb = new StringBuilder();
         sb.append(c.isFocused() ? "F" : "-");
@@ -304,116 +272,6 @@ public class ATreeTableViewTester extends Application {
         sb.append(' ');
         sb.append(c.getPseudoClassStates());
         return sb.toString();
-    }
-    
-    protected Pane createTreeWithBindings() {
-        TreeItem<Locale> root = new TreeItem(null);
-        
-        if (ADD_ROWS) {
-            for (Locale loc: Locale.getAvailableLocales()) {
-                TreeItem<Locale> ch = new TreeItem(loc);
-                root.getChildren().add(ch);
-            }
-        }
-        
-        // instantiate the table with null items
-        tree = new TreeTableView<Locale>(root);
-        
-        {
-            TreeTableColumn<Locale, String> c = new TreeTableColumn<>("Column_0");
-//            c.setCellValueFactory(new TreeItemPropertyValueFactory<>("displayLanguage"));
-            c.setCellFactory((col) -> createTreeTableCell());
-            c.setPrefWidth(50);
-            tree.getColumns().add(c);
-        }
-        {
-            TreeTableColumn<Locale, String> c = new TreeTableColumn<>("Column_2");
-//            c.setCellValueFactory(new TreeItemPropertyValueFactory<>("ISO3Language"));
-            c.setCellFactory((col) -> createTreeTableCell());
-            c.setPrefWidth(100);
-            tree.getColumns().add(c);
-        }
-        {
-            TreeTableColumn<Locale, String> c = new TreeTableColumn<>("Column_2");
-            lastTreeColumn = c;
-//            c.setCellValueFactory((cdf) -> {
-//                TreeItem v = cdf.getValue();
-//                if(v == null) {
-//                    return new ReadOnlyStringWrapper("");
-//                }
-//                else {
-//                    int n = v.getChildren().size();
-//                    return new ReadOnlyStringWrapper(String.valueOf(n));
-//                }
-//            });
-            c.setCellFactory((col) -> createTreeTableCell());
-            c.setPrefWidth(200);
-            tree.getColumns().add(c);
-        }
-
-        root.setExpanded(true);
-
-        tree.setShowRoot(true);
-
-        boolean nullSelectionModel = false;
-        if(nullSelectionModel) {
-            tree.setSelectionModel(null);
-        }
-        else {
-            System.err.println("cell selection model is not null!");
-            tree.getSelectionModel().setCellSelectionEnabled(true);
-            tree.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-        }
-
-        tree.setEditable(true);
-        
-        CheckBox treeCellSelectionEnabled = new CheckBox("cell selection");
-        tree.getSelectionModel().cellSelectionEnabledProperty().bind(treeCellSelectionEnabled.selectedProperty());
-        
-        CheckBox showLastTreeColumnCheckbox = new CheckBox("show last column");
-        showLastTreeColumnCheckbox.setSelected(true);
-        lastTreeColumn.visibleProperty().bind(showLastTreeColumnCheckbox.selectedProperty());
-        showLastTreeColumnCheckbox.selectedProperty().addListener((src,prev,c) -> {
-            Platform.runLater(this::dumpTree);
-        });
-        
-        CheckBox nullTreeSelectionModel = new CheckBox("null cell selection model");
-        nullTreeSelectionModel.selectedProperty().addListener((src,prev,on) -> {
-            if(on) {
-                oldTreeSelectionModel = tree.getSelectionModel();
-                tree.setSelectionModel(null);
-            }
-            else
-            {
-                tree.setSelectionModel(oldTreeSelectionModel);
-            }
-        });
-        
-        CheckBox constrainedTreeModel = new CheckBox("constrained model");
-        constrainedTreeModel.selectedProperty().addListener((src,prev,on) -> {
-            if(on) {
-                tree.setColumnResizePolicy(TreeTableView.CONSTRAINED_RESIZE_POLICY);
-            }
-            else
-            {
-                tree.setColumnResizePolicy(TreeTableView.UNCONSTRAINED_RESIZE_POLICY);
-            }
-        });
-        
-        VBox vb2 = new VBox();
-        vb2.setPadding(new Insets(5));
-        vb2.setSpacing(5);
-        vb2.getChildren().addAll(
-            treeCellSelectionEnabled,
-            showLastTreeColumnCheckbox,
-            nullTreeSelectionModel,
-            constrainedTreeModel
-            );
-        
-        BorderPane p2 = new BorderPane();
-        p2.setCenter(tree);
-        p2.setBottom(vb2);
-        return p2;
     }
     
     protected TextFieldTreeTableCell createTreeTableCell2() {

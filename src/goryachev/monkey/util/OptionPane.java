@@ -22,42 +22,40 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.ensemble.pages;
+package goryachev.monkey.util;
 
-import java.time.LocalDate;
-import goryachev.ensemble.util.ToolPane;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.stage.StageStyle;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
 
 /**
  *
  */
-public class DatePickerPage extends ToolPane {
-    private final Button button;
-    private DatePicker datePicker;
-    private Alert dialog;
+public class OptionPane extends GridPane {
+    private int row;
+    private int column;
+    private static final Insets MARGIN = new Insets(2, 4, 2, 4);
     
-    public DatePickerPage() {
-        button = new Button("Show Dialog");
-        toolbar().add(button);
-        
-        datePicker = new DatePicker(LocalDate.now());
-        datePicker.valueProperty().addListener(event -> {
-            dialog.close();
-        });
+    public OptionPane() {
+        // no such thing
+        // https://stackoverflow.com/questions/20454021/how-to-set-padding-between-columns-of-a-javafx-gridpane
+        // setVGap(2);
+    }
+    
+    public void label(String text) {
+        add(new Label(text));
+    }
+    
+    public void option(Node n) {
+        add(n);
+    }
 
-        button.setOnAction(event -> {
-            dialog = new Alert(AlertType.INFORMATION);
-            dialog.initStyle(StageStyle.UNDECORATED);
-            dialog.initOwner(getWindow());
-            dialog.getDialogPane().setContent(datePicker);
-            dialog.show();
-            
-            LocalDate v = datePicker.getValue();
-            System.out.println(v);
-        });
+    public void add(Node n) {
+        add(n, column, row++);
+        setMargin(n, MARGIN);
+        setFillHeight(n, Boolean.TRUE);
+        setFillWidth(n, Boolean.TRUE);
     }
 }

@@ -22,20 +22,46 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.ensemble.util;
+package goryachev.monkey.util;
 
+import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 
 /**
  *
  */
 public class ToolPane  extends BorderPane {
+    private final BorderPane contentPane;
+
     public ToolPane() {
+        contentPane = new BorderPane();
+        contentPane.setOpacity(1.0);
+        
+        SplitPane hsplit = new SplitPane(contentPane, pane());
+        hsplit.setBorder(null);
+        hsplit.setDividerPositions(0.9);
+        hsplit.setOrientation(Orientation.HORIZONTAL);
+        
+        SplitPane vsplit = new SplitPane(hsplit, pane());
+        vsplit.setBorder(null);
+        vsplit.setDividerPositions(0.9);
+        vsplit.setOrientation(Orientation.VERTICAL);
+        
+        setCenter(vsplit);
+    }
+    
+    protected static Pane pane() {
+        Pane p = new Pane();
+        p.setStyle("-fx-background-color:#dddddd;");
+        return p;
     }
     
     public Button addButton(String name, Runnable action) {
@@ -66,12 +92,32 @@ public class ToolPane  extends BorderPane {
         return null;
     }
     
+    public void setContent(Node content) {
+        contentPane.setCenter(content);
+    }
+    
+    public void setOptions(Node n) {
+        setRight(n);
+    }
+    
     //
     
     public static class TBar extends HBox {
+        public TBar() {
+            setFillHeight(true);
+            setAlignment(Pos.CENTER_LEFT);
+            setSpacing(2);
+        }
+
         public <T extends Node> T add(T n) {
             getChildren().add(n);
             return n;
+        }
+
+        public void addAll(Node... nodes) {
+            for (Node n : nodes) {
+                add(n);
+            }
         }
     }
 }

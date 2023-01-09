@@ -22,17 +22,26 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.ensemble.pages;
+package goryachev.monkey;
 
-import goryachev.ensemble.util.ToolPane;
-import javafx.scene.web.HTMLEditor;
+import goryachev.monkey.pages.*;
 
 /**
- *
+ * Monkey Tester Pages.
  */
-public class HtmlEditorPage extends ToolPane {
-    public HtmlEditorPage() {
-        HTMLEditor ed = new HTMLEditor();
-        setCenter(ed);
+public class Pages {
+    public static DemoPage[] create() {
+        return new DemoPage[] {
+            new DemoPage("ComboBox", ComboBoxPage::new),
+            new DemoPage("Dual Focus JDK-8292933", DualFocusPage::new),
+            new DemoPage("DatePicker in Alert", DatePickerPage::new),
+            new DemoPage("HtmlEditor", HtmlEditorPage::new),
+            new DemoPage("ListView", ListViewPage::new),
+            new DemoPage("TableView", TableViewPage::new),
+            new DemoPage("TextField", TextFieldPage::new),
+            new DemoPage("TreeView", TreeViewPage::new),
+            new DemoPage("TreeTableView", TreeTableViewPage::new),
+            new DemoPage("Canvas", CanvasPage::new),
+        };
     }
 }
