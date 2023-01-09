@@ -31,11 +31,13 @@ import java.util.ArrayList;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Region;
+import javafx.scene.shape.PathElement;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.TextFlow;
 
 import goryachev.rich.impl.Markers;
 import goryachev.rich.util.NewAPI;
+import goryachev.rich.util.Util;
 
 /**
  * Represents text cells layed out in a visible area.
@@ -121,6 +123,17 @@ public class TextCellLayout {
         int ix = modelIndex - topLineIndex;
         if ((ix >= 0) && (ix < cells.size())) {
             return cells.get(ix);
+        }
+        return null;
+    }
+
+    public CaretSize getCaretSize(Region parent, Marker m) {
+        if (m != null) {
+            int ix = m.getLineIndex();
+            TextCell cell = getCell(ix);
+            if (cell != null) {
+                return cell.getCaretSize(parent, m);
+            }
         }
         return null;
     }

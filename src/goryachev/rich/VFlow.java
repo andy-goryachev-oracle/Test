@@ -73,11 +73,13 @@ public class VFlow extends Pane {
         caretPath = new Path();
         caretPath.getStyleClass().add("caret");
         caretPath.setManaged(false);
+        caretPath.setStroke(Color.BLACK); // FIX
+        caretPath.setStrokeWidth(1.0); // TODO ?
         
         caretLineHighlight = new Path();
         caretLineHighlight.getStyleClass().add("caret-line");
-        caretLineHighlight.setManaged(false);
         caretLineHighlight.setFill(Color.rgb(255, 0, 255, 0.02)); // FIX
+        caretLineHighlight.setManaged(false);
 
         selectionHighlight = new Path();
         selectionHighlight.getStyleClass().add("selection-highlight");
@@ -224,8 +226,13 @@ public class VFlow extends Pane {
         caretPath.getElements().setAll(caretBuilder.getPathElements());
     }
 
-    protected void createCaretPath(FxPathBuilder caretBuilder, Marker caret) {
-        // TODO
+    protected void createCaretPath(FxPathBuilder b, Marker m) {
+        CaretSize c = getCaretSize(m);
+        System.err.println(c); // FIX
+        if(c != null) {
+            b.moveto(c.x(), c.y0());
+            b.lineto(c.x(), c.y1());
+        }
     }
 
     protected void createSelectionHighlight(FxPathBuilder b, Marker start, Marker end) {
@@ -250,5 +257,9 @@ public class VFlow extends Pane {
         }
 
         return layout.getTextPosition(screenX, screenY, markers);
+    }
+
+    protected CaretSize getCaretSize(Marker m) {
+        return layout.getCaretSize(this, m);
     }
 }
