@@ -35,10 +35,10 @@
 
 .rich-text-area .caret-line {
     -fx-stroke: null;
-    -fx-fill: derive(#ff44ff, 99.9%);
+    -fx-fill: rgba(255, 0, 255, 0.1);
 }
 
 .rich-text-area .selection-highlight {
     -fx-stroke: null;
-    -fx-fill: #ffff00;
+    -fx-fill: rgba(255, 255, 0, 0.3);
 }

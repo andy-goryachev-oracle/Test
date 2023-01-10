@@ -26,6 +26,7 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 
@@ -48,7 +49,17 @@ public class MouseHandler {
     }
     
     protected void handleMouseClicked(MouseEvent ev) {
-        // TODO
+        if(ev.getButton() == MouseButton.PRIMARY) {
+            int clicks = ev.getClickCount();
+            switch(clicks) {
+            case 2:
+                control.selectWord(getTextPosition(ev));
+                break;
+            case 3:
+                control.selectLine(getTextPosition(ev));
+                break;
+            }
+        }
     }
     
     protected void handleMousePressed(MouseEvent ev) {
@@ -72,6 +83,7 @@ public class MouseHandler {
             sm.clearAndExtendLastSegment(pos);
         } else {
             sm.setSelection(pos, pos);
+            sm.setAnchor(pos);
         }
         
         control.requestFocus();

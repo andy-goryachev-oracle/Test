@@ -123,14 +123,17 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         super.dispose();
     }
 
+    /** called from the constructor.  override to provide a custom scroll bar */
     protected ScrollBar createVScrollBar() {
         return new ScrollBar();
     }
 
+    /** called from the constructor.  override to provide a custom scroll bar */
     protected ScrollBar createHScrollBar() {
         return new ScrollBar();
     }
-    
+
+    /** called from the constructor.  override to provide a custom MouseHandler */
     protected MouseHandler createMouseHandler() {
         return new MouseHandler(getSkinnable());
     }
