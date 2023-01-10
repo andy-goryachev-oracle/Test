@@ -357,7 +357,7 @@ public class VFlow extends Pane {
             // not a range, use caret shape instead
             pe = cell.getCaretShape(startOffset, true);
         } else {
-            pe = cell.getRange(startOffset, endOffset);
+            pe = cell.getRangeShape(startOffset, endOffset);
         }
 
         if (pe == null) {

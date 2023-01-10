@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -27,9 +27,6 @@
 package goryachev.rich.util;
 
 import javafx.scene.Node;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
-import javafx.scene.shape.PathElement;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
@@ -47,7 +44,8 @@ public class NewAPI {
         }
         return sb.toString();
     }
-    
+
+    /** TextFlow.getTextLength() */
     public static int getTextLength(TextFlow f) {
         int len = 0;
         for(Node n: f.getChildrenUnmodifiable()) {
@@ -56,17 +54,5 @@ public class NewAPI {
             }
         }
         return len;
-    }
-
-    // or possibly moved to TextCell
-    public static PathElement[] getRange(TextFlow f, int start, int end) {
-        PathElement[] p = f.rangeShape(start, end);
-        if(p == null) {
-            p = new PathElement[] {
-                new MoveTo(0.0, 0.0),
-                new LineTo(0.0, f.getHeight())
-            };
-        }
-        return p;
     }
 }

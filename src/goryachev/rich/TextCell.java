@@ -107,7 +107,6 @@ public class TextCell {
         b.lineto(x, y0);
     }
 
-    // TODO rename getCaretPath?
     public PathElement[] getCaretShape(int charIndex, boolean leading) {
         if (content instanceof TextFlow f) {
             PathElement[] p = f.caretShape(charIndex, leading);
@@ -129,14 +128,21 @@ public class TextCell {
         return null;
     }
     
-    // TODO rename getRangePath?
-    public PathElement[] getRange(int start, int end) {
+    public PathElement[] getRangeShape(int start, int end) {
         if (content instanceof TextFlow f) {
-            return NewAPI.getRange(f, start, end);
+            PathElement[] p = f.rangeShape(start, end);
+            if(p != null) {
+                return p;
+            }
+
+            return new PathElement[] {
+                new MoveTo(0.0, 0.0),
+                new LineTo(0.0, f.getHeight())
+            };
         } else {
             double w = content.getWidth();
             double h = content.getHeight();
-            
+
             return new PathElement[] {
                 new MoveTo(0.0, 0.0),
                 new LineTo(w, 0.0),
@@ -149,7 +155,7 @@ public class TextCell {
 
     public int getTextLength() {
         if (content instanceof TextFlow f) {
-            
+            return NewAPI.getTextLength(f);
         }
         return 0;
     }
