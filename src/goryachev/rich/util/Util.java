@@ -118,4 +118,29 @@ public class Util {
     public static double halfPixel(double coord) {
         return Math.round(coord + 0.5) - 0.5;
     }
+
+    public static PathElement[] translatePath(Region target, Region src, PathElement[] elements) {
+        Point2D p = src.localToScreen(src.snappedLeftInset(), src.snappedTopInset());
+        if (p == null) {
+            return null;
+        }
+
+        p = target.screenToLocal(p);
+        double dx = p.getX();
+        double dy = p.getY();
+
+        for (int i = 0; i < elements.length; i++) {
+            PathElement em = elements[i];
+            if (em instanceof LineTo m) {
+                em = new LineTo(m.getX() + dx, m.getY() + dy);
+            } else if (em instanceof MoveTo m) {
+                em = new MoveTo(m.getX() + dx, m.getY() + dy);
+            } else {
+                throw new RuntimeException("unexpected path element " + em);
+            }
+
+            elements[i] = em;
+        }
+        return elements;
+    }
 }

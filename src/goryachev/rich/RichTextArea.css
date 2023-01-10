@@ -29,13 +29,13 @@
     -fx-prompt-text-fill: transparent;
 }
 
-.rich-text-area .caret2 {
+.rich-text-area .caret {
     -fx-stroke: black;
 }
 
 .rich-text-area .caret-line {
     -fx-stroke: null;
-    -fx-fill: #ff00ff;
+    -fx-fill: derive(#ff44ff, 99.9%);
 }
 
 .rich-text-area .selection-highlight {

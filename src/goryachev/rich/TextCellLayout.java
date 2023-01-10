@@ -27,14 +27,14 @@
 package goryachev.rich;
 
 import java.util.ArrayList;
-
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.PathElement;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.TextFlow;
-
 import goryachev.rich.impl.Markers;
 import goryachev.rich.util.NewAPI;
 import goryachev.rich.util.Util;
@@ -76,6 +76,10 @@ public class TextCellLayout {
         // TODO add line number section width + any other gutters widths
         return unwrappedWidth;
     }
+
+    public int getVisibleCellCount() {
+        return cells.size();
+    }
     
     protected TextCell getLastCell() {
         int sz = cells.size();
@@ -114,7 +118,7 @@ public class TextCellLayout {
         Region r = cell.getContent();
         int ix = 0;
         if (r instanceof TextFlow f) {
-            ix = Math.max(0, NewAPI.getText(f).length() - 1);
+            ix = Math.max(0, NewAPI.getTextLength(f) - 1);
         }
         return markers.newMarker(cell.getLineIndex(), ix, false);
     }
@@ -132,9 +136,19 @@ public class TextCellLayout {
             int ix = m.getLineIndex();
             TextCell cell = getCell(ix);
             if (cell != null) {
-                return cell.getCaretSize(parent, m);
+                int charIndex = m.getCharIndex();
+                boolean leading = m.isLeading();
+                PathElement[] p = cell.getCaretShape(charIndex, leading);
+                return Util.translateCaretSize(parent, cell.getContent(), p);
             }
         }
         return null;
+    }
+
+    public void removeFromLayout(VFlow f) {
+        ObservableList<Node> cs = f.getChildren();
+        for(TextCell cell: cells) {
+            cs.remove(cell.getContent());
+        }
     }
 }

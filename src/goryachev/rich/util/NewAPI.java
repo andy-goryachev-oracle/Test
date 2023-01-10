@@ -27,6 +27,9 @@
 package goryachev.rich.util;
 
 import javafx.scene.Node;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.PathElement;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
@@ -34,6 +37,7 @@ import javafx.scene.text.TextFlow;
  * These APIs should be added to JavaFX.
  */
 public class NewAPI {
+    // TODO check if used
     public static String getText(TextFlow f) {
         StringBuilder sb = new StringBuilder();
         for(Node n: f.getChildrenUnmodifiable()) {
@@ -43,5 +47,26 @@ public class NewAPI {
         }
         return sb.toString();
     }
+    
+    public static int getTextLength(TextFlow f) {
+        int len = 0;
+        for(Node n: f.getChildrenUnmodifiable()) {
+            if(n instanceof Text t) {
+                len += t.getText().length();
+            }
+        }
+        return len;
+    }
 
+    // or possibly moved to TextCell
+    public static PathElement[] getRange(TextFlow f, int start, int end) {
+        PathElement[] p = f.rangeShape(start, end);
+        if(p == null) {
+            p = new PathElement[] {
+                new MoveTo(0.0, 0.0),
+                new LineTo(0.0, f.getHeight())
+            };
+        }
+        return p;
+    }
 }

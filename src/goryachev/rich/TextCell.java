@@ -33,7 +33,7 @@ import javafx.scene.shape.PathElement;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import goryachev.rich.util.FxPathBuilder;
-import goryachev.rich.util.Util;
+import goryachev.rich.util.NewAPI;
 
 /**
  * Represents a text flow cell - contains either a TextFlow or a Region. 
@@ -104,14 +104,13 @@ public class TextCell {
         b.lineto(w, y0);
         b.lineto(w, y1);
         b.lineto(x, y1);
-        b.lineto(x, y0); // or close path?
+        b.lineto(x, y0);
     }
 
-    public CaretSize getCaretSize(Region parent, Marker m) {
+    // TODO rename getCaretPath?
+    public PathElement[] getCaretShape(int charIndex, boolean leading) {
         if (content instanceof TextFlow f) {
-            int pos = m.getCharIndex();
-            boolean leading = m.isLeading();
-            PathElement[] p = f.caretShape(pos, leading);
+            PathElement[] p = f.caretShape(charIndex, leading);
             if (p.length == 2) {
                 PathElement p0 = p[0];
                 PathElement p1 = p[1];
@@ -125,8 +124,33 @@ public class TextCell {
                     }
                 }
             }
-            return Util.translateCaretSize(parent, f, p);
+            return p;
         }
         return null;
+    }
+    
+    // TODO rename getRangePath?
+    public PathElement[] getRange(int start, int end) {
+        if (content instanceof TextFlow f) {
+            return NewAPI.getRange(f, start, end);
+        } else {
+            double w = content.getWidth();
+            double h = content.getHeight();
+            
+            return new PathElement[] {
+                new MoveTo(0.0, 0.0),
+                new LineTo(w, 0.0),
+                new LineTo(w, h),
+                new LineTo(0.0, h),
+                new LineTo(0.0, 0.0)
+            };
+        }
+    }
+
+    public int getTextLength() {
+        if (content instanceof TextFlow f) {
+            
+        }
+        return 0;
     }
 }

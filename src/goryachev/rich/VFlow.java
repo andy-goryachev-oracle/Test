@@ -28,20 +28,24 @@ package goryachev.rich;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
 import javafx.scene.shape.Rectangle;
-
 import goryachev.rich.impl.Markers;
+import goryachev.rich.impl.SelectionHelper;
 import goryachev.rich.util.FxPathBuilder;
+import goryachev.rich.util.Util;
 
 /**
  * Virtual text flow deals with TextCells, scroll bars, and conversion
@@ -125,7 +129,7 @@ public class VFlow extends Pane {
     // TODO update scrollbars
     protected TextCellLayout layoutCells(TextCellLayout previous) {
         if(previous != null) {
-            clear();
+            previous.removeFromLayout(this);
         }
         
         double height = getHeight();
@@ -142,7 +146,7 @@ public class VFlow extends Pane {
         int topBoxIndex = 0;
         double x = boxOffsetX;
         double y = boxOffsetY;
-        double width = getWidth();
+        double width = getWidth(); // TODO padding
         
         boolean wrap = control.isWrapText();
         double maxWidth = wrap ? width : -1;
@@ -183,6 +187,10 @@ public class VFlow extends Pane {
             if(y > getHeight()) {
                 break;
             }
+        }
+        
+        if(unwrappedWidth < width) {
+            unwrappedWidth = width;
         }
         
         la.setUnwrappedWidth(unwrappedWidth);
@@ -228,15 +236,60 @@ public class VFlow extends Pane {
 
     protected void createCaretPath(FxPathBuilder b, Marker m) {
         CaretSize c = getCaretSize(m);
-        System.err.println(c); // FIX
         if(c != null) {
             b.moveto(c.x(), c.y0());
             b.lineto(c.x(), c.y1());
         }
     }
 
-    protected void createSelectionHighlight(FxPathBuilder b, Marker start, Marker end) {
+    protected void createSelectionHighlight(FxPathBuilder b, Marker startMarker, Marker endMarker) {
+        if ((startMarker == null) || (endMarker == null)) {
+            return;
+        }
+
+        // enforce startMarker < endMarker
+        if (startMarker.compareTo(endMarker) > 0) {
+            throw new Error(startMarker + "<" + endMarker);
+        }
+
+        int topLine = getTopLineIndex();
+        if (endMarker.getLineIndex() < topLine) {
+            // selection is above visible area
+            return;
+        } else if (startMarker.getLineIndex() >= (topLine + layout.getVisibleCellCount())) {
+            // selection is below visible area
+            return;
+        }
+
+        // get selection shapes for top and bottom segments,
+        // translated to this VFlow coordinates.
+        PathElement[] top;
+        PathElement[] bottom;
+        if (startMarker.getLineIndex() == endMarker.getLineIndex()) {
+            top = getRangeShape(startMarker.getLineIndex(), startMarker.getLineOffset(), endMarker.getLineOffset());
+            bottom = null;
+        } else {
+            top = getRangeShape(startMarker.getLineIndex(), startMarker.getLineOffset(), -1);
+            if (top == null) {
+                top = getRangeTop();
+            }
+
+            bottom = getRangeShape(endMarker.getLineIndex(), 0, endMarker.getLineOffset());
+            if (bottom == null) {
+                bottom = getRangeBottom();
+            }
+        }
+
+        // generate shapes
+        Insets m = getPadding();
+        double left = m.getLeft(); // + layout.getLineNumbersColumnWidth(); // FIX padding? border?
+        double right = control.isWrapText() ? (getWidth() - m.getLeft() - m.getRight()) : layout.getTotalWidth();
+
         // TODO
+        boolean topLTR = true;
+        boolean bottomLTR = true;
+
+        new SelectionHelper(b, left, right).generate(top, bottom, topLTR, bottomLTR);
     }
 
     protected void createCurrentLineHighlight(FxPathBuilder b, Marker caret) {
@@ -261,5 +314,56 @@ public class VFlow extends Pane {
 
     protected CaretSize getCaretSize(Marker m) {
         return layout.getCaretSize(this, m);
+    }
+    
+    protected PathElement[] getRangeTop() {
+        double w = getWidth();
+
+        return new PathElement[] {
+            new MoveTo(0, -1),
+            new LineTo(w, -1),
+            new LineTo(w, 0),
+            new LineTo(0, 0),
+            new LineTo(0, -1)
+        };
+    }
+
+    protected PathElement[] getRangeBottom() {
+        double w = getWidth();
+        double h = getHeight();
+        double h1 = h + 1.0;
+
+        return new PathElement[] {
+            new MoveTo(0, h),
+            new LineTo(w, h),
+            new LineTo(w, h1),
+            new LineTo(0, h1),
+            new LineTo(0, h)
+        };
+    }
+
+    protected PathElement[] getRangeShape(int line, int startOffset, int endOffset) {
+        TextCell cell = layout.getCell(line);
+        if (cell == null) {
+            return null;
+        }
+
+        if (endOffset < 0) {
+            endOffset = cell.getTextLength();
+        }
+
+        PathElement[] pe;
+        if (startOffset == endOffset) {
+            // not a range, use caret shape instead
+            pe = cell.getCaretShape(startOffset, true);
+        } else {
+            pe = cell.getRange(startOffset, endOffset);
+        }
+
+        if (pe == null) {
+            return null;
+        } else {
+            return Util.translatePath(this, cell.getContent(), pe);
+        }
     }
 }
