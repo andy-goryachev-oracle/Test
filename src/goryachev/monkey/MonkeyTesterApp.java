@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import goryachev.monkey.pages.DemoPage;
 import goryachev.monkey.util.FX;
+import goryachev.settings.FxSettings;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -55,6 +56,11 @@ public class MonkeyTesterApp extends Application {
     
     public static void main(String[] args) {
         Application.launch(MonkeyTesterApp.class, args);
+    }
+    
+    @Override
+    public void init() {
+        FxSettings.useDirectory(".MonkeyTesterApp");
     }
 
     @Override
