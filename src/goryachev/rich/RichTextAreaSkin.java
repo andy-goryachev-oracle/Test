@@ -33,6 +33,7 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
+import goryachev.rich.util.NewAPI;
 
 /**
  * Provides visual representation for RichTextArea.
@@ -101,10 +102,10 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         this.behavior = new RichTextAreaBehavior(control);
         
         createMouseHandler().register(vflow);
-        
-        control.getSelectionModel().selectionSegmentProperty().addListener((s,p,sel) -> {
-            vflow.updateCaretAndSelection();
-        });
+
+        // TODO protect with listener helper (it's internal, shoud be made public) to avoid memory leak when changing skins
+        NewAPI.addChangeListener(vflow::updateCaretAndSelection, false, control.getSelectionModel().selectionSegmentProperty());
+        NewAPI.addChangeListener(vflow::updateRateRestartBlink, true, control.caretBlinkPeriodProperty());
     }
 
     @Override

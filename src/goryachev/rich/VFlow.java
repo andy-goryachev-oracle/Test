@@ -28,7 +28,12 @@ package goryachev.rich;
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -42,6 +47,7 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 import goryachev.rich.impl.Markers;
 import goryachev.rich.impl.SelectionHelper;
 import goryachev.rich.util.FxPathBuilder;
@@ -64,15 +70,20 @@ public class VFlow extends Pane {
     private final Path caretPath;
     private final Path caretLineHighlight;
     private final Path selectionHighlight;
-    private final SimpleIntegerProperty topLineIndex = new SimpleIntegerProperty(0);
+    protected final SimpleIntegerProperty topLineIndex = new SimpleIntegerProperty(0);
+    protected final SimpleBooleanProperty caretVisible = new SimpleBooleanProperty(true);
+    protected final SimpleBooleanProperty suppressBlink = new SimpleBooleanProperty(false);
+    protected final Timeline caretAnimation;
+    BooleanBinding cv; // FIX
 
     public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = control;
         this.vscroll = vscroll;
         this.hscroll = hscroll;
 
+        getStyleClass().add("content"); // maybe
+
         clip = new Rectangle();
-        setClip(clip);
         
         caretPath = new Path();
         caretPath.getStyleClass().add("caret");
@@ -90,22 +101,56 @@ public class VFlow extends Pane {
         selectionHighlight.setManaged(false);
         
         getChildren().addAll(caretLineHighlight, selectionHighlight, caretPath);
+        setClip(clip);
+        
+        caretAnimation = new Timeline();
+        caretAnimation.setCycleCount(Animation.INDEFINITE);
+        
+        caretPath.visibleProperty().bind(cv = new BooleanBinding() {
+            {
+                bind(
+                    caretVisible,
+                    control.displayCaretProperty(),
+                    control.focusedProperty(),
+                    control.disabledProperty(),
+                    suppressBlink
+                );
+            }
+
+            @Override
+            protected boolean computeValue() {
+                return
+                    (isCaretVisible() || suppressBlink.get()) &&
+                    control.isDisplayCaret() &&
+                    control.isFocused() &&
+                    (!control.isDisabled());
+            }
+        });
     }
-    
+
     public int getTopLineIndex() {
         return topLineIndex.get();
     }
-    
+
     public void setTopLineIndex(int ix) {
         topLineIndex.set(ix);
     }
-    
+
     public IntegerProperty topLineIndexProperty() {
         return topLineIndex;
     }
-    
+
+    public void setCaretVisible(boolean on) {
+        caretVisible.set(on);
+    }
+
+    public boolean isCaretVisible() {
+        return caretVisible.get();
+    }
+
     @Override
     protected void layoutChildren() {
+        System.out.println("layoutChildren"); // FIX
         // do we need to rebuild layout?
         if ((layout == null) || !layout.isValid(this)) {
             layout = layoutCells(layout);
@@ -365,5 +410,27 @@ public class VFlow extends Pane {
         } else {
             return Util.translatePath(this, cell.getContent(), pe);
         }
+    }
+
+    public void setSuppressBlink(boolean on) {
+        suppressBlink.set(on);
+        
+        if(!on) {
+            updateRateRestartBlink();
+        }
+    }
+
+    public void updateRateRestartBlink() {
+        Duration t1 = control.getCaretBlinkPeriod();
+        Duration t2 = t1.multiply(2.0);
+
+        caretAnimation.stop();
+        // TODO potentially, the start time can be aligned ~(seconds / period) % period to make all carets blink in sync
+        caretAnimation.getKeyFrames().setAll(
+            new KeyFrame(Duration.ZERO, (ev) -> setCaretVisible(true)),
+            new KeyFrame(t1, (ev) -> setCaretVisible(false)),
+            new KeyFrame(t2)
+        );
+        caretAnimation.play();
     }
 }

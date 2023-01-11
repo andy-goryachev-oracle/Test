@@ -90,7 +90,9 @@ public class MouseHandler {
     }
     
     protected void handleMouseReleased(MouseEvent ev) {
-        // TODO
+        //stopAutoScroll(); // TODO
+        control.setSuppressBlink(false);
+        //control.commitselection TODO
     }
     
     protected void handleMouseDragged(MouseEvent ev) {

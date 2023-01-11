@@ -27,11 +27,12 @@
 package goryachev.rich;
 
 import java.util.List;
-
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.css.CssMetaData;
@@ -42,7 +43,7 @@ import javafx.css.StyleableProperty;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.Control;
-
+import javafx.util.Duration;
 import goryachev.rich.impl.Markers;
 import goryachev.rich.util.Util;
 
@@ -61,11 +62,12 @@ import goryachev.rich.util.Util;
  */
 public class RichTextArea extends Control {
     private ObjectProperty<StyledTextModel> model;
-    private final ReadOnlyIntegerWrapper currentLine = new ReadOnlyIntegerWrapper(-1);
-    private final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(true);
+    protected final ReadOnlyIntegerWrapper currentLine = new ReadOnlyIntegerWrapper(-1);
+    protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(true);
+    protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(500));
     // TODO property, pluggable models
-    private final SelectionModel selectionModel = new SingleSelectionModel();
-    private Markers markers = new Markers(32);
+    protected final SelectionModel selectionModel = new SingleSelectionModel();
+    protected final Markers markers = new Markers(32);
 
     public RichTextArea() {
         setFocusTraversable(true);
@@ -238,16 +240,32 @@ public class RichTextArea extends Control {
         return vflow().getTextPosition(screenX, screenY, markers);
     }
 
-    // temporarily suppresses blinking when caret is being moved
-    protected void setSuppressBlink(boolean b) {
-        // TODO
+    public ReadOnlyObjectProperty<Duration> caretBlinkPeriodProperty() {
+        return caretBlinkPeriod.getReadOnlyProperty();
+    }
+
+    public void setCaretBlinkPeriod(Duration period) {
+        if (period == null) {
+            throw new NullPointerException("caret blink period cannot be null");
+        }
+        caretBlinkPeriod.set(period);
+    }
+
+    public Duration getCaretBlinkPeriod() {
+        return caretBlinkPeriod.get();
+    }
+
+    /** temporarily suppresses blinking when the caret is being moved */
+    protected void setSuppressBlink(boolean on) {
+        // perhaps we should call this method directly
+        vflow().setSuppressBlink(on);
     }
 
     public void selectWord(Marker m) {
-        // TODO
+        // TODO invoke an action?
     }
 
     public void selectLine(Marker m) {
-        // TODO
+        // TODO invoke an action?
     }
 }

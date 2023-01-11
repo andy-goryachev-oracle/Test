@@ -26,6 +26,8 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich.util;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -54,5 +56,23 @@ public class NewAPI {
             }
         }
         return len;
+    }
+    
+    /** adds a change listener via ListenerHelper which should be made public */
+    public static void addChangeListener(Runnable onChange, boolean fireImmediately, ObservableValue<?>... props) {
+        ChangeListener li = new ChangeListener() {
+            @Override
+            public void changed(ObservableValue prop, Object oldValue, Object newValue) {
+                onChange.run();
+            }
+        };
+
+        for (ObservableValue p : props) {
+            p.addListener(li);
+        }
+
+        if (fireImmediately) {
+            onChange.run();
+        }
     }
 }

@@ -5,6 +5,12 @@
 - extract properties base from RichTextArea?
 
 
+## Bugs
+
+- content padding
+
+
+
 ## Properties
 
 - model
@@ -30,3 +36,6 @@
 - pageUp
 - pageDown
 - selectAll
+- select word under cursor?
+- select line under cursor?
+
