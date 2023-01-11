@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,15 +24,18 @@
  */
 package goryachev.monkey.pages;
 
+import java.util.List;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.ToolPane;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ConstrainedColumnResizeBase;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumnBase;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TableView.ResizeFeatures;
 import javafx.scene.layout.BorderPane;
@@ -72,16 +75,15 @@ public class TableViewPage extends ToolPane {
     }
 
     public enum ResizePolicy {
-// TODO
-//        AUTO_RESIZE_FLEX_NEXT_COLUMN,
-//        AUTO_RESIZE_FLEX_LAST_COLUMN,
-//        AUTO_RESIZE_NEXT_COLUMN,
-//        AUTO_RESIZE_SUBSEQUENT_COLUMNS,
-//        AUTO_RESIZE_LAST_COLUMN,
-//        AUTO_RESIZE_ALL_COLUMNS,
-//        USER_DEFINED_EQUAL_WIDTHS,
+        AUTO_RESIZE_FLEX_NEXT_COLUMN,
+        AUTO_RESIZE_FLEX_LAST_COLUMN,
+        AUTO_RESIZE_NEXT_COLUMN,
+        AUTO_RESIZE_SUBSEQUENT_COLUMNS,
+        AUTO_RESIZE_LAST_COLUMN,
+        AUTO_RESIZE_ALL_COLUMNS,
         UNCONSTRAINED_RESIZE_POLICY,
-        CONSTRAINED_RESIZE_POLICY;
+        CONSTRAINED_RESIZE_POLICY,
+        USER_DEFINED_EQUAL_WIDTHS,
     }
     
     public enum Selection {
@@ -202,26 +204,24 @@ public class TableViewPage extends ToolPane {
 
     protected Callback<ResizeFeatures, Boolean> createPolicy(ResizePolicy p) {
         switch(p) {
-// TODO
-//        case AUTO_RESIZE_FLEX_NEXT_COLUMN:
-//            return TableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN;
-//        case AUTO_RESIZE_FLEX_LAST_COLUMN:
-//            return TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN;
-//        case AUTO_RESIZE_ALL_COLUMNS:
-//            return TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS;
-//        case AUTO_RESIZE_LAST_COLUMN:
-//            return TableView.CONSTRAINED_RESIZE_POLICY_LAST_COLUMN;
-//        case AUTO_RESIZE_NEXT_COLUMN:
-//            return TableView.CONSTRAINED_RESIZE_POLICY_NEXT_COLUMN;
-//        case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
-//            return TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS;
+        case AUTO_RESIZE_FLEX_NEXT_COLUMN:
+            return TableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN;
+        case AUTO_RESIZE_FLEX_LAST_COLUMN:
+            return TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN;
+        case AUTO_RESIZE_ALL_COLUMNS:
+            return TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS;
+        case AUTO_RESIZE_LAST_COLUMN:
+            return TableView.CONSTRAINED_RESIZE_POLICY_LAST_COLUMN;
+        case AUTO_RESIZE_NEXT_COLUMN:
+            return TableView.CONSTRAINED_RESIZE_POLICY_NEXT_COLUMN;
+        case AUTO_RESIZE_SUBSEQUENT_COLUMNS:
+            return TableView.CONSTRAINED_RESIZE_POLICY_SUBSEQUENT_COLUMNS;
         case CONSTRAINED_RESIZE_POLICY:
             return TableView.CONSTRAINED_RESIZE_POLICY;
         case UNCONSTRAINED_RESIZE_POLICY:
             return TableView.UNCONSTRAINED_RESIZE_POLICY;
-// TODO
-//        case USER_DEFINED_EQUAL_WIDTHS:
-//            return new UserDefinedResizePolicy();
+        case USER_DEFINED_EQUAL_WIDTHS:
+            return new UserDefinedResizePolicy();
         default:
             throw new Error("?" + p);
         }
@@ -591,7 +591,6 @@ public class TableViewPage extends ToolPane {
      * a user-defined policy demonstrates that we can indeed create a custom policy using the new API.
      * this policy simply sizes all columns equally.
      */
-    /** TODO
     protected static class UserDefinedResizePolicy
         extends ConstrainedColumnResizeBase
         implements Callback<TableView.ResizeFeatures,Boolean> {
@@ -610,5 +609,4 @@ public class TableViewPage extends ToolPane {
             return false;
         }
     }
-    */
 }
