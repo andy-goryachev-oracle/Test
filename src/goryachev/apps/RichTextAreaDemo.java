@@ -24,21 +24,11 @@
  */
 package goryachev.apps;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.geometry.Orientation;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.SplitPane;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-
-import goryachev.rich.RichTextArea;
-import goryachev.rich.StyledTextModel;
-import goryachev.util.VerticalGridPane;
+import goryachev.apps.rich.RichTextAreaWindow;
 
 /**
- * RichTextArea demo.
+ * RichTextArea demo application.
  */
 public class RichTextAreaDemo extends Application {
     public static void main(String[] args) {
@@ -47,49 +37,6 @@ public class RichTextAreaDemo extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        StyledTextModel m = new RichTextAreaDemoModel();
-        
-        RichTextArea textField = new RichTextArea();
-        textField.setModel(m);
-        textField.setWrapText(true);
-        
-        RichTextArea textField2 = new RichTextArea();
-        textField2.setModel(m);
-        
-        MenuBar mb = new MenuBar();
-        FX.menu(mb, "File");
-        FX.item(mb, "Quit", () -> Platform.exit());
-        
-        Label status = new Label();
-        
-        // grid pane does not work as expected
-//        GridPane g = new GridPane();
-//        g.add(new BorderPane(textField), 0, 0);
-//        g.add(new BorderPane(textField2), 0, 1);
-        
-        // cannot do fill
-//        VBox vb = new VBox();
-//        VBox.setVgrow(textField, Priority.ALWAYS);
-//        VBox.setVgrow(textField2, Priority.ALWAYS);
-//        vb.getChildren().addAll(textField, textField2);
-        
-        SplitPane p = new SplitPane(textField, textField2);
-        p.setOrientation(Orientation.VERTICAL);
-        
-        //VerticalGridPane p = new VerticalGridPane(textField, textField2);
-        
-        BorderPane bp = new BorderPane();
-        bp.setTop(mb);
-        bp.setCenter(p);
-        bp.setBottom(status);
-        
-        Scene scene = new Scene(bp);
-        scene.getStylesheets().add(HelloTooltip.class.getResource("RichTextAreaDemo.css").toExternalForm());
-
-        stage.setScene(scene);
-        stage.setTitle("RichTextArea Demo " + System.getProperty("java.version"));
-        stage.setWidth(800);
-        stage.setHeight(500);
-        stage.show();
+        new RichTextAreaWindow().show();
     }
 }
