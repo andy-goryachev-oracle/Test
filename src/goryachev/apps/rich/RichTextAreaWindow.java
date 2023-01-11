@@ -33,7 +33,6 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import goryachev.apps.FX;
-import goryachev.apps.RichTextAreaDemoModel;
 import goryachev.rich.RichTextArea;
 import goryachev.rich.StyledTextModel;
 
@@ -41,28 +40,22 @@ import goryachev.rich.StyledTextModel;
  * Rich Text Area Demo window
  */
 public class RichTextAreaWindow extends Stage {
+    protected final MainPane mainPane;
+    
     public RichTextAreaWindow() {
-        StyledTextModel m = new RichTextAreaDemoModel();
-
-        RichTextArea textField = new RichTextArea();
-        textField.setModel(m);
-        textField.setWrapText(true);
-
-        RichTextArea textField2 = new RichTextArea();
-        textField2.setModel(m);
+        mainPane = new MainPane();
         
         MenuBar mb = new MenuBar();
         FX.menu(mb, "File");
+        FX.item(mb, "New Window", this::newWindow);
+        FX.separator(mb);
         FX.item(mb, "Quit", () -> Platform.exit());
         
         Label status = new Label();
         
-        SplitPane p = new SplitPane(textField, textField2);
-        p.setOrientation(Orientation.VERTICAL);
-        
         BorderPane bp = new BorderPane();
         bp.setTop(mb);
-        bp.setCenter(p);
+        bp.setCenter(mainPane);
         bp.setBottom(status);
         
         Scene scene = new Scene(bp);
@@ -72,5 +65,16 @@ public class RichTextAreaWindow extends Stage {
         setTitle("RichTextArea Demo " + System.getProperty("java.version"));
         setWidth(800);
         setHeight(500);
+    }
+    
+    protected void newWindow() {
+        double offset = 20;
+        
+        RichTextAreaWindow w = new RichTextAreaWindow();
+        w.setX(getX() + offset);
+        w.setY(getY() + offset);
+        w.setWidth(getWidth());
+        w.setHeight(getHeight());
+        w.show();
     }
 }

@@ -28,7 +28,7 @@ import javafx.stage.Stage;
 import goryachev.apps.rich.RichTextAreaWindow;
 
 /**
- * RichTextArea demo application.
+ * RichTextArea Demo Application.
  */
 public class RichTextAreaDemo extends Application {
     public static void main(String[] args) {

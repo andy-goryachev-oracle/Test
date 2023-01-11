@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -27,6 +27,7 @@ package goryachev.apps;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 
 /**
  * Poor man replacement of my FX hacks.
@@ -39,11 +40,20 @@ public class FX {
     }
 
     public static MenuItem item(MenuBar mb, String text, Runnable action) {
-        int ct = mb.getMenus().size();
-        Menu m = mb.getMenus().get(ct - 1);
         MenuItem mi = new MenuItem(text);
         mi.setOnAction((ev) -> action.run());
-        m.getItems().add(mi);
+        lastMenu(mb).getItems().add(mi);
         return mi;
+    }
+    
+    private static Menu lastMenu(MenuBar mb) {
+        int ct = mb.getMenus().size();
+        return mb.getMenus().get(ct - 1);
+    }
+    
+    public static SeparatorMenuItem separator(MenuBar mb) {
+        SeparatorMenuItem m = new SeparatorMenuItem();
+        lastMenu(mb).getItems().add(m);
+        return m;
     }
 }

@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.apps;
+package goryachev.apps.rich;
 import goryachev.rich.simple.SimpleStyledTextModel;
 
 /**
