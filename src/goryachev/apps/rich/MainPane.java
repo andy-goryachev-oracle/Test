@@ -29,6 +29,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -41,10 +42,12 @@ import goryachev.rich.StyledTextModel;
  * Main Panel contains RichTextArea, split panes for quick size adjustment, and an option pane.
  */
 public class MainPane extends BorderPane {
-    private static StyledTextModel model;
+    private static RichTextAreaDemoModel model;
+    private final ROptionPane optionPane;
+    private final RichTextArea textField;
 
     public MainPane() {
-        RichTextArea textField = new RichTextArea();
+        textField = new RichTextArea();
         textField.setModel(model());
         textField.setWrapText(true);
 
@@ -57,8 +60,21 @@ public class MainPane extends BorderPane {
         vsplit.setBorder(null);
         vsplit.setDividerPositions(0.9);
         vsplit.setOrientation(Orientation.VERTICAL);
+
+        CheckBox wrapText = new CheckBox("wrap text");
+        wrapText.selectedProperty().bindBidirectional(textField.wrapTextProperty());
+        
+        CheckBox displayCaret = new CheckBox("display caret");
+        displayCaret.selectedProperty().bindBidirectional(textField.displayCaretProperty());
+        
+        // TODO blink rate
+        
+        optionPane = new ROptionPane();
+        optionPane.option(wrapText);
+        optionPane.option(displayCaret);
         
         setCenter(vsplit);
+        setRight(optionPane);
     }
     
     private static StyledTextModel model() {

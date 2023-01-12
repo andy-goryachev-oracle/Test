@@ -23,6 +23,8 @@
  * questions.
  */
 package goryachev.apps.rich;
+import java.util.Arrays;
+import java.util.Random;
 import goryachev.rich.simple.SimpleStyledTextModel;
 
 /**
@@ -50,12 +52,35 @@ public class RichTextAreaDemoModel extends SimpleStyledTextModel {
         addSegment("Application {", null, CODE).nl();
         addSegment("}", null, CODE).nl();
         nl(2);
+        
         // TODO unicode codepoints
 //        addSegment("Mongolian ᠨᠢᠷᠤᠭᠤ niruγu (нуруу nuruu)", null, null).nl();
 //        addSegment("Arabic العربية", null, null).nl();
 //        addSegment("Japanese 日本語", null, null).nl();
-        addSegment("Mongolian \u1828\u1822\u1837\u1824\u182d\u1824 niru\u03b3u (\u043d\u0443\u0440\u0443\u0443 nuruu)", null, null).nl();
-        addSegment("Arabic \u0627\u0644\u0639\u0631\u0628\u064a\u0629", null, null).nl();
-        addSegment("Japanese \u65e5\u672c\u8a9e", null, null).nl();
+//        addSegment("Mongolian \u1828\u1822\u1837\u1824\u182d\u1824 niru\u03b3u (\u043d\u0443\u0440\u0443\u0443 nuruu)", null, null).nl();
+//        addSegment("Arabic \u0627\u0644\u0639\u0631\u0628\u064a\u0629", null, null).nl();
+//        addSegment("Japanese \u65e5\u672c\u8a9e", null, null).nl();
+        nl(2);
+        
+        Random r = new Random();
+        for(int line=0; line<100; line++) {
+            int ct = r.nextInt(10);
+            for(int word=0; word<ct; word++) {
+                int len = 1 + r.nextInt(7);
+                char c = (char)('a' + r.nextInt(27));
+                
+                if(word > 0) {
+                    addSegment(" ", null, CODE);
+                }
+                addSegment(word(c, len), null, CODE);
+            }
+            nl();
+        }
+    }
+    
+    private String word(char c, int len) {
+        char[] cs = new char[len];
+        Arrays.fill(cs, c);
+        return new String(cs);
     }
 }

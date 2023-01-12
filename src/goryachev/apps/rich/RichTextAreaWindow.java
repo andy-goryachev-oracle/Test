@@ -65,6 +65,8 @@ public class RichTextAreaWindow extends Stage {
         setTitle("RichTextArea Demo " + System.getProperty("java.version"));
         setWidth(800);
         setHeight(500);
+        
+        // TODO line= charIndex= in status
     }
     
     protected void newWindow() {
