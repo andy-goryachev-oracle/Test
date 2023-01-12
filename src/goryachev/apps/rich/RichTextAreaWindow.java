@@ -40,10 +40,10 @@ import goryachev.rich.StyledTextModel;
  * Rich Text Area Demo window
  */
 public class RichTextAreaWindow extends Stage {
-    protected final MainPane mainPane;
+    protected final RichTextAreaDemoPane mainPane;
     
     public RichTextAreaWindow() {
-        mainPane = new MainPane();
+        mainPane = new RichTextAreaDemoPane();
         
         MenuBar mb = new MenuBar();
         FX.menu(mb, "File");

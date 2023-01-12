@@ -27,16 +27,15 @@
 package goryachev.rich.simple;
 
 import java.util.ArrayList;
-
-import goryachev.rich.TextCell;
 import goryachev.rich.StyledParagraph;
+import goryachev.rich.TextCell;
 
 public class SimpleStyledTextLine implements StyledParagraph {
 
     public record Segment(String text, String style, String[] css) { }
 
     private int index;
-    private ArrayList<Segment> segments = new ArrayList<>();
+    private ArrayList<Segment> segments;
 
     public SimpleStyledTextLine(int index) {
         this.index = index;
@@ -46,8 +45,13 @@ public class SimpleStyledTextLine implements StyledParagraph {
     public TextCell createTextCell() {
         int ix = getIndex();
         TextCell b = new TextCell(ix);
-        for(Segment s: segments) {
-            b.addSegment(s.text, s.style, s.css);
+        if(segments == null) {
+            // avoid zero height
+            b.addSegment("", null, null);
+        } else {
+            for(Segment s: segments) {
+                b.addSegment(s.text, s.style, s.css);
+            }
         }
         return b;
     }
@@ -59,6 +63,9 @@ public class SimpleStyledTextLine implements StyledParagraph {
 
     public void addSegment(String text, String style, String[] css) {
         // TODO check for newlines/formfeed chars
+        if(segments == null) {
+            segments = new ArrayList<>();
+        }
         segments.add(new Segment(text, style, css));
     }
 }

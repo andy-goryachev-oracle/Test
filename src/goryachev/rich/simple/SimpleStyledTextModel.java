@@ -28,27 +28,26 @@ package goryachev.rich.simple;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
 import goryachev.rich.StyledParagraph;
 import goryachev.rich.StyledTextModel;
 
 public class SimpleStyledTextModel implements StyledTextModel {
-    private final ObservableList<StyledParagraph> lines = FXCollections.observableArrayList();
+    private final ObservableList<StyledParagraph> paragraphs = FXCollections.observableArrayList();
 
     public SimpleStyledTextModel() {
     }
 
     @Override
     public ObservableList<? extends StyledParagraph> getParagraphs() {
-        return lines;
+        return paragraphs;
     }
 
     public SimpleStyledTextModel addSegment(String text, String style, String... css) {
-        if (lines.size() == 0) {
-            lines.add(new SimpleStyledTextLine(0));
+        if (paragraphs.size() == 0) {
+            paragraphs.add(new SimpleStyledTextLine(0));
         }
 
-        SimpleStyledTextLine t = (SimpleStyledTextLine)lines.get(lines.size() - 1);
+        SimpleStyledTextLine t = (SimpleStyledTextLine)paragraphs.get(paragraphs.size() - 1);
         t.addSegment(text, style, css);
         return this;
     }
@@ -59,8 +58,8 @@ public class SimpleStyledTextModel implements StyledTextModel {
 
     public SimpleStyledTextModel nl(int count) {
         for (int i = 0; i < count; i++) {
-            int ix = lines.size();
-            lines.add(new SimpleStyledTextLine(ix));
+            int ix = paragraphs.size();
+            paragraphs.add(new SimpleStyledTextLine(ix));
         }
         return this;
     }

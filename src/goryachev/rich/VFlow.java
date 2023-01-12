@@ -182,7 +182,7 @@ public class VFlow extends Pane {
         clip.setHeight(height);
 
         StyledTextModel model = control.getModel();
-        List<? extends StyledParagraph> lines = model.getParagraphs();
+        List<? extends StyledParagraph> paragraphs = model.getParagraphs();
         TextCellLayout la = new TextCellLayout(this);
         
         // TODO properties
@@ -199,11 +199,11 @@ public class VFlow extends Pane {
         
         // TODO size from previous layout
         ArrayList<TextCell> cells = new ArrayList<>(32);
-        for(int i=topBoxIndex; i<lines.size(); i++)
+        for(int i=topBoxIndex; i<paragraphs.size(); i++)
         {
             // TODO can use cache
-            StyledParagraph tline = lines.get(i);
-            TextCell cell = tline.createTextCell();
+            StyledParagraph p = paragraphs.get(i);
+            TextCell cell = p.createTextCell();
             cells.add(cell);
             Region r = cell.getContent();
                         
@@ -214,6 +214,7 @@ public class VFlow extends Pane {
             r.setMaxWidth(maxWidth);
             double h = r.prefHeight(maxWidth);
             cell.setPreferredHeight(h);
+            System.out.println(i + " " + h); // FIX
             
             if(wrap) {
                 cell.setPreferredWidth(-1.0);

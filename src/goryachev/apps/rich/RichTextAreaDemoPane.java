@@ -41,12 +41,12 @@ import goryachev.rich.StyledTextModel;
 /**
  * Main Panel contains RichTextArea, split panes for quick size adjustment, and an option pane.
  */
-public class MainPane extends BorderPane {
+public class RichTextAreaDemoPane extends BorderPane {
     private static RichTextAreaDemoModel model;
     private final ROptionPane optionPane;
     private final RichTextArea textField;
 
-    public MainPane() {
+    public RichTextAreaDemoPane() {
         textField = new RichTextArea();
         textField.setModel(model());
         textField.setWrapText(true);
