@@ -22,6 +22,8 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// This code borrows heavily from the following project, with permission from the author:
+// https://github.com/andy-goryachev/FxDock
 package goryachev.settings;
 
 import java.util.ArrayList;
@@ -34,8 +36,10 @@ import javafx.stage.Window;
  */
 public class FxSettingsSchema {
     private static final String PREFIX = "FX.";
-    private static final String SEP = ",";
+    private static final char SEP = ',';
+    private static final char ESC = '\\';
     
+    private static final String WINDOW_NORMAL = "N";
     private static final String WINDOW_ICONIFIED = "I";
     private static final String WINDOW_MAXIMIZED = "M";
     private static final String WINDOW_FULLSCREEN = "F";
@@ -49,14 +53,12 @@ public class FxSettingsSchema {
         if(w instanceof Stage s) {
             if(s.isIconified()) {
                 a.add(WINDOW_ICONIFIED);
-            }
-            
-            if(s.isMaximized()) {
+            } else if(s.isMaximized()) {
                 a.add(WINDOW_MAXIMIZED);
-            }
-            
-            if(s.isFullScreen()) {
+            } else if(s.isFullScreen()) {
                 a.add(WINDOW_FULLSCREEN);
+            } else {
+                a.add(WINDOW_NORMAL);
             }
         }
         FxSettings.set(PREFIX + m.getID(), toString(a));
@@ -83,8 +85,58 @@ public class FxSettingsSchema {
             } else {
                 sep = true;
             }
-            sb.append(x);
+            sb.append(encode(x));
         }
         return sb.toString();
+    }
+    
+    private static String encode(Object x) {
+        if(x == null) {
+            return "";
+        }
+
+        String s = x.toString();
+        int len = s.length();
+        int i = 0;
+        for( ; i<len; i++) {
+            char c = s.charAt(i);
+            if(c == SEP) {
+                break;
+            } else if(c == ESC) {
+                break;
+            } else if(c < 0x20) {
+                break;
+            }
+        }
+        
+        if(i == len) {
+            return s;
+        }
+        
+        StringBuilder sb = new StringBuilder(len + 8);
+        sb.append(s, 0, i);
+        for( ;i<len; i++) {
+            char c = s.charAt(i);
+            if(c == SEP) {
+                escape(sb, c);
+            } else if(c == ESC) {
+                escape(sb, c);
+            } else if(c < 0x20) {
+                escape(sb, c);
+            } else {
+                sb.append(c);
+            }
+        }
+        return sb.toString();
+    }
+
+    private static void escape(StringBuilder sb, char c) {
+        sb.append(ESC);
+        sb.append(nibble(c >> 4));
+        sb.append(nibble(c));
+    }
+
+    private static char nibble(int ix) {
+        return "0123456789abcdef".charAt(ix & 0x0f);
     }
 }
