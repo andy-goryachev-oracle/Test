@@ -52,7 +52,7 @@ import goryachev.rich.util.Util;
  * 
  * TODO line spacing property
  * TODO content padding property
- * TODO focus enabled property
+ * TODO focus enabled property (Node?)
  * TODO set size to content property
  * TODO highlight current line property
  * TODO tab size property
