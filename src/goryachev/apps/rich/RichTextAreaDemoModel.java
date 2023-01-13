@@ -25,6 +25,7 @@
 package goryachev.apps.rich;
 import java.util.Arrays;
 import java.util.Random;
+import goryachev.rich.simple.SimpleStyledImageParagraph;
 import goryachev.rich.simple.SimpleStyledTextModel;
 
 /**
@@ -38,8 +39,9 @@ public class RichTextAreaDemoModel extends SimpleStyledTextModel {
         String UNDER = "underline";
 
         addSegment("RichTextArea Control", "-fx-font-size:200%;", UNDER);
-        nl();
-        addSegment("This text is styled with inline style.", "-fx-font-size:75%; -fx-font-style:italic; -fx-fill:magenta;");
+        //nl();
+        addImage(RichTextAreaDemoModel.class.getResourceAsStream("image.png"));
+        addSegment("*** This text is styled with inline style ***", "-fx-font-size:100%; -fx-font-style:italic; -fx-fill:gray;");
         nl();
         addSegment("The following text is styled with a CSS stylesheet:", null, null);
         nl().nl();

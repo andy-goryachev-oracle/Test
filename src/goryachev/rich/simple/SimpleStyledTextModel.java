@@ -26,8 +26,10 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich.simple;
 
+import java.io.InputStream;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 import goryachev.rich.StyledParagraph;
 import goryachev.rich.StyledTextModel;
 
@@ -67,8 +69,11 @@ public class SimpleStyledTextModel implements StyledTextModel {
         }
         return paragraphs.get(sz - 1);
     }
-    
-    public SimpleStyledTextModel addParagraph(StyledParagraph p) {
+
+    public SimpleStyledTextModel addImage(InputStream in) {
+        int ix = paragraphs.size();
+        Image im = new Image(in);
+        SimpleStyledImageParagraph p = new SimpleStyledImageParagraph(ix, im);
         paragraphs.add(p);
         return this;
     }

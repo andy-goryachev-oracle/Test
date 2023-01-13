@@ -34,7 +34,7 @@ public class SimpleStyledTextParagraph implements StyledParagraph {
 
     public record Segment(String text, String style, String[] css) { }
 
-    private int index;
+    private int index; // TODO move to base class?
     private ArrayList<Segment> segments;
 
     public SimpleStyledTextParagraph(int index) {
