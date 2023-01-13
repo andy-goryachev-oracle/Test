@@ -60,7 +60,7 @@ public class RichTextAreaDemoPane extends BorderPane {
         vsplit.setBorder(null);
         vsplit.setDividerPositions(0.9);
         vsplit.setOrientation(Orientation.VERTICAL);
-
+        
         CheckBox wrapText = new CheckBox("wrap text");
         wrapText.selectedProperty().bindBidirectional(richTextArea.wrapTextProperty());
         
@@ -86,6 +86,7 @@ public class RichTextAreaDemoPane extends BorderPane {
     
     protected static Pane pane() {
         Pane p = new Pane();
+        SplitPane.setResizableWithParent(p, false);
         p.setStyle("-fx-background-color:#dddddd;");
         return p;
     }
