@@ -69,9 +69,13 @@ public class RichTextAreaDemoModel extends SimpleStyledTextModel {
                 char c = (char)('a' + r.nextInt(27));
                 
                 if(word > 0) {
-                    addSegment(" ", null, CODE);
+                    addSegment(" ", null);
                 }
-                addSegment(word(c, len), null, CODE);
+                if(c < 'e') {
+                    addSegment(word(c, len), null, GREEN);
+                } else {
+                    addSegment(word(c, len), null);
+                }
             }
             nl();
         }

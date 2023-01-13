@@ -7,7 +7,7 @@
 
 ## Bugs
 
-- content padding
+- content padding property vs. focus borders
 
 
 

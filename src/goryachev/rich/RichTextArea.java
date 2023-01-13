@@ -53,9 +53,7 @@ import goryachev.rich.util.Util;
  * TODO line spacing property
  * TODO content padding property
  * TODO focus enabled property
- * TODO cater enabled property
- * TODO set preferred size to content property
- * TODO current position r/o property
+ * TODO set size to content property
  * TODO highlight current line property
  * TODO tab size property
  * TODO selection model property
@@ -65,6 +63,7 @@ public class RichTextArea extends Control {
     protected final ReadOnlyIntegerWrapper currentLine = new ReadOnlyIntegerWrapper(-1);
     protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(true);
     protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(500));
+    protected final ReadOnlyObjectWrapper<TextPos> caretPosition = new ReadOnlyObjectWrapper<>(this, "caretPosition", null);
     // TODO property, pluggable models
     protected final SelectionModel selectionModel = new SingleSelectionModel();
     protected final Markers markers = new Markers(32);
@@ -267,5 +266,18 @@ public class RichTextArea extends Control {
 
     public void selectLine(Marker m) {
         // TODO invoke an action?
+    }
+    
+    /** implementation detail: sets caret position */
+    protected void setCaretPosition(TextPos p) {
+        caretPosition.set(p);
+    }
+    
+    public TextPos getCaretPosition() {
+        return caretPosition.get();
+    }
+    
+    public ReadOnlyObjectProperty<TextPos> caretPositionProperty() {
+        return caretPosition.getReadOnlyProperty();
     }
 }

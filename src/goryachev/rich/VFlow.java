@@ -150,8 +150,6 @@ public class VFlow extends Pane {
 
     @Override
     protected void layoutChildren() {
-        System.out.println("layoutChildren"); // FIX
-        // do we need to rebuild layout?
         if ((layout == null) || !layout.isValid(this)) {
             layout = layoutCells(layout);
             updateCaretAndSelection();
@@ -201,7 +199,7 @@ public class VFlow extends Pane {
         ArrayList<TextCell> cells = new ArrayList<>(32);
         for(int i=topBoxIndex; i<paragraphs.size(); i++)
         {
-            // TODO can use cache
+            // TODO use cache
             StyledParagraph p = paragraphs.get(i);
             TextCell cell = p.createTextCell();
             cells.add(cell);
@@ -214,7 +212,6 @@ public class VFlow extends Pane {
             r.setMaxWidth(maxWidth);
             double h = r.prefHeight(maxWidth);
             cell.setPreferredHeight(h);
-            System.out.println(i + " " + h); // FIX
             
             if(wrap) {
                 cell.setPreferredWidth(-1.0);
@@ -426,7 +423,6 @@ public class VFlow extends Pane {
         Duration t2 = t1.multiply(2.0);
 
         caretAnimation.stop();
-        // TODO potentially, the start time can be aligned ~(seconds / period) % period to make all carets blink in sync
         caretAnimation.getKeyFrames().setAll(
             new KeyFrame(Duration.ZERO, (ev) -> setCaretVisible(true)),
             new KeyFrame(t1, (ev) -> setCaretVisible(false)),

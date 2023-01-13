@@ -43,15 +43,15 @@ import goryachev.rich.StyledTextModel;
  */
 public class RichTextAreaDemoPane extends BorderPane {
     private static RichTextAreaDemoModel model;
-    private final ROptionPane optionPane;
-    private final RichTextArea textField;
+    public final ROptionPane optionPane;
+    public final RichTextArea richTextArea;
 
     public RichTextAreaDemoPane() {
-        textField = new RichTextArea();
-        textField.setModel(model());
-        textField.setWrapText(true);
+        richTextArea = new RichTextArea();
+        richTextArea.setModel(model());
+        richTextArea.setWrapText(true);
 
-        SplitPane hsplit = new SplitPane(textField, pane());
+        SplitPane hsplit = new SplitPane(richTextArea, pane());
         hsplit.setBorder(null);
         hsplit.setDividerPositions(0.9);
         hsplit.setOrientation(Orientation.HORIZONTAL);
@@ -62,10 +62,10 @@ public class RichTextAreaDemoPane extends BorderPane {
         vsplit.setOrientation(Orientation.VERTICAL);
 
         CheckBox wrapText = new CheckBox("wrap text");
-        wrapText.selectedProperty().bindBidirectional(textField.wrapTextProperty());
+        wrapText.selectedProperty().bindBidirectional(richTextArea.wrapTextProperty());
         
         CheckBox displayCaret = new CheckBox("display caret");
-        displayCaret.selectedProperty().bindBidirectional(textField.displayCaretProperty());
+        displayCaret.selectedProperty().bindBidirectional(richTextArea.displayCaretProperty());
         
         // TODO blink rate
         

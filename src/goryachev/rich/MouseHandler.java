@@ -86,6 +86,7 @@ public class MouseHandler {
             sm.setAnchor(pos);
         }
         
+        control.setCaretPosition(pos.getTextPos());
         control.requestFocus();
     }
     

@@ -25,25 +25,24 @@
 package goryachev.apps.rich;
 
 import javafx.application.Platform;
-import javafx.geometry.Orientation;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import goryachev.apps.FX;
-import goryachev.rich.RichTextArea;
-import goryachev.rich.StyledTextModel;
+import goryachev.rich.TextPos;
 
 /**
  * Rich Text Area Demo window
  */
 public class RichTextAreaWindow extends Stage {
-    protected final RichTextAreaDemoPane mainPane;
+    public final RichTextAreaDemoPane demoPane;
+    public final Label status;
     
     public RichTextAreaWindow() {
-        mainPane = new RichTextAreaDemoPane();
+        demoPane = new RichTextAreaDemoPane();
         
         MenuBar mb = new MenuBar();
         FX.menu(mb, "File");
@@ -51,11 +50,12 @@ public class RichTextAreaWindow extends Stage {
         FX.separator(mb);
         FX.item(mb, "Quit", () -> Platform.exit());
         
-        Label status = new Label();
+        status = new Label();
+        status.setPadding(new Insets(2, 10, 2, 10));
         
         BorderPane bp = new BorderPane();
         bp.setTop(mb);
-        bp.setCenter(mainPane);
+        bp.setCenter(demoPane);
         bp.setBottom(status);
         
         Scene scene = new Scene(bp);
@@ -63,10 +63,23 @@ public class RichTextAreaWindow extends Stage {
 
         setScene(scene);
         setTitle("RichTextArea Demo " + System.getProperty("java.version"));
-        setWidth(800);
-        setHeight(500);
+        setWidth(1200);
+        setHeight(600);
         
-        // TODO line= charIndex= in status
+        demoPane.richTextArea.caretPositionProperty().addListener((x) -> updateStatus());
+    }
+    
+    protected void updateStatus() {
+        TextPos p = demoPane.richTextArea.getCaretPosition();
+        
+        String s;
+        if(p == null) {
+            s = null;
+        } else {
+            s = "line=" + p.lineIndex() + " char=" + p.charIndex();
+        }
+        
+        status.setText(s);
     }
     
     protected void newWindow() {
