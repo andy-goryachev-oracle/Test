@@ -44,11 +44,32 @@ public class SimpleStyledTextModel implements StyledTextModel {
 
     public SimpleStyledTextModel addSegment(String text, String style, String... css) {
         if (paragraphs.size() == 0) {
-            paragraphs.add(new SimpleStyledTextLine(0));
+            paragraphs.add(new SimpleStyledTextParagraph(0));
         }
 
-        SimpleStyledTextLine t = (SimpleStyledTextLine)paragraphs.get(paragraphs.size() - 1);
-        t.addSegment(text, style, css);
+        SimpleStyledTextParagraph p;
+        StyledParagraph last = lastParagraph();
+        if(last instanceof SimpleStyledTextParagraph ss) {
+            p = ss;
+        } else {
+            p = new SimpleStyledTextParagraph(0);
+            paragraphs.add(p);
+        }
+        
+        p.addSegment(text, style, css);
+        return this;
+    }
+    
+    protected StyledParagraph lastParagraph() {
+        int sz = paragraphs.size();
+        if (sz == 0) {
+            return null;
+        }
+        return paragraphs.get(sz - 1);
+    }
+    
+    public SimpleStyledTextModel addParagraph(StyledParagraph p) {
+        paragraphs.add(p);
         return this;
     }
 
@@ -59,7 +80,7 @@ public class SimpleStyledTextModel implements StyledTextModel {
     public SimpleStyledTextModel nl(int count) {
         for (int i = 0; i < count; i++) {
             int ix = paragraphs.size();
-            paragraphs.add(new SimpleStyledTextLine(ix));
+            paragraphs.add(new SimpleStyledTextParagraph(ix));
         }
         return this;
     }
