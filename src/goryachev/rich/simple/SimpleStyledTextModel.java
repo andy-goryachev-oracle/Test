@@ -54,7 +54,8 @@ public class SimpleStyledTextModel implements StyledTextModel {
         if(last instanceof SimpleStyledTextParagraph ss) {
             p = ss;
         } else {
-            p = new SimpleStyledTextParagraph(0);
+            int ix = paragraphs.size();
+            p = new SimpleStyledTextParagraph(ix);
             paragraphs.add(p);
         }
         

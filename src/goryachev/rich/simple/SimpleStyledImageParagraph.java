@@ -25,6 +25,7 @@
 package goryachev.rich.simple;
 
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -35,6 +36,7 @@ import goryachev.rich.TextCell;
 public class SimpleStyledImageParagraph implements StyledParagraph {
     private final int index; // TODO move to base class?
     private final Image image;
+    private static final Insets PADDING = new Insets(1, 1, 1, 1);
     
     public SimpleStyledImageParagraph(int index, Image image) {
         this.index = index;
@@ -43,8 +45,9 @@ public class SimpleStyledImageParagraph implements StyledParagraph {
     
     @Override
     public TextCell createTextCell() {
-        ImageView v = new ImageView(image);
-        Pane p = new Pane(v) {            
+        // TODO ImageCell ?
+        ImageView im = new ImageView(image);
+        Pane p = new Pane(im) {            
             @Override
             protected void layoutChildren() {
                 double width = getWidth();
@@ -54,20 +57,25 @@ public class SimpleStyledImageParagraph implements StyledParagraph {
                 } else {
                     sc = 1.0;
                 }
-                v.setScaleX(sc);
-                v.setScaleY(sc);
-                layoutInArea(v, 0, 0, image.getWidth() * sc, image.getHeight() * sc, 0, null, true, false, HPos.CENTER, VPos.CENTER);
+                im.setScaleX(sc);
+                im.setScaleY(sc);
+                
+                double x0 = snappedLeftInset();
+                double y0 = snappedTopInset();
+                layoutInArea(im, x0, y0, image.getWidth() * sc, image.getHeight() * sc, 0, PADDING, true, false, HPos.CENTER, VPos.CENTER);
             }
             
             @Override
             protected double computePrefHeight(double w) {
+                double p = snappedTopInset() + snappedBottomInset();
                 if(w < image.getWidth()) {
-                    return image.getHeight() * w / image.getWidth();
+                    return p + (image.getHeight() * w / image.getWidth());
                 } else {
-                    return image.getHeight();
+                    return p + (image.getHeight());
                 }
             }
         };
+        p.setPadding(PADDING);
         return new TextCell(index, p);
     }
 

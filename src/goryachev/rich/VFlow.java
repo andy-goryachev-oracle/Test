@@ -74,7 +74,6 @@ public class VFlow extends Pane {
     protected final SimpleBooleanProperty caretVisible = new SimpleBooleanProperty(true);
     protected final SimpleBooleanProperty suppressBlink = new SimpleBooleanProperty(false);
     protected final Timeline caretAnimation;
-    BooleanBinding cv; // FIX
 
     public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = control;
@@ -106,7 +105,7 @@ public class VFlow extends Pane {
         caretAnimation = new Timeline();
         caretAnimation.setCycleCount(Animation.INDEFINITE);
         
-        caretPath.visibleProperty().bind(cv = new BooleanBinding() {
+        caretPath.visibleProperty().bind(new BooleanBinding() {
             {
                 bind(
                     caretVisible,
@@ -397,7 +396,6 @@ public class VFlow extends Pane {
 
         PathElement[] pe;
         if (startOffset == endOffset) {
-            // not a range, use caret shape instead
             pe = cell.getCaretShape(startOffset, true);
         } else {
             pe = cell.getRangeShape(startOffset, endOffset);

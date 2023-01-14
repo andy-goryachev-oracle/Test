@@ -124,8 +124,12 @@ public class TextCell {
                 }
             }
             return p;
+        } else {
+            return new PathElement[] {
+                new MoveTo(0.0, 0.0),
+                new LineTo(0.0, content.getHeight())
+            };
         }
-        return null;
     }
     
     public PathElement[] getRangeShape(int start, int end) {

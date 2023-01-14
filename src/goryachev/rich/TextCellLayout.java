@@ -106,6 +106,8 @@ public class TextCellLayout {
                     if(h != null) {
                         return markers.newMarker(cell.getLineIndex(), h.getCharIndex(), h.isLeading());
                     }
+                } else {
+                    return markers.newMarker(cell.getLineIndex(), 0, true);
                 }
             }
         }
