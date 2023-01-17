@@ -57,6 +57,8 @@ import goryachev.rich.util.Util;
  * TODO highlight current line property
  * TODO tab size property
  * TODO selection model property
+ * 
+ * TODO supply configuration options to the constructor (like cell cache size, etc)?
  */
 public class RichTextArea extends Control {
     private ObjectProperty<StyledTextModel> model;

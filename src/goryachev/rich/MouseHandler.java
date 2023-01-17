@@ -91,6 +91,7 @@ public class MouseHandler {
     }
     
     protected void handleMouseReleased(MouseEvent ev) {
+        // TODO is popup trigger?
         //stopAutoScroll(); // TODO
         control.setSuppressBlink(false);
         //control.commitselection TODO

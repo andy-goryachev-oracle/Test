@@ -41,7 +41,6 @@ import goryachev.rich.util.NewAPI;
 public class TextCell {
     private final int index;
     private final Region content;
-    private double width;
     private double height;
 
     public TextCell(int index, Region content) {
@@ -82,14 +81,6 @@ public class TextCell {
 
     public double getPreferredHeight() {
         return height;
-    }
-
-    public void setPreferredWidth(double width) {
-        this.width = width;
-    }
-
-    public double getPreferredWidth() {
-        return width;
     }
 
     public int getLineIndex() {

@@ -48,6 +48,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import goryachev.rich.impl.CellCache;
 import goryachev.rich.impl.Markers;
 import goryachev.rich.impl.SelectionHelper;
 import goryachev.rich.util.FxPathBuilder;
@@ -74,6 +75,7 @@ public class VFlow extends Pane {
     protected final SimpleBooleanProperty caretVisible = new SimpleBooleanProperty(true);
     protected final SimpleBooleanProperty suppressBlink = new SimpleBooleanProperty(false);
     protected final Timeline caretAnimation;
+    protected final CellCache cache;
 
     public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = control;
@@ -81,6 +83,10 @@ public class VFlow extends Pane {
         this.hscroll = hscroll;
 
         getStyleClass().add("content"); // maybe
+        
+        // TODO parameter?
+        cache = new CellCache(512);
+        // TODO invalidate cache when cell indexes change
 
         clip = new Rectangle();
         
@@ -125,6 +131,8 @@ public class VFlow extends Pane {
                     (!control.isDisabled());
             }
         });
+        
+        control.wrapTextProperty().addListener((p) -> requestLayout());
     }
 
     public int getTopLineIndex() {
@@ -149,31 +157,29 @@ public class VFlow extends Pane {
 
     @Override
     protected void layoutChildren() {
+        System.out.println("layoutChildren"); // FIX
         if ((layout == null) || !layout.isValid(this)) {
             layout = layoutCells(layout);
             updateCaretAndSelection();
         }
     }
-    
+
     public void invalidateLayout() {
-        if(layout != null) {
-            clear();
+        if (layout != null) {
+            layout.removeNodesFrom(this);
             layout = null;
         }
     }
-    
-    protected void clear() {
-        getChildren().clear();
-    }
-    
+
+    // TODO add sliding window
     // TODO resizing should try keep the current line at the same level
     // TODO update topBoxOffset
     // TODO update scrollbars
     protected TextCellLayout layoutCells(TextCellLayout previous) {
-        if(previous != null) {
-            previous.removeFromLayout(this);
+        if (previous != null) {
+            previous.removeNodesFrom(this);
         }
-        
+
         double height = getHeight();
         clip.setWidth(getWidth());
         clip.setHeight(height);
@@ -189,41 +195,38 @@ public class VFlow extends Pane {
         double x = boxOffsetX;
         double y = boxOffsetY;
         double width = getWidth(); // TODO padding
-        
+        double unwrappedWidth = width;
         boolean wrap = control.isWrapText();
-        double maxWidth = wrap ? width : -1;
-        double unwrappedWidth = -1;
-        
-        // TODO size from previous layout
-        ArrayList<TextCell> cells = new ArrayList<>(32);
-        for(int i=topBoxIndex; i<paragraphs.size(); i++)
-        {
-            // TODO use cache
-            StyledParagraph p = paragraphs.get(i);
-            TextCell cell = p.createTextCell();
-            cells.add(cell);
+
+        // FIX we already have text layout, no need to keep a separate list!
+        ArrayList<TextCell> cells = new ArrayList<>(64);
+        for (int i = topBoxIndex; i < paragraphs.size(); i++) {
+            TextCell cell = cache.get(i);
+            if (cell == null) {
+                StyledParagraph p = paragraphs.get(i);
+                cell = p.createTextCell();
+                cache.add(cell);
+            }
             Region r = cell.getContent();
-                        
             getChildren().add(r);
             r.applyCss();
-            la.addBox(cell);
+
+            cells.add(cell);
+            la.addCell(cell);
+
+            r.setMaxWidth(wrap ? width : Double.MAX_VALUE); // TODO needed?
             
-            r.setMaxWidth(maxWidth);
-            double h = r.prefHeight(maxWidth);
+            // TODO actual box height might be different from h due to snapping?
+            // TODO account for side components
+            double h = r.prefHeight(wrap ? width : -1);
             cell.setPreferredHeight(h);
-            
-            if(wrap) {
-                cell.setPreferredWidth(-1.0);
-            } else {
+
+            if (!wrap) {
                 double w = r.prefWidth(-1);
-                cell.setPreferredWidth(w);
-                if(unwrappedWidth < w) {
+                if (unwrappedWidth < w) {
                     unwrappedWidth = w;
                 }
             }
-            
-            // TODO actual box height might be different from h due to snapping?
-            h = r.getHeight();
             
             y += h;
             if(y > getHeight()) {
@@ -231,20 +234,18 @@ public class VFlow extends Pane {
             }
         }
         
-        if(unwrappedWidth < width) {
-            unwrappedWidth = width;
-        }
-        
         la.setUnwrappedWidth(unwrappedWidth);
         
-        for (TextCell box : cells) {
-            Region r = box.getContent();
-            double w = wrap ? maxWidth : unwrappedWidth;
-            double h = box.getPreferredHeight();
+        y = boxOffsetY;
+        
+        for (TextCell cell : cells) {
+            Region r = cell.getContent();
+            double w = wrap ? width : unwrappedWidth;
+            double h = cell.getPreferredHeight();
             layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
 
             // TODO actual box height might be different from h due to snapping?
-            y += box.getPreferredHeight();
+            y += cell.getPreferredHeight();
         }
         
         return la;

@@ -64,7 +64,7 @@ public class TextCellLayout {
             (f.getTopLineIndex() == topLineIndex);
     }
 
-    public void addBox(TextCell box) {
+    public void addCell(TextCell box) {
         cells.add(box);
     }
     
@@ -81,7 +81,7 @@ public class TextCellLayout {
         return cells.size();
     }
     
-    protected TextCell getLastCell() {
+    protected TextCell lastCell() {
         int sz = cells.size();
         if(sz > 0) {
             return cells.get(sz - 1);
@@ -112,7 +112,7 @@ public class TextCellLayout {
             }
         }
 
-        TextCell cell = getLastCell();
+        TextCell cell = lastCell();
         if (cell == null) {
             return Marker.ZERO;
         }
@@ -147,7 +147,8 @@ public class TextCellLayout {
         return null;
     }
 
-    public void removeFromLayout(VFlow f) {
+    public void removeNodesFrom(VFlow f) {
+        System.out.println("removeNodesFrom"); // FIX
         ObservableList<Node> cs = f.getChildren();
         for(TextCell cell: cells) {
             cs.remove(cell.getContent());
