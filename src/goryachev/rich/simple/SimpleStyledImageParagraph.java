@@ -47,32 +47,34 @@ public class SimpleStyledImageParagraph implements StyledParagraph {
     public TextCell createTextCell() {
         // TODO ImageCell ?
         ImageView im = new ImageView(image);
-        Pane p = new Pane(im) {            
+        Pane p = new Pane(im) {
             @Override
             protected void layoutChildren() {
                 double width = getWidth();
                 double sc;
-                if(width < image.getWidth()) {
+                if (width < image.getWidth()) {
                     sc = width / image.getWidth();
                 } else {
                     sc = 1.0;
                 }
                 im.setScaleX(sc);
                 im.setScaleY(sc);
-                
+
                 double x0 = snappedLeftInset();
                 double y0 = snappedTopInset();
-                layoutInArea(im, x0, y0, image.getWidth() * sc, image.getHeight() * sc, 0, PADDING, true, false, HPos.CENTER, VPos.CENTER);
+                layoutInArea(im, x0, y0, image.getWidth() * sc, image.getHeight() * sc, 0, PADDING, true, false,
+                        HPos.CENTER, VPos.CENTER);
             }
-            
+
             @Override
             protected double computePrefHeight(double w) {
-                double p = snappedTopInset() + snappedBottomInset();
-                if(w < image.getWidth()) {
-                    return p + (image.getHeight() * w / image.getWidth());
-                } else {
-                    return p + (image.getHeight());
+                double pad = snappedTopInset() + snappedBottomInset();
+                if (w != -1) {
+                    if (w < image.getWidth()) {
+                        return pad + (image.getHeight() * w / image.getWidth());
+                    }
                 }
+                return pad + (image.getHeight());
             }
         };
         p.setPadding(PADDING);
