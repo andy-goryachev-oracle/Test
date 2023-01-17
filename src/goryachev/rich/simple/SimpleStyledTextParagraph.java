@@ -55,7 +55,20 @@ public class SimpleStyledTextParagraph implements StyledParagraph {
         }
         return b;
     }
-    
+
+    @Override
+    public String getPlainText() {
+        if (segments == null) {
+            return null;
+        }
+
+        StringBuilder sb = new StringBuilder(64);
+        for (Segment s : segments) {
+            sb.append(s.text);
+        }
+        return sb.toString();
+    }
+
     @Override
     public int getIndex() {
         return index;

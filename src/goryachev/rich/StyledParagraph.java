@@ -36,4 +36,7 @@ public interface StyledParagraph {
     
     /** returns model line index */
     public int getIndex();
+    
+    /** returns plain text.  might return null if no text is associated with the paragraph */
+    public String getPlainText();
 }

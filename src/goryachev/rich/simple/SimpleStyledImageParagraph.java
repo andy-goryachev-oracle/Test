@@ -83,4 +83,9 @@ public class SimpleStyledImageParagraph implements StyledParagraph {
     public int getIndex() {
         return index;
     }
+
+    @Override
+    public String getPlainText() {
+        return null;
+    }
 }
