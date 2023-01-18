@@ -58,18 +58,18 @@ import goryachev.rich.util.Util;
  * TODO tab size property
  * TODO selection model property
  * 
- * TODO supply configuration options to the constructor (like cell cache size, etc)?
  */
 public class RichTextArea extends Control {
     private ObjectProperty<StyledTextModel> model;
-    protected final ReadOnlyIntegerWrapper currentLine = new ReadOnlyIntegerWrapper(-1);
-    protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(true);
-    protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(500));
+    protected final ReadOnlyIntegerWrapper currentLine = new ReadOnlyIntegerWrapper(this, "currentLine", -1);
+    protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(this, "displayCaret", true);
+    protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(Config.caretBlinkPeriod));
     protected final ReadOnlyObjectWrapper<TextPos> caretPosition = new ReadOnlyObjectWrapper<>(this, "caretPosition", null);
     // TODO property, pluggable models, or boolean (selection enabled?), do we need to allow for multiple selection?
     protected final SelectionModel selectionModel = new SingleSelectionModel();
     protected final Markers markers = new Markers(32);
 
+    // TODO supply configuration options to the constructor (like cell cache size, etc)?
     public RichTextArea() {
         setFocusTraversable(true);
         getStyleClass().add("rich-text-area");

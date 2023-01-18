@@ -84,8 +84,7 @@ public class VFlow extends Pane {
 
         getStyleClass().add("content"); // maybe
         
-        // TODO parameter?
-        cache = new CellCache(512);
+        cache = new CellCache(Config.cellCacheSize);
         // TODO invalidate cache when cell indexes change
 
         clip = new Rectangle();
@@ -153,102 +152,6 @@ public class VFlow extends Pane {
 
     public boolean isCaretVisible() {
         return caretVisible.get();
-    }
-
-    @Override
-    protected void layoutChildren() {
-        System.out.println("layoutChildren"); // FIX
-        if ((layout == null) || !layout.isValid(this)) {
-            layout = layoutCells(layout);
-            updateCaretAndSelection();
-        }
-    }
-
-    public void invalidateLayout() {
-        if (layout != null) {
-            layout.removeNodesFrom(this);
-            layout = null;
-        }
-    }
-
-    // TODO add sliding window
-    // TODO resizing should try keep the current line at the same level
-    // TODO update topBoxOffset
-    // TODO update scrollbars
-    protected TextCellLayout layoutCells(TextCellLayout previous) {
-        if (previous != null) {
-            previous.removeNodesFrom(this);
-        }
-
-        double height = getHeight();
-        clip.setWidth(getWidth());
-        clip.setHeight(height);
-
-        StyledTextModel model = control.getModel();
-        List<? extends StyledParagraph> paragraphs = model.getParagraphs();
-        TextCellLayout la = new TextCellLayout(this);
-        
-        // TODO properties
-        double boxOffsetY = 0;
-        double boxOffsetX = 0;
-        int topBoxIndex = 0;
-        double x = boxOffsetX;
-        double y = boxOffsetY;
-        double width = getWidth(); // TODO padding
-        double unwrappedWidth = width;
-        boolean wrap = control.isWrapText();
-
-        // FIX we already have text layout, no need to keep a separate list!
-        ArrayList<TextCell> cells = new ArrayList<>(64);
-        for (int i = topBoxIndex; i < paragraphs.size(); i++) {
-            TextCell cell = cache.get(i);
-            if (cell == null) {
-                StyledParagraph p = paragraphs.get(i);
-                cell = p.createTextCell();
-                cache.add(cell);
-            }
-            Region r = cell.getContent();
-            getChildren().add(r);
-            r.applyCss();
-
-            cells.add(cell);
-            la.addCell(cell);
-
-            r.setMaxWidth(wrap ? width : Double.MAX_VALUE); // TODO needed?
-            
-            // TODO actual box height might be different from h due to snapping?
-            // TODO account for side components
-            double h = r.prefHeight(wrap ? width : -1);
-            cell.setPreferredHeight(h);
-
-            if (!wrap) {
-                double w = r.prefWidth(-1);
-                if (unwrappedWidth < w) {
-                    unwrappedWidth = w;
-                }
-            }
-            
-            y += h;
-            if(y > getHeight()) {
-                break;
-            }
-        }
-        
-        la.setUnwrappedWidth(unwrappedWidth);
-        
-        y = boxOffsetY;
-        
-        for (TextCell cell : cells) {
-            Region r = cell.getContent();
-            double w = wrap ? width : unwrappedWidth;
-            double h = cell.getPreferredHeight();
-            layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
-
-            // TODO actual box height might be different from h due to snapping?
-            y += cell.getPreferredHeight();
-        }
-        
-        return la;
     }
 
     public void updateCaretAndSelection() {
@@ -428,5 +331,102 @@ public class VFlow extends Pane {
             new KeyFrame(t2)
         );
         caretAnimation.play();
+    }
+
+    @Override
+    protected void layoutChildren() {
+        if ((layout == null) || !layout.isValid(this)) {
+            layout = layoutCells(layout);
+            updateCaretAndSelection();
+        }
+    }
+
+    public void invalidateLayout() {
+        if (layout != null) {
+            layout.removeNodesFrom(this);
+            layout = null;
+        }
+    }
+
+    // TODO add sliding window
+    // TODO resizing should try keep the current line at the same level
+    // TODO update topBoxOffset
+    // TODO update scrollbars
+    protected TextCellLayout layoutCells(TextCellLayout previous) {
+        if (previous != null) {
+            previous.removeNodesFrom(this);
+        }
+
+        double width = getWidth();
+        double height = getHeight();
+        clip.setWidth(width);
+        clip.setHeight(height);
+
+        StyledTextModel model = control.getModel(); // TODO handle null, suppress scroll bars
+        boolean wrap = control.isWrapText();
+        List<? extends StyledParagraph> paragraphs = model.getParagraphs();
+        
+        // TODO content padding
+        double boxOffsetY = 0;
+        double boxOffsetX = 0;
+        int topCellIndex = 0;
+        double x = boxOffsetX;
+        double y = boxOffsetY;
+        double unwrappedWidth = width; // TODO padding
+
+        // FIX we already have text layout, no need to keep a separate list!
+        TextCellLayout la = new TextCellLayout(this);
+        ArrayList<TextCell> cells = new ArrayList<>(64);
+        for (int i = topCellIndex; i < paragraphs.size(); i++) {
+            TextCell cell = cache.get(i);
+            if (cell == null) {
+                StyledParagraph p = paragraphs.get(i);
+                cell = p.createTextCell();
+                cache.add(cell);
+            }
+            Region r = cell.getContent();
+            getChildren().add(r);
+            r.applyCss();
+
+            cells.add(cell);
+            la.addCell(cell);
+
+            r.setMaxWidth(wrap ? width : Double.MAX_VALUE); // TODO needed?
+            
+            // TODO actual box height might be different from h due to snapping?
+            // TODO account for side components
+            double h = r.prefHeight(wrap ? width : -1);
+            cell.setPreferredHeight(h);
+
+            if (!wrap) {
+                double w = r.prefWidth(-1);
+                if (unwrappedWidth < w) {
+                    unwrappedWidth = w;
+                }
+            }
+
+            // TODO either N*lineCount, or N*Height
+            y += h;
+            if(y > getHeight()) {
+                break;
+            }
+        }
+        
+        la.setUnwrappedWidth(unwrappedWidth);
+        
+        y = boxOffsetY;
+        
+        for (TextCell cell : cells) {
+            Region r = cell.getContent();
+            double w = wrap ? width : unwrappedWidth;
+            double h = cell.getPreferredHeight();
+            layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
+
+            // TODO actual box height might be different from h due to snapping?
+            // TODO also consider using maxx, maxy instead?
+            y += cell.getPreferredHeight();
+        }
+        
+        return la;
     }
 }

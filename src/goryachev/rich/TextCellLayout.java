@@ -89,7 +89,6 @@ public class TextCellLayout {
         return null;
     }
 
-    // TODO perhaps we need a new API in TextFlow
     public Marker getTextPosition(double screenX, double screenY, Markers markers) {
         for(TextCell cell: cells) {
             Region r = cell.getContent();
@@ -148,7 +147,6 @@ public class TextCellLayout {
     }
 
     public void removeNodesFrom(VFlow f) {
-        System.out.println("removeNodesFrom"); // FIX
         ObservableList<Node> cs = f.getChildren();
         for(TextCell cell: cells) {
             cs.remove(cell.getContent());
