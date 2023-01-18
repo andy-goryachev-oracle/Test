@@ -48,6 +48,7 @@ public class TextCellLayout {
     private double width;
     private double height;
     private int topLineIndex;
+    private int bottomPartCount;
     private double unwrappedWidth;
     
     public TextCellLayout(VFlow flow) {
@@ -131,6 +132,14 @@ public class TextCellLayout {
         }
         return null;
     }
+    
+    /** returns a TextCell from the visible or bottom margin parts, or null */
+    public TextCell getCellAt(int ix) {
+        if(ix < bottomPartCount) {
+            return cells.get(ix);
+        }
+        return null;
+    }
 
     public CaretSize getCaretSize(Region parent, Marker m) {
         if (m != null) {
@@ -151,5 +160,9 @@ public class TextCellLayout {
         for(TextCell cell: cells) {
             cs.remove(cell.getContent());
         }
+    }
+
+    public void setBottomPartCount(int ix) {
+        bottomPartCount = ix;
     }
 }

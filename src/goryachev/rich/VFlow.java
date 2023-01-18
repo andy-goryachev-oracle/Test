@@ -373,10 +373,13 @@ public class VFlow extends Pane {
         double x = boxOffsetX;
         double y = boxOffsetY;
         double unwrappedWidth = width; // TODO padding
+        double maxHeight = (1 + Config.slidingWindowMargin) * height;
+        int count = 0;
+        int maxCount = 0;
 
-        // FIX we already have text layout, no need to keep a separate list!
         TextCellLayout la = new TextCellLayout(this);
-        ArrayList<TextCell> cells = new ArrayList<>(64);
+        
+        // populating visible part of the sliding window + bottom margin
         for (int i = topCellIndex; i < paragraphs.size(); i++) {
             TextCell cell = cache.get(i);
             if (cell == null) {
@@ -388,7 +391,6 @@ public class VFlow extends Pane {
             getChildren().add(r);
             r.applyCss();
 
-            cells.add(cell);
             la.addCell(cell);
 
             r.setMaxWidth(wrap ? width : Double.MAX_VALUE); // TODO needed?
@@ -399,33 +401,57 @@ public class VFlow extends Pane {
             cell.setPreferredHeight(h);
 
             if (!wrap) {
-                double w = r.prefWidth(-1);
-                if (unwrappedWidth < w) {
-                    unwrappedWidth = w;
+                // unwrappedWidth of visible paragraphs (maxCount has not been initialized)
+                if (maxCount == 0) {
+                    double w = r.prefWidth(-1);
+                    if (unwrappedWidth < w) {
+                        unwrappedWidth = w;
+                    }
                 }
             }
 
-            // TODO either N*lineCount, or N*Height
             y += h;
-            if(y > getHeight()) {
-                break;
+            count++;
+
+            // stop populating the bottom part of the sliding window
+            // when exceeded both pixel and line count margins
+            if (maxCount == 0) {
+                if (y > height) {
+                    maxCount = (int)Math.ceil(count * (1 + Config.slidingWindowMargin));
+                }
+            } else {
+                if ((y > maxHeight) && (count > maxCount)) {
+                    break;
+                }
             }
         }
-        
+
         la.setUnwrappedWidth(unwrappedWidth);
         
+        // populate top margin, going backwards from topCellIndex
+        la.setBottomPartCount(count);
+        // TODO
+
+        // lay out content nodes
         y = boxOffsetY;
+        double w = wrap ? width : unwrappedWidth;
         
-        for (TextCell cell : cells) {
+        for (int i=0; ; i++) {
+            TextCell cell = la.getCellAt(i);
+            if (cell == null) {
+                break;
+            }
+
             Region r = cell.getContent();
-            double w = wrap ? width : unwrappedWidth;
             double h = cell.getPreferredHeight();
             layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
 
             // TODO actual box height might be different from h due to snapping?
-            // TODO also consider using maxx, maxy instead?
+            // TODO also consider using maxx, maxy from boundsInLocal instead?
             y += cell.getPreferredHeight();
         }
+        
+        // TODO update scroll bars
         
         return la;
     }
