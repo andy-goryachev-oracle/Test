@@ -48,6 +48,8 @@ public class RichTextAreaWindow extends Stage {
         FX.menu(mb, "File");
         FX.item(mb, "New Window", this::newWindow);
         FX.separator(mb);
+        FX.item(mb, "Close Window", this::hide);
+        FX.separator(mb);
         FX.item(mb, "Quit", () -> Platform.exit());
         
         status = new Label();

@@ -66,7 +66,7 @@ public class RichTextArea extends Control {
     protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(true);
     protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(500));
     protected final ReadOnlyObjectWrapper<TextPos> caretPosition = new ReadOnlyObjectWrapper<>(this, "caretPosition", null);
-    // TODO property, pluggable models
+    // TODO property, pluggable models, or boolean (selection enabled?), do we need to allow for multiple selection?
     protected final SelectionModel selectionModel = new SingleSelectionModel();
     protected final Markers markers = new Markers(32);
 

@@ -44,7 +44,10 @@ public class ImageCellPane extends Pane {
         this.image = image;
 
         imageView = new ImageView(image);
+        imageView.setSmooth(true);
+        imageView.setPreserveRatio(true);
         getChildren().add(imageView);
+
         setPadding(PADDING);
         getStyleClass().add("image-cell-pane");
     }
