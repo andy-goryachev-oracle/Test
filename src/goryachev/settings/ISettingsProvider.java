@@ -22,15 +22,35 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
+// This code borrows heavily from the following project, with permission from the author:
+// https://github.com/andy-goryachev/FxDock
 package goryachev.settings;
+
+import java.io.IOException;
 
 /**
  * Defines the interface for storing and loading of settings.
  */
 public interface ISettingsProvider {
-    /** */
-    public void set(String key, String value);
+    /**
+     * Loads settings from persistent storage, if needed.
+     * @throws IOException 
+     */
+    public void load() throws IOException;
     
-    /** */
+    /**
+     * Saves the settings to persistent media, if needed.
+     * @throws IOException 
+     */
+    public void save() throws IOException;
+    
+    /**
+     * Sets a key-value pair.
+     */
+    public void set(String key, String value);
+
+    /**
+     * Retrieves the value for the specific key
+     */
     public String get(String key);
 }
