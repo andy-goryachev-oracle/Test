@@ -24,19 +24,13 @@
  */
 package goryachev.rich.simple;
 
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.VPos;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
 import goryachev.rich.StyledParagraph;
 import goryachev.rich.TextCell;
 
 public class SimpleStyledImageParagraph implements StyledParagraph {
     private final int index; // TODO move to base class?
     private final Image image;
-    private static final Insets PADDING = new Insets(1, 1, 1, 1);
     
     public SimpleStyledImageParagraph(int index, Image image) {
         this.index = index;
@@ -45,40 +39,7 @@ public class SimpleStyledImageParagraph implements StyledParagraph {
     
     @Override
     public TextCell createTextCell() {
-        // TODO ImageCell ?
-        ImageView im = new ImageView(image);
-        Pane p = new Pane(im) {
-            @Override
-            protected void layoutChildren() {
-                double width = getWidth();
-                double sc;
-                if (width < image.getWidth()) {
-                    sc = width / image.getWidth();
-                } else {
-                    sc = 1.0;
-                }
-                im.setScaleX(sc);
-                im.setScaleY(sc);
-
-                double x0 = snappedLeftInset();
-                double y0 = snappedTopInset();
-                layoutInArea(im, x0, y0, image.getWidth() * sc, image.getHeight() * sc, 0, PADDING, true, false,
-                        HPos.CENTER, VPos.CENTER);
-            }
-
-            @Override
-            protected double computePrefHeight(double w) {
-                double pad = snappedTopInset() + snappedBottomInset();
-                if (w != -1) {
-                    if (w < image.getWidth()) {
-                        return pad + (image.getHeight() * w / image.getWidth());
-                    }
-                }
-                return pad + (image.getHeight());
-            }
-        };
-        p.setPadding(PADDING);
-        return new TextCell(index, p);
+        return new TextCell(index, new ImageCellPane(image));
     }
 
     @Override
