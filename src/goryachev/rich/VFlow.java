@@ -332,6 +332,12 @@ public class VFlow extends Pane {
         );
         caretAnimation.play();
     }
+    
+    protected int lineCount() {
+        // TODO perhaps use control.lineCount property?
+        StyledTextModel m = control.getModel();
+        return (m == null) ? 0 : m.getParagraphs().size();
+    }
 
     @Override
     protected void layoutChildren() {
@@ -346,6 +352,30 @@ public class VFlow extends Pane {
             layout.removeNodesFrom(this);
             layout = null;
         }
+    }
+    
+    protected void updateVerticalScrollBar() {
+        // TODO disable scroll events
+        
+        double max;
+        double visible;
+        double val;
+        
+        if(layout == null) {
+            visible = 1.0;
+            val = 0.0;
+            max = 1.0;
+        } else {
+            double av = layout.averageHeight();
+            max = (lineCount() - layout.topCount() - layout.bottomCount()) * av + layout.topHeight() + layout.bottomHeight();
+            visible = getHeight();
+            val = (getTopLineIndex() - layout.topCount()) * av + layout.topHeight();
+        }
+        
+        vscroll.setMin(0.0);
+        vscroll.setMax(max);
+        vscroll.setVisibleAmount(visible);
+        vscroll.setValue(val);
     }
 
     // TODO add sliding window
@@ -434,6 +464,7 @@ public class VFlow extends Pane {
         y = 0.0;
         
         // populate top margin, going backwards from topCellIndex
+        // TODO populate more, if bottom ended prematurely
         for (int i = topCellIndex - 1; i >= 0; i--) {
             TextCell cell = cache.get(i);
             if (cell == null) {
@@ -464,7 +495,9 @@ public class VFlow extends Pane {
             }
         }
         
+        // TODO check that counts and heights are set correctly
         la.setTopHeight(y);
+        System.err.println(la);
         
         // lay out content nodes
         y = boxOffsetY;
@@ -484,11 +517,19 @@ public class VFlow extends Pane {
             // TODO also consider using maxx, maxy from boundsInLocal instead?
             y += cell.getPreferredHeight();
         }
-        
-        System.err.println(la);
-        
+
         // TODO update scroll bars
+        if (!wrap) {
+            hscroll.setMin(0.0);
+            hscroll.setMax(unwrappedWidth);
+            hscroll.setVisibleAmount(width);
+            hscroll.setValue(0.0); // TODO
+        }
         
+        updateVerticalScrollBar();
+        
+        // TODO enable scrollbar event handling
+
         return la;
     }
 }

@@ -168,8 +168,16 @@ public class TextCellLayout {
         bottomCount = ix;
     }
     
+    public int bottomCount() {
+        return bottomCount;
+    }
+    
     public void setBottomHeight(double h) {
         bottomHeight = h;
+    }
+    
+    public double bottomHeight() {
+        return bottomHeight;
     }
     
     public int topCount() {
@@ -180,6 +188,14 @@ public class TextCellLayout {
         topHeight = h;
     }
     
+    public double topHeight() {
+        return topHeight;
+    }
+    
+    public double averageHeight() {
+        return (topHeight + bottomHeight) / (topCount() + bottomCount);
+    }
+    
     public String toString() {
         return
             "TextCellLayout{" +
@@ -187,6 +203,7 @@ public class TextCellLayout {
             ", bottomCount=" + bottomCount +
             ", topHeight=" + topHeight +
             ", bottomHeight=" + bottomHeight +
+            ", average=" + averageHeight() +
             "}";
     }
 }
