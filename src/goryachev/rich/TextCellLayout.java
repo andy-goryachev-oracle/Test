@@ -48,8 +48,10 @@ public class TextCellLayout {
     private double width;
     private double height;
     private int topLineIndex;
-    private int bottomPartCount;
+    private int bottomCount;
     private double unwrappedWidth;
+    private double topHeight;
+    private double bottomHeight;
     
     public TextCellLayout(VFlow flow) {
         this.flow = flow;
@@ -135,7 +137,7 @@ public class TextCellLayout {
     
     /** returns a TextCell from the visible or bottom margin parts, or null */
     public TextCell getCellAt(int ix) {
-        if(ix < bottomPartCount) {
+        if(ix < bottomCount) {
             return cells.get(ix);
         }
         return null;
@@ -162,7 +164,29 @@ public class TextCellLayout {
         }
     }
 
-    public void setBottomPartCount(int ix) {
-        bottomPartCount = ix;
+    public void setBottomCount(int ix) {
+        bottomCount = ix;
+    }
+    
+    public void setBottomHeight(double h) {
+        bottomHeight = h;
+    }
+    
+    public int topCount() {
+        return cells.size() - bottomCount;
+    }
+    
+    public void setTopHeight(double h) {
+        topHeight = h;
+    }
+    
+    public String toString() {
+        return
+            "TextCellLayout{" +
+            "topCount=" + topCount() +
+            ", bottomCount=" + bottomCount +
+            ", topHeight=" + topHeight +
+            ", bottomHeight=" + bottomHeight +
+            "}";
     }
 }

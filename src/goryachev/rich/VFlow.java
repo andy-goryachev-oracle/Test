@@ -366,16 +366,16 @@ public class VFlow extends Pane {
         boolean wrap = control.isWrapText();
         List<? extends StyledParagraph> paragraphs = model.getParagraphs();
         
-        // TODO content padding
-        double boxOffsetY = 0;
-        double boxOffsetX = 0;
-        int topCellIndex = 0;
+        double boxOffsetY = 0; // TODO content padding
+        double boxOffsetX = 0; // TODO content padding
+        int topCellIndex = 0; // TODO field
         double x = boxOffsetX;
         double y = boxOffsetY;
         double unwrappedWidth = width; // TODO padding
-        double maxHeight = (1 + Config.slidingWindowMargin) * height;
+        double margin = Config.slidingWindowMargin * height;
+        int topMarginCount = 0;
+        int bottomMarginCount = 0;
         int count = 0;
-        int maxCount = 0;
 
         TextCellLayout la = new TextCellLayout(this);
         
@@ -401,8 +401,8 @@ public class VFlow extends Pane {
             cell.setPreferredHeight(h);
 
             if (!wrap) {
-                // unwrappedWidth of visible paragraphs (maxCount has not been initialized)
-                if (maxCount == 0) {
+                // unwrappedWidth of visible paragraphs (bottomMarginCount has not been initialized)
+                if (bottomMarginCount == 0) {
                     double w = r.prefWidth(-1);
                     if (unwrappedWidth < w) {
                         unwrappedWidth = w;
@@ -415,23 +415,57 @@ public class VFlow extends Pane {
 
             // stop populating the bottom part of the sliding window
             // when exceeded both pixel and line count margins
-            if (maxCount == 0) {
+            if (bottomMarginCount == 0) {
                 if (y > height) {
-                    maxCount = (int)Math.ceil(count * (1 + Config.slidingWindowMargin));
+                    topMarginCount = (int)Math.ceil(count * Config.slidingWindowMargin);
+                    bottomMarginCount = count + topMarginCount;
                 }
             } else {
-                if ((y > maxHeight) && (count > maxCount)) {
+                if ((y > (height + margin)) && (count > bottomMarginCount)) {
                     break;
                 }
             }
         }
 
+        la.setBottomCount(count);
+        la.setBottomHeight(y);
         la.setUnwrappedWidth(unwrappedWidth);
+        count = 0;
+        y = 0.0;
         
         // populate top margin, going backwards from topCellIndex
-        la.setBottomPartCount(count);
-        // TODO
+        for (int i = topCellIndex - 1; i >= 0; i--) {
+            TextCell cell = cache.get(i);
+            if (cell == null) {
+                StyledParagraph p = paragraphs.get(i);
+                cell = p.createTextCell();
+                cache.add(cell);
+            }
+            Region r = cell.getContent();
+            getChildren().add(r);
+            r.applyCss();
 
+            la.addCell(cell);
+
+            r.setMaxWidth(wrap ? width : Double.MAX_VALUE); // TODO needed?
+            
+            // TODO actual box height might be different from h due to snapping?
+            // TODO account for side components
+            double h = r.prefHeight(wrap ? width : -1);
+            cell.setPreferredHeight(h);
+
+            y += h;
+            count++;
+
+            // stop populating the top part of the sliding window
+            // when exceeded both pixel and line count margins
+            if ((y > margin) && (count > topMarginCount)) {
+                break;
+            }
+        }
+        
+        la.setTopHeight(y);
+        
         // lay out content nodes
         y = boxOffsetY;
         double w = wrap ? width : unwrappedWidth;
@@ -450,6 +484,8 @@ public class VFlow extends Pane {
             // TODO also consider using maxx, maxy from boundsInLocal instead?
             y += cell.getPreferredHeight();
         }
+        
+        System.err.println(la);
         
         // TODO update scroll bars
         
