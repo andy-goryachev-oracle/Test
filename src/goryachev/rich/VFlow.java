@@ -130,8 +130,16 @@ public class VFlow extends Pane {
                     (!control.isDisabled());
             }
         });
-        
+
+        control.modelProperty().addListener((p) -> updateModel());
         control.wrapTextProperty().addListener((p) -> requestLayout());
+    }
+    
+    public void updateModel() {
+        invalidateLayout();
+        cache.clear();
+        requestLayout();
+        // FIX update scroll bars
     }
 
     public int getTopLineIndex() {
@@ -344,6 +352,7 @@ public class VFlow extends Pane {
         if ((layout == null) || !layout.isValid(this)) {
             layout = layoutCells(layout);
             updateCaretAndSelection();
+            updateVerticalScrollBar();
         }
     }
 
@@ -392,7 +401,12 @@ public class VFlow extends Pane {
         clip.setWidth(width);
         clip.setHeight(height);
 
-        StyledTextModel model = control.getModel(); // TODO handle null, suppress scroll bars
+        StyledTextModel model = control.getModel();
+        if(model == null) {
+            // TODO suppress scroll bars?
+            return null;
+        }
+
         boolean wrap = control.isWrapText();
         List<? extends StyledParagraph> paragraphs = model.getParagraphs();
         
@@ -518,15 +532,13 @@ public class VFlow extends Pane {
             y += cell.getPreferredHeight();
         }
 
-        // TODO update scroll bars
+        // TODO update scroll bars - here?  or extract?
         if (!wrap) {
             hscroll.setMin(0.0);
             hscroll.setMax(unwrappedWidth);
             hscroll.setVisibleAmount(width);
             hscroll.setValue(0.0); // TODO
         }
-        
-        updateVerticalScrollBar();
         
         // TODO enable scrollbar event handling
 

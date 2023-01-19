@@ -60,7 +60,7 @@ import goryachev.rich.util.Util;
  * 
  */
 public class RichTextArea extends Control {
-    private ObjectProperty<StyledTextModel> model;
+    protected final ObjectProperty<StyledTextModel> model = new SimpleObjectProperty<>(this, "model");
     protected final ReadOnlyIntegerWrapper currentLine = new ReadOnlyIntegerWrapper(this, "currentLine", -1);
     protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(this, "displayCaret", true);
     protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(Config.caretBlinkPeriod));
@@ -94,14 +94,6 @@ public class RichTextArea extends Control {
     }
 
     public ObjectProperty<StyledTextModel> modelProperty() {
-        if (model == null) {
-            model = new SimpleObjectProperty<>(this, "model") {
-                @Override
-                protected void invalidated() {
-                    updateModel();
-                }
-            };
-        }
         return model;
     }
 
@@ -162,10 +154,6 @@ public class RichTextArea extends Control {
     public boolean isHighlightCurrentLine() {
         // TODO
         return true;
-    }
-    
-    protected void updateModel() {
-        // TODO
     }
     
     @Override

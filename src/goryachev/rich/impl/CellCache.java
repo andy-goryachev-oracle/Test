@@ -90,7 +90,7 @@ public class CellCache {
 
     public void clear() {
         size = 0;
-        Arrays.setAll(linear, null);
+        Arrays.fill(linear, null);
         data.clear();
     }
 }

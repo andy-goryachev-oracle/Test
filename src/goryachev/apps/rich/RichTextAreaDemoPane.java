@@ -30,6 +30,7 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -42,9 +43,21 @@ import goryachev.rich.StyledTextModel;
  * Main Panel contains RichTextArea, split panes for quick size adjustment, and an option pane.
  */
 public class RichTextAreaDemoPane extends BorderPane {
-    private static RichTextAreaDemoModel model;
-    public final ROptionPane optionPane;
+    enum Model {
+        DEMO,
+        NULL,
+        ZERO_LINES,
+        ONE_LINE,
+        TEN_LINES,
+        THOUSAND_LINES,
+        BILLION_LINES,
+        MONOSPACED
+    }
+    
+    private static StyledTextModel model;
+    public final ROptionPane op;
     public final RichTextArea richTextArea;
+    public final ComboBox<Model> modelField;
 
     public RichTextAreaDemoPane() {
         richTextArea = new RichTextArea();
@@ -61,6 +74,10 @@ public class RichTextAreaDemoPane extends BorderPane {
         vsplit.setDividerPositions(0.9);
         vsplit.setOrientation(Orientation.VERTICAL);
         
+        modelField = new ComboBox<>();
+        modelField.getItems().setAll(Model.values());
+        modelField.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> updateModel());
+        
         CheckBox wrapText = new CheckBox("wrap text");
         wrapText.selectedProperty().bindBidirectional(richTextArea.wrapTextProperty());
         
@@ -69,21 +86,55 @@ public class RichTextAreaDemoPane extends BorderPane {
         
         // TODO blink rate
         
-        optionPane = new ROptionPane();
-        optionPane.option(wrapText);
-        optionPane.option(displayCaret);
+        op = new ROptionPane();
+        op.label("Model:");
+        op.option(modelField);
+        op.option(wrapText);
+        op.option(displayCaret);
         
         setCenter(vsplit);
-        setRight(optionPane);
+        setRight(op);
+        
+        modelField.getSelectionModel().selectFirst();
     }
     
     private static StyledTextModel model() {
-        if(model == null) {
-            model = new RichTextAreaDemoModel();
-        }
         return model;
     }
     
+    private void updateModel() {
+        model = createModel();
+        richTextArea.setModel(model());
+    }
+    
+    private StyledTextModel createModel() {
+        Model m = modelField.getSelectionModel().getSelectedItem();
+        if(m == null) {
+            return null;
+        }
+        
+        switch(m) {
+        case BILLION_LINES:
+            return new SimpleRichModel(1_000_000_000, false);
+        case DEMO:
+            return new RichTextAreaDemoModel();
+        case NULL:
+            return null;
+        case ONE_LINE:
+            return new SimpleRichModel(1, false);
+        case TEN_LINES:
+            return new SimpleRichModel(10, false);
+        case THOUSAND_LINES:
+            return new SimpleRichModel(1_000, false);
+        case ZERO_LINES:
+            return new SimpleRichModel(0, false);
+        case MONOSPACED:
+            return new SimpleRichModel(100_000, true);
+        default:
+            throw new Error("?" + m);
+        }
+    }
+
     protected static Pane pane() {
         Pane p = new Pane();
         SplitPane.setResizableWithParent(p, false);

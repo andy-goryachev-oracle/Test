@@ -61,23 +61,27 @@ public class MouseHandler {
             }
         }
     }
-    
+
     protected void handleMousePressed(MouseEvent ev) {
         // TODO
-        if(ev.isPopupTrigger()) {
+        if (ev.isPopupTrigger()) {
             // TODO clear selection if click happened outside of said selection?
             return;
         }
-        
+
         SelectionModel sm = control.getSelectionModel();
-        if(sm == null) {
+        if (sm == null) {
             return;
         }
-        
+
         Marker pos = getTextPosition(ev);
+        if (pos == null) {
+            return;
+        }
+
         control.setSuppressBlink(true);
-        
-        if(ev.isShiftDown()) {
+
+        if (ev.isShiftDown()) {
             // expand selection from the anchor point to the current position
             // clearing existing (possibly multiple) selection
             sm.clearAndExtendLastSegment(pos);
@@ -85,7 +89,7 @@ public class MouseHandler {
             sm.setSelection(pos, pos);
             sm.setAnchor(pos);
         }
-        
+
         control.setCaretPosition(pos.getTextPos());
         control.requestFocus();
     }
