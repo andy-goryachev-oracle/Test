@@ -76,6 +76,9 @@ public class VFlow extends Pane {
     protected final SimpleBooleanProperty suppressBlink = new SimpleBooleanProperty(false);
     protected final Timeline caretAnimation;
     protected final CellCache cache;
+    private int topCellIndex;
+    private double offsetX;
+    private double offsetY;
 
     public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = control;
@@ -341,7 +344,7 @@ public class VFlow extends Pane {
         caretAnimation.play();
     }
     
-    protected int lineCount() {
+    public int lineCount() {
         // TODO perhaps use control.lineCount property?
         StyledTextModel m = control.getModel();
         return (m == null) ? 0 : m.getParagraphs().size();
@@ -376,7 +379,7 @@ public class VFlow extends Pane {
             max = 1.0;
         } else {
             double av = layout.averageHeight();
-            max = (lineCount() - layout.topCount() - layout.bottomCount()) * av + layout.topHeight() + layout.bottomHeight();
+            max = layout.estimatedMax();
             visible = getHeight();
             val = (getTopLineIndex() - layout.topCount()) * av + layout.topHeight();
         }
@@ -387,6 +390,21 @@ public class VFlow extends Pane {
         vscroll.setValue(val);
     }
 
+    public void handleVerticalScroll() {
+        double max = layout.estimatedMax();
+        double pos = vscroll.getValue() * max;
+        
+        // if within the layout -> get new origin from layout
+        // else use line#
+
+        // TODO compute origin: line + offsetY
+        //setOrigin(line, offsetX);
+    }
+    
+    public void handleHorizontalScroll() {
+        // TODO
+    }
+    
     // TODO add sliding window
     // TODO resizing should try keep the current line at the same level
     // TODO update topBoxOffset
@@ -410,11 +428,8 @@ public class VFlow extends Pane {
         boolean wrap = control.isWrapText();
         List<? extends StyledParagraph> paragraphs = model.getParagraphs();
         
-        double boxOffsetY = 0; // TODO content padding
-        double boxOffsetX = 0; // TODO content padding
-        int topCellIndex = 0; // TODO field
-        double x = boxOffsetX;
-        double y = boxOffsetY;
+        double x = offsetX; // TODO content padding
+        double y = offsetY; // TODO content padding
         double unwrappedWidth = width; // TODO padding
         double margin = Config.slidingWindowMargin * height;
         int topMarginCount = 0;
@@ -514,7 +529,7 @@ public class VFlow extends Pane {
         System.err.println(la);
         
         // lay out content nodes
-        y = boxOffsetY;
+        y = offsetY;
         double w = wrap ? width : unwrappedWidth;
         
         for (int i=0; ; i++) {

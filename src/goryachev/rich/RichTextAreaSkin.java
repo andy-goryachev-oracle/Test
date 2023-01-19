@@ -54,13 +54,15 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     protected RichTextAreaSkin(RichTextArea control) {
         super(control);
         
+        // TODO maybe create scroll bars in the control (as they might be custom) -
+        // this way they are available before vflow is created by the skin
         vscroll = createVScrollBar();
         vscroll.setOrientation(Orientation.VERTICAL);
         vscroll.setManaged(true);
         vscroll.setMin(0.0);
         vscroll.setMax(1.0);
         vscroll.addEventFilter(ScrollEvent.ANY, (ev) -> ev.consume());
-
+        
         hscroll = createVScrollBar();
         hscroll.setOrientation(Orientation.HORIZONTAL);
         hscroll.setManaged(true);
@@ -106,6 +108,8 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         // TODO protect with listener helper (it's internal, shoud be made public) to avoid memory leak when changing skins
         NewAPI.addChangeListener(vflow::updateCaretAndSelection, false, control.getSelectionModel().selectionSegmentProperty());
         NewAPI.addChangeListener(vflow::updateRateRestartBlink, true, control.caretBlinkPeriodProperty());
+        vscroll.valueProperty().addListener((ev) -> vflow.handleVerticalScroll());
+        hscroll.valueProperty().addListener((ev) -> vflow.handleHorizontalScroll());
     }
 
     @Override
@@ -124,12 +128,14 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         super.dispose();
     }
 
-    /** called from the constructor.  override to provide a custom scroll bar */
+    /** called from the constructor. override to provide a custom scroll bar */
+    // TODO variant: generator in Config
     protected ScrollBar createVScrollBar() {
         return new ScrollBar();
     }
 
-    /** called from the constructor.  override to provide a custom scroll bar */
+    /** called from the constructor. override to provide a custom scroll bar */
+    // TODO variant: generator in Config
     protected ScrollBar createHScrollBar() {
         return new ScrollBar();
     }

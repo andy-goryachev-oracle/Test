@@ -43,7 +43,7 @@ import goryachev.rich.util.Util;
  * Represents text cells layed out in a visible area.
  */
 public class TextCellLayout {
-    private final VFlow flow;
+    private final VFlow vflow;
     private final ArrayList<TextCell> cells = new ArrayList<>(32);
     private double width;
     private double height;
@@ -53,11 +53,11 @@ public class TextCellLayout {
     private double topHeight;
     private double bottomHeight;
     
-    public TextCellLayout(VFlow flow) {
-        this.flow = flow;
-        this.width = flow.getWidth();
-        this.height = flow.getHeight();
-        this.topLineIndex = flow.getTopLineIndex();
+    public TextCellLayout(VFlow f) {
+        this.vflow = f;
+        this.width = f.getWidth();
+        this.height = f.getHeight();
+        this.topLineIndex = f.getTopLineIndex();
     }
 
     public boolean isValid(VFlow f) {
@@ -204,6 +204,12 @@ public class TextCellLayout {
             ", topHeight=" + topHeight +
             ", bottomHeight=" + bottomHeight +
             ", average=" + averageHeight() +
+            ", estMax=" + estimatedMax() +
             "}";
+    }
+
+    public double estimatedMax() {
+        int lineCount = vflow.lineCount();
+        return (lineCount - topCount() - bottomCount) * averageHeight() + topHeight + bottomHeight;
     }
 }
