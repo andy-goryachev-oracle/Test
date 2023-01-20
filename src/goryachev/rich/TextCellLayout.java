@@ -48,6 +48,7 @@ public class TextCellLayout {
     private double width;
     private double height;
     private int topLineIndex;
+    private int visible;
     private int bottomCount;
     private double unwrappedWidth;
     private double topHeight;
@@ -81,7 +82,11 @@ public class TextCellLayout {
     }
 
     public int getVisibleCellCount() {
-        return cells.size();
+        return visible;
+    }
+    
+    public void setVisibleCount(int n) {
+        visible = n;
     }
     
     protected TextCell lastCell() {
@@ -159,7 +164,8 @@ public class TextCellLayout {
 
     public void removeNodesFrom(VFlow f) {
         ObservableList<Node> cs = f.getChildren();
-        for(TextCell cell: cells) {
+        for (int i = getVisibleCellCount() - 1; i >= 0; --i) {
+            TextCell cell = cells.get(i);
             cs.remove(cell.getContent());
         }
     }
@@ -200,6 +206,7 @@ public class TextCellLayout {
         return
             "TextCellLayout{" +
             "topCount=" + topCount() +
+            ", visible=" + getVisibleCellCount() +
             ", bottomCount=" + bottomCount +
             ", topHeight=" + topHeight +
             ", bottomHeight=" + bottomHeight +

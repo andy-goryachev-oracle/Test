@@ -435,6 +435,7 @@ public class VFlow extends Pane {
         int topMarginCount = 0;
         int bottomMarginCount = 0;
         int count = 0;
+        boolean visible = true;
 
         TextCellLayout la = new TextCellLayout(this);
         
@@ -460,8 +461,7 @@ public class VFlow extends Pane {
             cell.setPreferredHeight(h);
 
             if (!wrap) {
-                // unwrappedWidth of visible paragraphs (bottomMarginCount has not been initialized)
-                if (bottomMarginCount == 0) {
+                if (visible) {
                     double w = r.prefWidth(-1);
                     if (unwrappedWidth < w) {
                         unwrappedWidth = w;
@@ -474,12 +474,16 @@ public class VFlow extends Pane {
 
             // stop populating the bottom part of the sliding window
             // when exceeded both pixel and line count margins
-            if (bottomMarginCount == 0) {
+            if (visible) {
                 if (y > height) {
                     topMarginCount = (int)Math.ceil(count * Config.slidingWindowMargin);
                     bottomMarginCount = count + topMarginCount;
+                    visible = false;
+                    la.setVisibleCount(count);
                 }
             } else {
+                getChildren().remove(r);
+
                 if ((y > (height + margin)) && (count > bottomMarginCount)) {
                     break;
                 }
@@ -513,6 +517,8 @@ public class VFlow extends Pane {
             // TODO account for side components
             double h = r.prefHeight(wrap ? width : -1);
             cell.setPreferredHeight(h);
+            
+            getChildren().remove(r);
 
             y += h;
             count++;
