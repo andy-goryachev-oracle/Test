@@ -72,7 +72,7 @@ public class TextCellLayout {
         cells.add(box);
     }
     
-    public void setUnwrappedWidth(double w) {
+    public void setTotalWidth(double w) {
         unwrappedWidth = w;
     }
     

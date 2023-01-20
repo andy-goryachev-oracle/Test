@@ -402,7 +402,19 @@ public class VFlow extends Pane {
     }
     
     public void handleHorizontalScroll() {
-        // TODO
+        if(control.isWrapText()) {
+            return; // is this needed?
+        }
+
+        double val = hscroll.getValue();
+        double unwrappedWidth = layout.getTotalWidth();
+        double w = getWidth(); // TODO padding
+        
+        offsetX = val * (unwrappedWidth - w) / unwrappedWidth;
+        // no need to recompute the flow
+        layoutNodes(layout);
+        
+        updateCaretAndSelection();
     }
     
     // TODO add sliding window
@@ -428,7 +440,6 @@ public class VFlow extends Pane {
         boolean wrap = control.isWrapText();
         List<? extends StyledParagraph> paragraphs = model.getParagraphs();
         
-        double x = offsetX; // TODO content padding
         double y = offsetY; // TODO content padding
         double unwrappedWidth = width; // TODO padding
         double margin = Config.slidingWindowMargin * height;
@@ -492,7 +503,7 @@ public class VFlow extends Pane {
 
         la.setBottomCount(count);
         la.setBottomHeight(y);
-        la.setUnwrappedWidth(unwrappedWidth);
+        la.setTotalWidth(unwrappedWidth);
         count = 0;
         y = 0.0;
         
@@ -535,25 +546,10 @@ public class VFlow extends Pane {
         System.err.println(la);
         
         // lay out content nodes
-        y = offsetY;
-        double w = wrap ? width : unwrappedWidth;
-        
-        for (int i=0; ; i++) {
-            TextCell cell = la.getCellAt(i);
-            if (cell == null) {
-                break;
-            }
+        layoutNodes(la);
 
-            Region r = cell.getContent();
-            double h = cell.getPreferredHeight();
-            layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
-
-            // TODO actual box height might be different from h due to snapping?
-            // TODO also consider using maxx, maxy from boundsInLocal instead?
-            y += cell.getPreferredHeight();
-        }
-
-        // TODO update scroll bars - here?  or extract?
+        // TODO disable scroll events
+        // TODO update scroll bars - here?  or extract to new method?
         if (!wrap) {
             hscroll.setMin(0.0);
             hscroll.setMax(unwrappedWidth);
@@ -564,5 +560,27 @@ public class VFlow extends Pane {
         // TODO enable scrollbar event handling
 
         return la;
+    }
+    
+    private void layoutNodes(TextCellLayout la) {
+        double x = 0.0 - offsetX; // TODO content padding
+        double y = offsetY;
+        boolean wrap = control.isWrapText();
+        double w = wrap ? getWidth() : la.getTotalWidth(); // TODO padding
+        
+        System.err.println("offsetX=" + offsetX);
+
+        int sz = la.getVisibleCellCount();
+        for (int i=0; i < sz; i++) {
+            TextCell cell = la.getCellAt(i);
+            Region r = cell.getContent();
+            double h = cell.getPreferredHeight();
+            // TODO clip cell?
+            layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
+
+            // TODO actual box height might be different from h due to snapping?
+            // TODO also consider using maxx, maxy from boundsInLocal instead?
+            y += cell.getPreferredHeight();
+        }
     }
 }
