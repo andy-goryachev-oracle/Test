@@ -144,6 +144,19 @@ public class FxSettings {
         triggerSave();
     }
     
+    public static void setStream(String key, SStream s) {
+        provider.set(key, s);
+        triggerSave();
+    }
+    
+    public static String get(String key) {
+        return provider.get(key);
+    }
+    
+    public static SStream getStream(String key) {
+        return provider.getSStream(key);
+    }
+    
     private static synchronized void triggerSave() {
         save.set(true);
         

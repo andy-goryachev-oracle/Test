@@ -48,9 +48,19 @@ public interface ISettingsProvider {
      * Sets a key-value pair.
      */
     public void set(String key, String value);
+    
+    /**
+     * Sets a key-value pair where value is a SStream.
+     */
+    public void set(String key, SStream s);
 
     /**
-     * Retrieves the value for the specific key
+     * Retrieves a String value for the specific key
      */
     public String get(String key);
+    
+    /**
+     * Retrieves a SStream value for the specific key
+     */
+    public SStream getSStream(String key);
 }
