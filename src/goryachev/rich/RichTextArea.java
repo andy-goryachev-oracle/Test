@@ -102,10 +102,11 @@ public class RichTextArea extends Control {
     }
     
     /**
-     * If a run of text exceeds the width of the {@code TextArea},
+     * If a run of text exceeds the width of the {@code RichTextArea},
      * then this variable indicates whether the text should wrap onto
      * another line.
      */
+    // TODO perhaps all other properties need to be styleable properties?
     private StyleableBooleanProperty wrapText = new StyleableBooleanProperty(false) {
         @Override public Object getBean() {
             return RichTextArea.this;
@@ -119,10 +120,19 @@ public class RichTextArea extends Control {
             return StyleableProperties.WRAP_TEXT;
         }
     };
-    public final BooleanProperty wrapTextProperty() { return wrapText; }
-    public final boolean isWrapText() { return wrapText.getValue(); }
-    public final void setWrapText(boolean value) { wrapText.setValue(value); }
-    
+
+    public final BooleanProperty wrapTextProperty() {
+        return wrapText;
+    }
+
+    public final boolean isWrapText() {
+        return wrapText.getValue();
+    }
+
+    public final void setWrapText(boolean value) {
+        wrapText.setValue(value);
+    }
+
     public void setDisplayCaret(boolean on) {
         displayCaretProperty.set(on);
     }

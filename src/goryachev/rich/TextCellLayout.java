@@ -205,7 +205,8 @@ public class TextCellLayout {
     public String toString() {
         return
             "TextCellLayout{" +
-            "topCount=" + topCount() +
+            "totalWidth=" + getTotalWidth() +
+            ", topCount=" + topCount() +
             ", visible=" + getVisibleCellCount() +
             ", bottomCount=" + bottomCount +
             ", topHeight=" + topHeight +

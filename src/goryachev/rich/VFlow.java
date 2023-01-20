@@ -26,14 +26,15 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
-import java.util.ArrayList;
 import java.util.List;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -52,6 +53,7 @@ import goryachev.rich.impl.CellCache;
 import goryachev.rich.impl.Markers;
 import goryachev.rich.impl.SelectionHelper;
 import goryachev.rich.util.FxPathBuilder;
+import goryachev.rich.util.NewAPI;
 import goryachev.rich.util.Util;
 
 /**
@@ -74,11 +76,13 @@ public class VFlow extends Pane {
     protected final SimpleIntegerProperty topLineIndex = new SimpleIntegerProperty(0);
     protected final SimpleBooleanProperty caretVisible = new SimpleBooleanProperty(true);
     protected final SimpleBooleanProperty suppressBlink = new SimpleBooleanProperty(false);
+    protected final SimpleDoubleProperty unwrappedWidth = new SimpleDoubleProperty(0.0);
+    protected final SimpleDoubleProperty offsetX = new SimpleDoubleProperty(0.0);
+    protected final SimpleDoubleProperty offsetY = new SimpleDoubleProperty(0.0);
     protected final Timeline caretAnimation;
     protected final CellCache cache;
     private int topCellIndex;
-    private double offsetX;
-    private double offsetY;
+    private boolean handleScrollEvents = true;
 
     public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = control;
@@ -134,15 +138,27 @@ public class VFlow extends Pane {
             }
         });
 
+        // TODO this needs ListenerHelper
         control.modelProperty().addListener((p) -> updateModel());
         control.wrapTextProperty().addListener((p) -> requestLayout());
+
+        NewAPI.addChangeListener(
+            this::updateHorizontalScrollBar,
+            true,
+            unwrappedWidth,
+            offsetX,
+            widthProperty()
+        );
     }
     
     public void updateModel() {
         invalidateLayout();
         cache.clear();
-        requestLayout();
-        // FIX update scroll bars
+        setOffsetX(0.0);
+        setOffsetY(0.0);
+
+        // requestLayout() does not call layoutChildren() after changing the model - why?
+        layoutChildren();
     }
 
     public int getTopLineIndex() {
@@ -156,6 +172,38 @@ public class VFlow extends Pane {
     public IntegerProperty topLineIndexProperty() {
         return topLineIndex;
     }
+    
+    public double getOffsetX() {
+        return offsetX.get();
+    }
+    
+    public void setOffsetX(double x) {
+        offsetX.set(x);
+    }
+    
+    public DoubleProperty offsetXProperty() {
+        return offsetX;
+    }
+    
+    public double getOffsetY() {
+        return offsetY.get();
+    }
+    
+    public void setOffsetY(double y) {
+        offsetY.set(y);
+    }
+    
+    public DoubleProperty offsetYProperty() {
+        return offsetY;
+    }
+    
+    public double getUnwrappedWidth() {
+        return unwrappedWidth.get();
+    }
+    
+    public void setUnwrappedWidth(double w) {
+        unwrappedWidth.set(w);
+    }
 
     public void setCaretVisible(boolean on) {
         caretVisible.set(on);
@@ -166,6 +214,10 @@ public class VFlow extends Pane {
     }
 
     public void updateCaretAndSelection() {
+        if(layout == null) {
+            return;
+        }
+
         SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
         if(sel == null) {
             return;
@@ -363,17 +415,20 @@ public class VFlow extends Pane {
         if (layout != null) {
             layout.removeNodesFrom(this);
             layout = null;
+            
+            // FIX check
+            if(getChildren().size() != 3) {
+                System.err.println("ERROR: children left from previous layout");
+            }
         }
     }
-    
+
     protected void updateVerticalScrollBar() {
-        // TODO disable scroll events
-        
         double max;
         double visible;
         double val;
-        
-        if(layout == null) {
+
+        if (layout == null) {
             visible = 1.0;
             val = 0.0;
             max = 1.0;
@@ -383,47 +438,85 @@ public class VFlow extends Pane {
             visible = getHeight();
             val = (getTopLineIndex() - layout.topCount()) * av + layout.topHeight();
         }
-        
+
+        handleScrollEvents = false;
+
         vscroll.setMin(0.0);
         vscroll.setMax(max);
         vscroll.setVisibleAmount(visible);
         vscroll.setValue(val);
+
+        handleScrollEvents = true;
+    }
+    
+    protected void updateHorizontalScrollBar() {
+        boolean wrap = control.isWrapText();
+        if (wrap) {
+            return;
+        }
+        
+        double w = getWidth();
+        double off = getOffsetX();
+        double max = Math.max(getUnwrappedWidth(), off + w);
+        
+        handleScrollEvents = false;
+
+        hscroll.setMin(0.0);
+        hscroll.setMax(max);
+        hscroll.setVisibleAmount(w);
+        hscroll.setValue(off);
+        
+        System.err.println("hsb=" + off + "/" + max + " off+wid=" + (off + w));
+
+        handleScrollEvents = true;
     }
 
     public void handleVerticalScroll() {
-        double max = layout.estimatedMax();
-        double pos = vscroll.getValue() * max;
-        
-        // if within the layout -> get new origin from layout
-        // else use line#
-
-        // TODO compute origin: line + offsetY
-        //setOrigin(line, offsetX);
-    }
+        if (handleScrollEvents) {
+            double max = layout.estimatedMax();
+            double pos = vscroll.getValue() * max;
+            
+            // if within the layout -> get new origin from layout
+            // else use line#
     
+            // TODO compute origin: line + offsetY
+            //setOrigin(line, offsetX);
+        }
+    }
+
     public void handleHorizontalScroll() {
-        if(control.isWrapText()) {
+        if (layout == null) {
+            return;
+        } else if (control.isWrapText()) {
             return; // is this needed?
         }
 
-        double val = hscroll.getValue();
-        double unwrappedWidth = layout.getTotalWidth();
-        double w = getWidth(); // TODO padding
-        
-        offsetX = val * (unwrappedWidth - w) / unwrappedWidth;
-        // no need to recompute the flow
-        layoutNodes(layout);
-        
-        updateCaretAndSelection();
+        if (handleScrollEvents) {
+            double val = hscroll.getValue();
+            double w = getWidth(); // TODO padding
+            double max = Math.max(layout.getTotalWidth(), getOffsetX() + w);
+            double off = val;
+            
+            setOffsetX(off);
+            
+            // no need to recompute the flow
+            layoutNodes(layout);
+
+            updateCaretAndSelection();
+        }
     }
-    
-    // TODO add sliding window
+
     // TODO resizing should try keep the current line at the same level
     // TODO update topBoxOffset
-    // TODO update scrollbars
     protected TextCellLayout layoutCells(TextCellLayout previous) {
         if (previous != null) {
             previous.removeNodesFrom(this);
+        }
+        
+        // FIX check
+        if(getChildren().size() != 3) {
+            System.err.println("ERROR: children left from previous layout");
+            System.err.println(getChildren());
         }
 
         double width = getWidth();
@@ -440,7 +533,7 @@ public class VFlow extends Pane {
         boolean wrap = control.isWrapText();
         List<? extends StyledParagraph> paragraphs = model.getParagraphs();
         
-        double y = offsetY; // TODO content padding
+        double y = getOffsetY(); // TODO content padding
         double unwrappedWidth = width; // TODO padding
         double margin = Config.slidingWindowMargin * height;
         int topMarginCount = 0;
@@ -489,8 +582,8 @@ public class VFlow extends Pane {
                 if (y > height) {
                     topMarginCount = (int)Math.ceil(count * Config.slidingWindowMargin);
                     bottomMarginCount = count + topMarginCount;
-                    visible = false;
                     la.setVisibleCount(count);
+                    visible = false;
                 }
             } else {
                 getChildren().remove(r);
@@ -499,6 +592,11 @@ public class VFlow extends Pane {
                     break;
                 }
             }
+        }
+
+        // less paragraphs than can fit in the view
+        if (visible) {
+            la.setVisibleCount(count);
         }
 
         la.setBottomCount(count);
@@ -548,27 +646,20 @@ public class VFlow extends Pane {
         // lay out content nodes
         layoutNodes(la);
 
-        // TODO disable scroll events
-        // TODO update scroll bars - here?  or extract to new method?
         if (!wrap) {
-            hscroll.setMin(0.0);
-            hscroll.setMax(unwrappedWidth);
-            hscroll.setVisibleAmount(width);
-            hscroll.setValue(0.0); // TODO
+            setUnwrappedWidth(unwrappedWidth);
         }
         
-        // TODO enable scrollbar event handling
-
         return la;
     }
     
     private void layoutNodes(TextCellLayout la) {
-        double x = 0.0 - offsetX; // TODO content padding
-        double y = offsetY;
+        double x = 0.0 - getOffsetX(); // TODO content padding
+        double y = getOffsetY();
         boolean wrap = control.isWrapText();
         double w = wrap ? getWidth() : la.getTotalWidth(); // TODO padding
         
-        System.err.println("offsetX=" + offsetX);
+        System.err.println("offsetX=" + getOffsetX());
 
         int sz = la.getVisibleCellCount();
         for (int i=0; i < sz; i++) {
