@@ -46,6 +46,11 @@ class WindowMonitor {
     public WindowMonitor(Window w, String id) {
         this.id = id;
         
+        x = w.getX();
+        y = w.getY();
+        width = w.getWidth();
+        height = w.getHeight();
+        
         w.xProperty().addListener((p) -> updateX(w));
         w.yProperty().addListener((p) -> updateY(w));
         w.widthProperty().addListener((p) -> updateWidth(w));

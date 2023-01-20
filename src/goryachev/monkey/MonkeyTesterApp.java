@@ -39,6 +39,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
@@ -104,6 +106,11 @@ public class MonkeyTesterApp extends Application {
         MenuBar b = new MenuBar();
         FX.menu(b, "File");
         FX.item(b, "Quit", Platform::exit);
+        FX.menu(b, "Menu");
+        ToggleGroup g = new ToggleGroup();
+        FX.radio(b, "RadioMenuItem 1", KeyCombination.keyCombination("Shortcut+1"), g);
+        FX.radio(b, "RadioMenuItem 2", KeyCombination.keyCombination("Shortcut+2"), g);
+        FX.radio(b, "RadioMenuItem 3", KeyCombination.keyCombination("Shortcut+3"), g);
         return b;
     }
 

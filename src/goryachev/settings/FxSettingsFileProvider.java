@@ -26,32 +26,43 @@
 // https://github.com/andy-goryachev/FxDock
 package goryachev.settings;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.util.Properties;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * Settings provider stores settings as a single file in the specified directory.
  */
 public class FxSettingsFileProvider implements ISettingsProvider {
+    private static final char SEP = '=';
+    private static final String DIV = ",";
     private final File file;
-    private final Properties data = new Properties();
+    private final HashMap<String,Object> data = new HashMap<>();
 
     public FxSettingsFileProvider(File dir) {
-        file = new File(dir, "uisettings.properties");
+        file = new File(dir, "ui-settings.properties");
     }
     
     @Override
     public void load() throws IOException {
         if (file.exists() && file.isFile()) {
-            InputStream in = new FileInputStream(file);
+            BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(file), Charset.forName("utf-8")));
             try {
-                data.load(in);
+                synchronized(data) {
+                    read(rd);
+                }
             } finally {
-                in.close();
+                rd.close();
             }
         }
     }
@@ -62,15 +73,39 @@ public class FxSettingsFileProvider implements ISettingsProvider {
             file.getParentFile().mkdirs();
         }
         
-        FileOutputStream out = new FileOutputStream(file);
-        try
-        {
-            // TODO writing to a string buffer will be quicker
+        Writer wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("utf-8")));
+        try {
             synchronized (data) {
-                data.store(out, null);
+                write(wr);
             }
         } finally {
-            out.close();
+            wr.close();
+        }
+    }
+    
+    private void read(BufferedReader rd) throws IOException {
+        String s;
+        while((s = rd.readLine()) != null) {
+            int ix = s.indexOf(SEP);
+            if(ix <= 0) {
+                continue;
+            }
+            String k = s.substring(0, ix);
+            String v = s.substring(ix + 1);
+            data.put(k, v);
+        }
+    }
+
+    private void write(Writer wr) throws IOException {
+        ArrayList<String> keys = new ArrayList<>(data.keySet());
+        Collections.sort(keys);
+        
+        for(String k: keys) {
+            Object v = data.get(k);
+            wr.write(k);
+            wr.write(SEP);
+            wr.write(encode(v));
+            wr.write("\r\n");
         }
     }
 
@@ -87,14 +122,74 @@ public class FxSettingsFileProvider implements ISettingsProvider {
     }
 
     @Override
-    public String get(String key) {
-        String v = get2(key);
-        System.out.println("GET " + key + "=" + v); // FIX
-        return v;
-    }
-    private String get2(String key) {
+    public void set(String key, SStream s) {
+        System.out.println("SET stream " + key + "=" + s); // FIX
         synchronized (data) {
-            return data.getProperty(key);
+            if (s == null) {
+                data.remove(key);
+            } else {
+                data.put(key, s.toArray());
+            }
+        }
+    }
+
+    @Override
+    public String get(String key) {
+        Object v;
+        synchronized (data) {
+            v = data.get(key);
+        }
+
+        String s;
+        if (v instanceof String) {
+            s = (String)v;
+        } else {
+            s = null;
+        }
+        System.out.println("GET " + key + "=" + s); // FIX
+        return s;
+    }
+
+    @Override
+    public SStream getSStream(String key) {
+        SStream s;
+        synchronized (data) {
+            Object v = data.get(key);
+            if (v instanceof Object[]) {
+                s = SStream.reader((Object[])v);
+            } else if(v != null) {
+                s = parseStream(v.toString());
+                data.put(key, s.toArray());
+            } else {
+                s = null;
+            }
+        }
+        System.out.println("GET stream " + key + "=" + s); // FIX
+        return s;
+    }
+
+    private static SStream parseStream(String text) {
+        String[] ss = text.split(DIV);
+        return SStream.reader(ss);
+    }
+
+    private static String encode(Object x) {
+        if(x == null) {
+            return "";
+        } else if(x instanceof Object[] items) {
+            StringBuilder sb = new StringBuilder();
+            boolean sep = false;
+            for(Object item: items) {
+                if(sep) {
+                    sb.append(DIV);
+                } else {
+                    sep = true;
+                }
+                sb.append(item);
+            }
+            return sb.toString();
+        } else {
+            return x.toString();
         }
     }
 }

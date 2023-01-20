@@ -33,6 +33,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
+import javafx.stage.PopupWindow;
 import javafx.stage.Window;
 
 /**
@@ -124,14 +125,22 @@ public class FxSettings {
     }
 
     private static void handleWindowOpening(Window w) {
+        if (w instanceof PopupWindow) {
+            return;
+        }
+
         WindowMonitor m = getWindowMonitor(w);
         FxSettingsSchema.restoreWindow(m, w);
-        
+
         Node p = w.getScene().getRoot();
         FxSettingsSchema.restoreNode(m, p);
     }
 
     private static void handleWindowClosing(Window w) {
+        if (w instanceof PopupWindow) {
+            return;
+        }
+
         WindowMonitor m = getWindowMonitor(w);
         FxSettingsSchema.storeWindow(m, w);
         
@@ -142,6 +151,19 @@ public class FxSettings {
     public static void set(String key, String value) {
         provider.set(key, value);
         triggerSave();
+    }
+    
+    public static void setStream(String key, SStream s) {
+        provider.set(key, s);
+        triggerSave();
+    }
+    
+    public static String get(String key) {
+        return provider.get(key);
+    }
+    
+    public static SStream getStream(String key) {
+        return provider.getSStream(key);
     }
     
     private static synchronized void triggerSave() {
