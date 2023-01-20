@@ -28,6 +28,9 @@ import java.util.List;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCombination;
 
 /**
  * Shortcuts and convenience methods that should be a part of JavaFX.
@@ -49,5 +52,13 @@ public class FX {
     private static Menu lastMenu(MenuBar b) {
         List<Menu> ms = b.getMenus();
         return ms.get(ms.size() - 1);
+    }
+
+    public static RadioMenuItem radio(MenuBar b, String text, KeyCombination accelerator, ToggleGroup g) {
+        RadioMenuItem mi = new RadioMenuItem(text);
+        mi.setAccelerator(accelerator);
+        mi.setToggleGroup(g);
+        lastMenu(b).getItems().add(mi);
+        return mi;
     }
 }
