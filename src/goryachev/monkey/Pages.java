@@ -42,6 +42,7 @@ public class Pages {
             new DemoPage("TreeView", TreeViewPage::new),
             new DemoPage("TreeTableView", TreeTableViewPage::new),
             new DemoPage("Canvas", CanvasPage::new),
+            new DemoPage("ScrollBar", ScrollBarPage::new),
         };
     }
 }
