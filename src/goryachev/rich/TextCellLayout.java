@@ -72,11 +72,11 @@ public class TextCellLayout {
         cells.add(box);
     }
     
-    public void setTotalWidth(double w) {
+    public void setUnwrappedWidth(double w) {
         unwrappedWidth = w;
     }
     
-    public double getTotalWidth() {
+    public double getUnwrappedWidth() {
         // TODO add line number section width + any other gutters widths
         return unwrappedWidth;
     }
@@ -205,7 +205,7 @@ public class TextCellLayout {
     public String toString() {
         return
             "TextCellLayout{" +
-            "totalWidth=" + getTotalWidth() +
+            "unwrapped=" + getUnwrappedWidth() +
             ", topCount=" + topCount() +
             ", visible=" + getVisibleCellCount() +
             ", bottomCount=" + bottomCount +

@@ -26,6 +26,7 @@ package goryachev.apps;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import goryachev.apps.rich.RichTextAreaWindow;
+import goryachev.settings.FxSettings;
 
 /**
  * RichTextArea Demo Application.
@@ -33,6 +34,11 @@ import goryachev.apps.rich.RichTextAreaWindow;
 public class RichTextAreaDemo extends Application {
     public static void main(String[] args) {
         Application.launch(RichTextAreaDemo.class, args);
+    }
+    
+    @Override
+    public void init() {
+        FxSettings.useDirectory(".RichTextAreaDemo");
     }
 
     @Override

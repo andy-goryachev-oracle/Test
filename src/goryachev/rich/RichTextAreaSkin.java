@@ -124,6 +124,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         }
 
         behavior.dispose();
+        vflow.dispose();
 
         super.dispose();
     }

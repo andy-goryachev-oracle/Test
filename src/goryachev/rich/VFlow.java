@@ -30,6 +30,7 @@ import java.util.List;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
@@ -76,13 +77,18 @@ public class VFlow extends Pane {
     protected final SimpleIntegerProperty topLineIndex = new SimpleIntegerProperty(0);
     protected final SimpleBooleanProperty caretVisible = new SimpleBooleanProperty(true);
     protected final SimpleBooleanProperty suppressBlink = new SimpleBooleanProperty(false);
-    protected final SimpleDoubleProperty unwrappedWidth = new SimpleDoubleProperty(0.0);
     protected final SimpleDoubleProperty offsetX = new SimpleDoubleProperty(0.0);
     protected final SimpleDoubleProperty offsetY = new SimpleDoubleProperty(0.0);
+    protected final SimpleDoubleProperty rightEdge = new SimpleDoubleProperty(0.0);
     protected final Timeline caretAnimation;
     protected final CellCache cache;
     private int topCellIndex;
     private boolean handleScrollEvents = true;
+    // TODO replace with ListenerHelper
+    InvalidationListener modelIL;
+    InvalidationListener wrapIL;
+
+    
 
     public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = control;
@@ -137,18 +143,22 @@ public class VFlow extends Pane {
                     (!control.isDisabled());
             }
         });
-
-        // TODO this needs ListenerHelper
-        control.modelProperty().addListener((p) -> updateModel());
-        control.wrapTextProperty().addListener((p) -> requestLayout());
+        
+        control.modelProperty().addListener(modelIL = (p) -> updateModel());
+        control.wrapTextProperty().addListener(wrapIL = (p) -> updateWrap());
+        widthProperty().addListener((p) -> updateWidth());
 
         NewAPI.addChangeListener(
             this::updateHorizontalScrollBar,
             true,
-            unwrappedWidth,
-            offsetX,
-            widthProperty()
+            rightEdge,
+            offsetX
         );
+    }
+    
+    public void dispose() {
+        control.wrapTextProperty().removeListener(wrapIL);
+        control.modelProperty().removeListener(modelIL);
     }
     
     public void updateModel() {
@@ -159,6 +169,13 @@ public class VFlow extends Pane {
 
         // requestLayout() does not call layoutChildren() after changing the model - why?
         layoutChildren();
+    }
+    
+    public void updateWrap() {
+        if(control.isWrapText()) {
+            setOffsetX(0.0);
+        }
+        requestLayout();
     }
 
     public int getTopLineIndex() {
@@ -197,12 +214,13 @@ public class VFlow extends Pane {
         return offsetY;
     }
     
-    public double getUnwrappedWidth() {
-        return unwrappedWidth.get();
+    public double rightEdge() {
+        return rightEdge.get();
     }
     
-    public void setUnwrappedWidth(double w) {
-        unwrappedWidth.set(w);
+    public void setRightEdge(double w) {
+        System.err.println("setRightEdge " + w); // FIX
+        rightEdge.set(w);
     }
 
     public void setCaretVisible(boolean on) {
@@ -211,6 +229,40 @@ public class VFlow extends Pane {
 
     public boolean isCaretVisible() {
         return caretVisible.get();
+    }
+
+    /** TODO
+    protected double rightEdge() {
+        if (control.isWrapText()) {
+            Insets m = getInsets();
+            return getWidth() - m.getLeft() - m.getRight();
+        } else {
+            if (layout == null) {
+                return 0;
+            }
+            if(rightEdge > 0) {
+                return rightEdge;
+            }
+            // TODO there is also unwrappedWidth property
+            return Math.max(layout.getUnwrappedWidth(), getOffsetX() + getWidth());
+        }
+    }*/
+    
+    protected void updateWidth() {
+        if(control.isWrapText()) {
+            setRightEdge(0.0);
+        } else {
+            double w = getOffsetX() + getWidth();
+            // optimize later
+            if (w > rightEdge()) {
+                setRightEdge(w);
+            } else if (layout != null) {
+                if (w > layout.getUnwrappedWidth()) {
+                    setRightEdge(w);
+                }
+            }
+            updateHorizontalScrollBar();
+        }
     }
 
     public void updateCaretAndSelection() {
@@ -292,7 +344,7 @@ public class VFlow extends Pane {
         // generate shapes
         Insets m = getPadding();
         double left = m.getLeft(); // + layout.getLineNumbersColumnWidth(); // FIX padding? border?
-        double right = control.isWrapText() ? (getWidth() - m.getLeft() - m.getRight()) : layout.getTotalWidth();
+        double right = rightEdge();
 
         // TODO
         boolean topLTR = true;
@@ -308,7 +360,7 @@ public class VFlow extends Pane {
             if(control.isWrapText()) {
                 cell.addBoxOutline(b, snappedLeftInset(), snapPositionX(getWidth() - snappedLeftInset() - snappedRightInset()));
             } else {
-                cell.addBoxOutline(b, snappedLeftInset(), snapPositionX(layout.getTotalWidth()));
+                cell.addBoxOutline(b, snappedLeftInset(), snapPositionX(rightEdge()));
             }
         }
     }
@@ -423,6 +475,19 @@ public class VFlow extends Pane {
         }
     }
 
+    public void handleVerticalScroll() {
+        if (handleScrollEvents) {
+            double max = layout.estimatedMax();
+            double pos = vscroll.getValue() * max;
+            
+            // if within the layout -> get new origin from layout
+            // else use line#
+    
+            // TODO compute origin: line + offsetY
+            //setOrigin(line, offsetX);
+        }
+    }
+
     protected void updateVerticalScrollBar() {
         double max;
         double visible;
@@ -448,7 +513,39 @@ public class VFlow extends Pane {
 
         handleScrollEvents = true;
     }
-    
+
+    /** handles user moving the scroll bar */
+    public void handleHorizontalScroll() {
+        // FIX
+        System.err.println(
+            "handleHorizontalScroll" + 
+            " val=" + hscroll.getValue() + 
+            " vis=" + hscroll.getVisibleAmount() + 
+            " max=" + hscroll.getMax() + 
+            " offx=" + getOffsetX() +
+            " right=" + rightEdge()
+        );
+
+        if (handleScrollEvents) {
+            if (layout == null) {
+                return;
+            } else if (control.isWrapText()) {
+                return; // is this needed?
+            }
+            
+            double max = rightEdge();
+            double off = hscroll.getValue();
+
+            setOffsetX(off);
+
+            // no need to recompute the flow
+            layoutNodes(layout);
+
+            updateCaretAndSelection();
+        }
+    }
+
+    /** updates HSB in response to change in width, layout, or offsetX */ 
     protected void updateHorizontalScrollBar() {
         boolean wrap = control.isWrapText();
         if (wrap) {
@@ -457,53 +554,19 @@ public class VFlow extends Pane {
         
         double w = getWidth();
         double off = getOffsetX();
-        double max = Math.max(getUnwrappedWidth(), off + w);
+        double max = rightEdge();
+        double val = off;
         
         handleScrollEvents = false;
 
         hscroll.setMin(0.0);
         hscroll.setMax(max);
         hscroll.setVisibleAmount(w);
-        hscroll.setValue(off);
+        hscroll.setValue(val);
         
-        System.err.println("hsb=" + off + "/" + max + " off+wid=" + (off + w));
+        System.err.println("updateHorizontalScrollBar hsb=" + off + "/" + max + " off+wid=" + (off + w));
 
         handleScrollEvents = true;
-    }
-
-    public void handleVerticalScroll() {
-        if (handleScrollEvents) {
-            double max = layout.estimatedMax();
-            double pos = vscroll.getValue() * max;
-            
-            // if within the layout -> get new origin from layout
-            // else use line#
-    
-            // TODO compute origin: line + offsetY
-            //setOrigin(line, offsetX);
-        }
-    }
-
-    public void handleHorizontalScroll() {
-        if (layout == null) {
-            return;
-        } else if (control.isWrapText()) {
-            return; // is this needed?
-        }
-
-        if (handleScrollEvents) {
-            double val = hscroll.getValue();
-            double w = getWidth(); // TODO padding
-            double max = Math.max(layout.getTotalWidth(), getOffsetX() + w);
-            double off = val;
-            
-            setOffsetX(off);
-            
-            // no need to recompute the flow
-            layoutNodes(layout);
-
-            updateCaretAndSelection();
-        }
     }
 
     // TODO resizing should try keep the current line at the same level
@@ -534,7 +597,7 @@ public class VFlow extends Pane {
         List<? extends StyledParagraph> paragraphs = model.getParagraphs();
         
         double y = getOffsetY(); // TODO content padding
-        double unwrappedWidth = width; // TODO padding
+        double unwrappedWidth = 0;
         double margin = Config.slidingWindowMargin * height;
         int topMarginCount = 0;
         int bottomMarginCount = 0;
@@ -601,7 +664,7 @@ public class VFlow extends Pane {
 
         la.setBottomCount(count);
         la.setBottomHeight(y);
-        la.setTotalWidth(unwrappedWidth);
+        la.setUnwrappedWidth(unwrappedWidth);
         count = 0;
         y = 0.0;
         
@@ -647,7 +710,9 @@ public class VFlow extends Pane {
         layoutNodes(la);
 
         if (!wrap) {
-            setUnwrappedWidth(unwrappedWidth);
+            if(rightEdge() < unwrappedWidth) {
+                setRightEdge(unwrappedWidth);
+            }
         }
         
         return la;
@@ -657,7 +722,7 @@ public class VFlow extends Pane {
         double x = 0.0 - getOffsetX(); // TODO content padding
         double y = getOffsetY();
         boolean wrap = control.isWrapText();
-        double w = wrap ? getWidth() : la.getTotalWidth(); // TODO padding
+        double w = rightEdge();
         
         System.err.println("offsetX=" + getOffsetX());
 

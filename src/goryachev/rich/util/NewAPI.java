@@ -75,4 +75,8 @@ public class NewAPI {
             onChange.run();
         }
     }
+
+    /** TODO need com.sun.javafx.scene.control.ListenerHelper to be public
+    public static ListenerHelper listenerHelper() {
+    } */
 }
