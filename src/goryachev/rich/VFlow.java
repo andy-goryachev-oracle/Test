@@ -174,6 +174,8 @@ public class VFlow extends Pane {
     public void updateWrap() {
         if(control.isWrapText()) {
             setOffsetX(0.0);
+            double w = getWidth(); // TODO padding
+            setRightEdge(w);
         }
         requestLayout();
     }
@@ -249,17 +251,18 @@ public class VFlow extends Pane {
     }*/
     
     protected void updateWidth() {
-        if(control.isWrapText()) {
+        if (control.isWrapText()) {
             setRightEdge(0.0);
         } else {
             double w = getOffsetX() + getWidth();
-            // optimize later
+            if (layout != null) {
+                if (layout.getUnwrappedWidth() > w) {
+                    w = layout.getUnwrappedWidth();
+                }
+            }
+
             if (w > rightEdge()) {
                 setRightEdge(w);
-            } else if (layout != null) {
-                if (w > layout.getUnwrappedWidth()) {
-                    setRightEdge(w);
-                }
             }
             updateHorizontalScrollBar();
         }
@@ -533,7 +536,7 @@ public class VFlow extends Pane {
                 return; // is this needed?
             }
             
-            double max = rightEdge();
+            //double max = rightEdge();
             double off = hscroll.getValue();
 
             setOffsetX(off);
@@ -553,9 +556,8 @@ public class VFlow extends Pane {
         }
         
         double w = getWidth();
-        double off = getOffsetX();
-        double max = rightEdge();
-        double val = off;
+        double val = getOffsetX();
+        double max = rightEdge(); // Math.max(0.0, rightEdge() - w);
         
         handleScrollEvents = false;
 
@@ -564,7 +566,7 @@ public class VFlow extends Pane {
         hscroll.setVisibleAmount(w);
         hscroll.setValue(val);
         
-        System.err.println("updateHorizontalScrollBar hsb=" + off + "/" + max + " off+wid=" + (off + w));
+        System.err.println("updateHorizontalScrollBar hsb=" + val + "/" + max + " off+wid=" + (val + w));
 
         handleScrollEvents = true;
     }
