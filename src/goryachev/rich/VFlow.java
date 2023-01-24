@@ -162,12 +162,12 @@ public class VFlow extends Pane {
     }
     
     public void updateModel() {
-        invalidateLayout();
-        cache.clear();
         setOffsetX(0.0);
         setOffsetY(0.0);
 
         // requestLayout() does not call layoutChildren() after changing the model - why?
+        cache.clear();
+        invalidateLayout();
         layoutChildren();
     }
     
@@ -177,7 +177,9 @@ public class VFlow extends Pane {
             double w = getWidth(); // TODO padding
             setRightEdge(w);
         }
-        requestLayout();
+        cache.clear();
+        invalidateLayout();
+        layoutChildren();
     }
 
     public int getTopLineIndex() {
@@ -221,7 +223,7 @@ public class VFlow extends Pane {
     }
     
     public void setRightEdge(double w) {
-        System.err.println("setRightEdge " + w); // FIX
+        //System.err.println("setRightEdge " + w);
         rightEdge.set(w);
     }
 
@@ -233,23 +235,6 @@ public class VFlow extends Pane {
         return caretVisible.get();
     }
 
-    /** TODO
-    protected double rightEdge() {
-        if (control.isWrapText()) {
-            Insets m = getInsets();
-            return getWidth() - m.getLeft() - m.getRight();
-        } else {
-            if (layout == null) {
-                return 0;
-            }
-            if(rightEdge > 0) {
-                return rightEdge;
-            }
-            // TODO there is also unwrappedWidth property
-            return Math.max(layout.getUnwrappedWidth(), getOffsetX() + getWidth());
-        }
-    }*/
-    
     protected void updateWidth() {
         if (control.isWrapText()) {
             setRightEdge(0.0);
@@ -544,28 +529,27 @@ public class VFlow extends Pane {
         hscroll.setVisibleAmount(vis);
         hscroll.setValue(val);
         
-        System.err.println(
-            "updateHorizontalScrollBar" +
-            " val=" + val +
-            " vis=" + w +
-            " max=" + max +
-            " right=" + rightEdge()
-        );
+//        System.err.println(
+//            "updateHorizontalScrollBar" +
+//            " val=" + val +
+//            " vis=" + w +
+//            " max=" + max +
+//            " right=" + rightEdge()
+//        );
 
         handleScrollEvents = true;
     }
 
     /** handles user moving the scroll bar */
     public void handleHorizontalScroll() {
-        // FIX
-        System.err.println(
-            "handleHorizontalScroll" + 
-            " val=" + hscroll.getValue() + 
-            " vis=" + hscroll.getVisibleAmount() + 
-            " max=" + hscroll.getMax() + 
-            " offx=" + getOffsetX() +
-            " right=" + rightEdge()
-        );
+//        System.err.println(
+//            "handleHorizontalScroll" + 
+//            " val=" + hscroll.getValue() + 
+//            " vis=" + hscroll.getVisibleAmount() + 
+//            " max=" + hscroll.getMax() + 
+//            " offx=" + getOffsetX() +
+//            " right=" + rightEdge()
+//        );
 
         if (handleScrollEvents) {
             if (layout == null) {
@@ -720,9 +704,8 @@ public class VFlow extends Pane {
             }
         }
         
-        // TODO check that counts and heights are set correctly
         la.setTopHeight(y);
-        System.err.println(la);
+        //System.err.println(la);
         
         // lay out content nodes
         layoutNodes(la);
@@ -742,7 +725,7 @@ public class VFlow extends Pane {
         boolean wrap = control.isWrapText();
         double w = wrap ? getWidth() : rightEdge(); // TODO padding
         
-        System.err.println("offsetX=" + getOffsetX());
+        //System.err.println("offsetX=" + getOffsetX());
 
         int sz = la.getVisibleCellCount();
         for (int i=0; i < sz; i++) {
