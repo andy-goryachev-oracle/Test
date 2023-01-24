@@ -36,7 +36,10 @@ import javafx.scene.text.TextFlow;
  * These APIs should be added to JavaFX.
  */
 public class NewAPI {
-    // TODO check if used
+    /**
+     * may or may not be a good idea: what if TextFlow contains non-text Nodes?
+     * this logic belongs to the model.
+     */
     public static String getText(TextFlow f) {
         StringBuilder sb = new StringBuilder();
         for(Node n: f.getChildrenUnmodifiable()) {

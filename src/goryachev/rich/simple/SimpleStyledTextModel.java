@@ -29,10 +29,10 @@ package goryachev.rich.simple;
 import java.io.InputStream;
 import java.util.ArrayList;
 import javafx.scene.image.Image;
+import goryachev.rich.AbstractStyledTextModel;
 import goryachev.rich.StyledParagraph;
-import goryachev.rich.StyledTextModel;
 
-public class SimpleStyledTextModel implements StyledTextModel {
+public class SimpleStyledTextModel extends AbstractStyledTextModel {
     private final ArrayList<StyledParagraph> paragraphs = new ArrayList<>();
 
     public SimpleStyledTextModel() {

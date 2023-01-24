@@ -41,11 +41,20 @@ public interface StyledTextModel {
      * Returns the number of paragraphs in the model.
      */
     public int getParagraphCount();
-    
+
     /**
      * Returns the specified paragraph.  The caller should never attempt to ask for a paragraph outside of the
      * valid range.
+     *
      * @param index paragraph index in the range (0...{@link getParagraphCount()})
      */
     public StyledParagraph getParagraph(int index);
+
+    /**
+     * Returns the plain text string for the specified paragraph.
+     * The caller should never attempt to ask for a paragraph outside of the valid range.
+     *
+     * @param index paragraph index in the range (0...{@link getParagraphCount()})
+     */
+    public String getPlainText(int index);
 }
