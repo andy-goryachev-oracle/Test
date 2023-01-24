@@ -38,7 +38,7 @@ public class ScrollBarPage extends ToolPane {
     private ScrollBar scroll;
     private Label status;
     private static Long[] VALUES = {
-        0L, 10L, 20L, 50L, 100L
+        0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L
     };
 
     public ScrollBarPage() {
@@ -104,9 +104,9 @@ public class ScrollBarPage extends ToolPane {
         setOptions(p);
         
         min.getSelectionModel().select(0L);
-        val.getSelectionModel().select(50L);
-        visible.getSelectionModel().select(10L);
-        max.getSelectionModel().select(100L);
+        val.getSelectionModel().select(5L);
+        visible.getSelectionModel().select(1L);
+        max.getSelectionModel().select(10L);
     }
 
     protected int parse(ComboBox<Long> c) {
