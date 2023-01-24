@@ -478,19 +478,6 @@ public class VFlow extends Pane {
         }
     }
 
-    public void handleVerticalScroll() {
-        if (handleScrollEvents) {
-            double max = layout.estimatedMax();
-            double pos = vscroll.getValue() * max;
-            
-            // if within the layout -> get new origin from layout
-            // else use line#
-    
-            // TODO compute origin: line + offsetY
-            //setOrigin(line, offsetX);
-        }
-    }
-
     protected void updateVerticalScrollBar() {
         double max;
         double visible;
@@ -517,6 +504,57 @@ public class VFlow extends Pane {
         handleScrollEvents = true;
     }
 
+    /** handles user moving the vertical scroll bar */
+    public void handleVerticalScroll() {
+        if (handleScrollEvents) {
+            double max = layout.estimatedMax();
+            double pos = vscroll.getValue() * max;
+            
+            // if within the layout -> get new origin from layout
+            // else use line#
+    
+            // TODO compute origin: line + offsetY
+            //setOrigin(line, offsetX);
+        }
+    }
+
+    /** updates HSB in response to change in width, layout, or offsetX */ 
+    protected void updateHorizontalScrollBar() {
+        boolean wrap = control.isWrapText();
+        if (wrap) {
+            return;
+        }
+
+        double max = rightEdge();
+        double w = getWidth();
+        double off = getOffsetX();
+        double vis = w / max;
+        
+        double val;
+        if(Math.abs(max - w) < 1e-10) {
+            val = 0.0;
+        } else {
+            val = off / (max - w);
+        }
+
+        handleScrollEvents = false;
+
+        hscroll.setMin(0.0);
+        hscroll.setMax(1.0);
+        hscroll.setVisibleAmount(vis);
+        hscroll.setValue(val);
+        
+        System.err.println(
+            "updateHorizontalScrollBar" +
+            " val=" + val +
+            " vis=" + w +
+            " max=" + max +
+            " right=" + rightEdge()
+        );
+
+        handleScrollEvents = true;
+    }
+
     /** handles user moving the scroll bar */
     public void handleHorizontalScroll() {
         // FIX
@@ -536,8 +574,9 @@ public class VFlow extends Pane {
                 return; // is this needed?
             }
             
-            //double max = rightEdge();
-            double off = hscroll.getValue();
+            double max = rightEdge();
+            double w = getWidth();
+            double off = hscroll.getValue() * (max - w);
 
             setOffsetX(off);
 
@@ -546,29 +585,6 @@ public class VFlow extends Pane {
 
             updateCaretAndSelection();
         }
-    }
-
-    /** updates HSB in response to change in width, layout, or offsetX */ 
-    protected void updateHorizontalScrollBar() {
-        boolean wrap = control.isWrapText();
-        if (wrap) {
-            return;
-        }
-        
-        double w = getWidth();
-        double val = getOffsetX();
-        double max = rightEdge(); // Math.max(0.0, rightEdge() - w);
-        
-        handleScrollEvents = false;
-
-        hscroll.setMin(0.0);
-        hscroll.setMax(max);
-        hscroll.setVisibleAmount(w);
-        hscroll.setValue(val);
-        
-        System.err.println("updateHorizontalScrollBar hsb=" + val + "/" + max + " off+wid=" + (val + w));
-
-        handleScrollEvents = true;
     }
 
     // TODO resizing should try keep the current line at the same level
@@ -724,7 +740,7 @@ public class VFlow extends Pane {
         double x = 0.0 - getOffsetX(); // TODO content padding
         double y = getOffsetY();
         boolean wrap = control.isWrapText();
-        double w = rightEdge();
+        double w = wrap ? getWidth() : rightEdge(); // TODO padding
         
         System.err.println("offsetX=" + getOffsetX());
 
