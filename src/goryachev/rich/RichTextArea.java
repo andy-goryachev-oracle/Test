@@ -57,7 +57,7 @@ import goryachev.rich.util.Util;
  * TODO highlight current line property
  * TODO tab size property
  * TODO selection model property
- * 
+ * TODO line count r/o property
  */
 public class RichTextArea extends Control {
     protected final ObjectProperty<StyledTextModel> model = new SimpleObjectProperty<>(this, "model");
@@ -144,6 +144,10 @@ public class RichTextArea extends Control {
     public BooleanProperty displayCaretProperty() {
         return displayCaretProperty;
     }
+    
+//    public int getLineCount() {
+//        // TODO r/o property
+//    }
     
     public int getCurrentLine() {
         return currentLine.get();

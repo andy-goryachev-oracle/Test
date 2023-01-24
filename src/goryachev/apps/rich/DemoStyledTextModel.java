@@ -27,25 +27,31 @@ package goryachev.apps.rich;
 import java.util.AbstractList;
 import java.util.Collection;
 import java.util.RandomAccess;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.text.TextFlow;
 import goryachev.rich.StyledParagraph;
 import goryachev.rich.StyledTextModel;
 import goryachev.rich.TextCell;
 
-public class SimpleRichModel implements StyledTextModel {
-    private final ObservableList<StyledParagraph> list;
+/**
+ * Demo StyledTextModel.
+ * Does not support editing events - populate the model first, then pass it to the control.
+ */
+public class DemoStyledTextModel implements StyledTextModel {
+    private final SList paragraphs;
     
-    public SimpleRichModel(int size, boolean monospaced) {
-        this.list = FXCollections.observableList(new SList(size, monospaced));
+    public DemoStyledTextModel(int size, boolean monospaced) {
+        this.paragraphs = new SList(size, monospaced);
     }
 
     @Override
-    public ObservableList<? extends StyledParagraph> getParagraphs() {
-        return list;
+    public int getParagraphCount() {
+        return paragraphs.size();
     }
-    
+
+    @Override
+    public StyledParagraph getParagraph(int index) {
+        return paragraphs.get(index);
+    }
+
     /** */
     public static class SList extends AbstractList<StyledParagraph> implements RandomAccess {
         private final int size;

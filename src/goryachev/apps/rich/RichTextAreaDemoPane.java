@@ -115,21 +115,21 @@ public class RichTextAreaDemoPane extends BorderPane {
         
         switch(m) {
         case BILLION_LINES:
-            return new SimpleRichModel(1_000_000_000, false);
+            return new DemoStyledTextModel(1_000_000_000, false);
         case DEMO:
             return new RichTextAreaDemoModel();
         case NULL:
             return null;
         case ONE_LINE:
-            return new SimpleRichModel(1, false);
+            return new DemoStyledTextModel(1, false);
         case TEN_LINES:
-            return new SimpleRichModel(10, false);
+            return new DemoStyledTextModel(10, false);
         case THOUSAND_LINES:
-            return new SimpleRichModel(1_000, false);
+            return new DemoStyledTextModel(1_000, false);
         case ZERO_LINES:
-            return new SimpleRichModel(0, false);
+            return new DemoStyledTextModel(0, false);
         case MONOSPACED:
-            return new SimpleRichModel(100_000, true);
+            return new DemoStyledTextModel(100_000, true);
         default:
             throw new Error("?" + m);
         }

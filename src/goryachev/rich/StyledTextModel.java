@@ -26,11 +26,9 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
-import javafx.collections.ObservableList;
-
 /**
- * Represents a styled text model.  The text is considered to be a collection of paragraphs,
- * represented by {@link StyledParagraph} class.
+ * Represents a styled text model.
+ * The text is considered to be a collection of paragraphs, represented by {@link StyledParagraph} class.
  * 
  * TODO events
  * TODO listeners
@@ -39,5 +37,15 @@ import javafx.collections.ObservableList;
  * TODO isModified()
  */
 public interface StyledTextModel {
-    public ObservableList<? extends StyledParagraph> getParagraphs();
+    /**
+     * Returns the number of paragraphs in the model.
+     */
+    public int getParagraphCount();
+    
+    /**
+     * Returns the specified paragraph.  The caller should never attempt to ask for a paragraph outside of the
+     * valid range.
+     * @param index paragraph index in the range (0...{@link getParagraphCount()})
+     */
+    public StyledParagraph getParagraph(int index);
 }

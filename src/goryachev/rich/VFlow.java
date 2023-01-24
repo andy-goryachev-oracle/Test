@@ -147,12 +147,20 @@ public class VFlow extends Pane {
         control.modelProperty().addListener(modelIL = (p) -> updateModel());
         control.wrapTextProperty().addListener(wrapIL = (p) -> updateWrap());
         widthProperty().addListener((p) -> updateWidth());
+        heightProperty().addListener((p) -> updateHeight());
 
         NewAPI.addChangeListener(
             this::updateHorizontalScrollBar,
             true,
             rightEdge,
             offsetX
+        );
+        
+        NewAPI.addChangeListener(
+            this::updateVerticalScrollBar,
+            true,
+            topLineIndex,
+            offsetY
         );
     }
     
@@ -235,6 +243,7 @@ public class VFlow extends Pane {
         return caretVisible.get();
     }
 
+    /** reacts to width changes */
     protected void updateWidth() {
         if (control.isWrapText()) {
             setRightEdge(0.0);
@@ -251,6 +260,11 @@ public class VFlow extends Pane {
             }
             updateHorizontalScrollBar();
         }
+    }
+    
+    /** reacts to height changes */
+    protected void updateHeight() {
+        // TODO what to do? do we still have enough nodes in the cell layout?
     }
 
     public void updateCaretAndSelection() {
@@ -437,9 +451,9 @@ public class VFlow extends Pane {
     }
     
     public int lineCount() {
-        // TODO perhaps use control.lineCount property?
+        // TODO use control.lineCount property?
         StyledTextModel m = control.getModel();
-        return (m == null) ? 0 : m.getParagraphs().size();
+        return (m == null) ? 0 : m.getParagraphCount();
     }
 
     @Override
@@ -463,18 +477,18 @@ public class VFlow extends Pane {
         }
     }
 
+    /** updates VSB in response to change in height, layout, or offsetY */ 
     protected void updateVerticalScrollBar() {
-        double max;
         double visible;
         double val;
 
-        if (layout == null) {
+        if (layout == null || (lineCount() == 0)) {
             visible = 1.0;
             val = 0.0;
-            max = 1.0;
         } else {
+            // TODO normalize
             double av = layout.averageHeight();
-            max = layout.estimatedMax();
+            double max = layout.estimatedMax();
             visible = getHeight();
             val = (getTopLineIndex() - layout.topCount()) * av + layout.topHeight();
         }
@@ -482,7 +496,7 @@ public class VFlow extends Pane {
         handleScrollEvents = false;
 
         vscroll.setMin(0.0);
-        vscroll.setMax(max);
+        vscroll.setMax(1.0);
         vscroll.setVisibleAmount(visible);
         vscroll.setValue(val);
 
@@ -528,14 +542,6 @@ public class VFlow extends Pane {
         hscroll.setMax(1.0);
         hscroll.setVisibleAmount(vis);
         hscroll.setValue(val);
-        
-//        System.err.println(
-//            "updateHorizontalScrollBar" +
-//            " val=" + val +
-//            " vis=" + w +
-//            " max=" + max +
-//            " right=" + rightEdge()
-//        );
 
         handleScrollEvents = true;
     }
@@ -596,7 +602,7 @@ public class VFlow extends Pane {
         }
 
         boolean wrap = control.isWrapText();
-        List<? extends StyledParagraph> paragraphs = model.getParagraphs();
+        int paragraphCount = lineCount();
         
         double y = getOffsetY(); // TODO content padding
         double unwrappedWidth = 0;
@@ -609,10 +615,10 @@ public class VFlow extends Pane {
         TextCellLayout la = new TextCellLayout(this);
         
         // populating visible part of the sliding window + bottom margin
-        for (int i = topCellIndex; i < paragraphs.size(); i++) {
+        for (int i = topCellIndex; i < paragraphCount; i++) {
             TextCell cell = cache.get(i);
             if (cell == null) {
-                StyledParagraph p = paragraphs.get(i);
+                StyledParagraph p = model.getParagraph(i);
                 cell = p.createTextCell();
                 cache.add(cell);
             }
@@ -675,7 +681,7 @@ public class VFlow extends Pane {
         for (int i = topCellIndex - 1; i >= 0; i--) {
             TextCell cell = cache.get(i);
             if (cell == null) {
-                StyledParagraph p = paragraphs.get(i);
+                StyledParagraph p = model.getParagraph(i);
                 cell = p.createTextCell();
                 cache.add(cell);
             }

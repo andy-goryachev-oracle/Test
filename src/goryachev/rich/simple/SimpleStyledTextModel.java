@@ -27,21 +27,25 @@
 package goryachev.rich.simple;
 
 import java.io.InputStream;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import java.util.ArrayList;
 import javafx.scene.image.Image;
 import goryachev.rich.StyledParagraph;
 import goryachev.rich.StyledTextModel;
 
 public class SimpleStyledTextModel implements StyledTextModel {
-    private final ObservableList<StyledParagraph> paragraphs = FXCollections.observableArrayList();
+    private final ArrayList<StyledParagraph> paragraphs = new ArrayList<>();
 
     public SimpleStyledTextModel() {
     }
 
     @Override
-    public ObservableList<? extends StyledParagraph> getParagraphs() {
-        return paragraphs;
+    public int getParagraphCount() {
+        return paragraphs.size();
+    }
+
+    @Override
+    public StyledParagraph getParagraph(int index) {
+        return paragraphs.get(index);
     }
 
     public SimpleStyledTextModel addSegment(String text, String style, String... css) {
