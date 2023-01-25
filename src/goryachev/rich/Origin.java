@@ -27,8 +27,10 @@ package goryachev.rich;
 /**
  * View origin: top paragraph index + offset in pixels from the top edge of top cell.
  */
-public record Origin(int index, double offset) {
+public record Origin(int index, double offset, double estPixel) {
+    public static final Origin ZERO = new Origin(0, 0.0, 0.0);
+
     public String toString() {
-        return "Origin{index=" + index + ", offset=" + offset + "}";
+        return "Origin{index=" + index + ", offset=" + offset + ", estPixel=" + estPixel + "}";
     }
 }

@@ -44,10 +44,10 @@ import goryachev.rich.util.Util;
  * for the purposes of layout, estimating the average paragraph height, and relative navigation.
  */
 public class TextCellLayout {
-    private final VFlow vflow;
     private final ArrayList<TextCell> cells = new ArrayList<>(32);
-    private final double width;
-    private final double height;
+    private final double flowWidth;
+    private final double flowHeight;
+    private final int lineCount;
     private final Origin origin;
     private int visible;
     private int bottomCount;
@@ -56,16 +56,16 @@ public class TextCellLayout {
     private double bottomHeight;
     
     public TextCellLayout(VFlow f) {
-        this.vflow = f;
-        this.width = f.getWidth();
-        this.height = f.getHeight();
+        this.flowWidth = f.getWidth();
+        this.flowHeight = f.getHeight();
         this.origin = f.getOrigin();
+        this.lineCount = f.lineCount();
     }
 
     public boolean isValid(VFlow f) {
         return
-            (f.getWidth() == width) &&
-            (f.getHeight() == height) &&
+            (f.getWidth() == flowWidth) &&
+            (f.getHeight() == flowHeight) &&
             (f.getTopLineIndex() == origin.index());
     }
 
@@ -174,35 +174,35 @@ public class TextCellLayout {
     public void setBottomCount(int ix) {
         bottomCount = ix;
     }
-    
+
     public int bottomCount() {
         return bottomCount;
     }
-    
+
     public void setBottomHeight(double h) {
         bottomHeight = h;
     }
-    
+
     public double bottomHeight() {
         return bottomHeight;
     }
-    
+
     public int topCount() {
         return cells.size() - bottomCount;
     }
-    
+
     public void setTopHeight(double h) {
         topHeight = h;
     }
-    
+
     public double topHeight() {
         return topHeight;
     }
-    
+
     public double averageHeight() {
         return (topHeight + bottomHeight) / (topCount() + bottomCount);
     }
-    
+
     public String toString() {
         return
             "TextCellLayout{" +
@@ -218,7 +218,6 @@ public class TextCellLayout {
     }
 
     public double estimatedMax() {
-        int lineCount = vflow.lineCount();
         return (lineCount - topCount() - bottomCount) * averageHeight() + topHeight + bottomHeight;
     }
 
@@ -247,7 +246,7 @@ public class TextCellLayout {
         
         // outside of the layout
         int ix = (int)Math.round(pos / av);
-        return new Origin(ix, 0.0);
+        return new Origin(ix, 0.0, pos);
     }
 
     private Origin find(double pos, boolean top) {
@@ -263,7 +262,7 @@ public class TextCellLayout {
         
         int ix = binarySearch(pos, top, high, low);
         TextCell c = cells.get(ix);
-        return new Origin(c.getLineIndex(), pos - c.getOffset());
+        return new Origin(c.getLineIndex(), pos - c.getOffset(), pos);
     }
     
     private int binarySearch(double pos, boolean top, int high, int low) {

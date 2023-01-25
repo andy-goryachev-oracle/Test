@@ -73,7 +73,7 @@ public class VFlow extends Pane {
     private final Path caretPath;
     private final Path caretLineHighlight;
     private final Path selectionHighlight;
-    protected final SimpleObjectProperty<Origin> origin = new SimpleObjectProperty(new Origin(0, 0));
+    protected final SimpleObjectProperty<Origin> origin = new SimpleObjectProperty(Origin.ZERO);
     protected final SimpleBooleanProperty caretVisible = new SimpleBooleanProperty(true);
     protected final SimpleBooleanProperty suppressBlink = new SimpleBooleanProperty(false);
     protected final SimpleDoubleProperty offsetX = new SimpleDoubleProperty(0.0);
@@ -173,7 +173,7 @@ public class VFlow extends Pane {
     }
     
     public void updateModel() {
-        setOrigin(0, 0);
+        setOrigin(Origin.ZERO);
         setOffsetX(0.0);
 
         // requestLayout() does not call layoutChildren() after changing the model - why?
@@ -207,12 +207,8 @@ public class VFlow extends Pane {
         if (p == null) {
             throw new NullPointerException();
         }
-        System.err.println(p); // TODO
+        System.err.println("setOrigin " + p); // TODO
         origin.set(p);
-    }
-    
-    public void setOrigin(int index, double offset) {
-        setOrigin(new Origin(index, offset));
     }
 
     public int getTopLineIndex() {
@@ -608,14 +604,13 @@ public class VFlow extends Pane {
 
             layout = new TextCellLayout(this);
             layoutCells();
-            
+            System.err.println("layoutCells " + layout); // TODO
+
             updateCaretAndSelection();
             updateVerticalScrollBar();
         }
     }
 
-    // TODO resizing should try keep the current line at the same level
-    // TODO update topBoxOffset
     protected void layoutCells() {
         double width = getWidth();
         double height = getHeight();
@@ -638,6 +633,7 @@ public class VFlow extends Pane {
         int bottomMarginCount = 0;
         int count = 0;
         boolean visible = true;
+        // TODO if topCount < marginCount, increase bottomCount correspondingly
 
         // populating visible part of the sliding window + bottom margin
         for (int i = topCellIndex; i < paragraphCount; i++) {
