@@ -42,7 +42,6 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
@@ -85,8 +84,6 @@ public class VFlow extends Pane {
     // TODO replace with ListenerHelper
     InvalidationListener modelIL;
     InvalidationListener wrapIL;
-    // FIX
-    final Line line;
 
     public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = control;
@@ -115,12 +112,7 @@ public class VFlow extends Pane {
         selectionHighlight.getStyleClass().add("selection-highlight");
         selectionHighlight.setManaged(false);
         
-        // FIX
-        line = new Line();
-        line.setStrokeWidth(1);
-        line.setStroke(Color.RED);
-        
-        getChildren().addAll(caretLineHighlight, selectionHighlight, caretPath, line);
+        getChildren().addAll(caretLineHighlight, selectionHighlight, caretPath);
         setClip(clip);
         
         caretAnimation = new Timeline();
@@ -509,15 +501,6 @@ public class VFlow extends Pane {
                 " origin=" + p +
                 " lineCount=" + lineCount()
             );
-
-            TextCell c = layout.getCellAt(p.index());
-            if(c != null) {
-                double y = c.getOffset() + p.offset();
-                line.setStartX(0);
-                line.setStartY(y);
-                line.setEndX(getWidth());
-                line.setEndY(y);
-            }
 
             setOrigin(p);
         }
