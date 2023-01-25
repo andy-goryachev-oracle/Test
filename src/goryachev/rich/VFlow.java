@@ -42,6 +42,7 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
@@ -84,6 +85,8 @@ public class VFlow extends Pane {
     // TODO replace with ListenerHelper
     InvalidationListener modelIL;
     InvalidationListener wrapIL;
+    // FIX
+    final Line line;
 
     public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = control;
@@ -112,7 +115,12 @@ public class VFlow extends Pane {
         selectionHighlight.getStyleClass().add("selection-highlight");
         selectionHighlight.setManaged(false);
         
-        getChildren().addAll(caretLineHighlight, selectionHighlight, caretPath);
+        // FIX
+        line = new Line();
+        line.setStrokeWidth(1);
+        line.setStroke(Color.RED);
+        
+        getChildren().addAll(caretLineHighlight, selectionHighlight, caretPath, line);
         setClip(clip);
         
         caretAnimation = new Timeline();
@@ -518,7 +526,29 @@ public class VFlow extends Pane {
             double av = layout.averageHeight();
             
             Origin p = layout.fromAbsolutePixels(pos);
-            setOrigin(p);
+            System.err.println(
+                "handleVerticalScroll" +
+                " val=" + vscroll.getValue() +
+                " pos=" + pos +
+                " av=" + av +
+                " max=" + max +
+                " origin=" + p +
+                " lineCount=" + lineCount()
+            );
+            
+            // FIX
+            if(p.index() == 4) {
+                layout.fromAbsolutePixels(pos);
+            }
+            TextCell c = layout.getCellAt(p.index());
+            if(c != null) {
+                double y = c.getOffset() + p.offset();
+                line.setStartX(0);
+                line.setStartY(y);
+                line.setEndX(getWidth());
+                line.setEndY(y);
+            }
+            //setOrigin(p);
         }
     }
 
@@ -596,12 +626,6 @@ public class VFlow extends Pane {
             previous.removeNodesFrom(this);
         }
         
-        // FIX check
-        if(getChildren().size() != 3) {
-            System.err.println("ERROR: children left from previous layout");
-            System.err.println(getChildren());
-        }
-
         double width = getWidth();
         double height = getHeight();
         clip.setWidth(width);
@@ -724,7 +748,7 @@ public class VFlow extends Pane {
         }
         
         la.setTopHeight(y);
-        //System.err.println(la);
+        System.err.println(la); // FIX
         
         // lay out content nodes
         layoutNodes(la);
