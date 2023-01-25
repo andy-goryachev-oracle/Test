@@ -45,7 +45,8 @@ import goryachev.rich.StyledTextModel;
 public class RichTextAreaDemoPane extends BorderPane {
     enum Model {
         DEMO,
-        UNEVEN,
+        UNEVEN_SMALL,
+        UNEVEN_LARGE,
         NULL,
         ZERO_LINES,
         ONE_LINE,
@@ -129,8 +130,10 @@ public class RichTextAreaDemoPane extends BorderPane {
             return new DemoStyledTextModel(10, false);
         case THOUSAND_LINES:
             return new DemoStyledTextModel(1_000, false);
-        case UNEVEN:
-            return new UnevenStyledTextModel(100);
+        case UNEVEN_SMALL:
+            return new UnevenStyledTextModel(20);
+        case UNEVEN_LARGE:
+            return new UnevenStyledTextModel(2000);
         case ZERO_LINES:
             return new DemoStyledTextModel(0, false);
         default:

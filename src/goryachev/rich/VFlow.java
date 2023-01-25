@@ -465,27 +465,6 @@ public class VFlow extends Pane {
         return (m == null) ? 0 : m.getParagraphCount();
     }
 
-    @Override
-    protected void layoutChildren() {
-        if ((layout == null) || !layout.isValid(this)) {
-            layout = layoutCells(layout);
-            updateCaretAndSelection();
-            updateVerticalScrollBar();
-        }
-    }
-
-    public void invalidateLayout() {
-        if (layout != null) {
-            layout.removeNodesFrom(this);
-            layout = null;
-            
-            // FIX check
-            if(getChildren().size() != 3) {
-                System.err.println("ERROR: children left from previous layout");
-            }
-        }
-    }
-
     /** updates VSB in response to change in height, layout, or offsetY */ 
     protected void updateVerticalScrollBar() {
         double visible;
@@ -523,23 +502,18 @@ public class VFlow extends Pane {
             double max = layout.estimatedMax();
             double h = getHeight();
             double pos = vscroll.getValue() * (max - h);
-            double av = layout.averageHeight();
             
             Origin p = layout.fromAbsolutePixels(pos);
+            // FIX
             System.err.println(
                 "handleVerticalScroll" +
                 " val=" + vscroll.getValue() +
                 " pos=" + pos +
-                " av=" + av +
                 " max=" + max +
                 " origin=" + p +
                 " lineCount=" + lineCount()
             );
-            
-            // FIX
-            if(p.index() == 4) {
-                layout.fromAbsolutePixels(pos);
-            }
+
             TextCell c = layout.getCellAt(p.index());
             if(c != null) {
                 double y = c.getOffset() + p.offset();
@@ -548,7 +522,8 @@ public class VFlow extends Pane {
                 line.setEndX(getWidth());
                 line.setEndY(y);
             }
-            //setOrigin(p);
+
+            setOrigin(p);
         }
     }
 
@@ -600,7 +575,7 @@ public class VFlow extends Pane {
             setOffsetX(off);
 
             // no need to recompute the flow
-            layoutNodes(layout);
+            layoutNodes();
 
             updateCaretAndSelection();
         }
@@ -619,13 +594,29 @@ public class VFlow extends Pane {
         }
     }
 
+    public void invalidateLayout() {
+        if (layout != null) {
+            layout.removeNodesFrom(this);
+            layout = null;
+        }
+    }
+
+    @Override
+    protected void layoutChildren() {
+        if ((layout == null) || !layout.isValid(this)) {
+            invalidateLayout();
+
+            layout = new TextCellLayout(this);
+            layoutCells();
+            
+            updateCaretAndSelection();
+            updateVerticalScrollBar();
+        }
+    }
+
     // TODO resizing should try keep the current line at the same level
     // TODO update topBoxOffset
-    protected TextCellLayout layoutCells(TextCellLayout previous) {
-        if (previous != null) {
-            previous.removeNodesFrom(this);
-        }
-        
+    protected void layoutCells() {
         double width = getWidth();
         double height = getHeight();
         clip.setWidth(width);
@@ -634,7 +625,7 @@ public class VFlow extends Pane {
         StyledTextModel model = control.getModel();
         if(model == null) {
             // TODO suppress scroll bars?
-            return null;
+            return;
         }
 
         boolean wrap = control.isWrapText();
@@ -648,8 +639,6 @@ public class VFlow extends Pane {
         int count = 0;
         boolean visible = true;
 
-        TextCellLayout la = new TextCellLayout(this);
-        
         // populating visible part of the sliding window + bottom margin
         for (int i = topCellIndex; i < paragraphCount; i++) {
             TextCell cell = cache.get(i);
@@ -662,7 +651,7 @@ public class VFlow extends Pane {
             getChildren().add(r);
             r.applyCss();
 
-            la.addCell(cell);
+            layout.addCell(cell);
 
             r.setMaxWidth(wrap ? width : Double.MAX_VALUE); // TODO needed?
             
@@ -690,7 +679,7 @@ public class VFlow extends Pane {
                 if (y > height) {
                     topMarginCount = (int)Math.ceil(count * Config.slidingWindowMargin);
                     bottomMarginCount = count + topMarginCount;
-                    la.setVisibleCount(count);
+                    layout.setVisibleCount(count);
                     visible = false;
                 }
             } else {
@@ -704,12 +693,12 @@ public class VFlow extends Pane {
 
         // less paragraphs than can fit in the view
         if (visible) {
-            la.setVisibleCount(count);
+            layout.setVisibleCount(count);
         }
 
-        la.setBottomCount(count);
-        la.setBottomHeight(y);
-        la.setUnwrappedWidth(unwrappedWidth);
+        layout.setBottomCount(count);
+        layout.setBottomHeight(y);
+        layout.setUnwrappedWidth(unwrappedWidth);
         count = 0;
         y = 0.0;
         
@@ -726,7 +715,7 @@ public class VFlow extends Pane {
             getChildren().add(r);
             r.applyCss();
 
-            la.addCell(cell);
+            layout.addCell(cell);
 
             r.setMaxWidth(wrap ? width : Double.MAX_VALUE); // TODO needed?
             
@@ -747,22 +736,20 @@ public class VFlow extends Pane {
             }
         }
         
-        la.setTopHeight(y);
-        System.err.println(la); // FIX
+        layout.setTopHeight(y);
+        System.err.println(layout); // FIX
         
         // lay out content nodes
-        layoutNodes(la);
+        layoutNodes();
 
         if (!wrap) {
             if(rightEdge() < unwrappedWidth) {
                 setRightEdge(unwrappedWidth);
             }
         }
-        
-        return la;
     }
     
-    private void layoutNodes(TextCellLayout la) {
+    private void layoutNodes() {
         double x = 0.0 - getOffsetX(); // TODO content padding
         double y = -getOffsetY();
         boolean wrap = control.isWrapText();
@@ -770,9 +757,9 @@ public class VFlow extends Pane {
         
         //System.err.println("offsetX=" + getOffsetX());
 
-        int sz = la.getVisibleCellCount();
+        int sz = layout.getVisibleCellCount();
         for (int i=0; i < sz; i++) {
-            TextCell cell = la.getCellAt(i);
+            TextCell cell = layout.getCellAt(i);
             Region r = cell.getContent();
             double h = cell.getPreferredHeight();
             // TODO clip cell?
