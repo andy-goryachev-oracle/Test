@@ -42,6 +42,7 @@ public class TextCell {
     private final int index;
     private final Region content;
     private double height;
+    private double offset;
 
     public TextCell(int index, Region content) {
         this.index = index;
@@ -81,6 +82,14 @@ public class TextCell {
 
     public double getPreferredHeight() {
         return height;
+    }
+    
+    public void setOffset(double offset) {
+        this.offset = offset;
+    }
+    
+    public double getOffset() {
+        return offset;
     }
 
     public int getLineIndex() {

@@ -40,14 +40,15 @@ import goryachev.rich.util.NewAPI;
 import goryachev.rich.util.Util;
 
 /**
- * Represents text cells layed out in a visible area.
+ * Manages TextCells in the visible area, surrounded by a number of cells before and after the visible area,
+ * for the purposes of layout, estimating the average paragraph height, and relative navigation.
  */
 public class TextCellLayout {
     private final VFlow vflow;
     private final ArrayList<TextCell> cells = new ArrayList<>(32);
-    private double width;
-    private double height;
-    private int topLineIndex;
+    private final double width;
+    private final double height;
+    private final Origin origin;
     private int visible;
     private int bottomCount;
     private double unwrappedWidth;
@@ -58,14 +59,14 @@ public class TextCellLayout {
         this.vflow = f;
         this.width = f.getWidth();
         this.height = f.getHeight();
-        this.topLineIndex = f.getTopLineIndex();
+        this.origin = f.getOrigin();
     }
 
     public boolean isValid(VFlow f) {
         return
             (f.getWidth() == width) &&
             (f.getHeight() == height) &&
-            (f.getTopLineIndex() == topLineIndex);
+            (f.getTopLineIndex() == origin.index());
     }
 
     public void addCell(TextCell box) {
@@ -133,7 +134,7 @@ public class TextCellLayout {
     }
 
     public TextCell getCell(int modelIndex) {
-        int ix = modelIndex - topLineIndex;
+        int ix = modelIndex - origin.index();
         if ((ix >= 0) && (ix < cells.size())) {
             return cells.get(ix);
         }
@@ -219,5 +220,75 @@ public class TextCellLayout {
     public double estimatedMax() {
         int lineCount = vflow.lineCount();
         return (lineCount - topCount() - bottomCount) * averageHeight() + topHeight + bottomHeight;
+    }
+
+    /** creates a new Origin from the absolute position in pixels */
+    public Origin fromAbsolutePixels(double pos) {
+        Origin p = fromAbsolutePixels2(pos);
+        System.err.println("fromAbsolutePixels(pos=" + pos + ")=" + p); 
+        return p;
+    }
+    public Origin fromAbsolutePixels2(double pos) { // FIX
+        double av = averageHeight();
+        double top = (origin.index() - topCount()) * av;
+        if(pos >= top) {
+            double p = pos - top;
+            if(p < topHeight) {
+                // TODO binary search in top cells
+                return find(p, true);
+            }
+            
+            p -= topHeight;
+            if(p < bottomHeight) {
+                // binary search in bottom cells
+                return find(p, false);
+            }
+        }
+        
+        // outside of the layout
+        int ix = (int)Math.round(pos / av);
+        return new Origin(ix, 0.0);
+    }
+
+    private Origin find(double pos, boolean top) {
+        int low;
+        int high;
+        if (top) {
+            low = bottomCount;
+            high = cells.size() - 1;
+        } else {
+            low = 0;
+            high = bottomCount - 1;
+        }
+        
+        int ix = binarySearch(pos, top, high, low);
+        TextCell c = cells.get(ix);
+        return new Origin(c.getLineIndex(), pos - c.getOffset());
+    }
+    
+    private int binarySearch(double pos, boolean top, int high, int low) {
+        while (low <= high) {
+            int mid = (low + high) >>> 1;
+            TextCell c = cells.get(mid);
+            int cmp = compare(c, pos);
+            if (cmp < 0) {
+                low = mid + (top ? -1 : 1);
+            } else if (cmp > 0) {
+                high = mid + (top ? 1 : - 1);
+            } else {
+                return mid;
+            }
+        }
+        return low;
+    }
+    
+    private static int compare(TextCell c, double offset) {
+        double off = c.getOffset();
+        if(offset < off) {
+            return 1;
+        } else if(off >= off + c.getPreferredHeight()) {
+            return -1;
+        }
+        return 0;
     }
 }

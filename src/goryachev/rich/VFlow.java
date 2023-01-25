@@ -26,17 +26,15 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
-import java.util.List;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
@@ -74,11 +72,10 @@ public class VFlow extends Pane {
     private final Path caretPath;
     private final Path caretLineHighlight;
     private final Path selectionHighlight;
-    protected final SimpleIntegerProperty topLineIndex = new SimpleIntegerProperty(0);
+    protected final SimpleObjectProperty<Origin> origin = new SimpleObjectProperty(new Origin(0, 0));
     protected final SimpleBooleanProperty caretVisible = new SimpleBooleanProperty(true);
     protected final SimpleBooleanProperty suppressBlink = new SimpleBooleanProperty(false);
     protected final SimpleDoubleProperty offsetX = new SimpleDoubleProperty(0.0);
-    protected final SimpleDoubleProperty offsetY = new SimpleDoubleProperty(0.0);
     protected final SimpleDoubleProperty rightEdge = new SimpleDoubleProperty(0.0);
     protected final Timeline caretAnimation;
     protected final CellCache cache;
@@ -87,8 +84,6 @@ public class VFlow extends Pane {
     // TODO replace with ListenerHelper
     InvalidationListener modelIL;
     InvalidationListener wrapIL;
-
-    
 
     public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = control;
@@ -148,7 +143,7 @@ public class VFlow extends Pane {
         control.wrapTextProperty().addListener(wrapIL = (p) -> updateWrap());
         widthProperty().addListener((p) -> updateWidth());
         heightProperty().addListener((p) -> updateHeight());
-
+        
         NewAPI.addChangeListener(
             this::updateHorizontalScrollBar,
             true,
@@ -157,10 +152,10 @@ public class VFlow extends Pane {
         );
         
         NewAPI.addChangeListener(
-            this::updateVerticalScrollBar,
+            this::updateLayout,
             true,
-            topLineIndex,
-            offsetY
+            origin
+            // TODO lineCount?
         );
     }
     
@@ -170,13 +165,19 @@ public class VFlow extends Pane {
     }
     
     public void updateModel() {
+        setOrigin(0, 0);
         setOffsetX(0.0);
-        setOffsetY(0.0);
 
         // requestLayout() does not call layoutChildren() after changing the model - why?
         cache.clear();
         invalidateLayout();
         layoutChildren();
+    }
+    
+    protected void updateLayout() {
+        invalidateLayout();
+        layoutChildren();
+        updateVerticalScrollBar();
     }
     
     public void updateWrap() {
@@ -190,16 +191,24 @@ public class VFlow extends Pane {
         layoutChildren();
     }
 
+    public Origin getOrigin() {
+        return origin.get();
+    }
+
+    public void setOrigin(Origin p) {
+        if (p == null) {
+            throw new NullPointerException();
+        }
+        System.err.println(p); // TODO
+        origin.set(p);
+    }
+    
+    public void setOrigin(int index, double offset) {
+        setOrigin(new Origin(index, offset));
+    }
+
     public int getTopLineIndex() {
-        return topLineIndex.get();
-    }
-
-    public void setTopLineIndex(int ix) {
-        topLineIndex.set(ix);
-    }
-
-    public IntegerProperty topLineIndexProperty() {
-        return topLineIndex;
+        return getOrigin().index();
     }
     
     public double getOffsetX() {
@@ -215,15 +224,7 @@ public class VFlow extends Pane {
     }
     
     public double getOffsetY() {
-        return offsetY.get();
-    }
-    
-    public void setOffsetY(double y) {
-        offsetY.set(y);
-    }
-    
-    public DoubleProperty offsetYProperty() {
-        return offsetY;
+        return getOrigin().offset();
     }
     
     public double rightEdge() {
@@ -489,8 +490,9 @@ public class VFlow extends Pane {
             // TODO normalize
             double av = layout.averageHeight();
             double max = layout.estimatedMax();
-            visible = getHeight();
-            val = (getTopLineIndex() - layout.topCount()) * av + layout.topHeight();
+            double h = getHeight();
+            visible = h / max;
+            val = normalizeScrollBarValue((getTopLineIndex() - layout.topCount()) * av + layout.topHeight(), h, max);
         }
 
         handleScrollEvents = false;
@@ -506,14 +508,17 @@ public class VFlow extends Pane {
     /** handles user moving the vertical scroll bar */
     public void handleVerticalScroll() {
         if (handleScrollEvents) {
+            if (lineCount() == 0) {
+                return;
+            }
+
             double max = layout.estimatedMax();
-            double pos = vscroll.getValue() * max;
+            double h = getHeight();
+            double pos = vscroll.getValue() * (max - h);
+            double av = layout.averageHeight();
             
-            // if within the layout -> get new origin from layout
-            // else use line#
-    
-            // TODO compute origin: line + offsetY
-            //setOrigin(line, offsetX);
+            Origin p = layout.fromAbsolutePixels(pos);
+            setOrigin(p);
         }
     }
 
@@ -528,13 +533,7 @@ public class VFlow extends Pane {
         double w = getWidth();
         double off = getOffsetX();
         double vis = w / max;
-        
-        double val;
-        if(Math.abs(max - w) < 1e-10) {
-            val = 0.0;
-        } else {
-            val = off / (max - w);
-        }
+        double val = normalizeScrollBarValue(off, w, max);
 
         handleScrollEvents = false;
 
@@ -577,6 +576,19 @@ public class VFlow extends Pane {
         }
     }
 
+    /**
+     * javafx ScrollBar is weird in that the value has a range between [min,max] regardless of visible amount.
+     * this method generates the value ScrollBar expects by renormalizing it to a [min,max-visible] range,
+     * assuming min == 0.
+     */
+    private static double normalizeScrollBarValue(double val, double visible, double max) {
+        if (Math.abs(max - visible) < 1e-10) {
+            return 0.0;
+        } else {
+            return val / (max - visible);
+        }
+    }
+
     // TODO resizing should try keep the current line at the same level
     // TODO update topBoxOffset
     protected TextCellLayout layoutCells(TextCellLayout previous) {
@@ -604,7 +616,7 @@ public class VFlow extends Pane {
         boolean wrap = control.isWrapText();
         int paragraphCount = lineCount();
         
-        double y = getOffsetY(); // TODO content padding
+        double y = -getOffsetY(); // TODO content padding
         double unwrappedWidth = 0;
         double margin = Config.slidingWindowMargin * height;
         int topMarginCount = 0;
@@ -634,6 +646,7 @@ public class VFlow extends Pane {
             // TODO account for side components
             double h = r.prefHeight(wrap ? width : -1);
             cell.setPreferredHeight(h);
+            cell.setOffset(y);
 
             if (!wrap) {
                 if (visible) {
@@ -727,7 +740,7 @@ public class VFlow extends Pane {
     
     private void layoutNodes(TextCellLayout la) {
         double x = 0.0 - getOffsetX(); // TODO content padding
-        double y = getOffsetY();
+        double y = -getOffsetY();
         boolean wrap = control.isWrapText();
         double w = wrap ? getWidth() : rightEdge(); // TODO padding
         
