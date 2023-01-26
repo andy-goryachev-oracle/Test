@@ -230,30 +230,27 @@ public class TextCellLayout {
         return p;
     }
     public Origin fromAbsolutePosition2(double pos) { // FIX
-        double av = averageHeight();
-        double top = origin.estPos();
-        if (!Double.isNaN(top)) {
-            if (pos >= top) {
-                double p = pos - top;
-                if (p < topHeight) {
-                    // TODO binary search in top cells
-                    return find(pos, p, true);
-                }
+        double top = (origin.index() - topCount()) / (double)lineCount;
+        double btm = (origin.index() + bottomCount) / (double)lineCount;
 
-                p -= topHeight;
-                if (p < bottomHeight) {
-                    // binary search in bottom cells
-                    return find(pos, p, false);
-                }
+        if ((pos >= top) && (pos < btm)) {
+            // inside the layout
+            double off = (topHeight + bottomHeight()) * (pos - top) / (btm - top); // TODO check for div0
+            off -= topHeight; // layout offsets starts at origin
+            if (off < 0) {
+                // binary search in top cells
+                return find(off, true);
+            } else {
+                // binary search in bottom cells
+                return find(off, false);
             }
         }
 
-        // outside of the layout
-        int ix = (int)Math.round(pos / av);
-        return new Origin(ix, 0.0, pos);
+        int ix = (int)(pos * lineCount);
+        return new Origin(ix, 0.0);
     }
 
-    private Origin find(double pos, double off, boolean top) {
+    private Origin find(double off, boolean top) {
         int low;
         int high;
         if (top) {
@@ -263,11 +260,11 @@ public class TextCellLayout {
             low = 0;
             high = bottomCount - 1;
         }
-        
+
         int ix = binarySearch(off, top, high, low);
         TextCell c = cells.get(ix);
         // TODO if top edge is at 0, the offset == estPos == pos.
-        return new Origin(c.getLineIndex(), off - c.getOffset(), pos);
+        return new Origin(c.getLineIndex(), off - c.getOffset());
     }
     
     private int binarySearch(double pos, boolean top, int high, int low) {

@@ -489,7 +489,7 @@ public class VFlow extends Pane {
             double max = layout.estimatedMax();
             double h = getHeight();
             double val = vscroll.getValue();
-            double pos = fromScrollBarValue(val, h, max);
+            double pos = fromScrollBarValue(val, h, max) / max;
             
             Origin p = layout.fromAbsolutePosition(pos);
             // FIX
@@ -709,10 +709,11 @@ public class VFlow extends Pane {
             // TODO account for side components
             double h = r.prefHeight(wrap ? width : -1);
             cell.setPreferredHeight(h);
+            cell.setOffset(y);
             
             getChildren().remove(r);
 
-            y += h;
+            y -= h;
             count++;
 
             // stop populating the top part of the sliding window
