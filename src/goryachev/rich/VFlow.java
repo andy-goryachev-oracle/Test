@@ -462,12 +462,11 @@ public class VFlow extends Pane {
             visible = 1.0;
             val = 0.0;
         } else {
-            // TODO normalize
             double av = layout.averageHeight();
             double max = layout.estimatedMax();
             double h = getHeight();
             visible = h / max;
-            val = normalizeScrollBarValue((getTopLineIndex() - layout.topCount()) * av + layout.topHeight(), h, max);
+            val = toScrollBarValue((getTopLineIndex() - layout.topCount()) * av + layout.topHeight(), h, max);
         }
 
         handleScrollEvents = false;
@@ -489,9 +488,10 @@ public class VFlow extends Pane {
 
             double max = layout.estimatedMax();
             double h = getHeight();
-            double pos = vscroll.getValue() * (max - h);
+            double val = vscroll.getValue();
+            double pos = fromScrollBarValue(val, h, max);
             
-            Origin p = layout.fromAbsolutePixels(pos);
+            Origin p = layout.fromAbsolutePosition(pos);
             // FIX
             System.err.println(
                 "handleVerticalScroll" +
@@ -517,7 +517,7 @@ public class VFlow extends Pane {
         double w = getWidth();
         double off = getOffsetX();
         double vis = w / max;
-        double val = normalizeScrollBarValue(off, w, max);
+        double val = toScrollBarValue(off, w, max);
 
         handleScrollEvents = false;
 
@@ -549,7 +549,8 @@ public class VFlow extends Pane {
             
             double max = rightEdge();
             double w = getWidth();
-            double off = hscroll.getValue() * (max - w);
+            double val = hscroll.getValue();
+            double off = fromScrollBarValue(val, w, max);
 
             setOffsetX(off);
 
@@ -565,12 +566,17 @@ public class VFlow extends Pane {
      * this method generates the value ScrollBar expects by renormalizing it to a [min,max-visible] range,
      * assuming min == 0.
      */
-    private static double normalizeScrollBarValue(double val, double visible, double max) {
+    private static double toScrollBarValue(double val, double visible, double max) {
         if (Math.abs(max - visible) < 1e-10) {
             return 0.0;
         } else {
             return val / (max - visible);
         }
+    }
+
+    /** inverse of {@link #toScrollBarValue}, returns the scroll bar value that takes into account visible amount */
+    private static double fromScrollBarValue(double val, double visible, double max) {
+        return val * (max - visible);
     }
 
     public void invalidateLayout() {

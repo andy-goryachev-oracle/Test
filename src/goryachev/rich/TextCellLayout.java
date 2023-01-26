@@ -223,13 +223,13 @@ public class TextCellLayout {
         return (lineCount - topCount() - bottomCount) * averageHeight() + topHeight + bottomHeight;
     }
 
-    /** creates a new Origin from the absolute position in pixels */
-    public Origin fromAbsolutePixels(double pos) {
-        Origin p = fromAbsolutePixels2(pos);
+    /** creates a new Origin from the absolute position [0.0 ... (1.0-normalized.visible.amount)] */
+    public Origin fromAbsolutePosition(double pos) {
+        Origin p = fromAbsolutePosition2(pos);
         System.err.println("fromAbsolutePixels(pos=" + pos + ") -> " + p); 
         return p;
     }
-    public Origin fromAbsolutePixels2(double pos) { // FIX
+    public Origin fromAbsolutePosition2(double pos) { // FIX
         double av = averageHeight();
         double top = origin.estPos();
         if (!Double.isNaN(top)) {
