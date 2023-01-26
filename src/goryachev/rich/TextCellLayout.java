@@ -82,7 +82,7 @@ public class TextCellLayout {
         return
             (f.getWidth() == flowWidth) &&
             (f.getHeight() == flowHeight) &&
-            (f.getTopLineIndex() == origin.index());
+            (f.topCellIndex() == origin.index());
     }
 
     public void addCell(TextCell box) {

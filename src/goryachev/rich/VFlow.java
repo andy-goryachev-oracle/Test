@@ -79,7 +79,6 @@ public class VFlow extends Pane {
     protected final SimpleDoubleProperty rightEdge = new SimpleDoubleProperty(0.0);
     protected final Timeline caretAnimation;
     protected final CellCache cache;
-    private int topCellIndex;
     private boolean handleScrollEvents = true;
     // TODO replace with ListenerHelper
     InvalidationListener modelIL;
@@ -203,7 +202,7 @@ public class VFlow extends Pane {
         origin.set(p);
     }
 
-    public int getTopLineIndex() {
+    public int topCellIndex() {
         return getOrigin().index();
     }
     
@@ -312,11 +311,11 @@ public class VFlow extends Pane {
             throw new Error(startMarker + "<" + endMarker);
         }
 
-        int topLine = getTopLineIndex();
-        if (endMarker.getLineIndex() < topLine) {
+        int topCellIndex = topCellIndex();
+        if (endMarker.getLineIndex() < topCellIndex) {
             // selection is above visible area
             return;
-        } else if (startMarker.getLineIndex() >= (topLine + layout.getVisibleCellCount())) {
+        } else if (startMarker.getLineIndex() >= (topCellIndex + layout.getVisibleCellCount())) {
             // selection is below visible area
             return;
         }
@@ -466,7 +465,7 @@ public class VFlow extends Pane {
             double max = layout.estimatedMax();
             double h = getHeight();
             visible = h / max;
-            val = toScrollBarValue((getTopLineIndex() - layout.topCount()) * av + layout.topHeight(), h, max);
+            val = toScrollBarValue((topCellIndex() - layout.topCount()) * av + layout.topHeight(), h, max);
         }
 
         handleScrollEvents = false;
@@ -623,10 +622,10 @@ public class VFlow extends Pane {
         int count = 0;
         boolean visible = true;
         // TODO if topCount < marginCount, increase bottomCount correspondingly
-        // also, update Origin if estPixel is known (and different)
+        // also, update Origin if layout hit the beginning/end of the document
 
         // populating visible part of the sliding window + bottom margin
-        for (int i = topCellIndex; i < paragraphCount; i++) {
+        for (int i = topCellIndex(); i < paragraphCount; i++) {
             TextCell cell = cache.get(i);
             if (cell == null) {
                 StyledParagraph p = model.getParagraph(i);
@@ -690,7 +689,7 @@ public class VFlow extends Pane {
         
         // populate top margin, going backwards from topCellIndex
         // TODO populate more, if bottom ended prematurely
-        for (int i = topCellIndex - 1; i >= 0; i--) {
+        for (int i = topCellIndex() - 1; i >= 0; i--) {
             TextCell cell = cache.get(i);
             if (cell == null) {
                 StyledParagraph p = model.getParagraph(i);
