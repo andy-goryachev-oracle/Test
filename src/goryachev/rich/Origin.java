@@ -26,11 +26,19 @@ package goryachev.rich;
 
 /**
  * View origin: top paragraph index + offset in pixels from the top edge of top cell.
+ * 
+ * @param index model index of a paragraph at the top of visible area
+ * @param offset distance in pixels from the top of the visible area to the top of the topmost paragraph
+ * @param estPos estimated position within the whole document, or Double.NaN
  */
-public record Origin(int index, double offset, double estPixel) {
+public record Origin(int index, double offset, double estPos) {
     public static final Origin ZERO = new Origin(0, 0.0, 0.0);
 
     public String toString() {
-        return "Origin{index=" + index + ", offset=" + offset + ", estPixel=" + estPixel + "}";
+        return
+            "Origin{index=" + index +
+            ", offset=" + offset +
+            ", estPos=" + estPos +
+            "}";
     }
 }

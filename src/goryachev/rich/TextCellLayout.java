@@ -62,6 +62,22 @@ public class TextCellLayout {
         this.lineCount = f.lineCount();
     }
 
+    public String toString() {
+        return
+            "TextCellLayout{" +
+            "unwrapped=" + getUnwrappedWidth() +
+            ", topCount=" + topCount() +
+            ", visible=" + getVisibleCellCount() +
+            ", bottomCount=" + bottomCount +
+            ", lineCount=" + lineCount +
+            ", topHeight=" + topHeight +
+            ", bottomHeight=" + bottomHeight +
+            ", average=" + averageHeight() +
+            ", estMax=" + estimatedMax() +
+            ", origin=" + origin +
+            "}";
+    }
+
     public boolean isValid(VFlow f) {
         return
             (f.getWidth() == flowWidth) &&
@@ -203,20 +219,6 @@ public class TextCellLayout {
         return (topHeight + bottomHeight) / (topCount() + bottomCount);
     }
 
-    public String toString() {
-        return
-            "TextCellLayout{" +
-            "unwrapped=" + getUnwrappedWidth() +
-            ", topCount=" + topCount() +
-            ", visible=" + getVisibleCellCount() +
-            ", bottomCount=" + bottomCount +
-            ", topHeight=" + topHeight +
-            ", bottomHeight=" + bottomHeight +
-            ", average=" + averageHeight() +
-            ", estMax=" + estimatedMax() +
-            "}";
-    }
-
     public double estimatedMax() {
         return (lineCount - topCount() - bottomCount) * averageHeight() + topHeight + bottomHeight;
     }
@@ -224,32 +226,34 @@ public class TextCellLayout {
     /** creates a new Origin from the absolute position in pixels */
     public Origin fromAbsolutePixels(double pos) {
         Origin p = fromAbsolutePixels2(pos);
-        System.err.println("fromAbsolutePixels(pos=" + pos + ")=" + p); 
+        System.err.println("fromAbsolutePixels(pos=" + pos + ") -> " + p); 
         return p;
     }
     public Origin fromAbsolutePixels2(double pos) { // FIX
         double av = averageHeight();
-        double top = (origin.index() - topCount()) * av;
-        if(pos >= top) {
-            double p = pos - top;
-            if(p < topHeight) {
-                // TODO binary search in top cells
-                return find(p, true);
-            }
-            
-            p -= topHeight;
-            if(p < bottomHeight) {
-                // binary search in bottom cells
-                return find(p, false);
+        double top = origin.estPos();
+        if (!Double.isNaN(top)) {
+            if (pos >= top) {
+                double p = pos - top;
+                if (p < topHeight) {
+                    // TODO binary search in top cells
+                    return find(pos, p, true);
+                }
+
+                p -= topHeight;
+                if (p < bottomHeight) {
+                    // binary search in bottom cells
+                    return find(pos, p, false);
+                }
             }
         }
-        
+
         // outside of the layout
         int ix = (int)Math.round(pos / av);
         return new Origin(ix, 0.0, pos);
     }
 
-    private Origin find(double pos, boolean top) {
+    private Origin find(double pos, double off, boolean top) {
         int low;
         int high;
         if (top) {
@@ -260,9 +264,10 @@ public class TextCellLayout {
             high = bottomCount - 1;
         }
         
-        int ix = binarySearch(pos, top, high, low);
+        int ix = binarySearch(off, top, high, low);
         TextCell c = cells.get(ix);
-        return new Origin(c.getLineIndex(), pos - c.getOffset(), pos);
+        // TODO if top edge is at 0, the offset == estPos == pos.
+        return new Origin(c.getLineIndex(), off - c.getOffset(), pos);
     }
     
     private int binarySearch(double pos, boolean top, int high, int low) {

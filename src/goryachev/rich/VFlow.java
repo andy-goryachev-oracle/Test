@@ -170,8 +170,8 @@ public class VFlow extends Pane {
 
         // requestLayout() does not call layoutChildren() after changing the model - why?
         cache.clear();
-        invalidateLayout();
-        layoutChildren();
+
+        updateLayout();
     }
     
     protected void updateLayout() {
@@ -617,6 +617,7 @@ public class VFlow extends Pane {
         int count = 0;
         boolean visible = true;
         // TODO if topCount < marginCount, increase bottomCount correspondingly
+        // also, update Origin if estPixel is known (and different)
 
         // populating visible part of the sliding window + bottom margin
         for (int i = topCellIndex; i < paragraphCount; i++) {
@@ -716,7 +717,6 @@ public class VFlow extends Pane {
         }
         
         layout.setTopHeight(y);
-        System.err.println(layout); // FIX
         
         // lay out content nodes
         layoutNodes();

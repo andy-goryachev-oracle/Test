@@ -28,6 +28,7 @@ package goryachev.rich;
  * Configuration settings for RichTextArea
  * 
  * TODO make it cloneable and pass an instance to the constructor?
+ * TODO a couple of factory methods for small model, size to content, large model?
  */
 public class Config {
     /** caret blink period in milliseconds */
