@@ -166,16 +166,16 @@ public class VFlow extends Pane {
     
     public void updateModel() {
         System.err.println("updateModel"); // FIX
+
+        // TODO fixing change model bug
+        invalidateLayout();
         
-        handleScrollEvents = false;
         control.getSelectionModel().clear();
         setOrigin(Origin.ZERO);
         setOffsetX(0.0);
         cache.clear();
 
         recomputeLayout();
-        
-        handleScrollEvents = true;
     }
     
     protected void recomputeLayout() {
@@ -654,7 +654,8 @@ public class VFlow extends Pane {
 
             layout.addCell(cell);
 
-            r.setMaxWidth(wrap ? width : Double.MAX_VALUE); // TODO needed?
+            //r.setMaxWidth(wrap ? width : Double.MAX_VALUE); // TODO needed?
+            //r.setPrefWidth(USE_COMPUTED_SIZE);
             
             // TODO actual box height might be different from h due to snapping?
             // TODO account for side components

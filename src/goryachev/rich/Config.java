@@ -36,5 +36,5 @@ public class Config {
     /** cell cache size */
     public static final int cellCacheSize = 512;
     /** determines the margin size of sliding window for VFlow layout, on either side */
-    public static final float slidingWindowMargin = 2.0f;
+    public static final float slidingWindowMargin = 3.0f;
 }
