@@ -81,6 +81,10 @@ public class RichTextAreaDemoModel extends SimpleStyledTextModel {
             }
             nl();
         }
+        
+        nl();
+        addSegment("The End.", null);
+        nl();
     }
     
     private String word(char c, int len) {

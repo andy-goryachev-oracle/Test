@@ -149,9 +149,16 @@ public class TextCellLayout {
         return markers.newMarker(cell.getLineIndex(), ix, false);
     }
 
+    /** returns the cell contained in this layout, or null */
     public TextCell getCell(int modelIndex) {
         int ix = modelIndex - origin.index();
-        if ((ix >= 0) && (ix < cells.size())) {
+        if(ix < 0) {
+            if((ix + topCount()) > 0) {
+                // cells in the top part come after bottom part, and in reverse order
+                return cells.get(bottomCount + topCount() + ix);
+            }
+        } else if(ix < bottomCount) {
+            // cells in the normal (bottom) part
             return cells.get(ix);
         }
         return null;
@@ -226,60 +233,53 @@ public class TextCellLayout {
     /** creates a new Origin from the absolute position [0.0 ... (1.0-normalized.visible.amount)] */
     public Origin fromAbsolutePosition(double pos) {
         Origin p = fromAbsolutePosition2(pos);
-        System.err.println("fromAbsolutePixels(pos=" + pos + ") -> " + p); 
+        System.err.println("fromAbsolutePosition(pos=" + pos + ") -> " + p); 
         return p;
     }
     public Origin fromAbsolutePosition2(double pos) { // FIX
-        double top = (origin.index() - topCount()) / (double)lineCount;
-        double btm = (origin.index() + bottomCount) / (double)lineCount;
+        int low = origin.index() - topCount();
+        int high = origin.index() + bottomCount;
+        double top = low / (double)lineCount;
+        double btm = high / (double)lineCount;
 
+        /* FIX for testing
         if ((pos >= top) && (pos < btm)) {
             // inside the layout
-            double off = (topHeight + bottomHeight()) * (pos - top) / (btm - top); // TODO check for div0
-            off -= topHeight; // layout offsets starts at origin
-            if (off < 0) {
-                // binary search in top cells
-                return find(off, true);
-            } else {
-                // binary search in bottom cells
-                return find(off, false);
-            }
+            double org = origin.index() / (double)lineCount;
+            double off = (topHeight + bottomHeight()) * (pos - org) / (btm - top); // TODO check for div0
+            
+            int ix = binarySearch(off, high - 1, low);
+            TextCell c = getCell(ix);
+            // TODO if top edge is at 0, the offset == estPos == pos.
+            System.err.println("found off=" + off + ", cell{index=" + c.getLineIndex() + ", offset=" + c.getOffset() + "}}");
+            return new Origin(c.getLineIndex(), off - c.getOffset());
         }
+        */
 
         int ix = (int)(pos * lineCount);
         return new Origin(ix, 0.0);
     }
 
-    private Origin find(double off, boolean top) {
-        int low;
-        int high;
-        if (top) {
-            low = bottomCount;
-            high = cells.size() - 1;
-        } else {
-            low = 0;
-            high = bottomCount - 1;
-        }
-
-        int ix = binarySearch(off, top, high, low);
-        TextCell c = cells.get(ix);
-        // TODO if top edge is at 0, the offset == estPos == pos.
-        return new Origin(c.getLineIndex(), off - c.getOffset());
-    }
-    
-    private int binarySearch(double pos, boolean top, int high, int low) {
+    private int binarySearch(double pos, int high, int low) {
         while (low <= high) {
+            // TODO might be a problem for 2B-rows models
             int mid = (low + high) >>> 1;
-            TextCell c = cells.get(mid);
+            TextCell c = getCell(mid);
+            if(c == null) {
+                c = getCell(mid);
+                System.err.println("ERR");
+            }
             int cmp = compare(c, pos);
             if (cmp < 0) {
-                low = mid + (top ? -1 : 1);
+                low = mid + 1;
             } else if (cmp > 0) {
-                high = mid + (top ? 1 : - 1);
+                high = mid - 1;
             } else {
                 return mid;
             }
         }
+        // should not happen
+        System.err.println("UNEXPECTED binarySearchTop");
         return low;
     }
     

@@ -60,8 +60,9 @@ import goryachev.rich.util.Util;
  * between the model and the screen coordinates.
  * 
  * TODO or a VFlowPolicy ?
- * TODO left paragraph component (line numbers)
- * TODO right paragraph component (annotation?)
+ * TODO left paragraph component (example: line numbers), needs a method to get the max size
+ * TODO right paragraph component (example: annotation?)
+ * TODO threshold for a full-model rendering
  */
 public class VFlow extends Pane {
     private final RichTextArea control;
@@ -151,7 +152,7 @@ public class VFlow extends Pane {
         );
         
         NewAPI.addChangeListener(
-            this::updateLayout,
+            this::recomputeLayout,
             true,
             origin
             // TODO lineCount?
@@ -164,16 +165,15 @@ public class VFlow extends Pane {
     }
     
     public void updateModel() {
+        System.err.println("updateModel"); // FIX
         setOrigin(Origin.ZERO);
         setOffsetX(0.0);
-
-        // requestLayout() does not call layoutChildren() after changing the model - why?
         cache.clear();
 
-        updateLayout();
+        recomputeLayout();
     }
     
-    protected void updateLayout() {
+    protected void recomputeLayout() {
         invalidateLayout();
         layoutChildren();
         updateVerticalScrollBar();
@@ -194,6 +194,8 @@ public class VFlow extends Pane {
         return origin.get();
     }
 
+    // TODO rename moveOrigin
+    // TODO add logic not to go outside of the document
     public void setOrigin(Origin p) {
         if (p == null) {
             throw new NullPointerException();
@@ -722,7 +724,7 @@ public class VFlow extends Pane {
             }
         }
         
-        layout.setTopHeight(y);
+        layout.setTopHeight(-y);
         
         // lay out content nodes
         layoutNodes();
