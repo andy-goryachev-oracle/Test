@@ -166,16 +166,22 @@ public class VFlow extends Pane {
     
     public void updateModel() {
         System.err.println("updateModel"); // FIX
+        
+        handleScrollEvents = false;
+        control.getSelectionModel().clear();
         setOrigin(Origin.ZERO);
         setOffsetX(0.0);
         cache.clear();
 
         recomputeLayout();
+        
+        handleScrollEvents = true;
     }
     
     protected void recomputeLayout() {
         invalidateLayout();
         layoutChildren();
+        updateCaretAndSelection();
         updateVerticalScrollBar();
     }
     
@@ -267,11 +273,13 @@ public class VFlow extends Pane {
 
     public void updateCaretAndSelection() {
         if(layout == null) {
+            removeCaretAndSelection();
             return;
         }
 
         SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
         if(sel == null) {
+            removeCaretAndSelection();
             return;
         }
         
@@ -293,6 +301,12 @@ public class VFlow extends Pane {
         createCaretPath(caretBuilder, caret);
         selectionHighlight.getElements().setAll(selectionBuilder.getPathElements());
         caretPath.getElements().setAll(caretBuilder.getPathElements());
+    }
+    
+    protected void removeCaretAndSelection() {
+        caretLineHighlight.getElements().clear();
+        selectionHighlight.getElements().clear();
+        caretPath.getElements().clear();
     }
 
     protected void createCaretPath(FxPathBuilder b, Marker m) {
@@ -355,7 +369,7 @@ public class VFlow extends Pane {
 
     protected void createCurrentLineHighlight(FxPathBuilder b, Marker caret) {
         int ix = caret.getLineIndex();
-        TextCell cell = layout.getCell(ix);
+        TextCell cell = layout.getVisibleCell(ix);
         if(cell != null) {
             if(control.isWrapText()) {
                 cell.addBoxOutline(b, snappedLeftInset(), snapPositionX(getWidth() - snappedLeftInset() - snappedRightInset()));
@@ -734,6 +748,9 @@ public class VFlow extends Pane {
                 setRightEdge(unwrappedWidth);
             }
         }
+        
+        // FIX
+        System.err.println("layoutCells children=" + getChildren().size());
     }
     
     private void layoutNodes() {

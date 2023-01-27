@@ -118,6 +118,9 @@ public class TextCellLayout {
         for(TextCell cell: cells) {
             Region r = cell.getContent();
             Point2D p = r.screenToLocal(screenX, screenY);
+            if (p == null) {
+                return markers.newMarker(cell.getLineIndex(), cell.getTextLength(), false);
+            }
             Insets pad = r.getPadding();
             double y = p.getY() - pad.getTop();
             if(y < 0) {
@@ -159,6 +162,15 @@ public class TextCellLayout {
             }
         } else if(ix < bottomCount) {
             // cells in the normal (bottom) part
+            return cells.get(ix);
+        }
+        return null;
+    }
+    
+    /** returns a visible cell, or null */
+    public TextCell getVisibleCell(int modelIndex) {
+        int ix = modelIndex - origin.index();
+        if((ix >= 0) && (ix < visible)) {
             return cells.get(ix);
         }
         return null;
@@ -230,36 +242,6 @@ public class TextCellLayout {
         return (lineCount - topCount() - bottomCount) * averageHeight() + topHeight + bottomHeight;
     }
 
-    /** creates a new Origin from the absolute position [0.0 ... (1.0-normalized.visible.amount)] */
-    public Origin fromAbsolutePosition(double pos) {
-        Origin p = fromAbsolutePosition2(pos);
-        System.err.println("fromAbsolutePosition(pos=" + pos + ") -> " + p); 
-        return p;
-    }
-    public Origin fromAbsolutePosition2(double pos) { // FIX
-        int low = origin.index() - topCount();
-        int high = origin.index() + bottomCount;
-        double top = low / (double)lineCount;
-        double btm = high / (double)lineCount;
-
-        /* FIX for testing
-        if ((pos >= top) && (pos < btm)) {
-            // inside the layout
-            double org = origin.index() / (double)lineCount;
-            double off = (topHeight + bottomHeight()) * (pos - org) / (btm - top); // TODO check for div0
-            
-            int ix = binarySearch(off, high - 1, low);
-            TextCell c = getCell(ix);
-            // TODO if top edge is at 0, the offset == estPos == pos.
-            System.err.println("found off=" + off + ", cell{index=" + c.getLineIndex() + ", offset=" + c.getOffset() + "}}");
-            return new Origin(c.getLineIndex(), off - c.getOffset());
-        }
-        */
-
-        int ix = (int)(pos * lineCount);
-        return new Origin(ix, 0.0);
-    }
-
     private int binarySearch(double pos, int high, int low) {
         while (low <= high) {
             // TODO might be a problem for 2B-rows models
@@ -291,5 +273,70 @@ public class TextCellLayout {
             return -1;
         }
         return 0;
+    }
+
+    /** creates a new Origin from the absolute position [0.0 ... (1.0-normalized.visible.amount)] */
+    // TODO handle hit-the-rail conditions
+    public Origin fromAbsolutePosition(double pos) {
+        Origin p = fromAbsolutePositionPixels(pos);
+        System.err.println("fromAbsolutePosition(pos=" + pos + ") -> " + p); 
+        return p;
+    }
+    public Origin fromAbsolutePositionIndexes(double pos) { // FIX
+        int low = origin.index() - topCount();
+        int high = origin.index() + bottomCount;
+        double top = low / (double)lineCount;
+        double btm = high / (double)lineCount;
+
+        /* FIX for testing
+        if ((pos >= top) && (pos < btm)) {
+            // inside the layout
+            double org = origin.index() / (double)lineCount;
+            double off = (topHeight + bottomHeight()) * (pos - org) / (btm - top); // TODO check for div0
+            
+            int ix = binarySearch(off, high - 1, low);
+            TextCell c = getCell(ix);
+            // TODO if top edge is at 0, the offset == estPos == pos.
+            System.err.println("found off=" + off + ", cell{index=" + c.getLineIndex() + ", offset=" + c.getOffset() + "}}");
+            return new Origin(c.getLineIndex(), off - c.getOffset());
+        }
+        */
+
+        int ix = (int)(pos * lineCount);
+        return new Origin(ix, 0.0);
+    }
+    public Origin fromAbsolutePositionPixels(double pos) { // FIX
+        double av = averageHeight();
+        double max = estimatedMax();
+        double estPos = pos * max;
+        
+        // try to find the new origin using information present in the current layout
+        
+        
+        int low = origin.index() - topCount();
+        int high = origin.index() + bottomCount;
+        double top = low / (double)lineCount;
+        double btm = high / (double)lineCount;
+
+        /* FIX for testing
+        if ((pos >= top) && (pos < btm)) {
+            // inside the layout
+            double org = origin.index() / (double)lineCount;
+            double off = (topHeight + bottomHeight()) * (pos - org) / (btm - top); // TODO check for div0
+            
+            int ix = binarySearch(off, high - 1, low);
+            TextCell c = getCell(ix);
+            // TODO if top edge is at 0, the offset == estPos == pos.
+            System.err.println("found off=" + off + ", cell{index=" + c.getLineIndex() + ", offset=" + c.getOffset() + "}}");
+            return new Origin(c.getLineIndex(), off - c.getOffset());
+        }
+        */
+
+        int ix = (int)(pos * lineCount);
+        double offset = (max * pos) - (ix * av);
+//        if(offset < 0) {
+//            offset = 0.0;
+//        }
+        return new Origin(ix, offset);
     }
 }
