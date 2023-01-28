@@ -642,6 +642,8 @@ public class VFlow extends Pane {
 
         // populating visible part of the sliding window + bottom margin
         for (int i = topCellIndex(); i < paragraphCount; i++) {
+            // TODO this code is duplicated in the top portion - extract into a function?
+            // TODO skip computingPreferredSize if the layout width did not change
             TextCell cell = cache.get(i);
             if (cell == null) {
                 StyledParagraph p = model.getParagraph(i);
@@ -650,13 +652,13 @@ public class VFlow extends Pane {
             }
             Region r = cell.getContent();
             getChildren().add(r);
+            r.setMaxWidth(wrap ? width : Double.MAX_VALUE);
+            r.setMaxHeight(USE_COMPUTED_SIZE);
+
             r.applyCss();
 
             layout.addCell(cell);
 
-            //r.setMaxWidth(wrap ? width : Double.MAX_VALUE); // TODO needed?
-            //r.setPrefWidth(USE_COMPUTED_SIZE);
-            
             // TODO actual box height might be different from h due to snapping?
             // TODO account for side components
             double h = r.prefHeight(wrap ? width : -1);
@@ -715,11 +717,12 @@ public class VFlow extends Pane {
             }
             Region r = cell.getContent();
             getChildren().add(r);
+            r.setMaxWidth(wrap ? width : Double.MAX_VALUE);
+            r.setMaxHeight(USE_COMPUTED_SIZE);
+            
             r.applyCss();
 
             layout.addCell(cell);
-
-            r.setMaxWidth(wrap ? width : Double.MAX_VALUE); // TODO needed?
             
             // TODO actual box height might be different from h due to snapping?
             // TODO account for side components
@@ -749,9 +752,6 @@ public class VFlow extends Pane {
                 setRightEdge(unwrappedWidth);
             }
         }
-        
-        // FIX
-        System.err.println("layoutCells children=" + getChildren().size());
     }
     
     private void layoutNodes() {
@@ -760,19 +760,18 @@ public class VFlow extends Pane {
         boolean wrap = control.isWrapText();
         double w = wrap ? getWidth() : rightEdge(); // TODO padding
         
-        //System.err.println("offsetX=" + getOffsetX());
-
         int sz = layout.getVisibleCellCount();
         for (int i=0; i < sz; i++) {
             TextCell cell = layout.getCellAt(i);
             Region r = cell.getContent();
+            
             double h = cell.getPreferredHeight();
             // TODO clip cell?
             layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
 
             // TODO actual box height might be different from h due to snapping?
             // TODO also consider using maxx, maxy from boundsInLocal instead?
-            y += cell.getPreferredHeight();
+            y += h;
         }
     }
 }

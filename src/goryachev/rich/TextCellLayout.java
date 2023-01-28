@@ -247,10 +247,6 @@ public class TextCellLayout {
             // TODO might be a problem for 2B-rows models
             int mid = (low + high) >>> 1;
             TextCell c = getCell(mid);
-            if(c == null) {
-                c = getCell(mid);
-                System.err.println("ERR");
-            }
             int cmp = compare(c, pos);
             if (cmp < 0) {
                 low = mid + 1;
@@ -282,22 +278,6 @@ public class TextCellLayout {
         System.err.println("fromAbsolutePosition(pos=" + pos + ") -> " + p); 
         return p;
     }
-    public Origin fromAbsolutePositionIndexes(double pos) { // FIX
-        int low = origin.index() - topCount();
-        int high = origin.index() + bottomCount;
-        double top = low / (double)lineCount;
-        double btm = high / (double)lineCount;
-        int ix = (int)(pos * lineCount);
-        return new Origin(ix, 0.0);
-    }
-    public Origin fromAbsolutePositionPixelsSimple(double pos) { // FIX
-        double av = averageHeight();
-        double max = estimatedMax();
-        double estPos = pos * max;
-        int ix = (int)(pos * lineCount);
-        double offset = (max * pos) - (ix * av);
-        return new Origin(ix, offset);
-    }
     public Origin fromAbsolutePositionPixels(double pos) { // FIX
         int topIx = origin.index() - topCount();
         int btmIx = origin.index() + bottomCount;
@@ -313,7 +293,7 @@ public class TextCellLayout {
             ix = binarySearch(off, btmIx - 1, topIx);
             TextCell c = getCell(ix);
             // TODO if top edge is at 0, the offset == estPos == pos.
-            System.err.println("found off=" + off + ", cell{index=" + c.getLineIndex() + ", offset=" + c.getOffset() + "}}");
+            //System.err.println("found off=" + off + ", cell{index=" + c.getLineIndex() + ", offset=" + c.getOffset() + "}}");
             return new Origin(c.getLineIndex(), off - c.getOffset());
         }
         return new Origin(ix, 0.0);
