@@ -6,6 +6,10 @@
     -fx-fill: #3e8c25;
 }
 
+.gray {
+    -fx-fill: gray;
+}
+
 .code {
     -fx-font-family: "Monospace";
 }

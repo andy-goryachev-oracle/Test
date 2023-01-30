@@ -37,6 +37,7 @@ public class RichTextAreaDemoModel extends SimpleStyledTextModel {
         String RED = "red";
         String GREEN = "green";
         String UNDER = "underline";
+        String GRAY = "gray";
 
         addSegment("RichTextArea Control", "-fx-font-size:200%;", UNDER);
         //nl();
@@ -66,17 +67,20 @@ public class RichTextAreaDemoModel extends SimpleStyledTextModel {
         Random r = new Random();
         for(int line=0; line<100; line++) {
             int ct = r.nextInt(10);
-            for(int word=0; word<ct; word++) {
+            for (int word = 0; word < ct; word++) {
                 int len = 1 + r.nextInt(7);
-                char c = (char)('a' + r.nextInt(27));
-                
-                if(word > 0) {
-                    addSegment(" ", null);
+                char c = '*';
+
+                if (word == 0) {
+                    addSegment("L" + (getParagraphCount() + 1), null, GRAY);
                 }
-                if(c < 'e') {
-                    addSegment(word(c, len), null, GREEN);
+                
+                addSegment(" ", null);
+
+                if (r.nextFloat() < 0.1) {
+                    addSegment(word + "." + word(c, len), null, RED);
                 } else {
-                    addSegment(word(c, len), null);
+                    addSegment(word + "." + word(c, len), null);
                 }
             }
             nl();

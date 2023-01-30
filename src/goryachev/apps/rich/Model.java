@@ -24,41 +24,48 @@
  */
 package goryachev.apps.rich;
 
-import java.util.Random;
-import goryachev.rich.simple.SimpleStyledTextModel;
+import goryachev.rich.StyledTextModel;
 
-public class UnevenStyledTextModel extends SimpleStyledTextModel {
-    private Random r = new Random();
+public enum Model {
+    DEMO,
+    UNEVEN_SMALL,
+    UNEVEN_LARGE,
+    NULL,
+    ZERO_LINES,
+    ONE_LINE,
+    TEN_LINES,
+    THOUSAND_LINES,
+    BILLION_LINES,
+    MONOSPACED;
 
-    public UnevenStyledTextModel(int lineCount) {
-        float longLineProbability = 0.1f;
-        for (int i = 0; i < lineCount; i++) {
-            boolean large = (r.nextFloat() < longLineProbability);
-            addSegment((large ? "L." : "S.") + (i + 1), null);
-
-            if (large) {
-                add(1000);
-            } else {
-                add(10);
-            }
-            nl();
+    public static StyledTextModel create(Model m) {
+        if(m == null) {
+            return null;
         }
-    }
-
-    private void add(int count) {
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < count; i++) {
-            int len = r.nextInt(10) + 1;
-            sb.append(' ');
-            sb.append(i);
-            sb.append('.');
-            
-            for (int j = 0; j < len; j++) {
-                sb.append('*');
-            }
+        
+        switch(m) {
+        case BILLION_LINES:
+            return new DemoStyledTextModel(1_000_000_000, false);
+        case DEMO:
+            return new RichTextAreaDemoModel();
+        case MONOSPACED:
+            return new DemoStyledTextModel(100_000, true);
+        case NULL:
+            return null;
+        case ONE_LINE:
+            return new DemoStyledTextModel(1, false);
+        case TEN_LINES:
+            return new DemoStyledTextModel(10, false);
+        case THOUSAND_LINES:
+            return new DemoStyledTextModel(1_000, false);
+        case UNEVEN_SMALL:
+            return new UnevenStyledTextModel(20);
+        case UNEVEN_LARGE:
+            return new UnevenStyledTextModel(2000);
+        case ZERO_LINES:
+            return new DemoStyledTextModel(0, false);
+        default:
+            throw new Error("?" + m);
         }
-
-        addSegment(sb.toString(), null);
     }
 }

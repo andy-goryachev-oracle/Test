@@ -42,20 +42,7 @@ import goryachev.rich.StyledTextModel;
 /**
  * Main Panel contains RichTextArea, split panes for quick size adjustment, and an option pane.
  */
-public class RichTextAreaDemoPane extends BorderPane {
-    enum Model {
-        DEMO,
-        UNEVEN_SMALL,
-        UNEVEN_LARGE,
-        NULL,
-        ZERO_LINES,
-        ONE_LINE,
-        TEN_LINES,
-        THOUSAND_LINES,
-        BILLION_LINES,
-        MONOSPACED
-    }
-    
+public class RichTextAreaDemoPane extends BorderPane {    
     private static StyledTextModel model;
     public final ROptionPane op;
     public final RichTextArea richTextArea;
@@ -120,34 +107,7 @@ public class RichTextAreaDemoPane extends BorderPane {
     
     private StyledTextModel createModel() {
         Model m = modelField.getSelectionModel().getSelectedItem();
-        if(m == null) {
-            return null;
-        }
-        
-        switch(m) {
-        case BILLION_LINES:
-            return new DemoStyledTextModel(1_000_000_000, false);
-        case DEMO:
-            return new RichTextAreaDemoModel();
-        case MONOSPACED:
-            return new DemoStyledTextModel(100_000, true);
-        case NULL:
-            return null;
-        case ONE_LINE:
-            return new DemoStyledTextModel(1, false);
-        case TEN_LINES:
-            return new DemoStyledTextModel(10, false);
-        case THOUSAND_LINES:
-            return new DemoStyledTextModel(1_000, false);
-        case UNEVEN_SMALL:
-            return new UnevenStyledTextModel(20);
-        case UNEVEN_LARGE:
-            return new UnevenStyledTextModel(2000);
-        case ZERO_LINES:
-            return new DemoStyledTextModel(0, false);
-        default:
-            throw new Error("?" + m);
-        }
+        return Model.create(m);
     }
 
     protected static Pane pane() {
