@@ -284,4 +284,12 @@ public class RichTextArea extends Control {
     public ReadOnlyObjectProperty<TextPos> caretPositionProperty() {
         return caretPosition.getReadOnlyProperty();
     }
+    
+    public ReadOnlyObjectProperty<Origin> originProperty() {
+        return vflow().originProperty();
+    }
+    
+    public Origin getOrigin() {
+        return vflow().getOrigin();
+    }
 }

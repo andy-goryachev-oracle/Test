@@ -32,9 +32,10 @@ import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
@@ -73,7 +74,7 @@ public class VFlow extends Pane {
     private final Path caretPath;
     private final Path caretLineHighlight;
     private final Path selectionHighlight;
-    protected final SimpleObjectProperty<Origin> origin = new SimpleObjectProperty(Origin.ZERO);
+    protected final ReadOnlyObjectWrapper<Origin> origin = new ReadOnlyObjectWrapper(Origin.ZERO);
     protected final SimpleBooleanProperty caretVisible = new SimpleBooleanProperty(true);
     protected final SimpleBooleanProperty suppressBlink = new SimpleBooleanProperty(false);
     protected final SimpleDoubleProperty offsetX = new SimpleDoubleProperty(0.0);
@@ -208,6 +209,10 @@ public class VFlow extends Pane {
         }
         System.err.println("setOrigin " + p); // TODO
         origin.set(p);
+    }
+    
+    public ReadOnlyObjectProperty<Origin> originProperty() {
+        return origin.getReadOnlyProperty();
     }
 
     public int topCellIndex() {

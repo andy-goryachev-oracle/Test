@@ -86,11 +86,15 @@ public class RichTextAreaDemoPane extends BorderPane {
         CheckBox displayCaret = new CheckBox("display caret");
         displayCaret.selectedProperty().bindBidirectional(richTextArea.displayCaretProperty());
         
+        Button reloadModel = new Button("Reload Model");
+        reloadModel.setOnAction((ev) -> reloadModel());
+        
         // TODO blink rate
         
         op = new ROptionPane();
         op.label("Model:");
         op.option(modelField);
+        op.option(reloadModel);
         op.option(wrapText);
         op.option(displayCaret);
         
@@ -104,9 +108,14 @@ public class RichTextAreaDemoPane extends BorderPane {
         return model;
     }
     
-    private void updateModel() {
+    protected void updateModel() {
         model = createModel();
         richTextArea.setModel(model());
+    }
+    
+    protected void reloadModel() {
+        richTextArea.setModel(null);
+        updateModel();
     }
     
     private StyledTextModel createModel() {

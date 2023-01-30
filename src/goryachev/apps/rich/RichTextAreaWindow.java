@@ -32,6 +32,8 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import goryachev.apps.FX;
+import goryachev.rich.Origin;
+import goryachev.rich.RichTextArea;
 import goryachev.rich.TextPos;
 
 /**
@@ -69,21 +71,26 @@ public class RichTextAreaWindow extends Stage {
         setHeight(600);
         
         demoPane.richTextArea.caretPositionProperty().addListener((x) -> updateStatus());
+        demoPane.richTextArea.originProperty().addListener((x) -> updateStatus());
     }
-    
+
     protected void updateStatus() {
-        TextPos p = demoPane.richTextArea.getCaretPosition();
-        
-        String s;
-        if(p == null) {
-            s = null;
-        } else {
-            s = "line=" + p.lineIndex() + " char=" + p.charIndex();
+        RichTextArea t = demoPane.richTextArea;
+        TextPos p = t.getCaretPosition();
+        Origin origin = t.getOrigin();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(origin);
+
+        if (p != null) {
+            sb.append(" line=").append(p.lineIndex());
+            sb.append(" char=").append(p.charIndex());
         }
-        
-        status.setText(s);
+
+        status.setText(sb.toString());
     }
-    
+
     protected void newWindow() {
         double offset = 20;
         
