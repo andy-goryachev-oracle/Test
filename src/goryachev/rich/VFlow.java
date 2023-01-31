@@ -36,11 +36,12 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.event.EventType;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.control.ScrollBar;
-import javafx.scene.input.ScrollEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -68,7 +69,6 @@ import goryachev.rich.util.Util;
  */
 public class VFlow extends Pane {
     private final RichTextArea control;
-    private final RichTextAreaSkin skin;
     private final ScrollBar vscroll;
     private final ScrollBar hscroll;
     private final Rectangle clip;
@@ -84,13 +84,13 @@ public class VFlow extends Pane {
     protected final Timeline caretAnimation;
     protected final CellCache cache;
     private boolean handleScrollEvents = true;
+    private boolean vsbPressed;
     // TODO replace with ListenerHelper
     InvalidationListener modelIL;
     InvalidationListener wrapIL;
 
     public VFlow(RichTextAreaSkin skin, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = skin.getSkinnable();
-        this.skin = skin;
         this.vscroll = vscroll;
         this.hscroll = hscroll;
 
@@ -161,6 +161,8 @@ public class VFlow extends Pane {
             origin
             // TODO lineCount?
         );
+        
+        vscroll.addEventFilter(MouseEvent.ANY, this::handleVScrollMouseEvent);
     }
     
     public void dispose() {
@@ -501,9 +503,14 @@ public class VFlow extends Pane {
         handleScrollEvents = true;
     }
     
-    public void handleVScrollBarEvent(ScrollEvent ev) {
-        System.err.println("  handleVScrollBarEvent " + ev); // FIX
-        ev.consume();
+    private void handleVScrollMouseEvent(MouseEvent ev) {
+        EventType<? extends MouseEvent> t = ev.getEventType();
+        if(t == MouseEvent.MOUSE_PRESSED) {
+            vsbPressed = true;
+        } else if(t == MouseEvent.MOUSE_RELEASED) {
+            vsbPressed = false;
+            updateVerticalScrollBar();
+        }
     }
 
     /** handles user moving the vertical scroll bar */
@@ -642,7 +649,7 @@ public class VFlow extends Pane {
 
             // eliminate VSB during scrolling with a mouse
             // the VSB will finally get updated on mouse released event
-            if (!skin.isVSBPressed()) {
+            if (!vsbPressed) {
                 updateVerticalScrollBar();
             }
         }
@@ -674,9 +681,8 @@ public class VFlow extends Pane {
 
         // populating visible part of the sliding window + bottom margin
         for (int i = topCellIndex(); i < paragraphCount; i++) {
-            // TODO this code is duplicated in the top portion - extract into a function?
-            // TODO skip computingPreferredSize if the layout width did not change
             TextCell cell = getCell(i);
+            // TODO skip computation if layout width is the same
             Region r = cell.getContent();
             getChildren().add(r);
             r.setMaxWidth(wrap ? width : Double.MAX_VALUE);
@@ -731,12 +737,13 @@ public class VFlow extends Pane {
         layout.setBottomHeight(y);
         layout.setUnwrappedWidth(unwrappedWidth);
         count = 0;
-        y = 0.0;
+        y = -getOffsetY(); // TODO content padding
         
         // populate top margin, going backwards from topCellIndex
         // TODO populate more, if bottom ended prematurely
         for (int i = topCellIndex() - 1; i >= 0; i--) {
             TextCell cell = getCell(i);
+            // TODO skip computation if layout width is the same
             Region r = cell.getContent();
             getChildren().add(r);
             r.setMaxWidth(wrap ? width : Double.MAX_VALUE);

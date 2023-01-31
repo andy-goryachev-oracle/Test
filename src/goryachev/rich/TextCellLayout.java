@@ -289,7 +289,7 @@ public class TextCellLayout {
         System.err.println("  fromAbsolutePosition(pos=" + pos + ") -> " + p); 
         return p;
     }
-    public Origin fromAbsolutePosition2(double pos) { // FIX
+    public Origin fromAbsolutePositionBinarySearch(double pos) { // FIX
         int topIx = origin.index() - topCount();
         int btmIx = origin.index() + bottomCount;
         int ix = (int)(pos * lineCount);
@@ -322,18 +322,22 @@ public class TextCellLayout {
         }
         return new Origin(ix, 0.0);
     }
+    public Origin fromAbsolutePositionByIndex(double pos) { // FIX
+        int ix = (int)(pos * lineCount);
+        return new Origin(ix, 0.0);
+    }
     public Origin fromAbsolutePositionLinearSearch(double pos) { // FIX
         int topIx = origin.index() - topCount();
         int btmIx = origin.index() + bottomCount;
         int ix = (int)(pos * lineCount);
-        /*
+
         if ((ix >= topIx) && (ix < btmIx)) {
             // inside the layout
             double top = topIx / (double)lineCount;
             double btm = btmIx / (double)lineCount;
-            double f = (pos - top) / (btm - top); // TODO watch for div0
-            double localOffset = f * (topHeight + bottomHeight);
-            localOffset -= topHeight;
+            double f = (pos - top) / (btm - top); // TODO check for dvi0/infinity/NaN
+            double localOffset = f * (topHeight + bottomHeight) - topHeight;
+
             int sz = cells.size();
             for(int i=0; i<sz; i++) {
                 TextCell c = cells.get(i);
@@ -343,7 +347,7 @@ public class TextCellLayout {
                 }
             }
         }
-        */
+
         return new Origin(ix, 0.0);
     }
 }

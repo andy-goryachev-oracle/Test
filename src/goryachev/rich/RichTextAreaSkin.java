@@ -26,13 +26,11 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
-import javafx.event.EventType;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.VPos;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SkinBase;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import goryachev.rich.util.NewAPI;
@@ -53,7 +51,6 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     private final ScrollBar vscroll;
     private final ScrollBar hscroll;
     private final MouseHandler mouseHandler;
-    private boolean vsbPressed;
 
     protected RichTextAreaSkin(RichTextArea control) {
         super(control);
@@ -69,7 +66,6 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         vscroll.setMin(0.0);
         vscroll.setMax(1.0);
         vscroll.addEventFilter(ScrollEvent.ANY, (ev) -> ev.consume());
-        vscroll.addEventFilter(MouseEvent.ANY, this::handleVScrollMouseEvent);
         
         hscroll = createVScrollBar();
         hscroll.setOrientation(Orientation.HORIZONTAL);
@@ -156,20 +152,5 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
 
     public VFlow getVFlow() {
         return vflow;
-    }
-    
-    private void handleVScrollMouseEvent(MouseEvent ev) {
-        EventType<? extends MouseEvent> t = ev.getEventType();
-        if(t == MouseEvent.MOUSE_PRESSED) {
-            vsbPressed = true;
-        } else if(t == MouseEvent.MOUSE_RELEASED) {
-            vsbPressed = false;
-            vflow.updateVerticalScrollBar();
-        }
-    }
-
-    public boolean isVSBPressed() {
-        System.err.println("  isVSBPressed=" + vsbPressed);
-        return vsbPressed;
     }
 }
