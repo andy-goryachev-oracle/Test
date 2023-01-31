@@ -36,6 +36,8 @@ public enum Model {
     TEN_LINES,
     THOUSAND_LINES,
     BILLION_LINES,
+    LARGE_TEXT,
+    LARGE_TEXT_LONG,
     MONOSPACED;
 
     public static StyledTextModel create(Model m) {
@@ -64,6 +66,10 @@ public enum Model {
             return new UnevenStyledTextModel(2000);
         case ZERO_LINES:
             return new DemoStyledTextModel(0, false);
+        case LARGE_TEXT:
+            return new LargeTextModel(10);
+        case LARGE_TEXT_LONG:
+            return new LargeTextModel(5_000);
         default:
             throw new Error("?" + m);
         }

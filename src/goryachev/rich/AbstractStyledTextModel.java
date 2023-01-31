@@ -35,7 +35,7 @@ public abstract class AbstractStyledTextModel implements StyledTextModel {
     }
     
     @Override
-    public final String getPlainText(int index) {
+    public String getPlainText(int index) {
         StyledParagraph p = getParagraph(index);
         return p.getPlainText();
     }

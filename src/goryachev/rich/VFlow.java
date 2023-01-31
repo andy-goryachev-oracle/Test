@@ -40,6 +40,7 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
@@ -67,6 +68,7 @@ import goryachev.rich.util.Util;
  */
 public class VFlow extends Pane {
     private final RichTextArea control;
+    private final RichTextAreaSkin skin;
     private final ScrollBar vscroll;
     private final ScrollBar hscroll;
     private final Rectangle clip;
@@ -86,8 +88,9 @@ public class VFlow extends Pane {
     InvalidationListener modelIL;
     InvalidationListener wrapIL;
 
-    public VFlow(RichTextArea control, ScrollBar vscroll, ScrollBar hscroll) {
-        this.control = control;
+    public VFlow(RichTextAreaSkin skin, ScrollBar vscroll, ScrollBar hscroll) {
+        this.control = skin.getSkinnable();
+        this.skin = skin;
         this.vscroll = vscroll;
         this.hscroll = hscroll;
 
@@ -183,7 +186,6 @@ public class VFlow extends Pane {
         invalidateLayout();
         layoutChildren();
         updateCaretAndSelection();
-        updateVerticalScrollBar();
     }
     
     public void updateWrap() {
@@ -485,8 +487,8 @@ public class VFlow extends Pane {
             double av = layout.averageHeight();
             double max = layout.estimatedMax();
             double h = getHeight();
-            visible = h / max;
             val = toScrollBarValue((topCellIndex() - layout.topCount()) * av + layout.topHeight(), h, max);
+            visible = h / max;
         }
 
         handleScrollEvents = false;
@@ -498,6 +500,11 @@ public class VFlow extends Pane {
 
         handleScrollEvents = true;
     }
+    
+    public void handleVScrollBarEvent(ScrollEvent ev) {
+        System.err.println("  handleVScrollBarEvent " + ev); // FIX
+        ev.consume();
+    }
 
     /** handles user moving the vertical scroll bar */
     public void handleVerticalScroll() {
@@ -506,18 +513,24 @@ public class VFlow extends Pane {
                 return;
             }
 
-            double max = layout.estimatedMax();
-            double h = getHeight();
             double val = vscroll.getValue();
-            double pos = fromScrollBarValue(val, h, max) / max;
-            
+            double visible = vscroll.getVisibleAmount();
+            double max = vscroll.getMax();
+            double pos = fromScrollBarValue(val, visible, max); // max is 1.0
+
+            // FIX remove
+            if(pos > 1.0) {
+                System.err.println("* * ERR pos>1 " + pos);
+                fromScrollBarValue(val, visible, max);
+            }
+
             Origin p = layout.fromAbsolutePosition(pos);
             // FIX
             System.err.println(
                 "handleVerticalScroll" +
                 " val=" + vscroll.getValue() +
                 " pos=" + pos +
-                " max=" + max +
+                " visible=" + visible +
                 " origin=" + p +
                 " lineCount=" + lineCount()
             );
@@ -568,9 +581,9 @@ public class VFlow extends Pane {
             }
             
             double max = rightEdge();
-            double w = getWidth();
+            double visible = getWidth();
             double val = hscroll.getValue();
-            double off = fromScrollBarValue(val, w, max);
+            double off = fromScrollBarValue(val, visible, max);
 
             setOffsetX(off);
 
@@ -598,6 +611,16 @@ public class VFlow extends Pane {
     private static double fromScrollBarValue(double val, double visible, double max) {
         return val * (max - visible);
     }
+    
+    protected TextCell getCell(int modelIndex) {
+        TextCell cell = cache.get(modelIndex);
+        if (cell == null) {
+            StyledParagraph p = control.getModel().getParagraph(modelIndex);
+            cell = p.createTextCell();
+            cache.add(cell);
+        }
+        return cell;
+    }
 
     public void invalidateLayout() {
         if (layout != null) {
@@ -616,7 +639,12 @@ public class VFlow extends Pane {
             System.err.println("layoutCells " + layout); // TODO
 
             updateCaretAndSelection();
-            updateVerticalScrollBar();
+
+            // eliminate VSB during scrolling with a mouse
+            // the VSB will finally get updated on mouse released event
+            if (!skin.isVSBPressed()) {
+                updateVerticalScrollBar();
+            }
         }
     }
 
@@ -626,8 +654,7 @@ public class VFlow extends Pane {
         clip.setWidth(width);
         clip.setHeight(height);
 
-        StyledTextModel model = control.getModel();
-        if(model == null) {
+        if(control.getModel() == null) {
             // TODO suppress scroll bars?
             return;
         }
@@ -649,12 +676,7 @@ public class VFlow extends Pane {
         for (int i = topCellIndex(); i < paragraphCount; i++) {
             // TODO this code is duplicated in the top portion - extract into a function?
             // TODO skip computingPreferredSize if the layout width did not change
-            TextCell cell = cache.get(i);
-            if (cell == null) {
-                StyledParagraph p = model.getParagraph(i);
-                cell = p.createTextCell();
-                cache.add(cell);
-            }
+            TextCell cell = getCell(i);
             Region r = cell.getContent();
             getChildren().add(r);
             r.setMaxWidth(wrap ? width : Double.MAX_VALUE);
@@ -714,12 +736,7 @@ public class VFlow extends Pane {
         // populate top margin, going backwards from topCellIndex
         // TODO populate more, if bottom ended prematurely
         for (int i = topCellIndex() - 1; i >= 0; i--) {
-            TextCell cell = cache.get(i);
-            if (cell == null) {
-                StyledParagraph p = model.getParagraph(i);
-                cell = p.createTextCell();
-                cache.add(cell);
-            }
+            TextCell cell = getCell(i);
             Region r = cell.getContent();
             getChildren().add(r);
             r.setMaxWidth(wrap ? width : Double.MAX_VALUE);
@@ -732,13 +749,13 @@ public class VFlow extends Pane {
             // TODO actual box height might be different from h due to snapping?
             // TODO account for side components
             double h = r.prefHeight(wrap ? width : -1);
+            y -= h;
+            count++;
+
             cell.setPreferredHeight(h);
             cell.setOffset(y);
             
             getChildren().remove(r);
-
-            y -= h;
-            count++;
 
             // stop populating the top part of the sliding window
             // when exceeded both pixel and line count margins

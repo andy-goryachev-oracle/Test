@@ -22,21 +22,39 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.apps.rich;
 
-/**
- * Configuration settings for RichTextArea
- * 
- * TODO make it cloneable and pass an instance to the constructor?
- * TODO a couple of factory methods for small model, size to content, large model?
- */
-public class Config {
-    /** caret blink period in milliseconds */
-    public static final int caretBlinkPeriod = 500;
+import java.util.Random;
+import goryachev.rich.simple.SimpleStyledTextModel;
 
-    /** cell cache size */
-    public static final int cellCacheSize = 512;
+public class LargeTextModel extends SimpleStyledTextModel {
+    private final String STYLE = "-fx-font-size:500%";
+    private final Random random = new Random();
 
-    /** VFlow TextLayout sliding window margin before and after the visible area */
-    public static final float slidingWindowMargin = 3.0f;
+    public LargeTextModel(int lineCount) {
+        for(int i=0; i<lineCount; i++) {
+            addLine(i);
+        }
+    }
+    
+    private void addLine(int n) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("L").append(n).append(' ');
+        int ct;
+        if(random.nextFloat() < 0.01f) {
+            ct = 200;
+        } else {
+            ct = random.nextInt(10);
+        }
+        
+        for(int i=0; i<ct; i++) {
+            sb.append(" ").append(i);
+            int len = random.nextInt(10) + 1;
+            for(int j=0; j<len; j++) {
+                sb.append('*');
+            }
+        }
+        addSegment(sb.toString(), STYLE);
+        nl();
+    }
 }

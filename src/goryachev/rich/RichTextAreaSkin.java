@@ -26,11 +26,13 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import javafx.event.EventType;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.VPos;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SkinBase;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import goryachev.rich.util.NewAPI;
@@ -50,11 +52,16 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     private final VFlow vflow;
     private final ScrollBar vscroll;
     private final ScrollBar hscroll;
+    private final MouseHandler mouseHandler;
+    private boolean vsbPressed;
 
     protected RichTextAreaSkin(RichTextArea control) {
         super(control);
         
+        mouseHandler = createMouseHandler();
+        
         // TODO maybe create scroll bars in the control (as they might be custom) -
+        // TODO alternatively, the scrollbars can come from Config
         // this way they are available before vflow is created by the skin
         vscroll = createVScrollBar();
         vscroll.setOrientation(Orientation.VERTICAL);
@@ -62,6 +69,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         vscroll.setMin(0.0);
         vscroll.setMax(1.0);
         vscroll.addEventFilter(ScrollEvent.ANY, (ev) -> ev.consume());
+        vscroll.addEventFilter(MouseEvent.ANY, this::handleVScrollMouseEvent);
         
         hscroll = createVScrollBar();
         hscroll.setOrientation(Orientation.HORIZONTAL);
@@ -71,7 +79,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         hscroll.addEventFilter(ScrollEvent.ANY, (ev) -> ev.consume());
         hscroll.visibleProperty().bind(control.wrapTextProperty().not());
 
-        vflow = new VFlow(control, vscroll, hscroll);
+        vflow = new VFlow(this, vscroll, hscroll);
 
         // TODO corner? only when both scroll bars are visible
 
@@ -103,7 +111,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
 
         this.behavior = new RichTextAreaBehavior(control);
         
-        createMouseHandler().register(vflow);
+        mouseHandler.register(vflow);
 
         // TODO protect with listener helper (it's internal, shoud be made public) to avoid memory leak when changing skins
         NewAPI.addChangeListener(vflow::updateCaretAndSelection, false, control.getSelectionModel().selectionSegmentProperty());
@@ -143,10 +151,25 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
 
     /** called from the constructor.  override to provide a custom MouseHandler */
     protected MouseHandler createMouseHandler() {
-        return new MouseHandler(getSkinnable());
+        return new MouseHandler(this);
     }
 
     public VFlow getVFlow() {
         return vflow;
+    }
+    
+    private void handleVScrollMouseEvent(MouseEvent ev) {
+        EventType<? extends MouseEvent> t = ev.getEventType();
+        if(t == MouseEvent.MOUSE_PRESSED) {
+            vsbPressed = true;
+        } else if(t == MouseEvent.MOUSE_RELEASED) {
+            vsbPressed = false;
+            vflow.updateVerticalScrollBar();
+        }
+    }
+
+    public boolean isVSBPressed() {
+        System.err.println("  isVSBPressed=" + vsbPressed);
+        return vsbPressed;
     }
 }

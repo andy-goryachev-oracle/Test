@@ -34,10 +34,12 @@ import javafx.scene.input.ScrollEvent;
  * Handles mouse events.
  */
 public class MouseHandler {
+    private final RichTextAreaSkin skin;
     private final RichTextArea control;
     
-    public MouseHandler(RichTextArea control) {
-        this.control = control;
+    public MouseHandler(RichTextAreaSkin skin) {
+        this.skin = skin;
+        this.control = skin.getSkinnable();
     }
     
     public void register(VFlow f) {
