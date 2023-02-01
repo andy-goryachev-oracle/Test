@@ -26,8 +26,15 @@
 // https://github.com/andy-goryachev/FxDock
 package goryachev.settings;
 
+import java.awt.Shape;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.SplitPane;
+import javafx.scene.image.ImageView;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -109,12 +116,154 @@ public class FxSettingsSchema {
         }
         return false;
     }
-
-    public static void storeNode(WindowMonitor m, Node n) {
-        // TODO
+    
+    private static String getName(WindowMonitor m, Node n) {
+        StringBuilder sb = new StringBuilder();
+        if (collectNames(sb, n)) {
+            return null;
+        }
+        String id = m.getID();
+        return id + sb;
     }
 
+    // returns true if Node should be ignored
+    private static boolean collectNames(StringBuilder sb, Node n) {
+        if(n instanceof MenuBar) {
+            return true;
+        } else if(n instanceof Shape) {
+            return true;
+        } else if(n instanceof ImageView) {
+            return true;
+        }
+
+        Parent p = n.getParent();
+        // FIX parent is null, so it's not yet connected (probably because of the skin)
+        if(p != null) {
+            if(collectNames(sb, p)) {
+                return true;
+            }
+        }
+        sb.append('.');
+        sb.append(n.getClass().getSimpleName());
+        return false;
+    }
+
+    public static void storeNode(WindowMonitor m, Node n) {
+        //System.out.println("storeNode " + n); // FIX
+        if (n instanceof ListView lv) {
+            storeListView(m, lv);
+        } else if (n instanceof ComboBox cb) {
+            storeComboBox(m, cb);
+        }
+        
+        if(n instanceof SplitPane sp) {
+            for(Node ch: sp.getItems()) {
+                storeNode(m, ch);
+            }
+        }
+
+        if (n instanceof Parent p) {
+            for(Node ch: p.getChildrenUnmodifiable()) {
+                storeNode(m, ch);
+            }
+        }
+    }
+    
     public static void restoreNode(WindowMonitor m, Node n) {
-        // TODO
+        //System.out.println("restoreNode " + n); // FIX
+        if (n instanceof ListView lv) {
+            restoreListView(m, lv);
+        } else if (n instanceof ComboBox cb) {
+            restoreComboBox(m, cb);
+        }
+        
+        if(n instanceof SplitPane sp) {
+            for(Node ch: sp.getItems()) {
+                restoreNode(m, ch);
+            }
+        }
+
+        if (n instanceof Parent p) {
+            for(Node ch: p.getChildrenUnmodifiable()) {
+                restoreNode(m, ch);
+            }
+        }
+    }
+
+    private static void storeComboBox(WindowMonitor m, ComboBox n) {
+        if (n.getSelectionModel() == null) {
+            return;
+        }
+
+        int ix = n.getSelectionModel().getSelectedIndex();
+        if (ix < 0) {
+            return;
+        }
+
+        String name = getName(m, n);
+        if (name == null) {
+            return;
+        }
+
+        FxSettings.set(PREFIX + name, String.valueOf(ix));
+    }
+
+    // TODO perhaps operate with selection model instead
+    private static void restoreComboBox(WindowMonitor m, ComboBox n) {
+        if (n.getSelectionModel() == null) {
+            return;
+        }
+
+        String name = getName(m, n);
+        if (name == null) {
+            return;
+        }
+
+        int ix = FxSettings.getInt(PREFIX + name, -1);
+        if (ix < 0) {
+            return;
+        } else if (ix >= n.getItems().size()) {
+            return;
+        }
+
+        n.getSelectionModel().select(ix);
+    }
+
+    private static void storeListView(WindowMonitor m, ListView n) {
+        if (n.getSelectionModel() == null) {
+            return;
+        }
+
+        int ix = n.getSelectionModel().getSelectedIndex();
+        if (ix < 0) {
+            return;
+        }
+
+        String name = getName(m, n);
+        if (name == null) {
+            return;
+        }
+
+        FxSettings.set(PREFIX + name, String.valueOf(ix));
+    }
+    
+    private static void restoreListView(WindowMonitor m, ListView n) {
+        if (n.getSelectionModel() == null) {
+            return;
+        }
+
+        String name = getName(m, n);
+        if (name == null) {
+            return;
+        }
+
+        int ix = FxSettings.getInt(PREFIX + name, -1);
+        if (ix < 0) {
+            return;
+        } else if (ix >= n.getItems().size()) {
+            return;
+        }
+
+        n.getSelectionModel().select(ix);
     }
 }

@@ -161,6 +161,16 @@ public class FxSettings {
     public static String get(String key) {
         return provider.get(key);
     }
+
+    public static int getInt(String key, int defaultValue) {
+        String v = get(key);
+        if (v != null) {
+            try {
+                return Integer.parseInt(v);
+            } catch (NumberFormatException e) { }
+        }
+        return defaultValue;
+    }
     
     public static SStream getStream(String key) {
         return provider.getSStream(key);
