@@ -24,14 +24,18 @@
  */
 package goryachev.monkey.pages;
 
-import java.util.List;
 import java.util.Random;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.ToolPane;
+import javafx.scene.chart.AreaChart;
+import javafx.scene.chart.BarChart;
 import javafx.scene.chart.BubbleChart;
-import javafx.scene.chart.Chart;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.ScatterChart;
+import javafx.scene.chart.StackedAreaChart;
+import javafx.scene.chart.StackedBarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.chart.XYChart.Series;
 import javafx.scene.control.Button;
@@ -53,7 +57,7 @@ public class ChartPage extends ToolPane {
     }
     
     private ComboBox<Mode> modeSelector;
-    private ChartGen base;
+    private XYChart<?,Number> chart;
     protected static Random rnd = new Random();
     
     public ChartPage() {
@@ -86,60 +90,105 @@ public class ChartPage extends ToolPane {
     
     protected void updateChart() {
         Mode m = modeSelector.getSelectionModel().getSelectedItem();
-        base = createBase(m);
-
+        chart = createChart(m);
+        
         BorderPane bp = new BorderPane();
-        if (base != null) {
-            bp.setCenter(base.chart());
-        }
+        bp.setCenter(chart);
         setContent(bp);
+        
+        addSeries();
     }
 
     protected void addSeries() {
-        if (base != null) {
-            base.add();
+        if (chart != null) {
+            if (chart instanceof BarChart b) {
+                Series s = createBarSeries();
+                b.getData().add(s);
+            } else if (chart instanceof StackedBarChart b) {
+                Series s = createBarSeries();
+                b.getData().add(s);
+            } else {
+                Series s = createNumberSeries();
+                chart.getData().add(s);
+            }
         }
     }
 
     protected void removeSeries() {
-        if (base != null) {
-            base.remove();
+        if (chart != null) {
+            if(chart.getData().size() > 0) {
+                chart.getData().remove(0);
+            }
         }
     }
     
     protected void addRemoveSeries() {
-        if (base != null) {
-            base.addRemove();
+        if (chart != null) {
+            if (chart.getData().size() > 0) {
+                var first = chart.getData().remove(0);
+                chart.getData().add((Series)first);
+            }
         }
     }
 
-    private ChartGen createBase(Mode m) {
+    private XYChart<?,Number> createChart(Mode m) {
+        NumberAxis xAxis = new NumberAxis();
+        xAxis.setLabel("X");
+
+        NumberAxis yAxis = new NumberAxis();
+        yAxis.setLabel("Y");
+
         switch (m) {
         case AREA:
-            break;
+            {
+                AreaChart<Number, Number> chart = new AreaChart<>(xAxis, yAxis);
+                chart.setTitle("Area Chart");
+                return chart;
+            }
+        case BAR:
+            {
+                CategoryAxis x = new CategoryAxis();
+                BarChart<String,Number> chart = new BarChart<>(x, yAxis);
+                chart.setTitle("Bar Chart");
+                return chart;
+            }
         case BUBBLE:
-            return new BubbleGen();
+            {
+                BubbleChart<Number, Number> chart = new BubbleChart<>(xAxis, yAxis);
+                chart.setTitle("Bubble Chart");
+                return chart;
+            }
         case LINE:
-            return new LineGen();
+            {
+                LineChart<Number,Number> chart = new LineChart<>(xAxis, yAxis);
+                chart.setTitle("Line Chart");
+                return chart;
+            }
+        case SCATTER:
+            {
+                ScatterChart<Number,Number> chart = new ScatterChart<>(xAxis, yAxis);
+                chart.setTitle("Scatter Chart");
+                return chart;
+            }
+        case STACKED_AREA:
+            {
+                StackedAreaChart<Number,Number> chart = new StackedAreaChart<>(xAxis, yAxis);
+                chart.setTitle("Stacked Area Chart");
+                return chart;
+            }
+        case STACKED_BAR:
+            {
+                CategoryAxis x = new CategoryAxis();
+                StackedBarChart<String,Number> chart = new StackedBarChart<>(x, yAxis);
+                chart.setTitle("Stacked Bar Chart");
+                return chart;
+            }
         }
 
         return null;
     }
     
-    protected static void removeFirst(List<?> list) {
-        if (list.size() > 0) {
-            list.remove(0);
-        }
-    }
-    
-    protected static <T> void addRemoveFirst(List<T> list) {
-        if (list.size() > 0) {
-            T first = list.remove(0);
-            list.add(first);
-        }
-    }
-    
-    public Series<Number, Number> create() {
+    public Series<Number,Number> createNumberSeries() {
         String name = Long.toString(System.currentTimeMillis(), 16);
         
         XYChart.Series s = new XYChart.Series();
@@ -151,80 +200,15 @@ public class ChartPage extends ToolPane {
         return s;
     }
     
-    /** Chart Generator */
-    protected abstract class ChartGen {
-        public abstract Chart chart();
-        public abstract void add();
-        public abstract void remove();
-        public abstract void addRemove();
-    }
-    
-    /** Bubble Chart */
-    protected class BubbleGen extends ChartGen {
-        BubbleChart<Number, Number> chart;
+    public Series<String,Number> createBarSeries() {
+        String name = Long.toString(System.currentTimeMillis(), 16);
         
-        @Override
-        public Chart chart() {
-            NumberAxis xAxis = new NumberAxis(1, 53, 4);
-            xAxis.setLabel("Week");
-
-            NumberAxis yAxis = new NumberAxis(0, 80, 10);
-            yAxis.setLabel("Product Budget");
-            
-            chart = new BubbleChart<Number, Number>(xAxis, yAxis);
-            chart.setTitle("Budget Monitoring");
-            chart.getData().addAll(create());
-            return chart;
+        XYChart.Series s = new XYChart.Series();
+        s.setName(name);
+        for(int i=0; i<12; i++) {
+            int v = rnd.nextInt(50);
+            s.getData().add(new XYChart.Data("c" + i, v));
         }
-
-        @Override
-        public void add() {
-            chart.getData().add(create());
-        }
-
-        @Override
-        public void remove() {
-            removeFirst(chart.getData());
-        }
-
-        @Override
-        public void addRemove() {
-            addRemoveFirst(chart.getData());
-        }
-    }
-
-    /** Line Chart */
-    public class LineGen extends ChartGen {
-        private LineChart<Number, Number> chart;
-        
-        @Override
-        public Chart chart() {
-            NumberAxis xAxis = new NumberAxis();
-            xAxis.setLabel("Month Number");
-
-            NumberAxis yAxis = new NumberAxis();
-          
-            chart = new LineChart<>(xAxis, yAxis);
-            chart.setTitle("Stock Monitoring, 2010");
-            chart.getData().add(create());
-            
-            return chart;
-        }
-        
-        @Override
-        public void add() {
-            Series<Number, Number> s = create();
-            chart.getData().add(s);
-        }
-        
-        @Override
-        public void remove() {
-            removeFirst(chart.getData());
-        }
-
-        @Override
-        public void addRemove() {
-            addRemoveFirst(chart.getData());
-        }
+        return s;
     }
 }
