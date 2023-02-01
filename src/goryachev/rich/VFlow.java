@@ -766,7 +766,7 @@ public class VFlow extends Pane {
 
             // stop populating the top part of the sliding window
             // when exceeded both pixel and line count margins
-            if ((y > margin) && (count > topMarginCount)) {
+            if ((-y > margin) && (count > topMarginCount)) {
                 break;
             }
         }

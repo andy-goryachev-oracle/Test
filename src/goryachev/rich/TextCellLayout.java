@@ -263,9 +263,9 @@ public class TextCellLayout {
                 return mid;
             }
         }
-        // should not happen
-        throw new Error("   ERR binarySearch off=" + off + ", high=" + high + ", low=" + low); // FIX
-        // return low;
+        // FIX should not happen
+        System.err.println("   ERR binarySearch off=" + off + ", high=" + high + ", low=" + low); // FIX
+        return low;
     }
     
     private int compare(TextCell cell, double offset) {
@@ -285,9 +285,13 @@ public class TextCellLayout {
     // TODO handle hit-the-rail conditions
     // TODO allow for 1 empty line when scrolling to the bottom of the document
     public Origin fromAbsolutePosition(double pos) {
-        Origin p = fromAbsolutePositionLinearSearch(pos);
+        Origin p = fromAbsolutePositionBinarySearch(pos);
         System.err.println("  fromAbsolutePosition(pos=" + pos + ") -> " + p); 
         return p;
+    }
+    public Origin fromAbsolutePositionByIndex(double pos) { // FIX
+        int ix = (int)(pos * lineCount);
+        return new Origin(ix, 0.0);
     }
     public Origin fromAbsolutePositionBinarySearch(double pos) { // FIX
         int topIx = origin.index() - topCount();
@@ -297,16 +301,10 @@ public class TextCellLayout {
             // inside the layout
             double top = topIx / (double)lineCount;
             double btm = btmIx / (double)lineCount;
+            double f = (pos - top) / (btm - top); // TODO check for dvi0/infinity/NaN
+            double offset = f * (topHeight + bottomHeight) - topHeight;
             
-            // TODO handle bottom: do not let origin exceed (bottom - visible.height)
-
-            double f = (pos - top) / (btm - top); // TODO watch for div0
-            double off = f * (topHeight + bottomHeight);
-            
-            // FIX off - relative to top.offset!
-            off -= topHeight;
-            
-            ix = binarySearch(off, btmIx - 1, topIx);
+            ix = binarySearch(offset, btmIx - 1, topIx);
             TextCell c = getCell(ix);
 
             // TODO if top edge is at 0, the offset == estPos == pos.
@@ -318,12 +316,8 @@ public class TextCellLayout {
                 ", h=" + c.getPreferredHeight() +
                 "}");
 
-            return new Origin(c.getLineIndex(), off - c.getOffset());
+            return new Origin(c.getLineIndex(), offset - c.getOffset());
         }
-        return new Origin(ix, 0.0);
-    }
-    public Origin fromAbsolutePositionByIndex(double pos) { // FIX
-        int ix = (int)(pos * lineCount);
         return new Origin(ix, 0.0);
     }
     public Origin fromAbsolutePositionLinearSearch(double pos) { // FIX
