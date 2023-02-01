@@ -156,9 +156,9 @@ public class TextCellLayout {
     public TextCell getCell(int modelIndex) {
         int ix = modelIndex - origin.index();
         if(ix < 0) {
-            if((ix + topCount()) > 0) {
+            if((ix + topCount()) >= 0) {
                 // cells in the top part come after bottom part, and in reverse order
-                return cells.get(bottomCount + topCount() + ix);
+                return cells.get(bottomCount - ix - 1);
             }
         } else if(ix < bottomCount) {
             // cells in the normal (bottom) part
@@ -243,7 +243,7 @@ public class TextCellLayout {
     }
 
     private int binarySearch(double off, int high, int low) {
-        System.err.println("binarySearch off=" + off + ", high=" + high + ", low=" + low); // FIX
+        System.err.println("    binarySearch off=" + off + ", high=" + high + ", low=" + low); // FIX
         while (low <= high) {
             // TODO might be a problem for 2B-rows models
             int mid = (low + high) >>> 1;
@@ -251,7 +251,11 @@ public class TextCellLayout {
             
             // FIX
             if(cell == null) {
-                System.err.println("   ERR binarySearch null cell off=" + off);
+                System.err.println("    * * * ERR binarySearch null cell off=" + off + " mid=" + mid + " topIx=" + topIndex() + " btmIx=" + bottomIndex());
+                cell = getCell(mid);
+            } else if(cell.getLineIndex() != mid) {
+                System.err.println("    * * * ERR getCell wrong ix=" + mid + " cell.ix=" + cell.getLineIndex());
+                cell = getCell(mid);
             }
             
             int cmp = compare(cell, off);
@@ -263,8 +267,6 @@ public class TextCellLayout {
                 return mid;
             }
         }
-        // FIX should not happen
-        System.err.println("   ERR binarySearch off=" + off + ", high=" + high + ", low=" + low); // FIX
         return low;
     }
     
@@ -280,13 +282,23 @@ public class TextCellLayout {
         }
         return 0;
     }
+    
+    /** returns a model index of the first cell in the sliding window top margin */
+    public int topIndex() {
+        return origin.index() - topCount();
+    }
+    
+    /** returns a model index of the last cell in the sliding window bottom margin + 1 */
+    public int bottomIndex() {
+        return origin.index() + bottomCount;
+    }
 
     /** creates a new Origin from the absolute position [0.0 ... (1.0-normalized.visible.amount)] */
     // TODO handle hit-the-rail conditions
     // TODO allow for 1 empty line when scrolling to the bottom of the document
     public Origin fromAbsolutePosition(double pos) {
         Origin p = fromAbsolutePositionBinarySearch(pos);
-        System.err.println("  fromAbsolutePosition(pos=" + pos + ") -> " + p); 
+        System.err.println("    fromAbsolutePosition(pos=" + pos + ") -> " + p); 
         return p;
     }
     public Origin fromAbsolutePositionByIndex(double pos) { // FIX
@@ -294,8 +306,8 @@ public class TextCellLayout {
         return new Origin(ix, 0.0);
     }
     public Origin fromAbsolutePositionBinarySearch(double pos) { // FIX
-        int topIx = origin.index() - topCount();
-        int btmIx = origin.index() + bottomCount;
+        int topIx = topIndex();
+        int btmIx = bottomIndex();
         int ix = (int)(pos * lineCount);
         if ((ix >= topIx) && (ix < btmIx)) {
             // inside the layout
@@ -306,16 +318,13 @@ public class TextCellLayout {
             
             ix = binarySearch(offset, btmIx - 1, topIx);
             TextCell c = getCell(ix);
-
-            // TODO if top edge is at 0, the offset == estPos == pos.
-            System.err.println(
-                "   binarySearch" +
-                " off=" + pos +
-                " cell{index=" + c.getLineIndex() + 
-                ", offset=" + c.getOffset() +
-                ", h=" + c.getPreferredHeight() +
-                "}");
-
+            
+            // FIX remove check
+            if(compare(c, offset) != 0) {
+                System.err.println("    * * * binarySearch is wrong: off=" + c.getOffset() + " .. " + (c.getOffset() + c.getPreferredHeight()));
+                binarySearch(offset, btmIx - 1, topIx);
+            }
+            
             return new Origin(c.getLineIndex(), offset - c.getOffset());
         }
         return new Origin(ix, 0.0);
