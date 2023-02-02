@@ -57,7 +57,7 @@ public class TextCellLayout {
     
     public TextCellLayout(VFlow f) {
         this.flowWidth = f.getWidth();
-        this.flowHeight = f.getHeight(); // TODO viewHeight() ?
+        this.flowHeight = f.getViewHeight();
         this.origin = f.getOrigin();
         this.lineCount = f.lineCount();
     }
@@ -356,15 +356,14 @@ public class TextCellLayout {
         return new Origin(ix, 0.0);
     }
 
-    // TODO clamp at document begin/end
     public Origin computeOrigin(double delta) {
         int topIx = topIndex();
         int btmIx = bottomIndex();
-        double offset = origin.offset() + delta;
+        double offset = delta;
         
         if(delta < 0) {
             // do not scroll above the top edge
-            double top = origin.offset() - topHeight;
+            double top = -origin.offset() - topHeight;
             if(offset < top) {
                 return new Origin(topIx, 0.0);
             }
