@@ -788,7 +788,7 @@ public class VFlow extends Pane {
         double y = -getOffsetY();
         boolean wrap = control.isWrapText();
         double w = wrap ? getWidth() : rightEdge(); // TODO padding
-        
+
         int sz = layout.getVisibleCellCount();
         for (int i=0; i < sz; i++) {
             TextCell cell = layout.getCellAt(i);
@@ -802,5 +802,27 @@ public class VFlow extends Pane {
             // TODO also consider using maxx, maxy from boundsInLocal instead?
             y += h;
         }
+    }
+    
+    public double getViewHeight() {
+        return getHeight(); // TODO padding
+    }
+    
+    public void pageUp() {
+        blockScroll(-getViewHeight());
+    }
+    
+    public void pageDown() {
+        blockScroll(getViewHeight());
+    }
+    
+    public void scroll(double fractionOfHeight) {
+        blockScroll(getViewHeight() * fractionOfHeight);
+    }
+    
+    /** scroll by a number of pixels, delta must not exceed the view height in absolute terms */
+    public void blockScroll(double delta) {
+        Origin p = layout.computeOrigin(delta);
+        setOrigin(p);
     }
 }

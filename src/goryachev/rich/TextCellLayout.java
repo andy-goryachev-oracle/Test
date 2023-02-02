@@ -57,7 +57,7 @@ public class TextCellLayout {
     
     public TextCellLayout(VFlow f) {
         this.flowWidth = f.getWidth();
-        this.flowHeight = f.getHeight();
+        this.flowHeight = f.getHeight(); // TODO viewHeight() ?
         this.origin = f.getOrigin();
         this.lineCount = f.lineCount();
     }
@@ -301,6 +301,7 @@ public class TextCellLayout {
         System.err.println("    fromAbsolutePosition(pos=" + pos + ") -> " + p); 
         return p;
     }
+    @Deprecated
     public Origin fromAbsolutePositionByIndex(double pos) { // FIX
         int ix = (int)(pos * lineCount);
         return new Origin(ix, 0.0);
@@ -329,6 +330,7 @@ public class TextCellLayout {
         }
         return new Origin(ix, 0.0);
     }
+    @Deprecated
     public Origin fromAbsolutePositionLinearSearch(double pos) { // FIX
         int topIx = origin.index() - topCount();
         int btmIx = origin.index() + bottomCount;
@@ -352,5 +354,37 @@ public class TextCellLayout {
         }
 
         return new Origin(ix, 0.0);
+    }
+
+    // TODO clamp at document begin/end
+    public Origin computeOrigin(double delta) {
+        int topIx = topIndex();
+        int btmIx = bottomIndex();
+        double offset = origin.offset() + delta;
+        
+        if(delta < 0) {
+            // do not scroll above the top edge
+            double top = origin.offset() - topHeight;
+            if(offset < top) {
+                return new Origin(topIx, 0.0);
+            }
+        } else {
+            // do not scroll past (bottom edge - visible area)
+            double max = bottomHeight - flowHeight;
+            if(offset > max) {
+                offset = max;
+            }
+        }
+        
+        int ix = binarySearch(offset, btmIx - 1, topIx);
+        TextCell c = getCell(ix);
+        
+        // FIX remove check
+        if(compare(c, offset) != 0) {
+            System.err.println("    * * * binarySearch is wrong: off=" + c.getOffset() + " .. " + (c.getOffset() + c.getPreferredHeight()));
+            binarySearch(offset, btmIx - 1, topIx);
+        }
+        
+        return new Origin(c.getLineIndex(), offset - c.getOffset());
     }
 }

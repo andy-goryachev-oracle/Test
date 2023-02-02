@@ -50,6 +50,10 @@ public class MouseHandler {
         f.addEventFilter(ScrollEvent.ANY, this::handleScrollEvent);
     }
     
+    protected VFlow vflow() {
+        return skin.getVFlow();
+    }
+    
     protected void handleMouseClicked(MouseEvent ev) {
         if(ev.getButton() == MouseButton.PRIMARY) {
             int clicks = ev.getClickCount();
@@ -108,7 +112,23 @@ public class MouseHandler {
     }
     
     protected void handleScrollEvent(ScrollEvent ev) {
-        // TODO
+        if(ev.isShiftDown()) {
+            // TODO horizontal scroll
+        } else if(ev.isShortcutDown()) {
+            // page up / page down
+            if(ev.getDeltaY() >= 0) {
+                vflow().pageUp();
+            } else {
+                vflow().pageDown();
+            }
+        } else {
+            // block scroll
+            double f = Config.scrollWheelBlockSize;
+            if(ev.getDeltaY() >= 0) {
+                f = -f;
+            }
+            vflow().scroll(f);
+        }
     }
     
     protected Marker getTextPosition(MouseEvent ev) {

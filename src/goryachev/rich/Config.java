@@ -37,6 +37,12 @@ public class Config {
     /** cell cache size */
     public static final int cellCacheSize = 512;
 
-    /** VFlow TextLayout sliding window margin before and after the visible area */
+    /**
+     * VFlow TextLayout sliding window margin before and after the visible area.
+     * Must be > 1.0 for relative navigation to work.
+     */
     public static final float slidingWindowMargin = 3.0f;
+    
+    /** block scroll size as a fraction of window height */
+    public static final double scrollWheelBlockSize = 0.1;
 }
