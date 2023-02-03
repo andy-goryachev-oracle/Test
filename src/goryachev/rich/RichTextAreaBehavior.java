@@ -26,18 +26,120 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
+
 /**
  * Behavior.
  * FIX BehaviorBase and InputMap are not public!
  */
 public class RichTextAreaBehavior {
-    private final RichTextArea textArea;
+    private final RichTextAreaSkin skin;
+    private final RichTextArea control;
 
-    public RichTextAreaBehavior(RichTextArea textArea) {
-        this.textArea = textArea;
+    public RichTextAreaBehavior(RichTextAreaSkin skin) {
+        this.skin = skin;
+        this.control = skin.getSkinnable();
+    }
+    
+    public void install() {
+        VFlow f = vflow();
+        f.addEventFilter(MouseEvent.MOUSE_CLICKED, this::handleMouseClicked);
+        f.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
+        f.addEventFilter(MouseEvent.MOUSE_RELEASED, this::handleMouseReleased);
+        f.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
+        f.addEventFilter(ScrollEvent.ANY, this::handleScrollEvent);
     }
     
     public void dispose() {
         // TODO
+    }
+    
+    protected VFlow vflow() {
+        return skin.getVFlow();
+    }
+    
+    protected void handleMouseClicked(MouseEvent ev) {
+        if(ev.getButton() == MouseButton.PRIMARY) {
+            int clicks = ev.getClickCount();
+            switch(clicks) {
+            case 2:
+                control.selectWord(getTextPosition(ev));
+                break;
+            case 3:
+                control.selectLine(getTextPosition(ev));
+                break;
+            }
+        }
+    }
+
+    protected void handleMousePressed(MouseEvent ev) {
+        // TODO
+        if (ev.isPopupTrigger()) {
+            // TODO clear selection if click happened outside of said selection?
+            return;
+        }
+
+        SelectionModel sm = control.getSelectionModel();
+        if (sm == null) {
+            return;
+        }
+
+        Marker pos = getTextPosition(ev);
+        if (pos == null) {
+            return;
+        }
+
+        control.setSuppressBlink(true);
+
+        if (ev.isShiftDown()) {
+            // expand selection from the anchor point to the current position
+            // clearing existing (possibly multiple) selection
+            sm.clearAndExtendLastSegment(pos);
+        } else {
+            sm.setSelection(pos, pos);
+            sm.setAnchor(pos);
+        }
+
+        control.setCaretPosition(pos.getTextPos());
+        control.requestFocus();
+    }
+    
+    protected void handleMouseReleased(MouseEvent ev) {
+        // TODO is popup trigger?
+        //stopAutoScroll(); // TODO
+        control.setSuppressBlink(false);
+        //control.commitselection TODO
+    }
+    
+    protected void handleMouseDragged(MouseEvent ev) {
+        // TODO
+    }
+    
+    protected void handleScrollEvent(ScrollEvent ev) {
+        if(ev.isShiftDown()) {
+            // TODO horizontal scroll
+        } else if(ev.isShortcutDown()) {
+            // page up / page down
+            if(ev.getDeltaY() >= 0) {
+                vflow().pageUp();
+            } else {
+                vflow().pageDown();
+            }
+        } else {
+            // block scroll
+            double f = Config.scrollWheelBlockSize;
+            if(ev.getDeltaY() >= 0) {
+                f = -f;
+            }
+            vflow().scroll(f);
+        }
+    }
+    
+    protected Marker getTextPosition(MouseEvent ev) {
+        double x = ev.getScreenX();
+        double y = ev.getScreenY();
+        return control.getTextPosition(x, y);
     }
 }

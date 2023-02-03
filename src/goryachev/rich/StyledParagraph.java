@@ -30,13 +30,23 @@ package goryachev.rich;
  * Represents a single styled text paragraph, a light weight item in a model.
  */
 public interface StyledParagraph {
-
-    /** creates Nodes corresponding to the text in the model */
+    /**
+     * Creates Nodes which provide visual representation of the paragraph.
+     * This method must create new Nodes each time, in order to support multiple RichTextArea instances
+     * connected to the same model.
+     * The nodes are not reused, so they must not maintain strong reference back to the model.
+     */
     public TextCell createTextCell();
     
-    /** returns model line index */
+    /**
+     * Returns the model paragraph index.
+     */
     public int getIndex();
     
-    /** returns plain text.  might return null if no text is associated with the paragraph */
+    /**
+     * Returns plain text for the give paragraph.  This text should be the same as the result of 'copy'
+     * operation performed on the paragraph, and must not contain line separator.
+     * This method might return null if no text is associated with the paragraph.
+     */
     public String getPlainText();
 }

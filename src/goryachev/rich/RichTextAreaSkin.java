@@ -50,12 +50,9 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     private final VFlow vflow;
     private final ScrollBar vscroll;
     private final ScrollBar hscroll;
-    private final MouseHandler mouseHandler;
 
     protected RichTextAreaSkin(RichTextArea control) {
         super(control);
-        
-        mouseHandler = createMouseHandler();
         
         // TODO maybe create scroll bars in the control (as they might be custom) -
         // TODO alternatively, the scrollbars can come from Config
@@ -105,10 +102,8 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
             }
         });
 
-        this.behavior = new RichTextAreaBehavior(control);
+        behavior = createBehavior();
         
-        mouseHandler.register(vflow);
-
         // TODO protect with listener helper (it's internal, shoud be made public) to avoid memory leak when changing skins
         NewAPI.addChangeListener(vflow::updateCaretAndSelection, false, control.getSelectionModel().selectionSegmentProperty());
         NewAPI.addChangeListener(vflow::updateRateRestartBlink, true, control.caretBlinkPeriodProperty());
@@ -116,23 +111,12 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         hscroll.valueProperty().addListener((ev) -> vflow.handleHorizontalScroll());
     }
 
-    @Override
-    public void install() {
-        // TODO
+    /** called from the constructor.  override to provide custom behavior */
+    // TODO variant: generator in Config
+    protected RichTextAreaBehavior createBehavior() {
+        return new RichTextAreaBehavior(this);
     }
-
-    @Override
-    public void dispose() {
-        if (getSkinnable() == null) {
-            return;
-        }
-
-        behavior.dispose();
-        vflow.dispose();
-
-        super.dispose();
-    }
-
+    
     /** called from the constructor. override to provide a custom scroll bar */
     // TODO variant: generator in Config
     protected ScrollBar createVScrollBar() {
@@ -145,12 +129,24 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         return new ScrollBar();
     }
 
-    /** called from the constructor.  override to provide a custom MouseHandler */
-    protected MouseHandler createMouseHandler() {
-        return new MouseHandler(this);
-    }
-
     public VFlow getVFlow() {
         return vflow;
+    }
+
+    @Override
+    public void install() {
+        behavior.install();
+    }
+
+    @Override
+    public void dispose() {
+        if (getSkinnable() == null) {
+            return;
+        }
+
+        behavior.dispose();
+        vflow.dispose();
+
+        super.dispose();
     }
 }
