@@ -29,12 +29,11 @@ public class PaginationDisappear extends Application {
             return label;
         });
         Parent parent = pagination;
-        if (!disappear)
+        if (!disappear) {
             parent = new HBox(pagination);
+        }
         stage.setScene(new Scene(parent));
         stage.show();
-        stage.setMinHeight(300);
-        stage.setMinWidth(300);
     }
 
     public static void main(String[] args) {
