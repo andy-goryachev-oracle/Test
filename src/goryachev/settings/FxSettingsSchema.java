@@ -27,9 +27,12 @@
 package goryachev.settings;
 
 import java.awt.Shape;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
@@ -169,6 +172,7 @@ public class FxSettingsSchema {
         }
     }
     
+    // TODO may not need WindowMonitor here, can get a window id from map
     public static void restoreNode(WindowMonitor m, Node n) {
         //System.out.println("restoreNode " + n); // FIX
         if (n instanceof ListView lv) {
@@ -213,6 +217,10 @@ public class FxSettingsSchema {
         if (n.getSelectionModel() == null) {
             return;
         }
+        
+        if(checkNoScene(m, n)) {
+            return;
+        }
 
         String name = getName(m, n);
         if (name == null) {
@@ -228,6 +236,38 @@ public class FxSettingsSchema {
 
         n.getSelectionModel().select(ix);
     }
+    
+    // TODO just an idea, and it does not work
+    private static boolean checkNoScene(WindowMonitor m, Node n) {
+        if (n.getScene() == null) {
+            System.out.println("attachSceneListener " + n); // FIX
+            class ChLi implements ChangeListener<Scene> {
+                private final Node node;
+                
+                public ChLi(Node n) {
+                    this.node = n;
+                }
+                
+                @Override
+                public void changed(ObservableValue<? extends Scene> src, Scene old, Scene scene) {
+                    if (scene != null) {
+                        System.out.println("scene connected: " + n); // FIX
+                        Window w = scene.getWindow();
+                        if (w != null) {
+                            n.sceneProperty().removeListener(this);
+                            restoreNode(m, n);
+                            FxSettings.restoreWindow(w);
+                        }
+                    }
+                }
+            };
+            
+            n.sceneProperty().addListener(new ChLi(n));
+
+            return true;
+        }
+        return false;
+    }
 
     private static void storeListView(WindowMonitor m, ListView n) {
         if (n.getSelectionModel() == null) {
@@ -238,7 +278,7 @@ public class FxSettingsSchema {
         if (ix < 0) {
             return;
         }
-
+        
         String name = getName(m, n);
         if (name == null) {
             return;
@@ -249,6 +289,10 @@ public class FxSettingsSchema {
     
     private static void restoreListView(WindowMonitor m, ListView n) {
         if (n.getSelectionModel() == null) {
+            return;
+        }
+        
+        if(checkNoScene(m, n)) {
             return;
         }
 

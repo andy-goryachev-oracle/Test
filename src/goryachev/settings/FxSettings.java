@@ -128,7 +128,11 @@ public class FxSettings {
         if (w instanceof PopupWindow) {
             return;
         }
-
+        
+        restoreWindow(w);
+    }
+    
+    public static void restoreWindow(Window w) {
         WindowMonitor m = getWindowMonitor(w);
         FxSettingsSchema.restoreWindow(m, w);
 
@@ -140,7 +144,11 @@ public class FxSettings {
         if (w instanceof PopupWindow) {
             return;
         }
-
+        
+        storeWindow(w);
+    }
+    
+    public static void storeWindow(Window w) {
         WindowMonitor m = getWindowMonitor(w);
         FxSettingsSchema.storeWindow(m, w);
         
