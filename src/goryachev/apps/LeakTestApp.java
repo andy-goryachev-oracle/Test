@@ -383,7 +383,7 @@ public class LeakTestApp extends Application {
                                          + "labore et dolore magna aliqua.");
                         }
                     });
-                    new Timeline(
+                    Timeline animation = new Timeline(
                         new KeyFrame(Duration.seconds(2), (ev) -> {
                             System.out.println("on");
                             p.getStyleClass().add(Pagination.STYLE_CLASS_BULLET);
@@ -400,7 +400,8 @@ public class LeakTestApp extends Application {
                             System.out.println("off");
                             p.getStyleClass().remove(Pagination.STYLE_CLASS_BULLET);
                         })
-                    ).play();
+                    );
+                    //animation.play();
                     return p;
                 }
 
