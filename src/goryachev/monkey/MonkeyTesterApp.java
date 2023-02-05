@@ -82,8 +82,9 @@ public class MonkeyTesterApp extends Application {
         contentPane = new BorderPane();
         
         SplitPane split = new SplitPane(listField, contentPane);
-        split.setDividerPositions(0.4); // the end result does not look like 0.4
+        split.setDividerPositions(0.15);
         SplitPane.setResizableWithParent(listField, Boolean.FALSE);
+        SplitPane.setResizableWithParent(contentPane, Boolean.TRUE);
         
         BorderPane bp = new BorderPane();
         bp.setTop(createMenu());
