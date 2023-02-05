@@ -33,6 +33,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
@@ -119,7 +120,8 @@ public class FxSettingsSchema {
         }
         return false;
     }
-    
+
+    // TODO add type-specific suffix
     private static String getName(WindowMonitor m, Node n) {
         StringBuilder sb = new StringBuilder();
         if (collectNames(sb, n)) {
@@ -157,6 +159,8 @@ public class FxSettingsSchema {
             storeListView(m, lv);
         } else if (n instanceof ComboBox cb) {
             storeComboBox(m, cb);
+        } else if (n instanceof CheckBox cb) {
+            storeCheckBox(m, cb);
         }
         
         if(n instanceof SplitPane sp) {
@@ -179,6 +183,8 @@ public class FxSettingsSchema {
             restoreListView(m, lv);
         } else if (n instanceof ComboBox cb) {
             restoreComboBox(m, cb);
+        } else if (n instanceof CheckBox cb) {
+            restoreCheckBox(m, cb);
         }
         
         if(n instanceof SplitPane sp) {
@@ -209,7 +215,7 @@ public class FxSettingsSchema {
             return;
         }
 
-        FxSettings.set(PREFIX + name, String.valueOf(ix));
+        FxSettings.setInt(PREFIX + name, ix);
     }
 
     // TODO perhaps operate with selection model instead
@@ -284,7 +290,7 @@ public class FxSettingsSchema {
             return;
         }
 
-        FxSettings.set(PREFIX + name, String.valueOf(ix));
+        FxSettings.setInt(PREFIX + name, ix);
     }
     
     private static void restoreListView(WindowMonitor m, ListView n) {
@@ -309,5 +315,33 @@ public class FxSettingsSchema {
         }
 
         n.getSelectionModel().select(ix);
+    }
+    
+    private static void storeCheckBox(WindowMonitor m, CheckBox n) {
+        String name = getName(m, n);
+        if (name == null) {
+            return;
+        }
+        
+        boolean sel = n.isSelected();
+        FxSettings.setBoolean(PREFIX + name, sel);
+    }
+    
+    private static void restoreCheckBox(WindowMonitor m, CheckBox n) {
+        if(checkNoScene(m, n)) {
+            return;
+        }
+
+        String name = getName(m, n);
+        if (name == null) {
+            return;
+        }
+
+        Boolean sel = FxSettings.getBoolean(PREFIX + name);
+        if (sel == null) {
+            return;
+        }
+
+        n.setSelected(sel);
     }
 }

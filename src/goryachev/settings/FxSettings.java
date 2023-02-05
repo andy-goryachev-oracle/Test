@@ -161,15 +161,23 @@ public class FxSettings {
         triggerSave();
     }
     
+    public static String get(String key) {
+        return provider.get(key);
+    }
+
     public static void setStream(String key, SStream s) {
         provider.set(key, s);
         triggerSave();
     }
     
-    public static String get(String key) {
-        return provider.get(key);
+    public static SStream getStream(String key) {
+        return provider.getSStream(key);
     }
-
+    
+    public static void setInt(String key, int value) {
+        set(key, String.valueOf(value));
+    }
+    
     public static int getInt(String key, int defaultValue) {
         String v = get(key);
         if (v != null) {
@@ -180,10 +188,22 @@ public class FxSettings {
         return defaultValue;
     }
     
-    public static SStream getStream(String key) {
-        return provider.getSStream(key);
+    public static void setBoolean(String key, boolean value) {
+        set(key, String.valueOf(value));
     }
-    
+
+    public static Boolean getBoolean(String key) {
+        String v = get(key);
+        if (v != null) {
+            if ("true".equals(v)) {
+                return Boolean.TRUE;
+            } else if ("false".equals(v)) {
+                return Boolean.FALSE;
+            }
+        }
+        return null;
+    }
+
     private static synchronized void triggerSave() {
         save.set(true);
         
