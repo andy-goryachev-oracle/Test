@@ -236,7 +236,7 @@ public class FxSettings {
         if (sc != null) {
             Window w = sc.getWindow();
             if (w != null) {
-                restoreWindow(w);
+               // FIX restoreWindow(w);
             }
         }
     }
