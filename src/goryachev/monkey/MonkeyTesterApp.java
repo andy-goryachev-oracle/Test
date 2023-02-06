@@ -105,8 +105,13 @@ public class MonkeyTesterApp extends Application {
     
     protected MenuBar createMenu() {
         MenuBar b = new MenuBar();
+        // File
         FX.menu(b, "File");
         FX.item(b, "Quit", Platform::exit);
+        // Page
+        FX.menu(b, "Page");
+        FX.item(b, "Reload Current Page", this::reloadCurrentPage);
+        // Menu
         FX.menu(b, "Menu");
         ToggleGroup g = new ToggleGroup();
         FX.radio(b, "RadioMenuItem 1", KeyCombination.keyCombination("Shortcut+1"), g);
@@ -119,6 +124,11 @@ public class MonkeyTesterApp extends Application {
         currentPage = p;
         contentPane.setCenter(p == null ? null : p.createPane());
         updateTitle();
+        FxSettings.restore(contentPane);
+    }
+    
+    protected void reloadCurrentPage() {
+        updatePage(currentPage);
     }
     
     protected void updateTitle() {

@@ -33,6 +33,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.stage.PopupWindow;
 import javafx.stage.Window;
 
@@ -227,6 +228,16 @@ public class FxSettings {
                 }
             };
             saveThread.start();
+        }
+    }
+
+    public static void restore(Node n) {
+        Scene sc = n.getScene();
+        if (sc != null) {
+            Window w = sc.getWindow();
+            if (w != null) {
+                restoreWindow(w);
+            }
         }
     }
 }
