@@ -135,7 +135,7 @@ public class TextCell {
     public PathElement[] getRangeShape(int start, int end) {
         if (content instanceof TextFlow f) {
             PathElement[] p = f.rangeShape(start, end);
-            if(p != null) {
+            if((p != null) && (p.length != 0)) {
                 return p;
             }
 

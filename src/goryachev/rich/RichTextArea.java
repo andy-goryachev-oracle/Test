@@ -243,6 +243,10 @@ public class RichTextArea extends Control {
         return vflow().getTextPosition(screenX, screenY, markers);
     }
 
+    public Marker newMarker(int index, int charIndex, boolean leading) {
+        return markers.newMarker(index, charIndex, leading);
+    }
+
     public ReadOnlyObjectProperty<Duration> caretBlinkPeriodProperty() {
         return caretBlinkPeriod.getReadOnlyProperty();
     }

@@ -51,7 +51,6 @@ public class RichTextAreaDemoPane extends BorderPane {
     public RichTextAreaDemoPane() {
         richTextArea = new RichTextArea();
         richTextArea.setModel(model());
-        //richTextArea.setWrapText(true);
 
         SplitPane hsplit = new SplitPane(richTextArea, pane());
         hsplit.setBorder(null);
