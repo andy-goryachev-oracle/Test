@@ -82,8 +82,9 @@ public class MonkeyTesterApp extends Application {
         contentPane = new BorderPane();
         
         SplitPane split = new SplitPane(listField, contentPane);
-        split.setDividerPositions(0.4); // the end result does not look like 0.4
+        split.setDividerPositions(0.15);
         SplitPane.setResizableWithParent(listField, Boolean.FALSE);
+        SplitPane.setResizableWithParent(contentPane, Boolean.TRUE);
         
         BorderPane bp = new BorderPane();
         bp.setTop(createMenu());
@@ -104,8 +105,13 @@ public class MonkeyTesterApp extends Application {
     
     protected MenuBar createMenu() {
         MenuBar b = new MenuBar();
+        // File
         FX.menu(b, "File");
         FX.item(b, "Quit", Platform::exit);
+        // Page
+        FX.menu(b, "Page");
+        FX.item(b, "Reload Current Page", this::reloadCurrentPage);
+        // Menu
         FX.menu(b, "Menu");
         ToggleGroup g = new ToggleGroup();
         FX.radio(b, "RadioMenuItem 1", KeyCombination.keyCombination("Shortcut+1"), g);
@@ -118,6 +124,11 @@ public class MonkeyTesterApp extends Application {
         currentPage = p;
         contentPane.setCenter(p == null ? null : p.createPane());
         updateTitle();
+        FxSettings.restore(contentPane);
+    }
+    
+    protected void reloadCurrentPage() {
+        updatePage(currentPage);
     }
     
     protected void updateTitle() {

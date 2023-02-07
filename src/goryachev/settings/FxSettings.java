@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -33,6 +33,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.stage.PopupWindow;
 import javafx.stage.Window;
 
@@ -128,7 +129,11 @@ public class FxSettings {
         if (w instanceof PopupWindow) {
             return;
         }
-
+        
+        restoreWindow(w);
+    }
+    
+    public static void restoreWindow(Window w) {
         WindowMonitor m = getWindowMonitor(w);
         FxSettingsSchema.restoreWindow(m, w);
 
@@ -140,7 +145,11 @@ public class FxSettings {
         if (w instanceof PopupWindow) {
             return;
         }
-
+        
+        storeWindow(w);
+    }
+    
+    public static void storeWindow(Window w) {
         WindowMonitor m = getWindowMonitor(w);
         FxSettingsSchema.storeWindow(m, w);
         
@@ -153,19 +162,49 @@ public class FxSettings {
         triggerSave();
     }
     
+    public static String get(String key) {
+        return provider.get(key);
+    }
+
     public static void setStream(String key, SStream s) {
         provider.set(key, s);
         triggerSave();
-    }
-    
-    public static String get(String key) {
-        return provider.get(key);
     }
     
     public static SStream getStream(String key) {
         return provider.getSStream(key);
     }
     
+    public static void setInt(String key, int value) {
+        set(key, String.valueOf(value));
+    }
+    
+    public static int getInt(String key, int defaultValue) {
+        String v = get(key);
+        if (v != null) {
+            try {
+                return Integer.parseInt(v);
+            } catch (NumberFormatException e) { }
+        }
+        return defaultValue;
+    }
+    
+    public static void setBoolean(String key, boolean value) {
+        set(key, String.valueOf(value));
+    }
+
+    public static Boolean getBoolean(String key) {
+        String v = get(key);
+        if (v != null) {
+            if ("true".equals(v)) {
+                return Boolean.TRUE;
+            } else if ("false".equals(v)) {
+                return Boolean.FALSE;
+            }
+        }
+        return null;
+    }
+
     private static synchronized void triggerSave() {
         save.set(true);
         
@@ -189,6 +228,16 @@ public class FxSettings {
                 }
             };
             saveThread.start();
+        }
+    }
+
+    public static void restore(Node n) {
+        Scene sc = n.getScene();
+        if (sc != null) {
+            Window w = sc.getWindow();
+            if (w != null) {
+               // FIX restoreWindow(w);
+            }
         }
     }
 }

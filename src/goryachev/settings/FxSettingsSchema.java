@@ -26,8 +26,19 @@
 // https://github.com/andy-goryachev/FxDock
 package goryachev.settings;
 
+import java.awt.Shape;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.SplitPane;
+import javafx.scene.image.ImageView;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -110,11 +121,227 @@ public class FxSettingsSchema {
         return false;
     }
 
-    public static void storeNode(WindowMonitor m, Node n) {
-        // TODO
+    // TODO add type-specific suffix
+    private static String getName(WindowMonitor m, Node n) {
+        StringBuilder sb = new StringBuilder();
+        if (collectNames(sb, n)) {
+            return null;
+        }
+        String id = m.getID();
+        return id + sb;
     }
 
+    // returns true if Node should be ignored
+    private static boolean collectNames(StringBuilder sb, Node n) {
+        if(n instanceof MenuBar) {
+            return true;
+        } else if(n instanceof Shape) {
+            return true;
+        } else if(n instanceof ImageView) {
+            return true;
+        }
+
+        Parent p = n.getParent();
+        // FIX parent is null, so it's not yet connected (probably because of the skin)
+        if(p != null) {
+            if(collectNames(sb, p)) {
+                return true;
+            }
+        }
+        sb.append('.');
+        sb.append(n.getClass().getSimpleName());
+        return false;
+    }
+
+    public static void storeNode(WindowMonitor m, Node n) {
+        //System.out.println("storeNode " + n); // FIX
+        if (n instanceof ListView lv) {
+            storeListView(m, lv);
+        } else if (n instanceof ComboBox cb) {
+            storeComboBox(m, cb);
+        } else if (n instanceof CheckBox cb) {
+            storeCheckBox(m, cb);
+        }
+        
+        if(n instanceof SplitPane sp) {
+            for(Node ch: sp.getItems()) {
+                storeNode(m, ch);
+            }
+        }
+
+        if (n instanceof Parent p) {
+            for(Node ch: p.getChildrenUnmodifiable()) {
+                storeNode(m, ch);
+            }
+        }
+    }
+    
+    // TODO may not need WindowMonitor here, can get a window id from map
     public static void restoreNode(WindowMonitor m, Node n) {
-        // TODO
+        //System.out.println("restoreNode " + n); // FIX
+        if (n instanceof ListView lv) {
+            restoreListView(m, lv);
+        } else if (n instanceof ComboBox cb) {
+            restoreComboBox(m, cb);
+        } else if (n instanceof CheckBox cb) {
+            restoreCheckBox(m, cb);
+        }
+        
+        if(n instanceof SplitPane sp) {
+            for(Node ch: sp.getItems()) {
+                restoreNode(m, ch);
+            }
+        }
+
+        if (n instanceof Parent p) {
+            for(Node ch: p.getChildrenUnmodifiable()) {
+                restoreNode(m, ch);
+            }
+        }
+    }
+
+    private static void storeComboBox(WindowMonitor m, ComboBox n) {
+        if (n.getSelectionModel() == null) {
+            return;
+        }
+
+        int ix = n.getSelectionModel().getSelectedIndex();
+        if (ix < 0) {
+            return;
+        }
+
+        String name = getName(m, n);
+        if (name == null) {
+            return;
+        }
+
+        FxSettings.setInt(PREFIX + name, ix);
+    }
+
+    // TODO perhaps operate with selection model instead
+    private static void restoreComboBox(WindowMonitor m, ComboBox n) {
+        if (n.getSelectionModel() == null) {
+            return;
+        }
+        
+        if(checkNoScene(m, n)) {
+            return;
+        }
+
+        String name = getName(m, n);
+        if (name == null) {
+            return;
+        }
+
+        int ix = FxSettings.getInt(PREFIX + name, -1);
+        if (ix < 0) {
+            return;
+        } else if (ix >= n.getItems().size()) {
+            return;
+        }
+
+        n.getSelectionModel().select(ix);
+    }
+    
+    // TODO just an idea, and it does not work
+    private static boolean checkNoScene(WindowMonitor m, Node n) {
+        if (n.getScene() == null) {
+            System.out.println("attachSceneListener " + n); // FIX
+            class ChLi implements ChangeListener<Scene> {
+                private final Node node;
+                
+                public ChLi(Node n) {
+                    this.node = n;
+                }
+                
+                @Override
+                public void changed(ObservableValue<? extends Scene> src, Scene old, Scene scene) {
+                    if (scene != null) {
+                        System.out.println("scene connected: " + n); // FIX
+                        Window w = scene.getWindow();
+                        if (w != null) {
+                            n.sceneProperty().removeListener(this);
+                            restoreNode(m, n);
+                            FxSettings.restoreWindow(w);
+                        }
+                    }
+                }
+            };
+            
+            n.sceneProperty().addListener(new ChLi(n));
+
+            return true;
+        }
+        return false;
+    }
+
+    private static void storeListView(WindowMonitor m, ListView n) {
+        if (n.getSelectionModel() == null) {
+            return;
+        }
+
+        int ix = n.getSelectionModel().getSelectedIndex();
+        if (ix < 0) {
+            return;
+        }
+        
+        String name = getName(m, n);
+        if (name == null) {
+            return;
+        }
+
+        FxSettings.setInt(PREFIX + name, ix);
+    }
+    
+    private static void restoreListView(WindowMonitor m, ListView n) {
+        if (n.getSelectionModel() == null) {
+            return;
+        }
+        
+        if(checkNoScene(m, n)) {
+            return;
+        }
+
+        String name = getName(m, n);
+        if (name == null) {
+            return;
+        }
+
+        int ix = FxSettings.getInt(PREFIX + name, -1);
+        if (ix < 0) {
+            return;
+        } else if (ix >= n.getItems().size()) {
+            return;
+        }
+
+        n.getSelectionModel().select(ix);
+    }
+    
+    private static void storeCheckBox(WindowMonitor m, CheckBox n) {
+        String name = getName(m, n);
+        if (name == null) {
+            return;
+        }
+        
+        boolean sel = n.isSelected();
+        FxSettings.setBoolean(PREFIX + name, sel);
+    }
+    
+    private static void restoreCheckBox(WindowMonitor m, CheckBox n) {
+        if(checkNoScene(m, n)) {
+            return;
+        }
+
+        String name = getName(m, n);
+        if (name == null) {
+            return;
+        }
+
+        Boolean sel = FxSettings.getBoolean(PREFIX + name);
+        if (sel == null) {
+            return;
+        }
+
+        n.setSelected(sel);
     }
 }
