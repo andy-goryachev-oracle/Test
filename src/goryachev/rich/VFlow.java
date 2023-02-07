@@ -331,8 +331,11 @@ public class VFlow extends Pane {
             return;
         }
 
-        // enforce startMarker < endMarker
-        if (startMarker.compareTo(endMarker) > 0) {
+        int eq = startMarker.compareTo(endMarker);
+        if (eq == 0) {
+            return;
+        } else if (eq > 0) {
+            // enforce startMarker < endMarker
             throw new Error(startMarker + "<" + endMarker);
         }
 
@@ -426,6 +429,7 @@ public class VFlow extends Pane {
         };
     }
 
+    /** returns the shape if both ends are at the same line */
     protected PathElement[] getRangeShape(int line, int startOffset, int endOffset) {
         TextCell cell = layout.getCell(line);
         if (cell == null) {
