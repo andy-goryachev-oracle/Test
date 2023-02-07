@@ -243,7 +243,7 @@ public class TextCellLayout {
     }
 
     private int binarySearch(double off, int high, int low) {
-        System.err.println("    binarySearch off=" + off + ", high=" + high + ", low=" + low); // FIX
+        //System.err.println("    binarySearch off=" + off + ", high=" + high + ", low=" + low); // FIX
         while (low <= high) {
             // TODO might be a problem for 2B-rows models
             int mid = (low + high) >>> 1;

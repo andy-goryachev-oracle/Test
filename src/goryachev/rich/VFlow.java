@@ -95,18 +95,18 @@ public class VFlow extends Pane {
         this.hscroll = hscroll;
 
         getStyleClass().add("content"); // maybe
-        
+
         cache = new CellCache(Config.cellCacheSize);
         // TODO invalidate cache when cell indexes change
 
         clip = new Rectangle();
-        
+
         caretPath = new Path();
         caretPath.getStyleClass().add("caret");
         caretPath.setManaged(false);
         caretPath.setStroke(Color.BLACK); // FIX
         caretPath.setStrokeWidth(1.0); // TODO ?
-        
+
         caretLineHighlight = new Path();
         caretLineHighlight.getStyleClass().add("caret-line");
         caretLineHighlight.setFill(Color.rgb(255, 0, 255, 0.02)); // FIX
@@ -115,13 +115,13 @@ public class VFlow extends Pane {
         selectionHighlight = new Path();
         selectionHighlight.getStyleClass().add("selection-highlight");
         selectionHighlight.setManaged(false);
-        
+
         getChildren().addAll(caretLineHighlight, selectionHighlight, caretPath);
         setClip(clip);
-        
+
         caretAnimation = new Timeline();
         caretAnimation.setCycleCount(Animation.INDEFINITE);
-        
+
         caretPath.visibleProperty().bind(new BooleanBinding() {
             {
                 bind(
@@ -259,7 +259,7 @@ public class VFlow extends Pane {
     /** reacts to width changes */
     protected void updateWidth() {
         if (control.isWrapText()) {
-            setRightEdge(0.0);
+            setRightEdge(getWidth());
         } else {
             double w = getOffsetX() + getWidth();
             if (layout != null) {
@@ -281,17 +281,17 @@ public class VFlow extends Pane {
     }
 
     public void updateCaretAndSelection() {
-        if(layout == null) {
+        if (layout == null) {
             removeCaretAndSelection();
             return;
         }
 
         SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
-        if(sel == null) {
+        if (sel == null) {
             removeCaretAndSelection();
             return;
         }
-        
+
         Marker caret = sel.getCaret();
 
         // current line highlight
@@ -308,10 +308,11 @@ public class VFlow extends Pane {
         Marker end = sel.getMax();
         createSelectionHighlight(selectionBuilder, start, end);
         createCaretPath(caretBuilder, caret);
+
         selectionHighlight.getElements().setAll(selectionBuilder.getPathElements());
         caretPath.getElements().setAll(caretBuilder.getPathElements());
     }
-    
+
     protected void removeCaretAndSelection() {
         caretLineHighlight.getElements().clear();
         selectionHighlight.getElements().clear();
@@ -370,7 +371,7 @@ public class VFlow extends Pane {
         // generate shapes
         Insets m = getPadding();
         double left = m.getLeft(); // + layout.getLineNumbersColumnWidth(); // FIX padding? border?
-        double right = rightEdge();
+        double right = rightEdge(); // FIX zero??
 
         // TODO
         boolean topLTR = true;
@@ -431,7 +432,7 @@ public class VFlow extends Pane {
 
     /** returns the shape if both ends are at the same line */
     protected PathElement[] getRangeShape(int line, int startOffset, int endOffset) {
-        TextCell cell = layout.getCell(line);
+        TextCell cell = layout.getVisibleCell(line);
         if (cell == null) {
             return null;
         }
