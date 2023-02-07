@@ -38,7 +38,11 @@ public enum Model {
     BILLION_LINES,
     LARGE_TEXT,
     LARGE_TEXT_LONG,
-    MONOSPACED;
+    MONOSPACED,
+    NO_LAST_NEWLINE_SHORT,
+    NO_LAST_NEWLINE_MEDIUM,
+    NO_LAST_NEWLINE_LONG,
+    ;
 
     public static StyledTextModel create(Model m) {
         if(m == null) {
@@ -70,6 +74,12 @@ public enum Model {
             return new LargeTextModel(10);
         case LARGE_TEXT_LONG:
             return new LargeTextModel(5_000);
+        case NO_LAST_NEWLINE_SHORT:
+            return new NoLastNewlineModel(1);
+        case NO_LAST_NEWLINE_MEDIUM:
+            return new NoLastNewlineModel(5);
+        case NO_LAST_NEWLINE_LONG:
+            return new NoLastNewlineModel(300);
         default:
             throw new Error("?" + m);
         }

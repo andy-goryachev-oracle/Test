@@ -44,7 +44,7 @@ public class RichTextAreaDemoModel extends SimpleStyledTextModel {
         addImage(RichTextAreaDemoModel.class.getResourceAsStream("image.png"));
         addSegment("*** This text is styled with inline style ***", "-fx-font-size:100%; -fx-font-style:italic; -fx-fill:gray;");
         nl();
-        addSegment("The following text is styled with a CSS stylesheet:", null, null);
+        addSegment("The following text is styled with a CSS stylesheet:");
         nl().nl();
         addSegment("/**", null, RED, CODE).nl();
         addSegment(" * RichTextArea demo.", null, RED, CODE).nl();

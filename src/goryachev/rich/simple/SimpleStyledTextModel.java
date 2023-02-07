@@ -47,6 +47,10 @@ public class SimpleStyledTextModel extends AbstractStyledTextModel {
     public StyledParagraph getParagraph(int index) {
         return paragraphs.get(index);
     }
+    
+    public SimpleStyledTextModel addSegment(String text) {
+        return addSegment(text, null);
+    }
 
     public SimpleStyledTextModel addSegment(String text, String style, String... css) {
         if (paragraphs.size() == 0) {

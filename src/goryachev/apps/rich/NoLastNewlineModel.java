@@ -24,41 +24,15 @@
  */
 package goryachev.apps.rich;
 
-import java.util.Random;
 import goryachev.rich.simple.SimpleStyledTextModel;
 
-public class UnevenStyledTextModel extends SimpleStyledTextModel {
-    private Random r = new Random();
-
-    public UnevenStyledTextModel(int lineCount) {
-        float longLineProbability = 0.1f;
-        for (int i = 0; i < lineCount; i++) {
-            boolean large = (r.nextFloat() < longLineProbability);
-            addSegment((large ? "L." : "S.") + (i + 1));
-
-            if (large) {
-                add(1000);
-            } else {
-                add(10);
-            }
-            nl();
-        }
-    }
-
-    private void add(int count) {
-        StringBuilder sb = new StringBuilder();
-
-        for (int i = 0; i < count; i++) {
-            int len = r.nextInt(10) + 1;
-            sb.append(' ');
-            sb.append(i);
-            sb.append('.');
-            
-            for (int j = 0; j < len; j++) {
-                sb.append('*');
+public class NoLastNewlineModel extends SimpleStyledTextModel {
+    public NoLastNewlineModel(int lineCount) {
+        for(int i=0; i<lineCount; i++) {
+            addSegment("L." + i);
+            if(i != (lineCount - 1)) {
+                nl();
             }
         }
-
-        addSegment(sb.toString());
     }
 }
