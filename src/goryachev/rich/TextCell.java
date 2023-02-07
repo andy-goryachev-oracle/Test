@@ -42,6 +42,7 @@ public class TextCell {
     private final int index;
     private final Region content;
     private double height;
+    private double forWidth;
     private double offset;
 
     public TextCell(int index, Region content) {
@@ -76,11 +77,12 @@ public class TextCell {
         }
     }
 
-    public void setPreferredHeight(double height) {
+    public void setComputedHeight(double height, double forWidth) {
         this.height = height;
+        this.forWidth = forWidth;
     }
 
-    public double getPreferredHeight() {
+    public double getComputedHeight() {
         return height;
     }
     

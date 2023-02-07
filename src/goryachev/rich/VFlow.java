@@ -672,6 +672,7 @@ public class VFlow extends Pane {
         }
 
         boolean wrap = control.isWrapText();
+        double forWidth = (wrap ? width : -1);
         int paragraphCount = lineCount();
         
         double y = -getOffsetY(); // TODO content padding
@@ -699,8 +700,8 @@ public class VFlow extends Pane {
 
             // TODO actual box height might be different from h due to snapping?
             // TODO account for side components
-            double h = r.prefHeight(wrap ? width : -1);
-            cell.setPreferredHeight(h);
+            double h = r.prefHeight(forWidth);
+            cell.setComputedHeight(h, forWidth);
             cell.setOffset(y);
 
             if (!wrap) {
@@ -760,11 +761,11 @@ public class VFlow extends Pane {
             
             // TODO actual box height might be different from h due to snapping?
             // TODO account for side components
-            double h = r.prefHeight(wrap ? width : -1);
+            double h = r.prefHeight(forWidth);
             y -= h;
             count++;
 
-            cell.setPreferredHeight(h);
+            cell.setComputedHeight(h, forWidth);
             cell.setOffset(y);
             
             getChildren().remove(r);
@@ -799,7 +800,7 @@ public class VFlow extends Pane {
             TextCell cell = layout.getCellAt(i);
             Region r = cell.getContent();
             
-            double h = cell.getPreferredHeight();
+            double h = cell.getComputedHeight();
             // TODO clip cell?
             layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
 

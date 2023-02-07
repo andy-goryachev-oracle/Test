@@ -125,7 +125,7 @@ public class TextCellLayout {
             double y = p.getY() - pad.getTop();
             if(y < 0) {
                 return markers.newMarker(cell.getLineIndex(), 0, true);
-            } else if(y < cell.getPreferredHeight()) {
+            } else if(y < cell.getComputedHeight()) {
                 // TODO move this to TextCell?
                 if(r instanceof TextFlow t) {
                     double x = p.getX() - pad.getLeft();
@@ -274,7 +274,7 @@ public class TextCellLayout {
         double off = cell.getOffset();
         if(offset < off) {
             return 1;
-        } else if(offset >= off + cell.getPreferredHeight()) {
+        } else if(offset >= off + cell.getComputedHeight()) {
             if(cell.getLineIndex() == (lineCount - 1)) {
                 return 0;
             }
@@ -322,7 +322,7 @@ public class TextCellLayout {
             
             // FIX remove check
             if(compare(c, offset) != 0) {
-                System.err.println("    * * * binarySearch is wrong: off=" + c.getOffset() + " .. " + (c.getOffset() + c.getPreferredHeight()));
+                System.err.println("    * * * binarySearch is wrong: off=" + c.getOffset() + " .. " + (c.getOffset() + c.getComputedHeight()));
                 binarySearch(offset, btmIx - 1, topIx);
             }
             
@@ -380,7 +380,7 @@ public class TextCellLayout {
         
         // FIX remove check
         if(compare(c, offset) != 0) {
-            System.err.println("    * * * binarySearch is wrong: off=" + c.getOffset() + " .. " + (c.getOffset() + c.getPreferredHeight()));
+            System.err.println("    * * * binarySearch is wrong: off=" + c.getOffset() + " .. " + (c.getOffset() + c.getComputedHeight()));
             binarySearch(offset, btmIx - 1, topIx);
         }
         
