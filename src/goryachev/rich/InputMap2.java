@@ -25,11 +25,9 @@
 package goryachev.rich;
 
 import java.util.HashMap;
-import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 
-public class InputMap2 implements EventHandler<KeyEvent> {
+public class InputMap2 {
     enum Modifier {
         ALT,
         CTRL,
@@ -56,24 +54,6 @@ public class InputMap2 implements EventHandler<KeyEvent> {
         System.err.println("add " + k); // FIX
     }
 
-    @Override
-    public void handle(KeyEvent ev) {
-        if (ev == null || ev.isConsumed()) {
-            return;
-        }
-
-        KeyBinding2 k = KeyBinding2.from(ev);
-        if (k != null) {
-            System.err.println("handle ev=" + k); // FIX
-            
-            // this should return an FxAction which can be disabled
-            Runnable r = getAction(k);
-            if (r != null) {
-                exec(r);
-            }
-        }
-    }
-
     /** returns a Runnable object for the given Action.  Might return null. */
     // TODO this should return FxAction which app developer can enable/disable
     public Runnable getAction(KeyBinding2 k) {
@@ -82,11 +62,5 @@ public class InputMap2 implements EventHandler<KeyEvent> {
             return r;
         }
         return null;
-    }
-    
-    private void exec(Runnable r) {
-        // TODO disable caret blinking - this belongs to behavior?
-        r.run();
-        // TODO enable caret blinking
     }
 }

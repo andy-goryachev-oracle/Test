@@ -26,6 +26,7 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import javafx.event.EventHandler;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -41,17 +42,26 @@ public class RichTextAreaBehavior {
     private final RichTextAreaSkin skin;
     private final RichTextArea control;
     private final InputMap2 inputMap;
+    private final EventHandler<KeyEvent> keyHandler;
 
     public RichTextAreaBehavior(RichTextAreaSkin skin) {
         this.skin = skin;
         this.control = skin.getSkinnable();
         
         inputMap = createInputMap();
+        keyHandler = this::handleKeyEvent;
     }
-    
+
+    // TODO alternatively, can expose addKeyBinding() and removeKeyBinding(),
+    // or better make InputMap and KeyBinding2 public
     protected InputMap2 createInputMap() {
-        // we could possibly pass control to the InputMap2 constructor.
         InputMap2 m = new InputMap2();
+        m.add(this::moveLeft, KeyCode.LEFT);
+        m.add(this::moveRight, KeyCode.RIGHT);
+        m.add(this::moveUp, KeyCode.UP);
+        m.add(this::moveDown, KeyCode.DOWN);
+        m.add(this::moveHome, KeyCode.HOME);
+        m.add(this::moveEnd, KeyCode.END);
         m.add(this::pageDown, KeyCode.PAGE_DOWN);
         m.add(this::pageUp, KeyCode.PAGE_UP);
         m.add(this::selectAll, KeyCode.A, InputMap2.Modifier.SHORTCUT);
@@ -66,15 +76,33 @@ public class RichTextAreaBehavior {
         f.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
         f.addEventFilter(ScrollEvent.ANY, this::handleScrollEvent);
 
-        control.addEventHandler(KeyEvent.ANY, inputMap);
+        control.addEventHandler(KeyEvent.ANY, keyHandler);
     }
 
     public void dispose() {
-        control.removeEventHandler(KeyEvent.ANY, inputMap);
+        control.removeEventHandler(KeyEvent.ANY, keyHandler);
     }
 
     protected VFlow vflow() {
         return skin.getVFlow();
+    }
+    
+    public void handleKeyEvent(KeyEvent ev) {
+        if (ev == null || ev.isConsumed()) {
+            return;
+        }
+
+        KeyBinding2 k = KeyBinding2.from(ev);
+        if (k != null) {
+            // this should return an FxAction which can be disabled
+            Runnable r = inputMap.getAction(k);
+            if (r != null) {
+                // TODO disable caret blinking - this belongs to behavior?
+                r.run();
+                // TODO enable caret blinking
+                ev.consume();
+            }
+        }
     }
 
     protected void handleMouseClicked(MouseEvent ev) {
@@ -159,16 +187,51 @@ public class RichTextAreaBehavior {
         double y = ev.getScreenY();
         return control.getTextPosition(x, y);
     }
-    
+
     public void pageUp() {
-        // TODO
+        // TODO block scroll - getViewHeight(),
+        // TODO then change caret position (use phantom x)
+        System.err.println("pageUp"); // FIX
     }
-    
+
     public void pageDown() {
-        // TODO
+        // TODO block scroll + getViewHeight(),
+        // TODO then change caret position (use phantom x)
+        System.err.println("pageDown"); // FIX
     }
     
+    public void moveRight() {
+        // TODO
+        System.err.println("moveRight"); // FIX
+    }
+
+    public void moveLeft() {
+        // TODO
+        System.err.println("moveLeft"); // FIX
+    }
+    
+    public void moveHome() {
+        // TODO
+        System.err.println("moveHome"); // FIX
+    }
+    
+    public void moveEnd() {
+        // TODO
+        System.err.println("moveEnd"); // FIX
+    }
+    
+    public void moveUp() {
+        // TODO
+        System.err.println("moveUp"); // FIX
+    }
+    
+    public void moveDown() {
+        // TODO
+        System.err.println("moveDown"); // FIX
+    }
+
     public void selectAll() {
+        System.err.println("selectAll"); // FIX
         StyledTextModel m = control.getModel();
         if(m != null) {
             int ix = m.getParagraphCount() - 1;
