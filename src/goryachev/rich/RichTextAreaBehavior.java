@@ -170,7 +170,7 @@ public class RichTextAreaBehavior {
     protected void handleMouseReleased(MouseEvent ev) {
         stopAutoScroll();
         vflow().setSuppressBlink(false);
-        // TODO scroll caret to view if outside the viewport
+        vflow().scrollCaretToVisible();
         //control.commitselection TODO
     }
 

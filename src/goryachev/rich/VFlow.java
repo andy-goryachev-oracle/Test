@@ -844,4 +844,19 @@ public class VFlow extends Pane {
             blockScroll(y - getViewHeight());
         }
     }
+    
+    public void scrollCaretToVisible() {
+        SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
+        if (sel == null) {
+            return; // TODO check
+        }
+
+        Marker m = sel.getCaret();
+        CaretSize c = getCaretSize(m);
+        if(c.y0() < 0.0) {
+            blockScroll(c.y0());
+        } else if(c.y1() > getViewHeight()) {
+            blockScroll(c.y1() - getViewHeight());
+        }
+    }
 }
