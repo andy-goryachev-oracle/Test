@@ -35,20 +35,25 @@ public interface SelectionModel {
     public void setAnchor(Marker anchor);
 
     /**
-     * clears the selection
+     * Clears the selection
      */
     public void clear();
 
     /**
-     * clears existing selection, if any, and sets a new selection
+     * Clears existing selection, if any, and sets a new selection
      */
     public void setSelection(Marker anchor, Marker caret);
 
     /**
-     * clears existing selection if any,
+     * Clears existing selection if any,
      * then selects from the anchor point to the current position.
      */
     public void clearAndExtendLastSegment(Marker pos);
+    
+    /**
+     * Extends the new selection from the anchor to the specified position.
+     */
+    public void extendSelection(Marker pos);
     
     /**
      * Selection segment property.  The value can be null.

@@ -39,6 +39,7 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventType;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.input.MouseEvent;
@@ -830,5 +831,17 @@ public class VFlow extends Pane {
     public void blockScroll(double delta) {
         Origin p = layout.computeOrigin(delta);
         setOrigin(p);
+    }
+
+    public void scrollToVisible(Point2D screenPoint) {
+        Point2D p = screenToLocal(screenPoint);
+        double y = p.getY();
+        if(y < 0.0) {
+            // above viewport
+            blockScroll(y);
+        } else if(y >= getViewHeight()) {
+            // below viewport
+            blockScroll(y - getViewHeight());
+        }
     }
 }

@@ -26,12 +26,16 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.util.Duration;
 
 /**
  * RichTextArea Behavior.
@@ -43,13 +47,25 @@ public class RichTextAreaBehavior {
     private final RichTextArea control;
     private final InputMap2 inputMap;
     private final EventHandler<KeyEvent> keyHandler;
+    private final Timeline autoScrollTimer;
+    private boolean autoScrollUp;
+    private boolean fastAutoScroll;
+    private static final Duration autoScrollPeriod = Duration.millis(100); // TODO config?
+    private static final double fastAutoScrollThreshold  = 100; // arbitrary number TODO config?
+    private static final double autoScrollStepFast  = 200; // arbitrary number TODO config?
+    private static final double autoStopStepSlow  = 20; // arbitrary number TODO config?
 
     public RichTextAreaBehavior(RichTextAreaSkin skin) {
         this.skin = skin;
         this.control = skin.getSkinnable();
         
-        inputMap = createInputMap();
-        keyHandler = this::handleKeyEvent;
+        this.inputMap = createInputMap();
+        this.keyHandler = this::handleKeyEvent;
+        
+        autoScrollTimer = new Timeline(new KeyFrame(autoScrollPeriod, (ev) -> {
+            autoScroll();
+        }));
+        autoScrollTimer.setCycleCount(Timeline.INDEFINITE);
     }
 
     // TODO alternatively, can expose addKeyBinding() and removeKeyBinding(),
@@ -97,9 +113,9 @@ public class RichTextAreaBehavior {
             // this should return an FxAction which can be disabled
             Runnable r = inputMap.getAction(k);
             if (r != null) {
-                // TODO disable caret blinking - this belongs to behavior?
+                vflow().setSuppressBlink(true);
                 r.run();
-                // TODO enable caret blinking
+                vflow().setSuppressBlink(false);
                 ev.consume();
             }
         }
@@ -152,14 +168,31 @@ public class RichTextAreaBehavior {
     }
 
     protected void handleMouseReleased(MouseEvent ev) {
-        // TODO is popup trigger?
-        //stopAutoScroll(); // TODO
+        stopAutoScroll();
         control.setSuppressBlink(false);
         //control.commitselection TODO
     }
 
     protected void handleMouseDragged(MouseEvent ev) {
-        // TODO
+        if (!(ev.getButton() == MouseButton.PRIMARY)) {
+            return;
+        }
+
+        double y = ev.getY();
+        if (y < 0.0) {
+            // above visible area
+            autoScroll(y);
+            return;
+        } else if (y > vflow().getViewHeight()) {
+            // below visible area
+            autoScroll(y - vflow().getViewHeight());
+            return;
+        } else {
+            stopAutoScroll();
+        }
+
+        Marker pos = getTextPosition(ev);
+        control.getSelectionModel().extendSelection(pos);
     }
 
     protected void handleScrollEvent(ScrollEvent ev) {
@@ -185,7 +218,41 @@ public class RichTextAreaBehavior {
     protected Marker getTextPosition(MouseEvent ev) {
         double x = ev.getScreenX();
         double y = ev.getScreenY();
+        return getTextPosition(x, y);
+    }
+
+    protected Marker getTextPosition(double x, double y) {
         return control.getTextPosition(x, y);
+    }
+
+    protected void stopAutoScroll() {
+        autoScrollTimer.stop();
+    }
+    
+    protected void autoScroll(double delta) {
+        autoScrollUp = (delta < 0.0);
+        fastAutoScroll = Math.abs(delta) > fastAutoScrollThreshold;
+        autoScrollTimer.play();
+    }
+    
+    protected void autoScroll() {
+        double delta = fastAutoScroll ? autoScrollStepFast : autoStopStepSlow;
+        if(autoScrollUp) {
+            delta = -delta;
+        }
+        vflow().blockScroll(delta);
+        
+        Point2D p;
+        if(autoScrollUp) {
+            p = vflow().localToScreen(0.0, 0.0);
+        } else {
+            p = vflow().localToScreen(0.0, vflow().getViewHeight());
+        }
+        
+        vflow().scrollToVisible(p);
+        
+        Marker pos = getTextPosition(p.getX(), p.getY());
+        control.getSelectionModel().extendSelection(pos);
     }
 
     public void pageUp() {
