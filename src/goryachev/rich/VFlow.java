@@ -372,7 +372,7 @@ public class VFlow extends Pane {
         // generate shapes
         Insets m = getPadding();
         double left = m.getLeft(); // + layout.getLineNumbersColumnWidth(); // FIX padding? border?
-        double right = rightEdge(); // FIX zero??
+        double right = rightEdge();
 
         // TODO
         boolean topLTR = true;

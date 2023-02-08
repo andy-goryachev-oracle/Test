@@ -152,7 +152,7 @@ public class RichTextAreaBehavior {
             return;
         }
 
-        control.setSuppressBlink(true);
+        vflow().setSuppressBlink(true);
 
         if (ev.isShiftDown()) {
             // expand selection from the anchor point to the current position
@@ -169,7 +169,8 @@ public class RichTextAreaBehavior {
 
     protected void handleMouseReleased(MouseEvent ev) {
         stopAutoScroll();
-        control.setSuppressBlink(false);
+        vflow().setSuppressBlink(false);
+        // TODO scroll caret to view if outside the viewport
         //control.commitselection TODO
     }
 
@@ -179,6 +180,7 @@ public class RichTextAreaBehavior {
         }
 
         double y = ev.getY();
+        System.err.println("    handleMouseDragged y=" + y); // FIX
         if (y < 0.0) {
             // above visible area
             autoScroll(y);
@@ -192,6 +194,7 @@ public class RichTextAreaBehavior {
         }
 
         Marker pos = getTextPosition(ev);
+        System.err.println("    handleMouseDragged pos=" + pos); // FIX
         control.getSelectionModel().extendSelection(pos);
     }
 

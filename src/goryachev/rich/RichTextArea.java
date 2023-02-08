@@ -262,12 +262,6 @@ public class RichTextArea extends Control {
         return caretBlinkPeriod.get();
     }
 
-    /** temporarily suppresses blinking when the caret is being moved */
-    protected void setSuppressBlink(boolean on) {
-        // perhaps we should call this method directly
-        vflow().setSuppressBlink(on);
-    }
-
     public void selectWord(Marker m) {
         // TODO invoke an action?
     }

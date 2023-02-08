@@ -50,6 +50,14 @@ public class Marker implements Comparable<Marker> {
         return new Marker(pos);
     }
     
+    public String toString() {
+        return
+            "Marker{index=" + getLineIndex() +
+            ", charIndex=" + getCharIndex() +
+            ", leading=" + isLeading() +
+            "}";
+    }
+    
     public ReadOnlyObjectProperty<TextPos> textPosProperty() {
         return pos.getReadOnlyProperty();
     }
