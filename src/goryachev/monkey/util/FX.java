@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,12 +25,14 @@
 package goryachev.monkey.util;
 
 import java.util.List;
+import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.GridPane;
 
 /**
  * Shortcuts and convenience methods that should be a part of JavaFX.
@@ -60,5 +62,10 @@ public class FX {
         mi.setToggleGroup(g);
         lastMenu(b).getItems().add(mi);
         return mi;
+    }
+
+    public static void add(GridPane p, Node n, int col, int row) {
+        p.getChildren().add(n);
+        GridPane.setConstraints(n, col, row);
     }
 }
