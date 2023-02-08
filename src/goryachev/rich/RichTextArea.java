@@ -29,8 +29,6 @@ package goryachev.rich;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyIntegerProperty;
-import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -61,7 +59,6 @@ import goryachev.rich.util.Util;
  */
 public class RichTextArea extends Control {
     protected final ObjectProperty<StyledTextModel> model = new SimpleObjectProperty<>(this, "model");
-    protected final ReadOnlyIntegerWrapper currentLine = new ReadOnlyIntegerWrapper(this, "currentLine", -1);
     protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(this, "displayCaret", true);
     protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(Config.caretBlinkPeriod));
     protected final ReadOnlyObjectWrapper<TextPos> caretPosition = new ReadOnlyObjectWrapper<>(this, "caretPosition", null);
@@ -149,16 +146,8 @@ public class RichTextArea extends Control {
 //        // TODO r/o property
 //    }
     
-    public int getCurrentLine() {
-        return currentLine.get();
-    }
-    
     public void moveCurrentLine(int n) {
         // TODO clip
-    }
-    
-    public ReadOnlyIntegerProperty currentLineProperty() {
-        return currentLine.getReadOnlyProperty();
     }
     
     public boolean isEditable() {
