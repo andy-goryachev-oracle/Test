@@ -26,8 +26,10 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import java.util.function.Consumer;
+
 /**
- * Represents a styled text model.
+ * Base class for a styled text model for use with {@link RichTextArea}.
  * The text is considered to be a collection of paragraphs, represented by {@link StyledParagraph} class.
  * 
  * TODO events
@@ -35,12 +37,19 @@ package goryachev.rich;
  * TODO editing
  * TODO is read only
  * TODO isModified()
+ * TODO use properties?  r/o: line count, r/w: editable
+ * 
+ * TODO rename StyledTextModelBase?
  */
-public interface StyledTextModel {
+public abstract class StyledTextModel {
+    public interface ChangeListener {
+        // TODO
+    }
+
     /**
      * Returns the number of paragraphs in the model.
      */
-    public int getParagraphCount();
+    public abstract int getParagraphCount();
 
     /**
      * Returns the specified paragraph.  The caller should never attempt to ask for a paragraph outside of the
@@ -48,13 +57,30 @@ public interface StyledTextModel {
      *
      * @param index paragraph index in the range (0...{@link getParagraphCount()})
      */
-    public StyledParagraph getParagraph(int index);
+    public abstract StyledParagraph getParagraph(int index);
+
+    public StyledTextModel() {
+    }
 
     /**
      * Returns the plain text string for the specified paragraph.
      * The caller should never attempt to ask for a paragraph outside of the valid range.
+     * 
+     * The default implementation requests a plain text string from StyledParagraph;
+     * models that have a cheaper access to the plain text should override this method. 
      *
      * @param index paragraph index in the range (0...{@link getParagraphCount()})
      */
-    public String getPlainText(int index);
+    public String getPlainText(int index) {
+        StyledParagraph p = getParagraph(index);
+        return p.getPlainText();
+    }
+    
+    public void addChangeListener(ChangeListener listener) {
+        // TODO
+    }
+    
+    public void removeChangeListener(ChangeListener listener) {
+        // TODO
+    }
 }

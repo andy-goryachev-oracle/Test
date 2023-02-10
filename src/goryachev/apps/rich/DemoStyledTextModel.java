@@ -28,8 +28,8 @@ import java.util.AbstractList;
 import java.util.Collection;
 import java.util.RandomAccess;
 import javafx.scene.text.TextFlow;
-import goryachev.rich.AbstractStyledTextModel;
 import goryachev.rich.StyledParagraph;
+import goryachev.rich.StyledTextModel;
 import goryachev.rich.TextCell;
 import goryachev.rich.util.NewAPI;
 
@@ -37,7 +37,7 @@ import goryachev.rich.util.NewAPI;
  * Demo StyledTextModel.
  * Does not support editing events - populate the model first, then pass it to the control.
  */
-public class DemoStyledTextModel extends AbstractStyledTextModel {
+public class DemoStyledTextModel extends StyledTextModel {
     private final SList paragraphs;
     
     public DemoStyledTextModel(int size, boolean monospaced) {
