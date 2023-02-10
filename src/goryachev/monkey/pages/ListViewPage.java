@@ -24,6 +24,9 @@
  */
 package goryachev.monkey.pages;
 
+import java.util.Random;
+import goryachev.monkey.util.OptionPane;
+import goryachev.monkey.util.ToolPane;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -31,17 +34,16 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import goryachev.monkey.util.OptionPane;
-import goryachev.monkey.util.ToolPane;
 
 /**
  * ListView page
  */
 public class ListViewPage extends ToolPane {
     enum Demo {
-        EMPTY("empty"),
-        LARGE("large"),
-        SMALL("small"),
+        EMPTY("Empty"),
+        LARGE("Large"),
+        SMALL("Small"),
+        VARIABLE("Variable Height"),
         ;
 
         private final String text;
@@ -61,12 +63,13 @@ public class ListViewPage extends ToolPane {
 
     public enum Cmd {
         ROWS,
+        VARIABLE_ROWS,
     }
 
     protected final ComboBox<Demo> demoSelector;
     protected final ComboBox<Selection> selectionSelector;
     protected final CheckBox nullFocusModel;
-    protected ListView<String> list;
+    protected ListView<Object> list;
     
     public ListViewPage() {
         // selector
@@ -128,6 +131,10 @@ public class ListViewPage extends ToolPane {
             return new Object[] {
                 Cmd.ROWS, 3,
             };
+        case VARIABLE:
+            return new Object[] {
+                Cmd.VARIABLE_ROWS, 500,
+            };
         default:
             throw new Error("?" + d);
         }
@@ -185,6 +192,14 @@ public class ListViewPage extends ToolPane {
                         }
                     }
                     break;
+                case VARIABLE_ROWS:
+                    {
+                        int n = (int)(spec[i++]);
+                        for (int j = 0; j < n; j++) {
+                            list.getItems().add(newVariableItem());
+                        }
+                    }
+                    break;
                 default:
                     throw new Error("?" + cmd);
                 }
@@ -200,5 +215,17 @@ public class ListViewPage extends ToolPane {
 
     protected String newItem() {
         return System.currentTimeMillis() + "." + System.nanoTime();
+    }
+    
+    protected String newVariableItem() {
+        int rows = 1 << new Random().nextInt(5);
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<rows; i++) {
+            if(i > 0) {
+                sb.append('\n');
+            }
+            sb.append(i);
+        }
+        return System.currentTimeMillis() + "." + System.nanoTime() + "." + sb;
     }
 }

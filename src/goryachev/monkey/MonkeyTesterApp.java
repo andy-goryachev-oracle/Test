@@ -31,10 +31,13 @@ import goryachev.monkey.util.FX;
 import goryachev.settings.FxSettings;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.NodeOrientation;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
@@ -86,11 +89,11 @@ public class MonkeyTesterApp extends Application {
         SplitPane.setResizableWithParent(listField, Boolean.FALSE);
         SplitPane.setResizableWithParent(contentPane, Boolean.TRUE);
         
-        BorderPane bp = new BorderPane();
+        BorderPane bp = new BorderPane();        
         bp.setTop(createMenu());
         bp.setCenter(split);
         bp.setBottom(status);
-        
+
         stage.setScene(new Scene(bp));
         stage.setWidth(1200);
         stage.setHeight(800);
@@ -104,6 +107,12 @@ public class MonkeyTesterApp extends Application {
     }
     
     protected MenuBar createMenu() {
+        CheckMenuItem ori = new CheckMenuItem("Orientation: RTL");
+        ori.setOnAction((ev) -> {
+            NodeOrientation v = (ori.isSelected()) ? NodeOrientation.RIGHT_TO_LEFT : NodeOrientation.LEFT_TO_RIGHT;
+            stage.getScene().setNodeOrientation(v);
+        });
+        
         MenuBar b = new MenuBar();
         // File
         FX.menu(b, "File");
@@ -111,6 +120,9 @@ public class MonkeyTesterApp extends Application {
         // Page
         FX.menu(b, "Page");
         FX.item(b, "Reload Current Page", this::reloadCurrentPage);
+        // Window
+        FX.menu(b, "Window");
+        FX.item(b, ori);
         // Menu
         FX.menu(b, "Menu");
         ToggleGroup g = new ToggleGroup();
