@@ -35,7 +35,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.PathElement;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.TextFlow;
-import goryachev.rich.impl.Markers;
 import goryachev.rich.util.NewAPI;
 import goryachev.rich.util.Util;
 
@@ -113,35 +112,35 @@ public class TextCellLayout {
         }
         return null;
     }
-
-    public Marker getTextPosition(double screenX, double screenY, Markers markers) {
+    
+    public TextPos getTextPos(double screenX, double screenY) {
         for(TextCell cell: cells) {
             Region r = cell.getContent();
             Point2D p = r.screenToLocal(screenX, screenY);
             if (p == null) {
-                return markers.newMarker(cell.getLineIndex(), cell.getTextLength(), false);
+                return new TextPos(cell.getLineIndex(), cell.getTextLength(), false);
             }
             Insets pad = r.getPadding();
             double y = p.getY() - pad.getTop();
             if(y < 0) {
-                return markers.newMarker(cell.getLineIndex(), 0, true);
+                return new TextPos(cell.getLineIndex(), 0, true);
             } else if(y < cell.getComputedHeight()) {
                 // TODO move this to TextCell?
                 if(r instanceof TextFlow t) {
                     double x = p.getX() - pad.getLeft();
                     HitInfo h = t.hitTest(new Point2D(x, y));
                     if(h != null) {
-                        return markers.newMarker(cell.getLineIndex(), h.getCharIndex(), h.isLeading());
+                        return new TextPos(cell.getLineIndex(), h.getCharIndex(), h.isLeading());
                     }
                 } else {
-                    return markers.newMarker(cell.getLineIndex(), 0, true);
+                    return new TextPos(cell.getLineIndex(), 0, true);
                 }
             }
         }
 
         TextCell cell = lastCell();
         if (cell == null) {
-            return Marker.ZERO;
+            return TextPos.ZERO;
         }
 
         Region r = cell.getContent();
@@ -149,7 +148,7 @@ public class TextCellLayout {
         if (r instanceof TextFlow f) {
             ix = Math.max(0, NewAPI.getTextLength(f) - 1);
         }
-        return markers.newMarker(cell.getLineIndex(), ix, false);
+        return new TextPos(cell.getLineIndex(), ix, false);
     }
 
     /** returns the cell contained in this layout, or null */

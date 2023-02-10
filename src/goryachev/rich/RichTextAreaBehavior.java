@@ -50,6 +50,8 @@ public class RichTextAreaBehavior {
     private final Timeline autoScrollTimer;
     private boolean autoScrollUp;
     private boolean fastAutoScroll;
+    // TODO set phantom x from cursor, add to mouse handler
+    private double phantomX = -1.0;
     private static final Duration autoScrollPeriod = Duration.millis(100); // TODO config?
     private static final double fastAutoScrollThreshold  = 100; // arbitrary number TODO config?
     private static final double autoScrollStepFast  = 200; // arbitrary number TODO config?
@@ -102,7 +104,14 @@ public class RichTextAreaBehavior {
     protected VFlow vflow() {
         return skin.getVFlow();
     }
-    
+
+    /** accepting VFlow coordinates */ 
+    private TextPos getTextPos(double x, double y) {
+        Point2D p = new Point2D(x, y);
+        Point2D sp = vflow().localToScreen(p);
+        return vflow().getTextPos(sp.getX(), sp.getY());
+    }
+
     public void handleKeyEvent(KeyEvent ev) {
         if (ev == null || ev.isConsumed()) {
             return;
@@ -147,8 +156,8 @@ public class RichTextAreaBehavior {
             return;
         }
 
-        Marker pos = getTextPosition(ev);
-        if (pos == null) {
+        Marker m = getTextPosition(ev);
+        if (m == null) {
             return;
         }
 
@@ -157,13 +166,14 @@ public class RichTextAreaBehavior {
         if (ev.isShiftDown()) {
             // expand selection from the anchor point to the current position
             // clearing existing (possibly multiple) selection
-            sm.clearAndExtendLastSegment(pos);
+            sm.clearAndExtendLastSegment(m);
         } else {
-            sm.setSelection(pos, pos);
-            sm.setAnchor(pos);
+            sm.setSelection(m, m);
+            sm.setAnchor(m);
         }
 
-        control.setCaretPosition(pos.getTextPos());
+        TextPos pos = m.getTextPos();
+        control.setCaretPosition(pos);
         control.requestFocus();
     }
 
@@ -171,6 +181,7 @@ public class RichTextAreaBehavior {
         stopAutoScroll();
         vflow().setSuppressBlink(false);
         vflow().scrollCaretToVisible();
+        phantomX = -1.0;
         //control.commitselection TODO
     }
 
@@ -297,7 +308,26 @@ public class RichTextAreaBehavior {
     
     public void moveDown() {
         // TODO
-        System.err.println("moveDown"); // FIX
+        System.err.println("moveDown " + control.getCaretPosition()); // FIX
+        CaretSize c = vflow().getCaretSize();
+        double x = c.x();
+        double y = c.y1() + 1; // TODO line spacing
+        
+        if(phantomX < 0) {
+            phantomX = x;
+        } else {
+            x = phantomX;
+        }
+        
+        TextPos p = getTextPos(x, y);
+        System.err.println("    moveDown p=" + p); // FIX
+        if(p == null) {
+            // TODO check
+            return;
+        }
+
+        // FIX does not move the caret!
+        vflow().moveCaret(p, false);
     }
 
     public void selectAll() {

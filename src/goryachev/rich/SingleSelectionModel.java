@@ -41,6 +41,9 @@ import javafx.beans.property.ReadOnlyProperty;
  * anchor belongs to a controller, transient selection that gets updated during dragging operation 
  * is a part of the controller, and once the drag is finished, the selection model is updated with the resulting
  * selection segment.
+ * 
+ * TODO perhaps change from Marker to TextPos since any kind of editing clears the selection
+ * TODO consider a case where text is inserted by a background process, or where two views work off the same model.
  */
 public class SingleSelectionModel implements SelectionModel {
     private final ReadOnlyObjectWrapper<SelectionSegment> selection = new ReadOnlyObjectWrapper<>();

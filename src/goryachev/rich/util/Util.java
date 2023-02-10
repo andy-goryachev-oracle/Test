@@ -87,6 +87,7 @@ public class Util {
         double y0 = 0.0;
         double y1 = 0.0;
 
+        // FIX use TextCell instead of localToScreen here, as sliding window regions may not be a part of the scene graph
         Point2D p = src.localToScreen(src.snappedLeftInset(), src.snappedTopInset());
         if (p == null) {
             return null;

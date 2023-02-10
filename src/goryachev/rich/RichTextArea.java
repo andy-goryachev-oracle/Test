@@ -235,6 +235,10 @@ public class RichTextArea extends Control {
     public Marker newMarker(int index, int charIndex, boolean leading) {
         return markers.newMarker(index, charIndex, leading);
     }
+    
+    protected Marker newMarker(TextPos p) {
+        return markers.newMarker(p);
+    }
 
     public ReadOnlyObjectProperty<Duration> caretBlinkPeriodProperty() {
         return caretBlinkPeriod.getReadOnlyProperty();

@@ -26,6 +26,9 @@ package goryachev.rich;
 
 /**
  * Local caret position and dimensions.
+ * 
+ * TODO better name?
+ * TODO there is a notion of "split caret" - PrismTextLayout:325
  */
 public record CaretSize(double x, double y0, double y1) {
     public boolean containsY(double y) {

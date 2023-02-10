@@ -30,6 +30,8 @@ package goryachev.rich;
  * For that, use {@link Marker}. 
  */
 public record TextPos(int lineIndex, int charIndex, boolean leading) implements Comparable<TextPos> {
+    public static final TextPos ZERO = new TextPos(0, 0, true);
+
     public int getLineOffset() {
         return leading ? charIndex : (charIndex + 1);
     }

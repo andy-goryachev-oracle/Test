@@ -398,13 +398,32 @@ public class VFlow extends Pane {
             return null;
         }
 
-        return layout.getTextPosition(screenX, screenY, markers);
+        TextPos p = layout.getTextPos(screenX, screenY);
+        return markers.newMarker(p);
+    }
+
+    public TextPos getTextPos(double screenX, double screenY) {
+        if (layout == null) {
+            return null;
+        }
+        return layout.getTextPos(screenX, screenY);
     }
 
     protected CaretSize getCaretSize(Marker m) {
         return layout.getCaretSize(this, m);
     }
-    
+
+    /** returns caret sizing info, or null */
+    public CaretSize getCaretSize() {
+        SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
+        if (sel == null) {
+            return null; // TODO check
+        }
+
+        Marker m = sel.getCaret();
+        return getCaretSize(m);
+    }
+
     protected PathElement[] getRangeTop() {
         double w = getWidth();
 
@@ -844,19 +863,35 @@ public class VFlow extends Pane {
             blockScroll(y - getViewHeight());
         }
     }
-    
+
     public void scrollCaretToVisible() {
-        SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
-        if (sel == null) {
-            return; // TODO check
+        CaretSize c = getCaretSize();
+        if (c == null) {
+            return;
         }
 
-        Marker m = sel.getCaret();
-        CaretSize c = getCaretSize(m);
-        if(c.y0() < 0.0) {
+        if (c.y0() < 0.0) {
             blockScroll(c.y0());
-        } else if(c.y1() > getViewHeight()) {
+        } else if (c.y1() > getViewHeight()) {
             blockScroll(c.y1() - getViewHeight());
         }
+    }
+
+    // TODO extend selection?
+    // TODO move method to control?
+    public void moveCaret(TextPos p, boolean extendSelection) {
+        SelectionModel sm = control.getSelectionModel();
+        if (sm == null) {
+            return;
+        }
+
+        control.setCaretPosition(p); // TODO use selection model????
+        Marker m = control.newMarker(p);
+        if (extendSelection) {
+            sm.extendSelection(m);
+        } else {
+            sm.setSelection(m, m);
+        }
+        scrollCaretToVisible();
     }
 }

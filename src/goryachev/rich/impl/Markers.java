@@ -36,15 +36,19 @@ import goryachev.rich.util.WeakList;
 public class Markers {
     private static final int LIMIT_MARKER_COUNT_SAFEGUARD = 1_000_000;
     private final WeakList<Marker> markers;
-    
-    public Markers(int size ) {
+
+    public Markers(int size) {
         markers = new WeakList<>(size);
     }
-    
+
     public Marker newMarker(int lineIndex, int charIndex, boolean leading) {
-        Marker m = Marker.create(this, new TextPos(lineIndex, charIndex, leading));
+        return newMarker(new TextPos(lineIndex, charIndex, leading));
+    }
+
+    public Marker newMarker(TextPos p) {
+        Marker m = Marker.create(this, p);
         markers.add(m);
-        
+
         // safeguard
         if (markers.size() > LIMIT_MARKER_COUNT_SAFEGUARD) {
             markers.gc();
@@ -52,7 +56,7 @@ public class Markers {
                 throw new RuntimeException("too many markers");
             }
         }
-        
+
         return m;
     }
 }
