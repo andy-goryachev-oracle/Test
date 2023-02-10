@@ -31,8 +31,8 @@ import goryachev.rich.simple.SimpleStyledTextModel;
 /**
  * RichTextArea demo.
  */
-public class RichTextAreaDemoModel extends SimpleStyledTextModel {
-    public RichTextAreaDemoModel() {
+public class DemoStyledModel extends SimpleStyledTextModel {
+    public DemoStyledModel() {
         String CODE = "code";
         String RED = "red";
         String GREEN = "green";
@@ -41,7 +41,7 @@ public class RichTextAreaDemoModel extends SimpleStyledTextModel {
 
         addSegment("RichTextArea Control", "-fx-font-size:200%;", UNDER);
         //nl();
-        addImage(RichTextAreaDemoModel.class.getResourceAsStream("image.png"));
+        addImage(DemoStyledModel.class.getResourceAsStream("image.png"));
         addSegment("*** This text is styled with inline style ***", "-fx-font-size:100%; -fx-font-style:italic; -fx-fill:gray;");
         nl();
         addSegment("The following text is styled with a CSS stylesheet:");
@@ -55,7 +55,11 @@ public class RichTextAreaDemoModel extends SimpleStyledTextModel {
         addSegment("Application {", null, CODE).nl();
         addSegment("}", null, CODE).nl();
         nl(2);
-        
+        addSegment("Halfwidth and FullWidth Forms", null, UNDER).nl();
+        addSegment("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯ", "-fx-font-family:monospaced;").nl();
+        addSegment("ABCDEFGHIJKLMNO", "-fx-font-family:monospaced;").nl();
+        nl(2);
+
         // TODO unicode codepoints
 //        addSegment("Mongolian ᠨᠢᠷᠤᠭᠤ niruγu (нуруу nuruu)", null, null).nl();
 //        addSegment("Arabic العربية", null, null).nl();

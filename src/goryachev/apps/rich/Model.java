@@ -27,22 +27,32 @@ package goryachev.apps.rich;
 import goryachev.rich.StyledTextModel;
 
 public enum Model {
-    DEMO,
-    UNEVEN_SMALL,
-    UNEVEN_LARGE,
-    NULL,
-    ZERO_LINES,
-    ONE_LINE,
-    TEN_LINES,
-    THOUSAND_LINES,
-    BILLION_LINES,
-    LARGE_TEXT,
-    LARGE_TEXT_LONG,
-    MONOSPACED,
-    NO_LAST_NEWLINE_SHORT,
-    NO_LAST_NEWLINE_MEDIUM,
-    NO_LAST_NEWLINE_LONG,
+    DEMO("Demo"),
+    UNEVEN_SMALL("Uneven Small"),
+    UNEVEN_LARGE("Uneven Large"),
+    NULL("null"),
+    ZERO_LINES("0 Lines"),
+    ONE_LINE("1 Line"),
+    TEN_LINES("10 Lines"),
+    THOUSAND_LINES("1,000 Lines"),
+    BILLION_LINES("1,000,000 Lines"),
+    LARGE_TEXT("Large text"),
+    LARGE_TEXT_LONG("Large Text, Long"),
+    MONOSPACED("Monospaced"),
+    NO_LAST_NEWLINE_SHORT("No Last Newline, Short"),
+    NO_LAST_NEWLINE_MEDIUM("No Last Newline, Medium"),
+    NO_LAST_NEWLINE_LONG("No Last Newline, Long"),
     ;
+    
+    private final String name;
+    
+    Model(String name) {
+        this.name = name;
+    }
+    
+    public String toString() {
+        return name;
+    }
 
     public static StyledTextModel create(Model m) {
         if(m == null) {
@@ -53,7 +63,7 @@ public enum Model {
         case BILLION_LINES:
             return new DemoStyledTextModel(1_000_000_000, false);
         case DEMO:
-            return new RichTextAreaDemoModel();
+            return new DemoStyledModel();
         case MONOSPACED:
             return new DemoStyledTextModel(100_000, true);
         case NULL:
