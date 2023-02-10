@@ -104,9 +104,23 @@ public class RichTextAreaBehavior {
         return skin.getVFlow();
     }
 
-    /** accepting VFlow coordinates */ 
-    private TextPos getTextPos(double localX, double localY) {
+    /** accepting VFlow coordinates */
+    protected TextPos getTextPos(double localX, double localY) {
         return vflow().getTextPos(localX, localY);
+    }
+
+    protected TextPos getCaret() {
+        SelectionModel sm = control.getSelectionModel();
+        if (sm == null) {
+            return null;
+        }
+
+        SelectionSegment sel = sm.getSelectionSegment();
+        if (sel == null) {
+            return null;
+        }
+
+        return sel.getCaret().getTextPos();
     }
 
     public void handleKeyEvent(KeyEvent ev) {
@@ -235,6 +249,11 @@ public class RichTextAreaBehavior {
     protected Marker getTextPosition(double screenX, double screenY) {
         return control.getTextPosition(screenX, screenY);
     }
+    
+    protected String getText(int modelIndex) {
+        StyledTextModel m = control.getModel();
+        return (m == null) ? null : m.getPlainText(modelIndex);
+    }
 
     protected void stopAutoScroll() {
         autoScrollTimer.stop();
@@ -288,13 +307,23 @@ public class RichTextAreaBehavior {
     }
     
     public void moveHome() {
-        // TODO
-        System.err.println("moveHome"); // FIX
+        TextPos p = getCaret();
+        if (p != null) {
+            TextPos p2 = new TextPos(p.lineIndex(), 0, true);
+            vflow().moveCaret(p2, false);
+            phantomX = -1.0;
+        }
     }
     
     public void moveEnd() {
-        // TODO
-        System.err.println("moveEnd"); // FIX
+        TextPos p = getCaret();
+        if (p != null) {
+            String s = getText(p.lineIndex());
+            int len = (s == null ? 0 : s.length());
+            TextPos p2 = new TextPos(p.lineIndex(), len, false);
+            vflow().moveCaret(p2, false);
+            phantomX = -1.0;
+        }
     }
     
     public void moveUp() {

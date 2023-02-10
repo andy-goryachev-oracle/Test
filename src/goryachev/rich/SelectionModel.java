@@ -28,6 +28,15 @@ package goryachev.rich;
 
 import javafx.beans.property.ReadOnlyProperty;
 
+/**
+ * Selection Model.
+ * 
+ * TODO perhaps we should support, at least theoretically, the concept of multiple selection
+ * and multiple carets.  The impacted areas:
+ * - this interface
+ * - changes in VFlow to handle multiple carets and decorations
+ * - changes in RichTextAreaBehavior to handle selection and keyboard navigation
+ */
 public interface SelectionModel {
     /**
      * Sets anchor.
