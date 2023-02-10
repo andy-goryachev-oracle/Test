@@ -43,7 +43,8 @@ public class TextCell {
     private final Region content;
     private double height;
     private double forWidth;
-    private double offset;
+    private double x;
+    private double y;
 
     public TextCell(int index, Region content) {
         this.index = index;
@@ -85,15 +86,21 @@ public class TextCell {
     public double getComputedHeight() {
         return height;
     }
-    
-    public void setOffset(double offset) {
-        this.offset = offset;
-    }
-    
-    public double getOffset() {
-        return offset;
+
+    /** sets location of this cell in VFlow coordinates */
+    public void setLocation(double x, double y) {
+        this.x = x;
+        this.y = y;
     }
 
+    public double getX() {
+        return x;
+    }
+    
+    public double getY() {
+        return y;
+    }
+    
     public int getLineIndex() {
         return index;
     }

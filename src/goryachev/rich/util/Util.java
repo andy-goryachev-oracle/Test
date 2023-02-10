@@ -34,7 +34,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.PathElement;
-import goryachev.rich.CaretSize;
 
 /**
  * Utility methods to be moved to com.sun.javafx hierarchy.
@@ -79,40 +78,6 @@ public class Util {
     public static <T extends Comparable<T>> void isLessThanOrEqual(T min, T max, String nameMin, String nameMax) {
         if(min.compareTo(max) > 0) {
             throw new IllegalArgumentException(nameMin + " must be less or equal to " + nameMax);
-        }
-    }
-
-    public static CaretSize translateCaretSize(Region target, Region src, PathElement[] elements) {
-        double x = 0.0;
-        double y0 = 0.0;
-        double y1 = 0.0;
-
-        // FIX use TextCell instead of localToScreen here, as sliding window regions may not be a part of the scene graph
-        Point2D p = src.localToScreen(src.snappedLeftInset(), src.snappedTopInset());
-        if (p == null) {
-            return null;
-        }
-
-        p = target.screenToLocal(p);
-        double dx = p.getX();
-        double dy = p.getY();
-
-        int sz = elements.length;
-        for (int i = 0; i < sz; i++) {
-            PathElement em = elements[i];
-            if (em instanceof LineTo m) {
-                x = halfPixel(m.getX() + dx);
-                y0 = halfPixel(m.getY() + dy);
-            } else if (em instanceof MoveTo m) {
-                x = halfPixel(m.getX() + dx);
-                y1 = halfPixel(m.getY() + dy);
-            }
-        }
-
-        if (y0 > y1) {
-            return new CaretSize(x, y1, y0);
-        } else {
-            return new CaretSize(x, y0, y1);
         }
     }
 

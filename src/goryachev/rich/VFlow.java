@@ -410,7 +410,7 @@ public class VFlow extends Pane {
     }
 
     protected CaretSize getCaretSize(Marker m) {
-        return layout.getCaretSize(this, m);
+        return layout.getCaretSize(m);
     }
 
     /** returns caret sizing info, or null */
@@ -695,6 +695,7 @@ public class VFlow extends Pane {
         double forWidth = (wrap ? width : -1);
         int paragraphCount = lineCount();
         
+        double x = 0.0 - getOffsetX(); // TODO content padding
         double y = -getOffsetY(); // TODO content padding
         double unwrappedWidth = 0;
         double margin = Config.slidingWindowMargin * height;
@@ -722,7 +723,7 @@ public class VFlow extends Pane {
             // TODO account for side components
             double h = r.prefHeight(forWidth);
             cell.setComputedHeight(h, forWidth);
-            cell.setOffset(y);
+            cell.setLocation(x, y);
 
             if (!wrap) {
                 if (visible) {
@@ -786,7 +787,7 @@ public class VFlow extends Pane {
             count++;
 
             cell.setComputedHeight(h, forWidth);
-            cell.setOffset(y);
+            cell.setLocation(x, y);
             
             getChildren().remove(r);
 
@@ -810,8 +811,6 @@ public class VFlow extends Pane {
     }
     
     private void layoutNodes() {
-        double x = 0.0 - getOffsetX(); // TODO content padding
-        double y = -getOffsetY();
         boolean wrap = control.isWrapText();
         double w = wrap ? getWidth() : rightEdge(); // TODO padding
 
@@ -821,12 +820,9 @@ public class VFlow extends Pane {
             Region r = cell.getContent();
             
             double h = cell.getComputedHeight();
-            // TODO clip cell?
+            double x = cell.getX();
+            double y = cell.getY();
             layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
-
-            // TODO actual box height might be different from h due to snapping?
-            // TODO also consider using maxx, maxy from boundsInLocal instead?
-            y += h;
         }
     }
     

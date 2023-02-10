@@ -32,6 +32,8 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.layout.Region;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.PathElement;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.TextFlow;
@@ -183,7 +185,7 @@ public class TextCellLayout {
         return null;
     }
 
-    public CaretSize getCaretSize(Region parent, Marker m) {
+    public CaretSize getCaretSize(Marker m) {
         if (m != null) {
             int ix = m.getLineIndex();
             TextCell cell = getCell(ix);
@@ -191,10 +193,38 @@ public class TextCellLayout {
                 int charIndex = m.getCharIndex();
                 boolean leading = m.isLeading();
                 PathElement[] p = cell.getCaretShape(charIndex, leading);
-                return Util.translateCaretSize(parent, cell.getContent(), p);
+                return translateCaretSize(cell, p);
             }
         }
         return null;
+    }
+
+    // TODO combine with previous method?
+    private static CaretSize translateCaretSize(TextCell cell, PathElement[] elements) {
+        double x = 0.0;
+        double y0 = 0.0;
+        double y1 = 0.0;
+
+        double dx = cell.getX();
+        double dy = cell.getY();
+
+        int sz = elements.length;
+        for (int i = 0; i < sz; i++) {
+            PathElement em = elements[i];
+            if (em instanceof LineTo m) {
+                x = Util.halfPixel(m.getX() + dx);
+                y0 = Util.halfPixel(m.getY() + dy);
+            } else if (em instanceof MoveTo m) {
+                x = Util.halfPixel(m.getX() + dx);
+                y1 = Util.halfPixel(m.getY() + dy);
+            }
+        }
+
+        if (y0 > y1) {
+            return new CaretSize(x, y1, y0);
+        } else {
+            return new CaretSize(x, y0, y1);
+        }
     }
 
     public void removeNodesFrom(VFlow f) {
@@ -270,7 +300,7 @@ public class TextCellLayout {
     }
     
     private int compare(TextCell cell, double offset) {
-        double off = cell.getOffset();
+        double off = cell.getY();
         if(offset < off) {
             return 1;
         } else if(offset >= off + cell.getComputedHeight()) {
@@ -321,11 +351,11 @@ public class TextCellLayout {
             
             // FIX remove check
             if(compare(c, offset) != 0) {
-                System.err.println("    * * * binarySearch is wrong: off=" + c.getOffset() + " .. " + (c.getOffset() + c.getComputedHeight()));
+                System.err.println("    * * * binarySearch is wrong: off=" + c.getY() + " .. " + (c.getY() + c.getComputedHeight()));
                 binarySearch(offset, btmIx - 1, topIx);
             }
             
-            return new Origin(c.getLineIndex(), offset - c.getOffset());
+            return new Origin(c.getLineIndex(), offset - c.getY());
         }
         return new Origin(ix, 0.0);
     }
@@ -346,7 +376,7 @@ public class TextCellLayout {
             for(int i=0; i<sz; i++) {
                 TextCell c = cells.get(i);
                 if(compare(c, localOffset) == 0) {
-                    double offset = localOffset - c.getOffset();
+                    double offset = localOffset - c.getY();
                     return new Origin(c.getLineIndex(), offset);
                 }
             }
@@ -379,10 +409,10 @@ public class TextCellLayout {
         
         // FIX remove check
         if(compare(c, offset) != 0) {
-            System.err.println("    * * * binarySearch is wrong: off=" + c.getOffset() + " .. " + (c.getOffset() + c.getComputedHeight()));
+            System.err.println("    * * * binarySearch is wrong: y=" + c.getY() + " .. " + (c.getY() + c.getComputedHeight()));
             binarySearch(offset, btmIx - 1, topIx);
         }
         
-        return new Origin(c.getLineIndex(), offset - c.getOffset());
+        return new Origin(c.getLineIndex(), offset - c.getY());
     }
 }
