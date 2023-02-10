@@ -302,16 +302,17 @@ public class RichTextAreaBehavior {
     }
     
     public void moveUp() {
-        // TODO
-        System.err.println("moveUp"); // FIX
+        moveLine(true);
     }
     
     public void moveDown() {
-        // TODO
-        System.err.println("moveDown " + control.getCaretPosition()); // FIX
+        moveLine(false);
+    }
+    
+    private void moveLine(boolean up) {
         CaretSize c = vflow().getCaretSize();
         double x = c.x();
-        double y = c.y1() + 1; // TODO line spacing
+        double y = up ? c.y0() - 1 : c.y1() + 1; // TODO line spacing
         
         if(phantomX < 0) {
             phantomX = x;
@@ -320,13 +321,11 @@ public class RichTextAreaBehavior {
         }
         
         TextPos p = getTextPos(x, y);
-        System.err.println("    moveDown p=" + p); // FIX
         if(p == null) {
             // TODO check
             return;
         }
 
-        // FIX does not move the caret!
         vflow().moveCaret(p, false);
     }
 

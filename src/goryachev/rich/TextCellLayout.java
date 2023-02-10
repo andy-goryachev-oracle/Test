@@ -106,17 +106,13 @@ public class TextCellLayout {
     public void setVisibleCount(int n) {
         visible = n;
     }
-    
-    protected TextCell lastCell() {
-        int sz = cells.size();
-        if(sz > 0) {
-            return cells.get(sz - 1);
-        }
-        return null;
-    }
 
     /** finds text position inside the sliding window */
     public TextPos getTextPos(double localX, double localY) {
+        if (lineCount == 0) {
+            return TextPos.ZERO;
+        }
+
         int topIx = topIndex();
         int btmIx = bottomIndex();
 
@@ -139,12 +135,9 @@ public class TextCellLayout {
                 } else {
                     return new TextPos(cell.getLineIndex(), 0, true);
                 }
+            } else {
+                // TODO
             }
-        }
-
-        cell = lastCell();
-        if (cell == null) {
-            return TextPos.ZERO;
         }
 
         Region r = cell.getContent();
