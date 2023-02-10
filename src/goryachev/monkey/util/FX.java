@@ -50,6 +50,17 @@ public class FX {
         lastMenu(b).getItems().add(mi);
         return mi;
     }
+    
+    public static MenuItem item(MenuBar b, MenuItem mi) {
+        lastMenu(b).getItems().add(mi);
+        return mi;
+    }
+    
+    public static MenuItem item(MenuBar b, String text) {
+        MenuItem mi = new MenuItem(text);
+        lastMenu(b).getItems().add(mi);
+        return mi;
+    }
 
     private static Menu lastMenu(MenuBar b) {
         List<Menu> ms = b.getMenus();
