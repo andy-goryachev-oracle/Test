@@ -321,7 +321,7 @@ public class VFlow extends Pane {
     }
 
     protected void createCaretPath(FxPathBuilder b, Marker m) {
-        CaretInfo c = getCaretSize(m);
+        CaretInfo c = getCaretInfo(m);
         if(c != null) {
             b.moveto(c.x(), c.y0());
             b.lineto(c.x(), c.y1());
@@ -401,19 +401,19 @@ public class VFlow extends Pane {
         return layout.getTextPos(localX, localY);
     }
 
-    protected CaretInfo getCaretSize(Marker m) {
-        return layout.getCaretSize(m);
+    protected CaretInfo getCaretInfo(Marker m) {
+        return layout.getCaretInfo(m);
     }
 
     /** returns caret sizing info, or null */
-    public CaretInfo getCaretSize() {
+    public CaretInfo getCaretInfo() {
         SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
         if (sel == null) {
             return null; // TODO check
         }
 
         Marker m = sel.getCaret();
-        return getCaretSize(m);
+        return getCaretInfo(m);
     }
 
     protected PathElement[] getRangeTop() {
@@ -854,7 +854,7 @@ public class VFlow extends Pane {
     }
 
     public void scrollCaretToVisible() {
-        CaretInfo c = getCaretSize();
+        CaretInfo c = getCaretInfo();
         if (c == null) {
             return;
         }

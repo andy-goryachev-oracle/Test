@@ -306,7 +306,7 @@ public class RichTextAreaBehavior {
     }
     
     private void moveLine(double delta) {
-        CaretInfo c = vflow().getCaretSize();
+        CaretInfo c = vflow().getCaretInfo();
         double x = c.x();
         double y = (delta < 0) ? c.y0() + delta : c.y1() + delta;
         
