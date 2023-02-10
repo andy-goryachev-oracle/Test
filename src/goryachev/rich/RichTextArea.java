@@ -67,7 +67,6 @@ public class RichTextArea extends Control {
     protected final SelectionModel selectionModel = new SingleSelectionModel();
     protected final Markers markers = new Markers(32);
 
-    // TODO supply configuration options to the constructor (like cell cache size, etc)?
     public RichTextArea() {
         setFocusTraversable(true);
         getStyleClass().add("rich-text-area");

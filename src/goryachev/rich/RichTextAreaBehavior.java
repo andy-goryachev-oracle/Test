@@ -39,7 +39,7 @@ import javafx.util.Duration;
 /**
  * RichTextArea Behavior.
  *
- * FIX BehaviorBase and InputMap are not public!
+ * BehaviorBase and InputMap are not public, so had to invent my own.
  */
 public class RichTextAreaBehavior {
     private final RichTextAreaSkin skin;
@@ -49,12 +49,8 @@ public class RichTextAreaBehavior {
     private final Timeline autoScrollTimer;
     private boolean autoScrollUp;
     private boolean fastAutoScroll;
-    // TODO set phantom x from cursor, add to mouse handler
     private double phantomX = -1.0;
-    private static final Duration autoScrollPeriod = Duration.millis(100); // TODO config?
-    private static final double fastAutoScrollThreshold  = 100; // arbitrary number TODO config?
-    private static final double autoScrollStepFast  = 200; // arbitrary number TODO config?
-    private static final double autoStopStepSlow  = 20; // arbitrary number TODO config?
+    private static final Duration autoScrollPeriod = Duration.millis(Config.autoScrollPeriod);
 
     public RichTextAreaBehavior(RichTextAreaSkin skin) {
         this.skin = skin;
@@ -158,6 +154,7 @@ public class RichTextAreaBehavior {
     protected void handleMousePressed(MouseEvent ev) {
         // TODO
         if (ev.isPopupTrigger()) {
+            // TODO use onContextMenu ?
             // TODO clear selection if click happened outside of said selection?
             return;
         }
@@ -193,7 +190,6 @@ public class RichTextAreaBehavior {
         vflow().setSuppressBlink(false);
         vflow().scrollCaretToVisible();
         phantomX = -1.0;
-        //control.commitselection TODO
     }
 
     protected void handleMouseDragged(MouseEvent ev) {
@@ -202,7 +198,6 @@ public class RichTextAreaBehavior {
         }
 
         double y = ev.getY();
-        System.err.println("    handleMouseDragged y=" + y); // FIX
         if (y < 0.0) {
             // above visible area
             autoScroll(y);
@@ -216,7 +211,6 @@ public class RichTextAreaBehavior {
         }
 
         Marker pos = getTextPosition(ev);
-        System.err.println("    handleMouseDragged pos=" + pos); // FIX
         control.getSelectionModel().extendSelection(pos);
     }
 
@@ -261,12 +255,12 @@ public class RichTextAreaBehavior {
     
     protected void autoScroll(double delta) {
         autoScrollUp = (delta < 0.0);
-        fastAutoScroll = Math.abs(delta) > fastAutoScrollThreshold;
+        fastAutoScroll = Math.abs(delta) > Config.fastAutoScrollThreshold;
         autoScrollTimer.play();
     }
     
     protected void autoScroll() {
-        double delta = fastAutoScroll ? autoScrollStepFast : autoStopStepSlow;
+        double delta = fastAutoScroll ? Config.autoScrollStepFast : Config.autoStopStepSlow;
         if(autoScrollUp) {
             delta = -delta;
         }
@@ -297,13 +291,11 @@ public class RichTextAreaBehavior {
     }
     
     public void moveRight() {
-        // TODO
-        System.err.println("moveRight"); // FIX
+        nextCharacterVisually(true);
     }
 
     public void moveLeft() {
-        // TODO
-        System.err.println("moveLeft"); // FIX
+        nextCharacterVisually(false);
     }
     
     public void moveHome() {
@@ -334,7 +326,21 @@ public class RichTextAreaBehavior {
         moveLine(1.0); // TODO line spacing
     }
     
-    private void moveLine(double delta) {
+    public void selectAll() {
+        StyledTextModel m = control.getModel();
+        if(m != null) {
+            int ix = m.getParagraphCount() - 1;
+            if (ix >= 0) {
+                String text = m.getPlainText(ix);
+                int cix = (text == null ? 0 : Math.max(0, text.length() - 1));
+                Marker end = control.newMarker(ix, cix, false);
+                control.getSelectionModel().setSelection(Marker.ZERO, end);
+                phantomX = -1.0;
+            }
+        }
+    }
+    
+    protected void moveLine(double delta) {
         CaretInfo c = vflow().getCaretInfo();
         double x = c.x();
         double y = (delta < 0) ? c.y0() + delta : c.y1() + delta;
@@ -354,17 +360,8 @@ public class RichTextAreaBehavior {
         vflow().moveCaret(p, false);
     }
 
-    public void selectAll() {
-        System.err.println("selectAll"); // FIX
-        StyledTextModel m = control.getModel();
-        if(m != null) {
-            int ix = m.getParagraphCount() - 1;
-            if (ix >= 0) {
-                String text = m.getPlainText(ix);
-                int cix = (text == null ? 0 : Math.max(0, text.length() - 1));
-                Marker end = control.newMarker(ix, cix, false);
-                control.getSelectionModel().setSelection(Marker.ZERO, end);
-            }
-        }
+    protected void nextCharacterVisually(boolean moveRight) {
+        // TODO
+        System.err.println("nextCharacterVisually " + moveRight); // FIX
     }
 }

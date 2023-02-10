@@ -25,12 +25,22 @@
 package goryachev.rich;
 
 /**
- * Configuration settings for RichTextArea
- * 
- * TODO make it cloneable and pass an instance to the constructor?
- * TODO a couple of factory methods for small model, size to content, large model?
+ * Configuration settings for RichTextArea.
  */
 public class Config {
+    /** autoscroll while selecting animation period, milliseconds */
+    public static final int autoScrollPeriod = 100;
+
+    /** autoscroll switches to fast mode when mouse is moved further out of the view, pixels */
+    public static final double fastAutoScrollThreshold  = 100;
+
+    /** "fast" autoscroll step, in pixels */
+    public static final double autoScrollStepFast  = 200;
+    
+    /** "slow" autoscroll step, in pixels */
+    public static final double autoStopStepSlow  = 20;
+
+
     /** caret blink period in milliseconds */
     public static final int caretBlinkPeriod = 500;
 

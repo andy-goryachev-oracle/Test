@@ -27,7 +27,9 @@ package goryachev.rich;
 /**
  * Local caret position and dimensions.
  * 
- * TODO there is a notion of "split caret" - PrismTextLayout:325
+ * TODO there is a notion of "split caret"
+ * PrismTextLayout:325, TextAreaSkin:580, also
+ * JDK-8089958 Text caret shape is split at bidi boundary
  */
 public record CaretInfo(double x, double y0, double y1) {
     public boolean containsY(double y) {

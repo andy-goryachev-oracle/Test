@@ -55,6 +55,9 @@ public class DemoStyledModel extends SimpleStyledTextModel {
         addSegment("Application {", null, CODE).nl();
         addSegment("}", null, CODE).nl();
         nl(2);
+        addSegment("        leading and trailing whitespace         ", null, CODE).nl();
+        addSegment("A regular Arabic verb, كَتَبَ‎ kataba 'to write'.").nl();
+        nl();
         addSegment("Halfwidth and FullWidth Forms", null, UNDER).nl();
         addSegment("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯ", "-fx-font-family:monospaced;").nl();
         addSegment("ABCDEFGHIJKLMNO", "-fx-font-family:monospaced;").nl();
