@@ -393,20 +393,12 @@ public class VFlow extends Pane {
         }
     }
 
-    public Marker getTextPosition(double screenX, double screenY, Markers markers) {
+    /** in vflow cooridinates */ 
+    public TextPos getTextPos(double localX, double localY) {
         if (layout == null) {
             return null;
         }
-
-        TextPos p = layout.getTextPos(screenX, screenY);
-        return markers.newMarker(p);
-    }
-
-    public TextPos getTextPos(double screenX, double screenY) {
-        if (layout == null) {
-            return null;
-        }
-        return layout.getTextPos(screenX, screenY);
+        return layout.getTextPos(localX, localY);
     }
 
     protected CaretSize getCaretSize(Marker m) {
@@ -848,9 +840,8 @@ public class VFlow extends Pane {
         setOrigin(p);
     }
 
-    public void scrollToVisible(Point2D screenPoint) {
-        Point2D p = screenToLocal(screenPoint);
-        double y = p.getY();
+    /** scrolls to visible area, using vflow coordinates */
+    public void scrollToVisible(double x, double y) {
         if(y < 0.0) {
             // above viewport
             blockScroll(y);
@@ -858,6 +849,8 @@ public class VFlow extends Pane {
             // below viewport
             blockScroll(y - getViewHeight());
         }
+        
+        // TODO forgot horizontal scrolling??
     }
 
     public void scrollCaretToVisible() {

@@ -29,7 +29,6 @@ package goryachev.rich;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -106,10 +105,8 @@ public class RichTextAreaBehavior {
     }
 
     /** accepting VFlow coordinates */ 
-    private TextPos getTextPos(double x, double y) {
-        Point2D p = new Point2D(x, y);
-        Point2D sp = vflow().localToScreen(p);
-        return vflow().getTextPos(sp.getX(), sp.getY());
+    private TextPos getTextPos(double localX, double localY) {
+        return vflow().getTextPos(localX, localY);
     }
 
     public void handleKeyEvent(KeyEvent ev) {
@@ -235,8 +232,8 @@ public class RichTextAreaBehavior {
         return getTextPosition(x, y);
     }
 
-    protected Marker getTextPosition(double x, double y) {
-        return control.getTextPosition(x, y);
+    protected Marker getTextPosition(double screenX, double screenY) {
+        return control.getTextPosition(screenX, screenY);
     }
 
     protected void stopAutoScroll() {
@@ -256,17 +253,20 @@ public class RichTextAreaBehavior {
         }
         vflow().blockScroll(delta);
         
-        Point2D p;
+        double x = 0.0;
+        double y;
         if(autoScrollUp) {
-            p = vflow().localToScreen(0.0, 0.0);
+            y = 0.0;
         } else {
-            p = vflow().localToScreen(0.0, vflow().getViewHeight());
+            y = vflow().getViewHeight();
         }
         
-        vflow().scrollToVisible(p);
+        vflow().scrollToVisible(x, y);
         
-        Marker pos = getTextPosition(p.getX(), p.getY());
-        control.getSelectionModel().extendSelection(pos);
+        TextPos p = getTextPos(x, y);
+        
+        Marker m = control.newMarker(p);
+        control.getSelectionModel().extendSelection(m);
     }
 
     public void pageUp() {

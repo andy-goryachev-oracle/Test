@@ -115,7 +115,49 @@ public class TextCellLayout {
         return null;
     }
     
-    public TextPos getTextPos(double screenX, double screenY) {
+    public TextPos getTextPos(double localX, double localY) {
+        int topIx = topIndex();
+        int btmIx = bottomIndex();
+
+        int ix = binarySearch(localY, btmIx - 1, topIx);
+        TextCell cell = getCell(ix);
+        if (cell != null) {
+            Region r = cell.getContent();
+            Insets pad = r.getPadding();
+            double y = localY - cell.getY() - pad.getTop();
+            if (y < 0) {
+                return new TextPos(cell.getLineIndex(), 0, true);
+            } else if (y < cell.getComputedHeight()) {
+                // TODO move this to TextCell?
+                if (r instanceof TextFlow t) {
+                    double x = localX - cell.getX() - pad.getLeft();
+                    HitInfo h = t.hitTest(new Point2D(x, y));
+                    if (h != null) {
+                        return new TextPos(cell.getLineIndex(), h.getCharIndex(), h.isLeading());
+                    }
+                } else {
+                    return new TextPos(cell.getLineIndex(), 0, true);
+                }
+            }
+        }
+
+        cell = lastCell();
+        if (cell == null) {
+            return TextPos.ZERO;
+        }
+
+        Region r = cell.getContent();
+        int cix = 0;
+        if (r instanceof TextFlow f) {
+            cix = Math.max(0, NewAPI.getTextLength(f) - 1);
+        }
+        return new TextPos(cell.getLineIndex(), cix, false);
+    }
+
+    /*
+    public TextPos getTextPos2(double localX, double localY) {
+        // TODO can use binary search here
+        // FIX incorrect - only visible cells!
         for(TextCell cell: cells) {
             Region r = cell.getContent();
             Point2D p = r.screenToLocal(screenX, screenY);
@@ -152,6 +194,7 @@ public class TextCellLayout {
         }
         return new TextPos(cell.getLineIndex(), ix, false);
     }
+    */
 
     /** returns the cell contained in this layout, or null */
     public TextCell getCell(int modelIndex) {
@@ -271,7 +314,13 @@ public class TextCellLayout {
         return (lineCount - topCount() - bottomCount) * averageHeight() + topHeight + bottomHeight;
     }
 
-    private int binarySearch(double off, int high, int low) {
+    /**
+     * finds a model index of a cell that contains the given localY.
+     * (in vflow frame of reference).
+     * Should not be called with localY outside of this layout sliding window.
+     */
+    // TODO flip high/low args
+    private int binarySearch(double localY, int high, int low) {
         //System.err.println("    binarySearch off=" + off + ", high=" + high + ", low=" + low); // FIX
         while (low <= high) {
             // TODO might be a problem for 2B-rows models
@@ -279,15 +328,15 @@ public class TextCellLayout {
             TextCell cell = getCell(mid);
             
             // FIX
-            if(cell == null) {
-                System.err.println("    * * * ERR binarySearch null cell off=" + off + " mid=" + mid + " topIx=" + topIndex() + " btmIx=" + bottomIndex());
-                cell = getCell(mid);
-            } else if(cell.getLineIndex() != mid) {
-                System.err.println("    * * * ERR getCell wrong ix=" + mid + " cell.ix=" + cell.getLineIndex());
-                cell = getCell(mid);
-            }
+//            if(cell == null) {
+//                System.err.println("    * * * ERR binarySearch null cell y=" + localY + " mid=" + mid + " topIx=" + topIndex() + " btmIx=" + bottomIndex());
+//                cell = getCell(mid);
+//            } else if(cell.getLineIndex() != mid) {
+//                System.err.println("    * * * ERR getCell wrong ix=" + mid + " cell.ix=" + cell.getLineIndex());
+//                cell = getCell(mid);
+//            }
             
-            int cmp = compare(cell, off);
+            int cmp = compare(cell, localY);
             if (cmp < 0) {
                 low = mid + 1;
             } else if (cmp > 0) {
@@ -299,11 +348,11 @@ public class TextCellLayout {
         return low;
     }
     
-    private int compare(TextCell cell, double offset) {
-        double off = cell.getY();
-        if(offset < off) {
+    private int compare(TextCell cell, double localY) {
+        double y = cell.getY();
+        if(localY < y) {
             return 1;
-        } else if(offset >= off + cell.getComputedHeight()) {
+        } else if(localY >= y + cell.getComputedHeight()) {
             if(cell.getLineIndex() == (lineCount - 1)) {
                 return 0;
             }
@@ -323,8 +372,6 @@ public class TextCellLayout {
     }
 
     /** creates a new Origin from the absolute position [0.0 ... (1.0-normalized.visible.amount)] */
-    // TODO handle hit-the-rail conditions
-    // TODO allow for 1 empty line when scrolling to the bottom of the document
     public Origin fromAbsolutePosition(double pos) {
         Origin p = fromAbsolutePositionBinarySearch(pos);
         System.err.println("    fromAbsolutePosition(pos=" + pos + ") -> " + p); 
@@ -347,15 +394,15 @@ public class TextCellLayout {
             double offset = f * (topHeight + bottomHeight) - topHeight;
             
             ix = binarySearch(offset, btmIx - 1, topIx);
-            TextCell c = getCell(ix);
+            TextCell cell = getCell(ix);
             
             // FIX remove check
-            if(compare(c, offset) != 0) {
-                System.err.println("    * * * binarySearch is wrong: off=" + c.getY() + " .. " + (c.getY() + c.getComputedHeight()));
+            if(compare(cell, offset) != 0) {
+                System.err.println("    * * * binarySearch is wrong: y=" + cell.getY() + " .. " + (cell.getY() + cell.getComputedHeight()));
                 binarySearch(offset, btmIx - 1, topIx);
             }
             
-            return new Origin(c.getLineIndex(), offset - c.getY());
+            return new Origin(cell.getLineIndex(), offset - cell.getY());
         }
         return new Origin(ix, 0.0);
     }
@@ -388,31 +435,31 @@ public class TextCellLayout {
     public Origin computeOrigin(double delta) {
         int topIx = topIndex();
         int btmIx = bottomIndex();
-        double offset = delta;
+        double y = delta;
         
         if(delta < 0) {
             // do not scroll above the top edge
             double top = -origin.offset() - topHeight;
-            if(offset < top) {
+            if(y < top) {
                 return new Origin(topIx, 0.0);
             }
         } else {
             // do not scroll past (bottom edge - visible area)
             double max = bottomHeight - flowHeight;
-            if(offset > max) {
-                offset = max;
+            if(y > max) {
+                y = max;
             }
         }
         
-        int ix = binarySearch(offset, btmIx - 1, topIx);
-        TextCell c = getCell(ix);
+        int ix = binarySearch(y, btmIx - 1, topIx);
+        TextCell cell = getCell(ix);
         
         // FIX remove check
-        if(compare(c, offset) != 0) {
-            System.err.println("    * * * binarySearch is wrong: y=" + c.getY() + " .. " + (c.getY() + c.getComputedHeight()));
-            binarySearch(offset, btmIx - 1, topIx);
+        if(compare(cell, y) != 0) {
+            System.err.println("    * * * binarySearch is wrong: y=" + cell.getY() + " .. " + (cell.getY() + cell.getComputedHeight()));
+            binarySearch(y, btmIx - 1, topIx);
         }
         
-        return new Origin(c.getLineIndex(), offset - c.getY());
+        return new Origin(cell.getLineIndex(), y - cell.getY());
     }
 }

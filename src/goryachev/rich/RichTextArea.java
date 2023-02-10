@@ -38,6 +38,7 @@ import javafx.css.StyleConverter;
 import javafx.css.Styleable;
 import javafx.css.StyleableBooleanProperty;
 import javafx.css.StyleableProperty;
+import javafx.geometry.Point2D;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.Control;
@@ -229,7 +230,12 @@ public class RichTextArea extends Control {
     }
 
     public Marker getTextPosition(double screenX, double screenY) {
-        return vflow().getTextPosition(screenX, screenY, markers);
+        Point2D local = vflow().screenToLocal(screenX, screenY);
+        TextPos pos = vflow().getTextPos(local.getX(), local.getY());
+        if(pos == null) {
+            return null;
+        }
+        return markers.newMarker(pos);
     }
 
     public Marker newMarker(int index, int charIndex, boolean leading) {
