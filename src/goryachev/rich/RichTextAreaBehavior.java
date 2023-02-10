@@ -270,15 +270,11 @@ public class RichTextAreaBehavior {
     }
 
     public void pageUp() {
-        // TODO block scroll - getViewHeight(),
-        // TODO then change caret position (use phantom x)
-        System.err.println("pageUp"); // FIX
+        moveLine(-vflow().getViewHeight());
     }
 
     public void pageDown() {
-        // TODO block scroll + getViewHeight(),
-        // TODO then change caret position (use phantom x)
-        System.err.println("pageDown"); // FIX
+        moveLine(vflow().getViewHeight());
     }
     
     public void moveRight() {
@@ -302,17 +298,17 @@ public class RichTextAreaBehavior {
     }
     
     public void moveUp() {
-        moveLine(true);
+        moveLine(-1.0); // TODO line spacing
     }
     
     public void moveDown() {
-        moveLine(false);
+        moveLine(1.0); // TODO line spacing
     }
     
-    private void moveLine(boolean up) {
-        CaretSize c = vflow().getCaretSize();
+    private void moveLine(double delta) {
+        CaretInfo c = vflow().getCaretSize();
         double x = c.x();
-        double y = up ? c.y0() - 1 : c.y1() + 1; // TODO line spacing
+        double y = (delta < 0) ? c.y0() + delta : c.y1() + delta;
         
         if(phantomX < 0) {
             phantomX = x;

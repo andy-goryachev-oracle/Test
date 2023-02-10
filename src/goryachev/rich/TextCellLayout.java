@@ -180,7 +180,7 @@ public class TextCellLayout {
         return null;
     }
 
-    public CaretSize getCaretSize(Marker m) {
+    public CaretInfo getCaretSize(Marker m) {
         if (m != null) {
             int ix = m.getLineIndex();
             TextCell cell = getCell(ix);
@@ -195,7 +195,7 @@ public class TextCellLayout {
     }
 
     // TODO combine with previous method?
-    private static CaretSize translateCaretSize(TextCell cell, PathElement[] elements) {
+    private static CaretInfo translateCaretSize(TextCell cell, PathElement[] elements) {
         double x = 0.0;
         double y0 = 0.0;
         double y1 = 0.0;
@@ -216,9 +216,9 @@ public class TextCellLayout {
         }
 
         if (y0 > y1) {
-            return new CaretSize(x, y1, y0);
+            return new CaretInfo(x, y1, y0);
         } else {
-            return new CaretSize(x, y0, y1);
+            return new CaretInfo(x, y0, y1);
         }
     }
 
