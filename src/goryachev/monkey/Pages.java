@@ -46,6 +46,7 @@ public class Pages {
             new DemoPage("Chart", ChartPage::new),
             new DemoPage("TextArea", TextAreaPage::new),
             new DemoPage("Label", LabelPage::new),
+            new DemoPage("Accordion", AccordionPage::new),
         };
     }
 }
