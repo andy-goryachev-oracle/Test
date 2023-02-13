@@ -149,7 +149,11 @@ public class FxSettingsSchema {
             }
         }
         sb.append('.');
-        sb.append(n.getClass().getSimpleName());
+        String name = n.getId();
+        if((name == null) || (name.trim().length() == 0)) {
+            name = n.getClass().getSimpleName();
+        }
+        sb.append(name);
         return false;
     }
 
