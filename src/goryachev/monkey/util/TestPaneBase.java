@@ -36,12 +36,12 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 
 /**
- *
+ * Base class for individual control test Pane.
  */
-public class ToolPane  extends BorderPane {
+public class TestPaneBase  extends BorderPane {
     private final BorderPane contentPane;
 
-    public ToolPane() {
+    public TestPaneBase() {
         contentPane = new BorderPane();
         contentPane.setOpacity(1.0);
         

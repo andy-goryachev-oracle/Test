@@ -26,6 +26,7 @@ package goryachev.monkey.util;
 
 import java.util.List;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -78,5 +79,9 @@ public class FX {
     public static void add(GridPane p, Node n, int col, int row) {
         p.getChildren().add(n);
         GridPane.setConstraints(n, col, row);
+    }
+    
+    public static <T> void select(ComboBox<T> cb, T value) {
+        cb.getSelectionModel().select(value);
     }
 }

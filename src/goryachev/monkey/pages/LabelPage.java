@@ -25,7 +25,7 @@
 package goryachev.monkey.pages;
 
 import goryachev.monkey.util.FX;
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 import javafx.geometry.Insets;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -39,7 +39,7 @@ import javafx.scene.paint.Color;
 /**
  *
  */
-public class LabelPage extends ToolPane {
+public class LabelPage extends TestPaneBase {
     public LabelPage() {
         Image im = createImage();
         

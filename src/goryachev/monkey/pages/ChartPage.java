@@ -26,7 +26,7 @@ package goryachev.monkey.pages;
 
 import java.util.Random;
 import goryachev.monkey.util.OptionPane;
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 import javafx.scene.chart.AreaChart;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.BubbleChart;
@@ -45,7 +45,7 @@ import javafx.scene.layout.BorderPane;
 /**
  * Tests various XYCharts
  */
-public class ChartPage extends ToolPane {
+public class ChartPage extends TestPaneBase {
     public enum Mode {
         AREA,
         BAR,

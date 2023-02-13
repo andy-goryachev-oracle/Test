@@ -33,14 +33,14 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.HBox;
 
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 
 /**
  * Test code from CheckBoxTreeEditor, see https://bugs.openjdk.org/browse/JDK-8209017
  * 
  * FIX don't see checkboxes for some reason!
  */
-public class TreeViewPage extends ToolPane {
+public class TreeViewPage extends TestPaneBase {
     private TreeView<String> tree;
     private int childNum;
     

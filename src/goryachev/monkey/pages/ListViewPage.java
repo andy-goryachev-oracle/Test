@@ -26,7 +26,7 @@ package goryachev.monkey.pages;
 
 import java.util.Random;
 import goryachev.monkey.util.OptionPane;
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -38,7 +38,7 @@ import javafx.scene.layout.Pane;
 /**
  * ListView page
  */
-public class ListViewPage extends ToolPane {
+public class ListViewPage extends TestPaneBase {
     enum Demo {
         EMPTY("Empty"),
         LARGE("Large"),

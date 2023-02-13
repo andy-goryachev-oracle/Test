@@ -25,7 +25,7 @@
 package goryachev.monkey.pages;
 
 import goryachev.monkey.util.OptionPane;
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -34,7 +34,7 @@ import javafx.scene.control.TitledPane;
 /**
  *
  */
-public class AccordionPage extends ToolPane {
+public class AccordionPage extends TestPaneBase {
     private final Accordion accordion;
     
     public AccordionPage() {

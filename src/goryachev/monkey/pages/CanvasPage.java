@@ -29,12 +29,12 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 
 /**
  * 
  */
-public class CanvasPage extends ToolPane {
+public class CanvasPage extends TestPaneBase {
     private Pane pane;
 
     public CanvasPage() {

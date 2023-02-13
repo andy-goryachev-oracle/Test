@@ -24,26 +24,36 @@
  */
 package goryachev.monkey.pages;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import goryachev.monkey.util.FX;
 import goryachev.monkey.util.OptionPane;
-import goryachev.monkey.util.ToolPane;
-import javafx.geometry.Pos;
+import goryachev.monkey.util.TestPaneBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
+import javafx.scene.text.Font;
 
 /**
  * TextArea Page
  */
-public class TextAreaPage extends ToolPane {
+public class TextAreaPage extends TestPaneBase {
     enum TextChoice {
-        NULL,
-        SHORT,
-        LONG,
-        RIGHT_TO_LEFT,
+        NULL("null"),
+        SHORT("Short"),
+        LONG("Long"),
+        RIGHT_TO_LEFT("Right-to-Left"),
+        UNICODE("Unicode"),
+        ;
+        private final String text;
+        TextChoice(String text) { this.text = text; }
+        public String toString() { return text; }
     }
     
-    private TextArea textArea;
+    private final ComboBox<String> fontChoice;
+    private final ComboBox<Integer> fontSize;
+    private final TextArea textArea;
     private Locale defaultLocale;
 
     public TextAreaPage() {
@@ -59,6 +69,23 @@ public class TextAreaPage extends ToolPane {
             Locale.setDefault(loc);
         });
         
+        fontChoice = new ComboBox<>();
+        fontChoice.getItems().setAll(collectFonts());
+        fontChoice.getSelectionModel().selectedItemProperty().addListener((x) -> {
+            updateFont();
+        });
+        
+        fontSize = new ComboBox<>();
+        fontSize.getItems().setAll(
+            8,
+            12,
+            24,
+            48
+        );
+        fontSize.getSelectionModel().selectedItemProperty().addListener((x) -> {
+            updateFont();
+        });
+        
         CheckBox wrap = new CheckBox("wrap text");
         wrap.selectedProperty().addListener((s,p,on) -> {
             textArea.setWrapText(on);
@@ -67,10 +94,35 @@ public class TextAreaPage extends ToolPane {
         OptionPane p = new OptionPane();
         p.label("Text:");
         p.option(textChoice);
+        p.label("Font:");
+        p.option(fontChoice);
+        p.label("Font Size:");
+        p.option(fontSize);
         p.option(wrap);
         
         setContent(textArea);
         setOptions(p);
+
+        FX.select(fontChoice, "System Regular");
+        FX.select(fontSize, 12);
+        FX.select(textChoice, TextChoice.UNICODE);
+    }
+    
+    protected void updateFont() {
+        Font f = getFont();
+        textArea.setFont(f);
+    }
+    
+    protected Font getFont() {
+        String name = fontChoice.getSelectionModel().getSelectedItem();
+        if(name == null) {
+            return null;
+        }
+        Integer size = fontSize.getSelectionModel().getSelectedItem();
+        if(size == null) {
+            size = 12;
+        }
+        return new Font(name, size);
     }
     
     protected String getText(TextChoice ch) {
@@ -82,7 +134,9 @@ public class TextAreaPage extends ToolPane {
         case NULL:
             return null;
         case RIGHT_TO_LEFT:
-            return "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די";
+            return "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די";
+        case UNICODE:
+            return generateTextForWritingSystems();
         default:
             return "?" + ch;
         }
@@ -99,5 +153,116 @@ public class TextAreaPage extends ToolPane {
         default:
             return defaultLocale;
         }
+    }
+    
+    private String generateTextForWritingSystems() {
+        // better list https://en.wikipedia.org/wiki/List_of_writing_systems
+        StringBuilder sb = new StringBuilder();
+        t(sb, "Arabic", "العربية");
+        t(sb, "Akkadian", "𒀝𒅗𒁺𒌑");
+        t(sb, "Armenian", "հայերէն/հայերեն");
+        t(sb, "Assamese", "অসমীয়া");
+        t(sb, "Awadhi", "अवधी/औधी");
+        t(sb, "Bagheli", "बघेली");
+        t(sb, "Bagri", "बागड़ी, باگڑی");
+        t(sb, "Bengali", "বাংলা");
+        t(sb, "Bhojpuri", "𑂦𑂷𑂔𑂣𑂳𑂩𑂲");
+        t(sb, "Braille", "⠃⠗⠇");
+        t(sb, "Bundeli", "बुन्देली");
+        t(sb, "Burmese", "မြန်မာ");
+        t(sb, "Cherokee", "ᏣᎳᎩ ᎦᏬᏂᎯᏍᏗ");
+        t(sb, "Chhattisgarhi", "छत्तीसगढ़ी, ଛତିଶଗଡ଼ି, ଲରିଆ");
+        t(sb, "Chinese", "中文");
+        t(sb, "Czech", "Čeština");
+        t(sb, "Devanagari", "देवनागरी");
+        t(sb, "Dhundhari", "ढूण्ढाड़ी/ઢૂણ્ઢાડ઼ી");
+        t(sb, "Farsi", "فارسی");
+        t(sb, "Garhwali", "गढ़वळि");
+        t(sb, "Geʽez", "ግዕዝ");
+        t(sb, "Greek", "Ελληνικά");
+        t(sb, "Georgian", "ქართული");
+        t(sb, "Gujarati", "ગુજરાતી");
+        t(sb, "Harauti", "हाड़ौती, हाड़ोती");
+        t(sb, "Haryanvi", "हरयाणवी");
+        t(sb, "Hebrew", "עברית");
+        t(sb, "Hindi", "हिन्दी");
+        t(sb, "Inuktitut", "ᐃᓄᒃᑎᑐᑦ");
+        t(sb, "Japanese", "日本語 かな カナ");
+        t(sb, "Kangri", "कांगड़ी");
+        t(sb, "Kannada", "ಕನ್ನಡ");
+        t(sb, "Khmer", "ខ្មែរ");
+        t(sb, "Khortha", "खोरठा");
+        t(sb, "Korean", "한국어");
+        t(sb, "Kumaoni", "कुमाऊँनी");
+        t(sb, "Magahi", "𑂧𑂏𑂯𑂲/𑂧𑂏𑂡𑂲");
+        t(sb, "Maithili", "मैथिली");
+        t(sb, "Malayalam", "മലയാളം");
+        t(sb, "Malvi", "माळवी भाषा / માળવી ભાષા");
+        t(sb, "Marathi", "मराठी");
+        t(sb, "Marwari,", "मारवाड़ी");
+        t(sb, "Meitei", "ꯃꯩꯇꯩꯂꯣꯟ");
+        t(sb, "Mewari", "मेवाड़ी/મેવ઼ાડ઼ી");
+        t(sb, "Mongolian", "ᠨᠢᠷᠤᠭᠤ");
+        t(sb, "Nimadi", "निमाड़ी");
+        t(sb, "Odia", "ଓଡ଼ିଆ");
+        t(sb, "Punjabi", "ਪੰਜਾਬੀپن٘جابی");
+        t(sb, "Pahari", "पहाड़ी پہاڑی ");
+        t(sb, "Rajasthani", "राजस्थानी");
+        t(sb, "Russian", "Русский");
+        t(sb, "Sanskrit", "संस्कृत-, संस्कृतम्");
+        t(sb, "Santali", "ᱥᱟᱱᱛᱟᱲᱤ");
+        t(sb, "Suret", "ܣܘܪܝܬ");
+        t(sb, "Surgujia", "सरगुजिया");
+        t(sb, "Surjapuri", "सुरजापुरी, সুরজাপুরী");
+        t(sb, "Tamil", "Tamiḻ");
+        t(sb, "Telugu", "తెలుగు");
+        t(sb, "Thaana", "ދިވެހި");
+        t(sb, "Thai", "ไทย");
+        t(sb, "Tibetan", "བོད་");
+        t(sb, "Tulu", "ತುಳು, ത‍ുള‍ു");
+        t(sb, "Turoyo", "ܛܘܪܝܐ");
+        t(sb, "Ukrainian", "Українська");
+        t(sb, "Urdu", "اردو");
+        t(sb, "Vietnamese", "Tiếng Việt");
+        return sb.toString();
+    }
+
+    private void t(StringBuilder sb, String name, String text) {
+        sb.append(name);
+        sb.append(": ");
+        sb.append(text);
+        sb.append(" (");
+        native2ascii(sb, text);
+        sb.append(") \n");
+    }
+
+    protected static void native2ascii(StringBuilder sb, String text) {
+        for (char c : text.toCharArray()) {
+            if (c < 0x20) {
+                escape(sb, c);
+            } else if (c > 0x7f) {
+                escape(sb, c);
+            } else {
+                sb.append(c);
+            }
+        }
+    }
+
+    protected static void escape(StringBuilder sb, char c) {
+        sb.append("\\u");
+        sb.append(h(c >> 12));
+        sb.append(h(c >> 8));
+        sb.append(h(c >> 4));
+        sb.append(h(c));
+    }
+
+    protected static char h(int d) {
+        return "0123456789abcdef".charAt(d & 0x000f);
+    }
+    
+    protected static List<String> collectFonts() {
+        ArrayList<String> rv = new ArrayList<>(Font.getFontNames());
+        rv.add(0, null);
+        return rv;
     }
 }

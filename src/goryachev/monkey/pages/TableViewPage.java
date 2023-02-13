@@ -26,7 +26,7 @@ package goryachev.monkey.pages;
 
 import java.util.List;
 import goryachev.monkey.util.OptionPane;
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
@@ -46,7 +46,7 @@ import javafx.util.Callback;
 /**
  * TableView page
  */
-public class TableViewPage extends ToolPane {
+public class TableViewPage extends TestPaneBase {
     enum Demo {
         PREF("pref only"),
         VARIABLE("variable cell height"),
