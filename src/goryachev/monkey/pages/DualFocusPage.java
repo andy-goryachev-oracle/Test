@@ -3,7 +3,7 @@
 // https://bugs.openjdk.org/browse/JDK-8292933
 package goryachev.monkey.pages;
 
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 import javafx.geometry.Point2D;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.PopupControl;
@@ -14,7 +14,7 @@ import javafx.scene.layout.BorderPane;
 /**
  * Illustrates dual focus bug JDK-8292933
  */
-public class DualFocusPage extends ToolPane {
+public class DualFocusPage extends TestPaneBase {
     protected PopupControl popup;
     protected BorderPane popupBox;
     protected final TextField textField;

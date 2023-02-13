@@ -24,13 +24,13 @@
  */
 package goryachev.monkey.pages;
 
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 import javafx.scene.web.HTMLEditor;
 
 /**
  *
  */
-public class HtmlEditorPage extends ToolPane {
+public class HtmlEditorPage extends TestPaneBase {
     public HtmlEditorPage() {
         HTMLEditor ed = new HTMLEditor();
         setContent(ed);

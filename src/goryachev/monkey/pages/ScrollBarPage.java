@@ -25,7 +25,7 @@
 package goryachev.monkey.pages;
 
 import goryachev.monkey.util.OptionPane;
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollBar;
@@ -34,7 +34,7 @@ import javafx.scene.layout.VBox;
 /**
  * ScrollBar Page
  */
-public class ScrollBarPage extends ToolPane {
+public class ScrollBarPage extends TestPaneBase {
     private ScrollBar scroll;
     private Label status;
     private static Long[] VALUES = {

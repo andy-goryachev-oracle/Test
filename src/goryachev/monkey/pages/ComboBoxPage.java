@@ -24,7 +24,7 @@
  */
 package goryachev.monkey.pages;
 
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.control.ComboBox;
@@ -35,7 +35,7 @@ import javafx.util.StringConverter;
 /**
  *
  */
-public class ComboBoxPage extends ToolPane {
+public class ComboBoxPage extends TestPaneBase {
     private ComboBox comboBox;
 
     public ComboBoxPage() {

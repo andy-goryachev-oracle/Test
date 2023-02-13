@@ -26,10 +26,12 @@ package goryachev.monkey.util;
 
 import java.util.List;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
@@ -66,6 +68,12 @@ public class FX {
         List<Menu> ms = b.getMenus();
         return ms.get(ms.size() - 1);
     }
+    
+    public static SeparatorMenuItem separator(MenuBar b) {
+        SeparatorMenuItem s = new SeparatorMenuItem();
+        lastMenu(b).getItems().add(s);
+        return s;
+    }
 
     public static RadioMenuItem radio(MenuBar b, String text, KeyCombination accelerator, ToggleGroup g) {
         RadioMenuItem mi = new RadioMenuItem(text);
@@ -78,5 +86,9 @@ public class FX {
     public static void add(GridPane p, Node n, int col, int row) {
         p.getChildren().add(n);
         GridPane.setConstraints(n, col, row);
+    }
+    
+    public static <T> void select(ComboBox<T> cb, T value) {
+        cb.getSelectionModel().select(value);
     }
 }

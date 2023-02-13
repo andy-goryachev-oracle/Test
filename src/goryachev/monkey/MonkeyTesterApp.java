@@ -28,10 +28,10 @@ import java.util.Arrays;
 import java.util.Comparator;
 import goryachev.monkey.pages.DemoPage;
 import goryachev.monkey.util.FX;
+import goryachev.monkey.util.TestPaneBase;
 import goryachev.settings.FxSettings;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -107,10 +107,16 @@ public class MonkeyTesterApp extends Application {
     }
     
     protected MenuBar createMenu() {
-        CheckMenuItem ori = new CheckMenuItem("Orientation: RTL");
-        ori.setOnAction((ev) -> {
-            NodeOrientation v = (ori.isSelected()) ? NodeOrientation.RIGHT_TO_LEFT : NodeOrientation.LEFT_TO_RIGHT;
+        CheckMenuItem orientation = new CheckMenuItem("Orientation: RTL");
+        orientation.setOnAction((ev) -> {
+            NodeOrientation v = (orientation.isSelected()) ? NodeOrientation.RIGHT_TO_LEFT : NodeOrientation.LEFT_TO_RIGHT;
             stage.getScene().setNodeOrientation(v);
+        });
+        
+        CheckMenuItem usePreferred = new CheckMenuItem("Use Preferred Size");
+        usePreferred.setOnAction((ev) -> {
+            boolean on = usePreferred.isSelected();
+            TestPaneBase.usePreferredSize.set(on);
         });
         
         MenuBar b = new MenuBar();
@@ -120,9 +126,11 @@ public class MonkeyTesterApp extends Application {
         // Page
         FX.menu(b, "Page");
         FX.item(b, "Reload Current Page", this::reloadCurrentPage);
+        FX.separator(b);
+        FX.item(b, usePreferred);
         // Window
         FX.menu(b, "Window");
-        FX.item(b, ori);
+        FX.item(b, orientation);
         // Menu
         FX.menu(b, "Menu");
         ToggleGroup g = new ToggleGroup();

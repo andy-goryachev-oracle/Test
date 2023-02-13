@@ -25,7 +25,7 @@
 package goryachev.monkey.pages;
 
 import java.time.LocalDate;
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -35,7 +35,7 @@ import javafx.stage.StageStyle;
 /**
  *
  */
-public class DatePickerPage extends ToolPane {
+public class DatePickerPage extends TestPaneBase {
     private final Button button;
     private DatePicker datePicker;
     private Alert dialog;

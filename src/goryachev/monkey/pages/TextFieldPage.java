@@ -25,7 +25,7 @@
 package goryachev.monkey.pages;
 
 import goryachev.monkey.util.OptionPane;
-import goryachev.monkey.util.ToolPane;
+import goryachev.monkey.util.TestPaneBase;
 import java.util.Locale;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
@@ -34,7 +34,7 @@ import javafx.scene.control.TextField;
 /**
  * TextField Page
  */
-public class TextFieldPage extends ToolPane {
+public class TextFieldPage extends TestPaneBase {
     enum TextChoice {
         NULL,
         SHORT,
