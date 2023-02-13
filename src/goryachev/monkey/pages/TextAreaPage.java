@@ -33,6 +33,7 @@ import goryachev.monkey.util.TestPaneBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.text.Font;
 
 /**
@@ -51,6 +52,25 @@ public class TextAreaPage extends TestPaneBase {
         public String toString() { return text; }
     }
     
+    enum PromptChoice {
+        NULL("null"),
+        SHORT("Short"),
+        LONG("Long"),
+        ;
+        private final String text;
+        PromptChoice(String text) { this.text = text; }
+        public String toString() { return text; }
+    }
+    
+    enum FormatterChoice {
+        NULL("null"),
+        PREFIX("Prefix"),
+        ;
+        private final String text;
+        FormatterChoice(String text) { this.text = text; }
+        public String toString() { return text; }
+    }
+    
     private final ComboBox<String> fontChoice;
     private final ComboBox<Integer> fontSize;
     private final TextArea textArea;
@@ -61,6 +81,7 @@ public class TextAreaPage extends TestPaneBase {
         textArea.setPromptText("<prompt>");
         
         ComboBox<TextChoice> textChoice = new ComboBox<>();
+        textChoice.setId("textChoice");
         textChoice.getItems().setAll(TextChoice.values());
         textChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             String text = getText(c);
@@ -70,12 +91,14 @@ public class TextAreaPage extends TestPaneBase {
         });
         
         fontChoice = new ComboBox<>();
+        fontChoice.setId("fontChoice");
         fontChoice.getItems().setAll(collectFonts());
         fontChoice.getSelectionModel().selectedItemProperty().addListener((x) -> {
             updateFont();
         });
         
         fontSize = new ComboBox<>();
+        fontSize.setId("fontSize");
         fontSize.getItems().setAll(
             8,
             12,
@@ -87,8 +110,29 @@ public class TextAreaPage extends TestPaneBase {
         });
         
         CheckBox wrap = new CheckBox("wrap text");
+        wrap.setId("wrapText");
         wrap.selectedProperty().addListener((s,p,on) -> {
             textArea.setWrapText(on);
+        });
+        
+        CheckBox editable = new CheckBox("editable");
+        editable.setId("editable");
+        editable.selectedProperty().bindBidirectional(textArea.editableProperty());
+        
+        ComboBox<PromptChoice> promptChoice = new ComboBox<>();
+        promptChoice.setId("promptChoice");
+        promptChoice.getItems().setAll(PromptChoice.values());
+        promptChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+            String text = getPromptText(c);
+            textArea.setPromptText(text);
+        });
+        
+        ComboBox<FormatterChoice> formatterChoice = new ComboBox<>();
+        formatterChoice.setId("formatterChoice");
+        formatterChoice.getItems().setAll(FormatterChoice.values());
+        formatterChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+            TextFormatter<?> f = getFormatter(c);
+            textArea.setTextFormatter(f);
         });
         
         OptionPane p = new OptionPane();
@@ -99,6 +143,11 @@ public class TextAreaPage extends TestPaneBase {
         p.label("Font Size:");
         p.option(fontSize);
         p.option(wrap);
+        p.option(editable);
+        p.label("Prompt:");
+        p.option(promptChoice);
+        p.label("Formatter: TODO");
+        // TODO p.option(formatterChoice);
         
         setContent(textArea);
         setOptions(p);
@@ -106,10 +155,12 @@ public class TextAreaPage extends TestPaneBase {
         FX.select(fontChoice, "System Regular");
         FX.select(fontSize, 12);
         FX.select(textChoice, TextChoice.UNICODE);
+        FX.select(promptChoice, PromptChoice.NULL);
     }
     
     protected void updateFont() {
         Font f = getFont();
+        System.err.println(f); // FIX
         textArea.setFont(f);
     }
     
@@ -139,6 +190,32 @@ public class TextAreaPage extends TestPaneBase {
             return generateTextForWritingSystems();
         default:
             return "?" + ch;
+        }
+    }
+    
+    protected String getPromptText(PromptChoice ch) {
+        switch (ch) {
+        case LONG:
+            return "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>";
+        case SHORT:
+            return "yo";
+        case NULL:
+            return null;
+        default:
+            return "?" + ch;
+        }
+    }
+    
+    protected TextFormatter<?> getFormatter(FormatterChoice ch) {
+        switch (ch) {
+        case NULL:
+            return null;
+        case PREFIX:
+            // TODO converter, filter, too many options - code this later
+//            return new TextFormatter<Object>() {
+//            };
+        default:
+            throw new Error("?" + ch);
         }
     }
 
