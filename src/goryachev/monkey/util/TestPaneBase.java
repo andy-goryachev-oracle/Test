@@ -24,8 +24,11 @@
  */
 package goryachev.monkey.util;
 
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -39,23 +42,39 @@ import javafx.stage.Window;
  * Base class for individual control test Pane.
  */
 public class TestPaneBase  extends BorderPane {
+    public static SimpleBooleanProperty usePreferredSize = new SimpleBooleanProperty();
     private final BorderPane contentPane;
+    private final BooleanBinding inScrollBars;
 
     public TestPaneBase() {
         contentPane = new BorderPane();
         contentPane.setOpacity(1.0);
         
-        SplitPane hsplit = new SplitPane(contentPane, pane());
-        hsplit.setBorder(null);
-        hsplit.setDividerPositions(0.9);
-        hsplit.setOrientation(Orientation.HORIZONTAL);
-        
-        SplitPane vsplit = new SplitPane(hsplit, pane());
-        vsplit.setBorder(null);
-        vsplit.setDividerPositions(0.9);
-        vsplit.setOrientation(Orientation.VERTICAL);
-        
-        setCenter(vsplit);
+        inScrollBars = usePreferredSize.not();
+        inScrollBars.addListener((x) -> {
+            updateContent();
+        });
+        updateContent();
+    }
+    
+    public void updateContent() {
+        boolean inScrolls = inScrollBars.get();
+        if(inScrolls) {
+            SplitPane hsplit = new SplitPane(contentPane, pane());
+            hsplit.setBorder(null);
+            hsplit.setDividerPositions(0.9);
+            hsplit.setOrientation(Orientation.HORIZONTAL);
+            
+            SplitPane vsplit = new SplitPane(hsplit, pane());
+            vsplit.setBorder(null);
+            vsplit.setDividerPositions(0.9);
+            vsplit.setOrientation(Orientation.VERTICAL);
+            
+            setCenter(vsplit);
+        } else {
+            Group g = new Group(contentPane);
+            setCenter(g);
+        }
     }
     
     protected static Pane pane() {

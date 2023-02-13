@@ -31,6 +31,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
@@ -66,6 +67,12 @@ public class FX {
     private static Menu lastMenu(MenuBar b) {
         List<Menu> ms = b.getMenus();
         return ms.get(ms.size() - 1);
+    }
+    
+    public static SeparatorMenuItem separator(MenuBar b) {
+        SeparatorMenuItem s = new SeparatorMenuItem();
+        lastMenu(b).getItems().add(s);
+        return s;
     }
 
     public static RadioMenuItem radio(MenuBar b, String text, KeyCombination accelerator, ToggleGroup g) {
