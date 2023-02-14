@@ -57,6 +57,8 @@ public class DemoStyledModel extends SimpleStyledTextModel {
         nl(2);
         addSegment("        leading and trailing whitespace         ", null, CODE).nl();
         addSegment("A regular Arabic verb, كَتَبَ‎ kataba 'to write'.").nl();
+        addSegment("Tibetan HAKṢHMALAWARAYAṀ: \u0f67\u0f90\u0fb5\u0fa8\u0fb3\u0fba\u0fbc\u0fbb\u0f82 (U+0f67 U+0f90 U+0fb5 U+0fa8 U+0fb3 U+0fba U+0fbc U+0fbb U+0f82)").nl();
+        addSegment("Double diacritics: a\u0360b a\u0361b a\u0362b a\u035cb").nl(); 
         nl();
         addSegment("Halfwidth and FullWidth Forms", null, UNDER).nl();
         addSegment("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯ", "-fx-font-family:monospaced;").nl();

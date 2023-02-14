@@ -29,11 +29,19 @@ package goryachev.rich;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
+import javafx.geometry.NodeOrientation;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Region;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
+import javafx.scene.text.HitInfo;
+import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 
 /**
@@ -99,12 +107,17 @@ public class RichTextAreaBehavior {
     protected VFlow vflow() {
         return skin.getVFlow();
     }
+    
+    protected boolean isRTL() {
+        return (control.getEffectiveNodeOrientation() == NodeOrientation.RIGHT_TO_LEFT);
+    }
 
     /** accepting VFlow coordinates */
     protected TextPos getTextPos(double localX, double localY) {
         return vflow().getTextPos(localX, localY);
     }
 
+    /** returns caret position or null */
     protected TextPos getCaret() {
         SelectionModel sm = control.getSelectionModel();
         if (sm == null) {
@@ -361,7 +374,68 @@ public class RichTextAreaBehavior {
     }
 
     protected void nextCharacterVisually(boolean moveRight) {
-        // TODO
-        System.err.println("nextCharacterVisually " + moveRight); // FIX
+        phantomX = -1;
+
+        if (isRTL()) {
+            moveRight = !moveRight;
+        }
+        
+        TextPos caretPos = getCaret();
+        if(caretPos == null) {
+            return; // TODO
+        }
+        
+        TextCell cell = vflow().getCell(caretPos.lineIndex());
+        int cix = caretPos.charIndex();
+        if(moveRight) {
+            cix++;
+            if(cix >= cell.getTextLength()) {
+                int line = cell.getLineIndex() + 1;
+                if(line < vflow().lineCount()) {
+                    // next line
+                    TextPos pos = new TextPos(line, 0, true);
+                    vflow().moveCaret(pos, false);
+                }
+                return;
+            }
+        } else {
+            if(caretPos.charIndex() == 0) {
+                int line = cell.getLineIndex() - 1;
+                if(line >= 0) {
+                    // prev line
+                    TextCell prevCell = vflow().getCell(line);
+                    TextPos pos = new TextPos(line, prevCell.getTextLength(), false);
+                    vflow().moveCaret(pos, false);
+                }
+                return;
+            }
+        }
+        
+        Region r = cell.getContent();
+        if(r instanceof TextFlow /* TODO eclipse autocompletion f */) {
+            TextFlow f = (TextFlow)r;
+            PathElement[] caretShape = f.caretShape(caretPos.charIndex(), caretPos.leading());
+            if(caretShape.length == 4) {
+                System.err.println(" --- Split caret"); // FIX
+                caretShape = new PathElement[] {
+                    caretShape[0],
+                    caretShape[1]
+                };
+            }
+            
+            Bounds caretBounds = new Path(caretShape).getLayoutBounds();
+            double hitX = moveRight ? caretBounds.getMaxX() : caretBounds.getMinX();
+            double hitY = (caretBounds.getMinY() + caretBounds.getMaxY()) / 2;
+            HitInfo hit = f.hitTest(new Point2D(hitX, hitY));
+            Path charShape = new Path(f.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
+            if ((moveRight && charShape.getLayoutBounds().getMaxX() > caretBounds.getMaxX()) || 
+                (!moveRight && charShape.getLayoutBounds().getMinX() < caretBounds.getMinX())) {
+                TextPos pos = new TextPos(caretPos.lineIndex(), hit.getInsertionIndex(), !hit.isLeading());
+                vflow().moveCaret(pos, false);
+                return;
+            }
+        }
+        
+        System.err.println("* * * ERR failed to navigate within the TextFlow"); // FIX
     }
 }

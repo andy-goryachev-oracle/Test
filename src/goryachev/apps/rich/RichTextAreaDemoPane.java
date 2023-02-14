@@ -24,6 +24,8 @@
  */
 package goryachev.apps.rich;
 
+import java.nio.charset.Charset;
+import java.util.Base64;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -72,10 +74,20 @@ public class RichTextAreaDemoPane extends BorderPane {
         CheckBox displayCaret = new CheckBox("display caret");
         displayCaret.selectedProperty().bindBidirectional(richTextArea.displayCaretProperty());
         
+        CheckBox fatCaret = new CheckBox("fat caret");
+        fatCaret.selectedProperty().addListener((s,p,on) -> {
+            Node n = richTextArea.lookup(".caret");
+            if(n != null) {
+                if(on) {
+                    n.setStyle("-fx-stroke-width:2; -fx-stroke:red; -fx-effect:dropshadow(gaussian,rgba(0,0,0,.5),5,0,1,1);");
+                } else {
+                    n.setStyle(null);
+                }
+            }
+        });
+        
         Button reloadModel = new Button("Reload Model");
         reloadModel.setOnAction((ev) -> reloadModel());
-        
-        // TODO blink rate
         
         op = new ROptionPane();
         op.label("Model:");
@@ -83,6 +95,8 @@ public class RichTextAreaDemoPane extends BorderPane {
         op.option(reloadModel);
         op.option(wrapText);
         op.option(displayCaret);
+        op.option(fatCaret);
+        op.label("Blink Rate: TODO"); // TODO
         
         setCenter(vsplit);
         setRight(op);
@@ -146,6 +160,11 @@ public class RichTextAreaDemoPane extends BorderPane {
     
     public void setOptions(Node n) {
         setRight(n);
+    }
+    
+    protected String generateStylesheet(boolean fat) {
+        String s = ".rich-text-area .caret { -fx-stroke-width:" + (fat ? 2 : 1) + "; }";
+        return "data:text/css;base64," + Base64.getEncoder().encodeToString(s.getBytes(Charset.forName("utf-8")));
     }
     
     //
