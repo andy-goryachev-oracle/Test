@@ -29,9 +29,11 @@ import java.util.List;
 import java.util.Locale;
 import goryachev.monkey.util.FX;
 import goryachev.monkey.util.OptionPane;
+import goryachev.monkey.util.ShowCharacterRuns;
 import goryachev.monkey.util.TestPaneBase;
 import goryachev.monkey.util.WritingSystemsDemo;
 import javafx.scene.Group;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -57,24 +59,26 @@ public class TextPage extends TestPaneBase {
     private final ComboBox<TextChoice> textChoice;
     private final ComboBox<String> fontChoice;
     private final ComboBox<Integer> fontSize;
+    private final CheckBox showChars;
     private final Group textGroup;
     private Locale defaultLocale;
 
     public TextPage() {
+        setId("TextPage");
         textGroup = new Group();
         
         textChoice = new ComboBox<>();
         textChoice.setId("textChoice");
         textChoice.getItems().setAll(TextChoice.values());
         textChoice.getSelectionModel().selectedItemProperty().addListener((c) -> {
-            updateTextFlow();
+            updateText();
         });
         
         fontChoice = new ComboBox<>();
         fontChoice.setId("fontChoice");
         fontChoice.getItems().setAll(collectFonts());
         fontChoice.getSelectionModel().selectedItemProperty().addListener((x) -> {
-            updateTextFlow();
+            updateText();
         });
         
         fontSize = new ComboBox<>();
@@ -83,12 +87,19 @@ public class TextPage extends TestPaneBase {
             8,
             12,
             24,
-            48
+            48,
+            72
         );
         fontSize.getSelectionModel().selectedItemProperty().addListener((x) -> {
-            updateTextFlow();
+            updateText();
         });
         
+        showChars = new CheckBox("show characters");
+        showChars.setId("showChars");
+        showChars.selectedProperty().addListener((p) -> {
+            updateText();
+        });
+
         OptionPane p = new OptionPane();
         p.label("Text:");
         p.option(textChoice);
@@ -96,6 +107,7 @@ public class TextPage extends TestPaneBase {
         p.option(fontChoice);
         p.label("Font Size:");
         p.option(fontSize);
+        p.option(showChars);
         
         setContent(textGroup);
         setOptions(p);
@@ -105,7 +117,7 @@ public class TextPage extends TestPaneBase {
         FX.select(textChoice, TextChoice.UNICODE);
     }
     
-    protected void updateTextFlow() {
+    protected void updateText() {
         TextChoice c = FX.getSelectedItem(textChoice);
         if(c == null) {
             return;
@@ -115,7 +127,13 @@ public class TextPage extends TestPaneBase {
         String text = getText(c);
         Text t = new Text(text);
         t.setFont(f);
+        
         textGroup.getChildren().setAll(t);
+        if(showChars.isSelected()) {
+            Group g = ShowCharacterRuns.createFor(t);
+            textGroup.getChildren().add(g);
+        }
+        
         Locale loc = getLocale(c);
         Locale.setDefault(loc);
     }

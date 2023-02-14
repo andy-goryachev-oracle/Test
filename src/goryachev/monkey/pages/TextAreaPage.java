@@ -106,7 +106,8 @@ public class TextAreaPage extends TestPaneBase {
             8,
             12,
             24,
-            48
+            48,
+            72
         );
         fontSize.getSelectionModel().selectedItemProperty().addListener((x) -> {
             updateFont();
