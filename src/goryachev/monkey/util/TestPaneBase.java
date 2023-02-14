@@ -60,6 +60,8 @@ public class TestPaneBase  extends BorderPane {
     public void updateContent() {
         boolean inScrolls = inScrollBars.get();
         if(inScrolls) {
+            contentPane.setStyle(null);
+
             SplitPane hsplit = new SplitPane(contentPane, pane());
             hsplit.setBorder(null);
             hsplit.setDividerPositions(0.9);
@@ -73,6 +75,7 @@ public class TestPaneBase  extends BorderPane {
             setCenter(vsplit);
         } else {
             Group g = new Group(contentPane);
+            contentPane.setStyle("-fx-border-color:red; -fx-borderinsets:0; -fx-borderwidth:1;");
             setCenter(g);
         }
     }

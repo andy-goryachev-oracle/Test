@@ -44,7 +44,9 @@ public class Pages {
             new DemoPage("Canvas", CanvasPage::new),
             new DemoPage("ScrollBar", ScrollBarPage::new),
             new DemoPage("Chart", ChartPage::new),
+            new DemoPage("Text", TextPage::new),
             new DemoPage("TextArea", TextAreaPage::new),
+            new DemoPage("TextFlow", TextFlowPage::new),
             new DemoPage("Label", LabelPage::new),
             new DemoPage("Accordion", AccordionPage::new),
         };
