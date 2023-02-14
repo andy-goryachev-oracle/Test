@@ -27,11 +27,13 @@ package goryachev.monkey.util;
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 
 /**
  * Shows character boundaries using navigation code similar to TextArea.nextCharacterVisually()
@@ -41,11 +43,11 @@ public class ShowCharacterRuns extends Group {
         setManaged(false);
     }
 
-    public static Group createFor(Text text) {
+    public static Group createFor(Text textNode) {
         ShowCharacterRuns r = new ShowCharacterRuns();
-        int len = text.getText().length();
+        int len = textNode.getText().length();
         for (int i = 0; i < len; i++) {
-            PathElement[] caret = text.caretShape(i, true);
+            PathElement[] caret = textNode.caretShape(i, true);
             if (caret.length == 4) {
                 caret = new PathElement[] {
                     caret[0],
@@ -56,8 +58,8 @@ public class ShowCharacterRuns extends Group {
             Bounds caretBounds = new Path(caret).getLayoutBounds();
             double x = caretBounds.getMaxX();
             double y = (caretBounds.getMinY() + caretBounds.getMaxY()) / 2;
-            HitInfo hit = text.hitTest(new Point2D(x, y));
-            Path cs = new Path(text.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
+            HitInfo hit = textNode.hitTest(new Point2D(x, y));
+            Path cs = new Path(textNode.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
             System.err.println(i + " " + cs); // FIX
             Color c = ((i % 2) == 0) ? Color.rgb(255, 0, 0, 0.5) : Color.rgb(0, 255, 0, 0.5);
             cs.setFill(c);
@@ -67,41 +69,40 @@ public class ShowCharacterRuns extends Group {
         return r;
     }
     
-    /*
-    private void nextCharacterVisually(boolean moveRight) {
-        Text textNode = getTextNode();
-        Bounds caretBounds = caretPath.getLayoutBounds();
-        if (caretPath.getElements().size() == 4) {
-            // The caret is split
-            // TODO: Find a better way to get the primary caret position
-            // instead of depending on the internal implementation.
-            // See RT-25465.
-            caretBounds = new Path(caretPath.getElements().get(0), caretPath.getElements().get(1)).getLayoutBounds();
+    public static Group createFor(TextFlow textNode) {
+        ShowCharacterRuns r = new ShowCharacterRuns();
+        int len = getTextLength(textNode);
+        for (int i = 0; i < len; i++) {
+            PathElement[] caret = textNode.caretShape(i, true);
+            if (caret.length == 4) {
+                caret = new PathElement[] {
+                    caret[0],
+                    caret[1]
+                };
+            }
+
+            Bounds caretBounds = new Path(caret).getLayoutBounds();
+            double x = caretBounds.getMaxX();
+            double y = (caretBounds.getMinY() + caretBounds.getMaxY()) / 2;
+            HitInfo hit = textNode.hitTest(new Point2D(x, y));
+            Path cs = new Path(textNode.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
+            System.err.println(i + " " + cs); // FIX
+            Color c = ((i % 2) == 0) ? Color.rgb(255, 0, 0, 0.5) : Color.rgb(0, 255, 0, 0.5);
+            cs.setFill(c);
+            cs.setStroke(c);
+            r.getChildren().add(cs);
         }
-        double hitX = moveRight ? caretBounds.getMaxX() : caretBounds.getMinX();
-        double hitY = (caretBounds.getMinY() + caretBounds.getMaxY()) / 2;
-        HitInfo hit = textNode.hitTest(new Point2D(hitX, hitY));
-        boolean leading = hit.isLeading();
-        Path charShape = new Path(textNode.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
-        if ((moveRight && charShape.getLayoutBounds().getMaxX() > caretBounds.getMaxX()) ||
-                (!moveRight && charShape.getLayoutBounds().getMinX() < caretBounds.getMinX())) {
-            leading = !leading;
-            positionCaret(hit.getInsertionIndex(), leading, false, false);
-        } else {
-            // We're at beginning or end of line. Try moving up / down.
-            int dot = textArea.getCaretPosition();
-            targetCaretX = moveRight ? 0 : Double.MAX_VALUE;
-            // TODO: Use Bidi sniffing instead of assuming right means forward here?
-            downLines(moveRight ? 1 : -1, false, false);
-            targetCaretX = -1;
-            if (dot == textArea.getCaretPosition()) {
-                if (moveRight) {
-                    textArea.forward();
-                } else {
-                    textArea.backward();
-                }
+        return r;
+    }
+    
+    /** TextFlow.getTextLength() */
+    public static int getTextLength(TextFlow f) {
+        int len = 0;
+        for(Node n: f.getChildrenUnmodifiable()) {
+            if(n instanceof Text t) {
+                len += t.getText().length();
             }
         }
+        return len;
     }
-    */
 }

@@ -29,8 +29,11 @@ import java.util.List;
 import java.util.Locale;
 import goryachev.monkey.util.FX;
 import goryachev.monkey.util.OptionPane;
+import goryachev.monkey.util.ShowCharacterRuns;
 import goryachev.monkey.util.TestPaneBase;
 import goryachev.monkey.util.WritingSystemsDemo;
+import javafx.scene.Group;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -57,10 +60,13 @@ public class TextFlowPage extends TestPaneBase {
     private final ComboBox<TextChoice> textChoice;
     private final ComboBox<String> fontChoice;
     private final ComboBox<Integer> fontSize;
+    private final CheckBox showChars;
     private final TextFlow textFlow;
     private Locale defaultLocale;
 
     public TextFlowPage() {
+        setId("TextFlowPage");
+        
         textFlow = new TextFlow();
         
         textChoice = new ComboBox<>();
@@ -90,6 +96,12 @@ public class TextFlowPage extends TestPaneBase {
             updateTextFlow();
         });
         
+        showChars = new CheckBox("show characters");
+        showChars.setId("showChars");
+        showChars.selectedProperty().addListener((p) -> {
+            updateTextFlow();
+        });
+
         OptionPane p = new OptionPane();
         p.label("Text:");
         p.option(textChoice);
@@ -97,6 +109,7 @@ public class TextFlowPage extends TestPaneBase {
         p.option(fontChoice);
         p.label("Font Size:");
         p.option(fontSize);
+        p.option(showChars);
         
         setContent(textFlow);
         setOptions(p);
@@ -117,9 +130,15 @@ public class TextFlowPage extends TestPaneBase {
         Text t = new Text(text);
         t.setFont(f);
         Text[] ts = new Text[] { t };
-        Locale loc = getLocale(c);
+        
         textFlow.getChildren().setAll(ts);
-        Locale.setDefault(loc);
+        if(showChars.isSelected()) {
+            Group g = ShowCharacterRuns.createFor(textFlow);
+            textFlow.getChildren().add(g);
+        }
+        
+        Locale loc = getLocale(c);
+                Locale.setDefault(loc);
     }
     
     protected Font getFont() {

@@ -65,6 +65,7 @@ public class TextPage extends TestPaneBase {
 
     public TextPage() {
         setId("TextPage");
+        
         textGroup = new Group();
         
         textChoice = new ComboBox<>();
