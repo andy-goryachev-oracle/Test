@@ -382,11 +382,11 @@ public class RichTextAreaBehavior {
             moveRight = !moveRight;
         }
         
-//        nextCharacterVisually2(moveRight);
-        nextCharacterVisually3(moveRight);
+//        nextCharacterVisually_breakIterator(moveRight);
+        nextCharacterVisually_textArea(moveRight);
     }
     
-    private void nextCharacterVisually3(boolean moveRight) { // FIX
+    private void nextCharacterVisually_breakIterator(boolean moveRight) { // FIX
         TextPos caretPos = getCaret();
         if(caretPos == null) {
             return; // TODO
@@ -435,7 +435,7 @@ public class RichTextAreaBehavior {
         return;
     }
     
-    private void nextCharacterVisually2(boolean moveRight) { // FIX
+    private void nextCharacterVisually_textArea(boolean moveRight) { // FIX
         TextPos caretPos = getCaret();
         if(caretPos == null) {
             return; // TODO
