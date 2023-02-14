@@ -30,6 +30,7 @@ import java.util.Locale;
 import goryachev.monkey.util.FX;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.TestPaneBase;
+import goryachev.monkey.util.WritingSystemsDemo;
 import javafx.scene.control.ComboBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
