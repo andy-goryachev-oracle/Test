@@ -26,6 +26,8 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import java.text.BreakIterator;
+import java.util.Locale;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
@@ -257,7 +259,7 @@ public class RichTextAreaBehavior {
         return control.getTextPosition(screenX, screenY);
     }
     
-    protected String getText(int modelIndex) {
+    protected String getPlainText(int modelIndex) {
         StyledTextModel m = control.getModel();
         return (m == null) ? null : m.getPlainText(modelIndex);
     }
@@ -323,7 +325,7 @@ public class RichTextAreaBehavior {
     public void moveEnd() {
         TextPos p = getCaret();
         if (p != null) {
-            String s = getText(p.lineIndex());
+            String s = getPlainText(p.lineIndex());
             int len = (s == null ? 0 : s.length());
             TextPos p2 = new TextPos(p.lineIndex(), len, false);
             vflow().moveCaret(p2, false);
@@ -380,6 +382,60 @@ public class RichTextAreaBehavior {
             moveRight = !moveRight;
         }
         
+//        nextCharacterVisually2(moveRight);
+        nextCharacterVisually3(moveRight);
+    }
+    
+    private void nextCharacterVisually3(boolean moveRight) { // FIX
+        TextPos caretPos = getCaret();
+        if(caretPos == null) {
+            return; // TODO
+        }
+        
+        TextCell cell = vflow().getCell(caretPos.lineIndex());
+        int cix = caretPos.charIndex();
+        if(moveRight) {
+            cix++;
+            if(cix >= cell.getTextLength()) {
+                int line = cell.getLineIndex() + 1;
+                if(line < vflow().lineCount()) {
+                    // next line
+                    TextPos pos = new TextPos(line, 0, true);
+                    vflow().moveCaret(pos, false);
+                }
+                return;
+            }
+        } else {
+            if(caretPos.charIndex() == 0) {
+                int line = cell.getLineIndex() - 1;
+                if(line >= 0) {
+                    // prev line
+                    TextCell prevCell = vflow().getCell(line);
+                    TextPos pos = new TextPos(line, prevCell.getTextLength(), false);
+                    vflow().moveCaret(pos, false);
+                }
+                return;
+            }
+        }
+        
+        // FIX problem: default locale may not correspond to the actual writing system!
+        // FIX: does not handle combining characters!
+        BreakIterator br = BreakIterator.getCharacterInstance(Locale.getDefault());
+        String text = getPlainText(cell.getLineIndex());
+        br.setText(text);
+        int off = caretPos.charIndex();
+        int ix = moveRight ? br.following(off) : br.preceding(off);
+        if(ix == BreakIterator.DONE) {
+            System.err.println(" --- SHOULD NOT HAPPEN: BreakIterator.DONE off=" + off); // FIX
+            return;
+        }
+        
+        TextPos pos = new TextPos(caretPos.lineIndex(), ix, moveRight ? false : true); // TODO leading?
+        vflow().moveCaret(pos, false);
+        return;
+    }
+    
+    private void nextCharacterVisually2(boolean moveRight) { // FIX
         TextPos caretPos = getCaret();
         if(caretPos == null) {
             return; // TODO
