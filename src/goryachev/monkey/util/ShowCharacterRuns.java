@@ -61,7 +61,7 @@ public class ShowCharacterRuns extends Group {
             HitInfo hit = textNode.hitTest(new Point2D(x, y));
             Path cs = new Path(textNode.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
             System.err.println(i + " " + cs); // FIX
-            Color c = ((i % 2) == 0) ? Color.rgb(255, 0, 0, 0.5) : Color.rgb(0, 255, 0, 0.5);
+            Color c = color(i);
             cs.setFill(c);
             cs.setStroke(c);
             r.getChildren().add(cs);
@@ -87,7 +87,7 @@ public class ShowCharacterRuns extends Group {
             HitInfo hit = textNode.hitTest(new Point2D(x, y));
             Path cs = new Path(textNode.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
             System.err.println(i + " " + cs); // FIX
-            Color c = ((i % 2) == 0) ? Color.rgb(255, 0, 0, 0.5) : Color.rgb(0, 255, 0, 0.5);
+            Color c = color(i);
             cs.setFill(c);
             cs.setStroke(c);
             r.getChildren().add(cs);
@@ -95,8 +95,19 @@ public class ShowCharacterRuns extends Group {
         return r;
     }
     
+    private static Color color(int i) {
+        switch(i % 3) {
+        case 0:
+            return Color.rgb(255, 0, 0, 0.5);
+        case 1:
+            return Color.rgb(0, 255, 0, 0.5);
+        default:
+            return Color.rgb(0, 0, 255, 0.5);
+        }
+    }
+    
     /** TextFlow.getTextLength() */
-    public static int getTextLength(TextFlow f) {
+    private static int getTextLength(TextFlow f) {
         int len = 0;
         for(Node n: f.getChildrenUnmodifiable()) {
             if(n instanceof Text t) {
