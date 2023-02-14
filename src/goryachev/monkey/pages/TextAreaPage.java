@@ -46,6 +46,7 @@ public class TextAreaPage extends TestPaneBase {
         LONG("Long"),
         RIGHT_TO_LEFT("Right-to-Left"),
         UNICODE("Unicode"),
+        COMBINING("Combining Characters"),
         ;
         private final String text;
         TextChoice(String text) { this.text = text; }
@@ -188,6 +189,8 @@ public class TextAreaPage extends TestPaneBase {
             return "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די";
         case UNICODE:
             return generateTextForWritingSystems();
+        case COMBINING:
+            return "Tibetan HAKṢHMALAWARAYAṀ: \u0f67\u0f90\u0fb5\u0fa8\u0fb3\u0fba\u0fbc\u0fbb\u0f82\n(U+0f67 U+0f90 U+0fb5 U+0fa8 U+0fb3 U+0fba U+0fbc U+0fbb U+0f82)";
         default:
             return "?" + ch;
         }
