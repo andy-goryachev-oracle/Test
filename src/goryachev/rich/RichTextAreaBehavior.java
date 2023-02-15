@@ -88,9 +88,9 @@ public class RichTextAreaBehavior {
         m.add(this::pageDown, KeyCode.PAGE_DOWN);
         m.add(this::pageUp, KeyCode.PAGE_UP);
         m.add(this::selectAll, KeyCode.A, InputMap2.Modifier.SHORTCUT);
-        m.add(this::documentStart, KeyCode.PAGE_UP, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
+        m.add(this::documentStart, KeyCode.HOME, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
         m.add(this::documentStart, KeyCode.UP, InputMap2.Modifier.SHORTCUT, InputMap2.Modifier.MAC);
-        m.add(this::documentEnd, KeyCode.PAGE_DOWN, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
+        m.add(this::documentEnd, KeyCode.END, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
         m.add(this::documentEnd, KeyCode.DOWN, InputMap2.Modifier.SHORTCUT, InputMap2.Modifier.MAC);
         return m;
     }
