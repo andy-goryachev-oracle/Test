@@ -27,12 +27,42 @@
 package goryachev.rich.simple;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+import javafx.scene.Node;
 import goryachev.rich.StyledParagraph;
 import goryachev.rich.TextCell;
 
 public class SegmentStyledTextParagraph implements StyledParagraph {
+    
+    public static abstract class Segment {
+        public String getText() { return null; }
+    }
+    
+    public static class TextSegment extends Segment {
+        public final String text;
+        public final String style;
+        public final String[] css;
 
-    public record Segment(String text, String style, String[] css) { }
+        public TextSegment(String text, String style, String[] css) {
+            this.text = text;
+            this.style = style;
+            this.css = css;
+        }
+
+        @Override
+        public String getText() {
+            return text;
+        }
+    }
+    
+    public static class NodeSegment extends Segment {
+        public final Supplier<Node> generator;
+        
+        public NodeSegment(Supplier<Node> generator) {
+            this.generator = generator;
+        }
+    }
 
     private int index; // TODO move to base class?
     private ArrayList<Segment> segments;
@@ -50,7 +80,12 @@ public class SegmentStyledTextParagraph implements StyledParagraph {
             b.addSegment("", null, null);
         } else {
             for(Segment s: segments) {
-                b.addSegment(s.text, s.style, s.css);
+                // TODO Segment.createNode()
+                if(s instanceof TextSegment t) {
+                    b.addSegment(t.text, t.style, t.css);
+                } else if(s instanceof NodeSegment n) {
+                    b.addInlineNode(n.generator.get());
+                }
             }
         }
         return b;
@@ -64,7 +99,7 @@ public class SegmentStyledTextParagraph implements StyledParagraph {
 
         StringBuilder sb = new StringBuilder(64);
         for (Segment s : segments) {
-            sb.append(s.text);
+            sb.append(s.getText());
         }
         return sb.toString();
     }
@@ -73,12 +108,20 @@ public class SegmentStyledTextParagraph implements StyledParagraph {
     public int getIndex() {
         return index;
     }
-
-    public void addSegment(String text, String style, String[] css) {
-        // TODO check for newlines/formfeed chars
+    
+    protected List<Segment> segments() {
         if(segments == null) {
             segments = new ArrayList<>();
         }
-        segments.add(new Segment(text, style, css));
+        return segments;
+    }
+
+    public void addSegment(String text, String style, String[] css) {
+        // TODO check for newlines/formfeed chars
+        segments().add(new TextSegment(text, style, css));
+    }
+    
+    public void addSegment(Supplier<Node> generator) {
+        segments().add(new NodeSegment(generator));
     }
 }

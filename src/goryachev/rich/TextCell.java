@@ -26,6 +26,7 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -68,6 +69,10 @@ public class TextCell {
             t.getStyleClass().addAll(css);
         }
         flow().getChildren().add(t);
+    }
+    
+    public void addInlineNode(Node n) {
+        flow().getChildren().add(n);
     }
     
     protected TextFlow flow() {

@@ -25,7 +25,7 @@
 package goryachev.apps.rich;
 import java.util.Arrays;
 import java.util.Random;
-import goryachev.rich.simple.SimpleStyledImageParagraph;
+import javafx.scene.control.Button;
 import goryachev.rich.simple.SegmentStyledTextModel;
 
 /**
@@ -63,6 +63,7 @@ public class DemoStyledModel extends SegmentStyledTextModel {
         addSegment("Halfwidth and FullWidth Forms", null, UNDER).nl();
         addSegment("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯ", "-fx-font-family:monospaced;").nl();
         addSegment("ABCDEFGHIJKLMNO", "-fx-font-family:monospaced;").nl();
+        addSegment("Inline Node [").addNodeSegment(() -> new Button("Button")).addSegment("].").nl();
         nl(2);
 
         // TODO unicode codepoints

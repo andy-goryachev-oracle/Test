@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.function.Supplier;
+import javafx.scene.Node;
 import javafx.scene.image.Image;
 import goryachev.rich.StyledParagraph;
 import goryachev.rich.StyledTextModel;
@@ -83,16 +85,7 @@ public class SegmentStyledTextModel extends StyledTextModel {
             paragraphs.add(new SegmentStyledTextParagraph(0));
         }
 
-        SegmentStyledTextParagraph p;
-        StyledParagraph last = lastParagraph();
-        if(last instanceof SegmentStyledTextParagraph ss) {
-            p = ss;
-        } else {
-            int ix = paragraphs.size();
-            p = new SegmentStyledTextParagraph(ix);
-            paragraphs.add(p);
-        }
-        
+        SegmentStyledTextParagraph p = lastSegmentStyledTextParagraph();
         p.addSegment(text, style, css);
         return this;
     }
@@ -104,12 +97,30 @@ public class SegmentStyledTextModel extends StyledTextModel {
         }
         return paragraphs.get(sz - 1);
     }
+    
+    protected SegmentStyledTextParagraph lastSegmentStyledTextParagraph() {
+        StyledParagraph last = lastParagraph();
+        if(last instanceof SegmentStyledTextParagraph ss) {
+            return ss;
+        } else {
+            int ix = paragraphs.size();
+            SegmentStyledTextParagraph p = new SegmentStyledTextParagraph(ix);
+            paragraphs.add(p);
+            return p;
+        }
+    }
 
     public SegmentStyledTextModel addImage(InputStream in) {
         int ix = paragraphs.size();
         Image im = new Image(in);
         SimpleStyledImageParagraph p = new SimpleStyledImageParagraph(ix, im);
         paragraphs.add(p);
+        return this;
+    }
+    
+    public SegmentStyledTextModel addNodeSegment(Supplier<Node> generator) {
+        SegmentStyledTextParagraph p = lastSegmentStyledTextParagraph();
+        p.addSegment(generator);
         return this;
     }
 
