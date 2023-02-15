@@ -167,7 +167,7 @@ public class TextFlowPage extends TestPaneBase {
             return WritingSystemsDemo.getText();
         case COMBINING:
             return
-                "Tibetan HAKṢHMALAWARAYAṀ: \u0f67\u0f90\u0fb5\u0fa8\u0fb3\u0fba\u0fbc\u0fbb\u0f82\n(U+0f67 U+0f90 U+0fb5 U+0fa8 U+0fb3 U+0fba U+0fbc U+0fbb U+0f82)\n" +
+                "Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ\n" +
                 "Double diacritics: a\u0360b a\u0361b a\u0362b a\u035cb";
         case FAIL_NAV:
             return "Arabic: \u0627\u0644\u0639\u0631\u0628\u064a\u0629";
