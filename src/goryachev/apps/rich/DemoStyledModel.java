@@ -26,12 +26,12 @@ package goryachev.apps.rich;
 import java.util.Arrays;
 import java.util.Random;
 import goryachev.rich.simple.SimpleStyledImageParagraph;
-import goryachev.rich.simple.SimpleStyledTextModel;
+import goryachev.rich.simple.SegmentStyledTextModel;
 
 /**
  * RichTextArea demo.
  */
-public class DemoStyledModel extends SimpleStyledTextModel {
+public class DemoStyledModel extends SegmentStyledTextModel {
     public DemoStyledModel() {
         String CODE = "code";
         String RED = "red";

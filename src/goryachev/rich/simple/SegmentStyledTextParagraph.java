@@ -30,14 +30,14 @@ import java.util.ArrayList;
 import goryachev.rich.StyledParagraph;
 import goryachev.rich.TextCell;
 
-public class SimpleStyledTextParagraph implements StyledParagraph {
+public class SegmentStyledTextParagraph implements StyledParagraph {
 
     public record Segment(String text, String style, String[] css) { }
 
     private int index; // TODO move to base class?
     private ArrayList<Segment> segments;
 
-    public SimpleStyledTextParagraph(int index) {
+    public SegmentStyledTextParagraph(int index) {
         this.index = index;
     }
     

@@ -35,14 +35,17 @@ import javafx.scene.image.Image;
 import goryachev.rich.StyledParagraph;
 import goryachev.rich.StyledTextModel;
 
-public class SimpleStyledTextModel extends StyledTextModel {
+/**
+ * A read-only styled text model that consists of styled text segments.
+ */
+public class SegmentStyledTextModel extends StyledTextModel {
     private final ArrayList<StyledParagraph> paragraphs = new ArrayList<>();
 
-    public SimpleStyledTextModel() {
+    public SegmentStyledTextModel() {
     }
 
-    public static SimpleStyledTextModel from(String text) {
-        SimpleStyledTextModel m = new SimpleStyledTextModel();
+    public static SegmentStyledTextModel from(String text) {
+        SegmentStyledTextModel m = new SegmentStyledTextModel();
         BufferedReader rd = new BufferedReader(new StringReader(text));
         try {
             String s;
@@ -71,22 +74,22 @@ public class SimpleStyledTextModel extends StyledTextModel {
         return paragraphs.get(index);
     }
     
-    public SimpleStyledTextModel addSegment(String text) {
+    public SegmentStyledTextModel addSegment(String text) {
         return addSegment(text, null);
     }
 
-    public SimpleStyledTextModel addSegment(String text, String style, String... css) {
+    public SegmentStyledTextModel addSegment(String text, String style, String... css) {
         if (paragraphs.size() == 0) {
-            paragraphs.add(new SimpleStyledTextParagraph(0));
+            paragraphs.add(new SegmentStyledTextParagraph(0));
         }
 
-        SimpleStyledTextParagraph p;
+        SegmentStyledTextParagraph p;
         StyledParagraph last = lastParagraph();
-        if(last instanceof SimpleStyledTextParagraph ss) {
+        if(last instanceof SegmentStyledTextParagraph ss) {
             p = ss;
         } else {
             int ix = paragraphs.size();
-            p = new SimpleStyledTextParagraph(ix);
+            p = new SegmentStyledTextParagraph(ix);
             paragraphs.add(p);
         }
         
@@ -102,7 +105,7 @@ public class SimpleStyledTextModel extends StyledTextModel {
         return paragraphs.get(sz - 1);
     }
 
-    public SimpleStyledTextModel addImage(InputStream in) {
+    public SegmentStyledTextModel addImage(InputStream in) {
         int ix = paragraphs.size();
         Image im = new Image(in);
         SimpleStyledImageParagraph p = new SimpleStyledImageParagraph(ix, im);
@@ -110,14 +113,14 @@ public class SimpleStyledTextModel extends StyledTextModel {
         return this;
     }
 
-    public SimpleStyledTextModel nl() {
+    public SegmentStyledTextModel nl() {
         return nl(1);
     }
 
-    public SimpleStyledTextModel nl(int count) {
+    public SegmentStyledTextModel nl(int count) {
         for (int i = 0; i < count; i++) {
             int ix = paragraphs.size();
-            paragraphs.add(new SimpleStyledTextParagraph(ix));
+            paragraphs.add(new SegmentStyledTextParagraph(ix));
         }
         return this;
     }

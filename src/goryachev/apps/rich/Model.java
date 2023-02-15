@@ -26,7 +26,7 @@ package goryachev.apps.rich;
 
 import goryachev.monkey.util.WritingSystemsDemo;
 import goryachev.rich.StyledTextModel;
-import goryachev.rich.simple.SimpleStyledTextModel;
+import goryachev.rich.simple.SegmentStyledTextModel;
 
 public enum Model {
     DEMO("Demo"),
@@ -82,7 +82,7 @@ public enum Model {
         case UNEVEN_LARGE:
             return new UnevenStyledTextModel(2000);
         case WRITING_SYSTEMS:
-            return SimpleStyledTextModel.from(WritingSystemsDemo.getText());
+            return SegmentStyledTextModel.from(WritingSystemsDemo.getText());
         case ZERO_LINES:
             return new DemoStyledTextModel(0, false);
         case LARGE_TEXT:
