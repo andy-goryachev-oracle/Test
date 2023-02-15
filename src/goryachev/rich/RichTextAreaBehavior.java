@@ -413,7 +413,7 @@ public class RichTextAreaBehavior {
             }
         }
 
-        boolean useBreakIterator = !false;
+        boolean useBreakIterator = true;
         if (useBreakIterator) {
             nextCharacterVisually_breakIterator(cell, caretPos, moveRight);
         } else {
@@ -421,9 +421,10 @@ public class RichTextAreaBehavior {
         }
     }
     
-    private void nextCharacterVisually_breakIterator(TextCell cell, TextPos caretPos, boolean moveRight) { // FIX
-        // FIX problem: default locale may not correspond to the actual writing system!
-        // FIX: does not handle combining characters!
+    // TODO combine with previous method
+    private void nextCharacterVisually_breakIterator(TextCell cell, TextPos caretPos, boolean moveRight) {
+        // FIX problem: default locale may not correspond to the actual writing system
+        // perhaps we can infer the locale from the surrounding text?
         BreakIterator br = BreakIterator.getCharacterInstance(Locale.getDefault());
         String text = getPlainText(cell.getLineIndex());
         br.setText(text);
@@ -439,6 +440,7 @@ public class RichTextAreaBehavior {
         return;
     }
     
+    @Deprecated // FIX remove, does not work correctly due to other bugs
     private void nextCharacterVisually_textArea(TextCell cell, TextPos caretPos, boolean moveRight) { // FIX
         Region r = cell.getContent();
         if(r instanceof TextFlow /* TODO eclipse autocompletion f */) {

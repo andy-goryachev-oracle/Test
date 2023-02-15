@@ -17,3 +17,8 @@
 .underline {
     -fx-underline: true;
 }
+
+.arabic {
+	-fx-font-family: "Noto Sans Arabic";
+	-fx-font-size: 200%;
+}
