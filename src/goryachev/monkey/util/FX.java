@@ -42,26 +42,39 @@ import javafx.scene.layout.GridPane;
 public class FX {
     public static Menu menu(MenuBar b, String text) {
         Menu m = new Menu(text);
+        applyMnemonic(m);
         b.getMenus().add(m);
         return m;
     }
 
     public static MenuItem item(MenuBar b, String text, Runnable action) {
         MenuItem mi = new MenuItem(text);
+        applyMnemonic(mi);
         mi.setOnAction((ev) -> action.run());
         lastMenu(b).getItems().add(mi);
         return mi;
     }
     
     public static MenuItem item(MenuBar b, MenuItem mi) {
+        applyMnemonic(mi);
         lastMenu(b).getItems().add(mi);
         return mi;
     }
     
     public static MenuItem item(MenuBar b, String text) {
         MenuItem mi = new MenuItem(text);
+        applyMnemonic(mi);
         lastMenu(b).getItems().add(mi);
         return mi;
+    }
+    
+    private static void applyMnemonic(MenuItem m) {
+        String text = m.getText();
+        if(text != null) {
+            if(text.contains("_")) {
+                m.setMnemonicParsing(true);
+            }
+        }
     }
 
     private static Menu lastMenu(MenuBar b) {
