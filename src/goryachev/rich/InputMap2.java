@@ -29,16 +29,22 @@ import javafx.scene.input.KeyCode;
 
 public class InputMap2 {
     enum Modifier {
+        /** modifier keys */
         ALT,
         CTRL,
-        /** default event type */
+        META,
+        SHIFT,
+        SHORTCUT, // ctrl on windows, command on mac
+        /** event type */
         KEY_PRESS,
         KEY_RELEASE,
         KEY_TYPED,
         KEY_ANY,
-        META,
-        SHIFT,
-        SHORTCUT,
+        /** platform specificity */
+        WINDOWS,
+        NOT_WINDOWS,
+        MAC,
+        NOT_MAC,
     }
     private final HashMap<Object,Object> map = new HashMap<>();
 
@@ -50,8 +56,10 @@ public class InputMap2 {
     public void add(Runnable r, KeyCode code, Modifier ... modifiers) {
         // TODO check for nulls
         KeyBinding2 k = KeyBinding2.of(code, modifiers);
-        map.put(k, r);
-        System.err.println("add " + k); // FIX
+        if(k != null) {
+            map.put(k, r);
+            System.err.println("add " + k); // FIX
+        }
     }
 
     /** returns a Runnable object for the given Action.  Might return null. */

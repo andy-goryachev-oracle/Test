@@ -33,6 +33,7 @@ import goryachev.rich.InputMap2.Modifier;
 // this class might be internal to InputMap2
 public record KeyBinding2(KeyCode code, EnumSet<Modifier> modifiers) {
     private static final boolean isMac = isMac();
+    private static final boolean isWin = isWin();
 
     public static KeyBinding2 from(KeyEvent ev) {
         EnumSet<Modifier> m = EnumSet.noneOf(Modifier.class);
@@ -51,8 +52,6 @@ public record KeyBinding2(KeyCode code, EnumSet<Modifier> modifiers) {
         boolean ctrl = ev.isControlDown();
         boolean meta = ev.isMetaDown();
         boolean shortcut = ev.isShortcutDown();
-        
-        System.err.println(ev); // FIX
         
         // TODO problem: shortcut on mac: shortcut + meta, on windows: control + meta; whereas of() would have
         // only one - shortcut
@@ -89,14 +88,36 @@ public record KeyBinding2(KeyCode code, EnumSet<Modifier> modifiers) {
         }
 
         KeyCode code = ev.getCode();
-        return new KeyBinding2(code, m);
+        KeyBinding2 keyBinding = new KeyBinding2(code, m);
+        System.err.println(ev + " kb=" + keyBinding); // FIX
+        return keyBinding;
     }
 
+    /** creates a key binding.  might return null if the specified modifiers refer to a different platform */
     public static KeyBinding2 of(KeyCode code, Modifier... modifiers) {
         EnumSet<Modifier> m = EnumSet.noneOf(Modifier.class);
         for (Modifier modifier : modifiers) {
             m.add(modifier);
         }
+
+        // TODO mac-windows for now.  might rethink the logic to support more platforms
+        if (isMac) {
+            if (m.contains(Modifier.NOT_MAC)) {
+                return null;
+            } else if (m.contains(Modifier.WINDOWS)) {
+                return null;
+            }
+        } else if (isWin) {
+            if (m.contains(Modifier.NOT_WINDOWS)) {
+                return null;
+            } else if (m.contains(Modifier.MAC)) {
+                return null;
+            }
+        }
+        m.remove(Modifier.MAC);
+        m.remove(Modifier.NOT_MAC);
+        m.remove(Modifier.WINDOWS);
+        m.remove(Modifier.NOT_WINDOWS);
         
         boolean pressed = m.contains(Modifier.KEY_PRESS);
         boolean released = m.contains(Modifier.KEY_PRESS);
@@ -130,9 +151,14 @@ public record KeyBinding2(KeyCode code, EnumSet<Modifier> modifiers) {
         // TODO validate: shortcut and !(other shortcut modifier)
         return new KeyBinding2(code, m);
     }
-    
+
     private static boolean isMac() {
         // PlatformUtil
         return System.getProperty("os.name").startsWith("Mac");
+    }
+
+    private static boolean isWin() {
+        // PlatformUtil
+        return System.getProperty("os.name").startsWith("Windows");
     }
 }
