@@ -378,18 +378,13 @@ public class RichTextAreaBehavior {
     protected void nextCharacterVisually(boolean moveRight) {
         phantomX = -1;
 
-        if (isRTL()) {
-            moveRight = !moveRight;
-        }
-        
-//        nextCharacterVisually_breakIterator(moveRight);
-        nextCharacterVisually_textArea(moveRight);
-    }
-    
-    private void nextCharacterVisually_breakIterator(boolean moveRight) { // FIX
         TextPos caretPos = getCaret();
         if(caretPos == null) {
             return; // TODO
+        }
+        
+        if (isRTL()) {
+            moveRight = !moveRight;
         }
         
         TextCell cell = vflow().getCell(caretPos.lineIndex());
@@ -417,7 +412,16 @@ public class RichTextAreaBehavior {
                 return;
             }
         }
-        
+
+        boolean useBreakIterator = !false;
+        if (useBreakIterator) {
+            nextCharacterVisually_breakIterator(cell, caretPos, moveRight);
+        } else {
+            nextCharacterVisually_textArea(cell, caretPos, moveRight);
+        }
+    }
+    
+    private void nextCharacterVisually_breakIterator(TextCell cell, TextPos caretPos, boolean moveRight) { // FIX
         // FIX problem: default locale may not correspond to the actual writing system!
         // FIX: does not handle combining characters!
         BreakIterator br = BreakIterator.getCharacterInstance(Locale.getDefault());
@@ -430,43 +434,12 @@ public class RichTextAreaBehavior {
             return;
         }
         
-        TextPos pos = new TextPos(caretPos.lineIndex(), ix, moveRight ? false : true); // TODO leading?
+        TextPos pos = new TextPos(caretPos.lineIndex(), ix, caretPos.leading());
         vflow().moveCaret(pos, false);
         return;
     }
     
-    private void nextCharacterVisually_textArea(boolean moveRight) { // FIX
-        TextPos caretPos = getCaret();
-        if(caretPos == null) {
-            return; // TODO
-        }
-        
-        TextCell cell = vflow().getCell(caretPos.lineIndex());
-        int cix = caretPos.charIndex();
-        if(moveRight) {
-            cix++;
-            if(cix >= cell.getTextLength()) {
-                int line = cell.getLineIndex() + 1;
-                if(line < vflow().lineCount()) {
-                    // next line
-                    TextPos pos = new TextPos(line, 0, true);
-                    vflow().moveCaret(pos, false);
-                }
-                return;
-            }
-        } else {
-            if(caretPos.charIndex() == 0) {
-                int line = cell.getLineIndex() - 1;
-                if(line >= 0) {
-                    // prev line
-                    TextCell prevCell = vflow().getCell(line);
-                    TextPos pos = new TextPos(line, prevCell.getTextLength(), false);
-                    vflow().moveCaret(pos, false);
-                }
-                return;
-            }
-        }
-        
+    private void nextCharacterVisually_textArea(TextCell cell, TextPos caretPos, boolean moveRight) { // FIX
         Region r = cell.getContent();
         if(r instanceof TextFlow /* TODO eclipse autocompletion f */) {
             TextFlow f = (TextFlow)r;
