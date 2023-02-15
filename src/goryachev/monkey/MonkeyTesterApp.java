@@ -121,18 +121,18 @@ public class MonkeyTesterApp extends Application {
         
         MenuBar b = new MenuBar();
         // File
-        FX.menu(b, "File");
+        FX.menu(b, "_File");
         FX.item(b, "Quit", Platform::exit);
         // Page
-        FX.menu(b, "Page");
+        FX.menu(b, "_Page");
         FX.item(b, "Reload Current Page", this::reloadCurrentPage);
         FX.separator(b);
         FX.item(b, usePreferred);
         // Window
-        FX.menu(b, "Window");
+        FX.menu(b, "_Window");
         FX.item(b, orientation);
         // Menu
-        FX.menu(b, "Menu");
+        FX.menu(b, "_Menu");
         ToggleGroup g = new ToggleGroup();
         FX.radio(b, "RadioMenuItem 1", KeyCombination.keyCombination("Shortcut+1"), g);
         FX.radio(b, "RadioMenuItem 2", KeyCombination.keyCombination("Shortcut+2"), g);
