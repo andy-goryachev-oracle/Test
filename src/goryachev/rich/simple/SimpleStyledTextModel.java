@@ -26,7 +26,10 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich.simple;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.ArrayList;
 import javafx.scene.image.Image;
 import goryachev.rich.StyledParagraph;
@@ -36,6 +39,26 @@ public class SimpleStyledTextModel extends StyledTextModel {
     private final ArrayList<StyledParagraph> paragraphs = new ArrayList<>();
 
     public SimpleStyledTextModel() {
+    }
+
+    public static SimpleStyledTextModel from(String text) {
+        SimpleStyledTextModel m = new SimpleStyledTextModel();
+        BufferedReader rd = new BufferedReader(new StringReader(text));
+        try {
+            String s;
+            while ((s = rd.readLine()) != null) {
+                m.addSegment(s);
+                m.nl();
+            }
+        } catch (Exception ignore) {
+        } finally {
+            try {
+                rd.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return m;
     }
 
     @Override

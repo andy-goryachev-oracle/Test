@@ -24,10 +24,13 @@
  */
 package goryachev.apps.rich;
 
+import goryachev.monkey.util.WritingSystemsDemo;
 import goryachev.rich.StyledTextModel;
+import goryachev.rich.simple.SimpleStyledTextModel;
 
 public enum Model {
     DEMO("Demo"),
+    WRITING_SYSTEMS("Writing Systems"),
     UNEVEN_SMALL("Uneven Small"),
     UNEVEN_LARGE("Uneven Large"),
     NULL("null"),
@@ -78,6 +81,8 @@ public enum Model {
             return new UnevenStyledTextModel(20);
         case UNEVEN_LARGE:
             return new UnevenStyledTextModel(2000);
+        case WRITING_SYSTEMS:
+            return SimpleStyledTextModel.from(WritingSystemsDemo.getText());
         case ZERO_LINES:
             return new DemoStyledTextModel(0, false);
         case LARGE_TEXT:
