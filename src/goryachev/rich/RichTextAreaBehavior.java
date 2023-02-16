@@ -50,6 +50,13 @@ import javafx.util.Duration;
  * RichTextArea Behavior.
  *
  * BehaviorBase and InputMap are not public, so had to invent my own.
+ * 
+ * TODO
+ * Behavior:
+ * - maps key bindings to actions
+ * - action: invokes methods of control
+ * Control:
+ * - delegates to skin/behavior methods
  */
 public class RichTextAreaBehavior {
     private final RichTextAreaSkin skin;
@@ -93,6 +100,12 @@ public class RichTextAreaBehavior {
         m.add(control::documentStart, KeyCode.UP, InputMap2.Modifier.SHORTCUT, InputMap2.Modifier.MAC);
         m.add(control::documentEnd, KeyCode.END, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
         m.add(control::documentEnd, KeyCode.DOWN, InputMap2.Modifier.SHORTCUT, InputMap2.Modifier.MAC);
+        m.add(this::selectLeft, KeyCode.LEFT, InputMap2.Modifier.SHIFT);
+        m.add(this::selectRight, KeyCode.RIGHT, InputMap2.Modifier.SHIFT);
+        m.add(this::selectUp, KeyCode.UP, InputMap2.Modifier.SHIFT);
+        m.add(this::selectDown, KeyCode.DOWN, InputMap2.Modifier.SHIFT);
+        m.add(this::selectPageUp, KeyCode.PAGE_UP, InputMap2.Modifier.SHIFT);
+        m.add(this::selectPageDown, KeyCode.PAGE_DOWN, InputMap2.Modifier.SHIFT);
         return m;
     }
 
@@ -209,7 +222,7 @@ public class RichTextAreaBehavior {
         stopAutoScroll();
         vflow().scrollCaretToVisible();
         vflow().setSuppressBlink(false);
-        phantomX = -1.0;
+        clearPhantomX();
     }
 
     protected void handleMouseDragged(MouseEvent ev) {
@@ -302,14 +315,14 @@ public class RichTextAreaBehavior {
         control.getSelectionModel().extendSelection(m);
     }
 
-    public void pageUp() {
-        moveLine(-vflow().getViewHeight());
-    }
-
     public void pageDown() {
-        moveLine(vflow().getViewHeight());
+        moveLine(vflow().getViewHeight(), false);
     }
     
+    public void pageUp() {
+        moveLine(-vflow().getViewHeight(), false);
+    }
+
     public void moveRight() {
         nextCharacterVisually(true);
     }
@@ -323,7 +336,7 @@ public class RichTextAreaBehavior {
         if (p != null) {
             TextPos p2 = new TextPos(p.lineIndex(), 0, true);
             vflow().moveCaret(p2, false);
-            phantomX = -1.0;
+            clearPhantomX();
         }
     }
     
@@ -334,46 +347,46 @@ public class RichTextAreaBehavior {
             int len = (s == null ? 0 : s.length());
             TextPos p2 = new TextPos(p.lineIndex(), len, false);
             vflow().moveCaret(p2, false);
-            phantomX = -1.0;
+            clearPhantomX();
         }
     }
-    
+
     public void moveUp() {
-        moveLine(-1.0); // TODO line spacing
+        moveLine(-1.0, false); // TODO line spacing
     }
-    
+
     public void moveDown() {
-        moveLine(1.0); // TODO line spacing
+        moveLine(1.0, false); // TODO line spacing
     }
-    
-    protected void moveLine(double delta) {
+
+    protected void moveLine(double deltaPixels, boolean extendSelection) {
         CaretInfo c = vflow().getCaretInfo();
         double x = c.x();
-        double y = (delta < 0) ? c.y0() + delta : c.y1() + delta;
-        
-        if(phantomX < 0) {
+        double y = (deltaPixels < 0) ? c.y0() + deltaPixels : c.y1() + deltaPixels;
+
+        if (phantomX < 0) {
             phantomX = x;
         } else {
             x = phantomX;
         }
-        
+
         TextPos p = getTextPos(x, y);
-        if(p == null) {
+        if (p == null) {
             // TODO check
             return;
         }
 
-        vflow().moveCaret(p, false);
+        vflow().moveCaret(p, extendSelection);
     }
 
     protected void nextCharacterVisually(boolean moveRight) {
-        phantomX = -1;
+        clearPhantomX();
 
         TextPos caretPos = getCaret();
-        if(caretPos == null) {
+        if (caretPos == null) {
             return; // TODO
         }
-        
+
         if (isRTL()) {
             moveRight = !moveRight;
         }
@@ -462,5 +475,39 @@ public class RichTextAreaBehavior {
     
     public void clearPhantomX() {
         phantomX = -1.0;
+    }
+    
+    public void selectLeft() {
+        // TODO
+        System.err.println("selectLeft");
+    }
+    
+    public void selectRight() {
+        // TODO
+        System.err.println("selectRight");
+    }
+    
+    public void selectDown() {
+        // TODO
+        System.err.println("selectDown");
+        moveLine(1.0, true);
+    }
+    
+    public void selectUp() {
+        // TODO
+        System.err.println("selectUp");
+        moveLine(-1.0, true);
+    }
+    
+    public void selectPageDown() {
+        // TODO
+        System.err.println("selectPageDown");
+        moveLine(vflow().getViewHeight(), true);
+    }
+    
+    public void selectPageUp() {
+        // TODO
+        System.err.println("selectPageUp");
+        moveLine(-vflow().getViewHeight(), true);
     }
 }

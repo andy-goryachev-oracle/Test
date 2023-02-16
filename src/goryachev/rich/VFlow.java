@@ -877,7 +877,8 @@ public class VFlow extends Pane {
             if(bottom) {
                 blockScroll(-getViewHeight() * Config.scrollCaretToVisibleEdgeDistance);
             } else {
-                blockScroll(getViewHeight() * (1 - Config.scrollCaretToVisibleEdgeDistance));
+                // skip if top
+                //blockScroll(getViewHeight() * (1 - Config.scrollCaretToVisibleEdgeDistance));
             }
             
             checkForExcessiveWhitespaceAtTheEnd();
