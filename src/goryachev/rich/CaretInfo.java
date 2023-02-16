@@ -37,6 +37,6 @@ public record CaretInfo(double x, double y0, double y1) {
     }
 
     public String toString() {
-        return "(" + x + "," + y0 + ".." + y1 + ")";
+        return "CaretInfo{x=" + x + ", y=" + y0 + ", y1=" + y1 + "}";
     }
 }

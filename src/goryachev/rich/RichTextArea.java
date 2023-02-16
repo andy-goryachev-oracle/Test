@@ -284,8 +284,64 @@ public class RichTextArea extends Control {
     public ReadOnlyObjectProperty<Origin> originProperty() {
         return vflow().originProperty();
     }
-    
+
     public Origin getOrigin() {
         return vflow().getOrigin();
+    }
+
+    /**
+     * Moves the caret to before the first character of the text, also clearing the selection.
+     */
+    public void documentStart() {
+        // TODO these should operate with selection model
+        System.err.println("documentStart");
+        select(TextPos.ZERO);
+    }
+
+    /**
+     * Moves the caret to after the last character of the text, also clearing the selection.
+     */
+    public void documentEnd() {
+        // TODO these should operate with selection model
+        System.err.println("documentEnd"); // FIX
+        int line = getParagraphCount();
+        if(line > 0) {
+            --line;
+            String text = getPlainText(line);
+            int cix = (text == null) ? 0 : text.length();
+            TextPos pos = new TextPos(line, cix, false);
+            select(pos);
+        }
+    }
+
+    /** Moves the caret to the specified position, clearing the selection */
+    public void select(TextPos pos) {
+        // TODO validate position?
+        // TODO or generic (pos, extendSelection) ?
+        System.err.println("select " + pos); // FIX
+        SelectionModel sm = getSelectionModel();
+        if(sm != null) {
+            Marker m = newMarker(pos);
+            sm.setSelection(m, m);
+        }
+    }
+    
+    /** Selects the specified range */
+    public void select(TextPos anchor, TextPos caret) {
+        // TODO or generic (pos, extendSelection) ?
+        System.err.println("select anchor=" + anchor + " caret=" + caret); // FIX
+    }
+    
+    public int getParagraphCount() {
+        StyledTextModel m = getModel();
+        return (m == null) ? 0 : m.getParagraphCount();
+    }
+    
+    public String getPlainText(int modelIndex) {
+        if((modelIndex < 0) || (modelIndex >= getParagraphCount())) {
+            throw new IllegalArgumentException("No paragraph at index=" + modelIndex);
+        }
+        
+        return getModel().getPlainText(modelIndex);
     }
 }

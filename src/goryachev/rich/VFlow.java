@@ -279,6 +279,12 @@ public class VFlow extends Pane {
     /** reacts to height changes */
     protected void updateHeight() {
         // TODO what to do? do we still have enough nodes in the cell layout?
+//        checkForExcessiveWhitespaceAtTheEnd();
+    }
+    
+    public void handleSelectionChange() {
+        updateCaretAndSelection();
+        scrollCaretToVisible();
     }
 
     public void updateCaretAndSelection() {
@@ -662,6 +668,7 @@ public class VFlow extends Pane {
             layoutCells();
             System.err.println("layoutCells " + layout); // TODO
 
+            checkForExcessiveWhitespaceAtTheEnd();
             updateCaretAndSelection();
 
             // eliminate VSB during scrolling with a mouse
@@ -856,13 +863,31 @@ public class VFlow extends Pane {
     public void scrollCaretToVisible() {
         CaretInfo c = getCaretInfo();
         if (c == null) {
-            return;
-        }
-
-        if (c.y0() < 0.0) {
-            blockScroll(c.y0());
-        } else if (c.y1() > getViewHeight()) {
-            blockScroll(c.y1() - getViewHeight());
+            // caret is outside of the layout; let's set the origin first to the caret position
+            // and then block scroll to the desired location (to show more of the selected text)
+            SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
+            // TODO try to maximize the amount of selected text shown in the view
+            boolean bottom = sel.getAnchor().compareTo(sel.getCaret()) < 0;
+            int ix = sel.getCaret().getLineIndex();
+            Origin or = new Origin(ix, 0);
+            setOrigin(or);
+            
+            // and now block scroll, if needed
+            c = getCaretInfo();
+            if(bottom) {
+                blockScroll(-getViewHeight() * .25);
+            } else {
+                blockScroll(getViewHeight() * .75);
+            }
+            
+            checkForExcessiveWhitespaceAtTheEnd();
+        } else {
+            // block scroll, if needed
+            if (c.y0() < 0.0) {
+                blockScroll(c.y0());
+            } else if (c.y1() > getViewHeight()) {
+                blockScroll(c.y1() - getViewHeight());
+            }
         }
     }
 
@@ -881,6 +906,14 @@ public class VFlow extends Pane {
         } else {
             sm.setSelection(m, m);
         }
+        // FIX not needed here
         scrollCaretToVisible();
+    }
+    
+    protected void checkForExcessiveWhitespaceAtTheEnd() {
+        double delta = layout.bottomHeight() - getViewHeight();
+        if(delta < 0) {
+            blockScroll(delta);
+        }
     }
 }
