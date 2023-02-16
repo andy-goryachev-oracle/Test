@@ -867,7 +867,7 @@ public class VFlow extends Pane {
             // and then block scroll to the desired location (to show more of the selected text)
             SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
             // TODO try to maximize the amount of selected text shown in the view
-            boolean bottom = sel.getAnchor().compareTo(sel.getCaret()) < 0;
+            boolean bottom = sel == null ? false : sel.getAnchor().compareTo(sel.getCaret()) < 0;
             int ix = sel.getCaret().getLineIndex();
             Origin or = new Origin(ix, 0);
             setOrigin(or);

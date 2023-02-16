@@ -58,24 +58,18 @@ public class SingleSelectionModel implements SelectionModel {
 
     @Override
     public void clear() {
-       selection.set(null);
+        anchor = null;
+        selection.set(null);
     }
 
     @Override
     public void setSelection(Marker anchor, Marker caret) {
+        System.err.println("setSelection a=" + anchor + " caret=" + caret); // FIX
+        this.anchor = anchor;
         SelectionSegment seg = new SelectionSegment(anchor, caret);
         selection.set(seg);
     }
 
-    @Override
-    public void clearAndExtendLastSegment(Marker pos) {
-        if (anchor == null) {
-            anchor = pos;
-        }
-        setSelection(anchor, pos);
-    }
-
-    // TODO inherited from multi-selection code.  can it be replaced with clearAndExtendLastSegment()?
     @Override
     public void extendSelection(Marker pos) {
         if (anchor == null) {

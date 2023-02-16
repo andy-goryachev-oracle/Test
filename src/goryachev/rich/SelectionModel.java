@@ -49,18 +49,13 @@ public interface SelectionModel {
     public void clear();
 
     /**
-     * Clears existing selection, if any, and sets a new selection
+     * Replaced existing selection, if any, with the new one.
      */
     public void setSelection(Marker anchor, Marker caret);
 
     /**
-     * Clears existing selection if any,
-     * then selects from the anchor point to the current position.
-     */
-    public void clearAndExtendLastSegment(Marker pos);
-    
-    /**
-     * Extends the new selection from the anchor to the specified position.
+     * Replaces the existing selection, if any, with a new one
+     * from the anchor to the specified position.
      */
     public void extendSelection(Marker pos);
     

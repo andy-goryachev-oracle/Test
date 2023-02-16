@@ -88,7 +88,7 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
 
         KeyCode code = ev.getCode();
         KeyBinding2 keyBinding = new KeyBinding2(code, m);
-        System.err.println(ev + " kb=" + keyBinding); // FIX
+        //System.err.println(ev + " kb=" + keyBinding); // FIX
         return keyBinding;
     }
 

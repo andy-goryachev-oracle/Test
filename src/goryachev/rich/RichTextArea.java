@@ -62,6 +62,7 @@ public class RichTextArea extends Control {
     protected final ObjectProperty<StyledTextModel> model = new SimpleObjectProperty<>(this, "model");
     protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(this, "displayCaret", true);
     protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(Config.caretBlinkPeriod));
+    // TODO use selection model one, or a binding
     protected final ReadOnlyObjectWrapper<TextPos> caretPosition = new ReadOnlyObjectWrapper<>(this, "caretPosition", null);
     // TODO property, pluggable models, or boolean (selection enabled?), do we need to allow for multiple selection?
     protected final SelectionModel selectionModel = new SingleSelectionModel();
@@ -265,6 +266,7 @@ public class RichTextArea extends Control {
     }
     
     /** implementation detail: sets caret position */
+    @Deprecated // TODO remove, use selection methods
     protected void setCaretPosition(TextPos p) {
         caretPosition.set(p);
     }
@@ -272,7 +274,8 @@ public class RichTextArea extends Control {
     public TextPos getCaretPosition() {
         return caretPosition.get();
     }
-    
+
+    // TODO replace with a binding?
     public ReadOnlyObjectProperty<TextPos> caretPositionProperty() {
         return caretPosition.getReadOnlyProperty();
     }

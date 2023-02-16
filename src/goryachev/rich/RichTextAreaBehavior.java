@@ -206,7 +206,7 @@ public class RichTextAreaBehavior {
         if (ev.isShiftDown()) {
             // expand selection from the anchor point to the current position
             // clearing existing (possibly multiple) selection
-            sm.clearAndExtendLastSegment(m);
+            sm.extendSelection(m);
         } else {
             sm.setSelection(m, m);
             sm.setAnchor(m);
