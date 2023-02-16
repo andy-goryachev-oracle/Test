@@ -323,11 +323,11 @@ public class RichTextAreaBehavior {
     }
 
     public void moveRight() {
-        nextCharacterVisually(true);
+        nextCharacterVisually(true, false);
     }
 
     public void moveLeft() {
-        nextCharacterVisually(false);
+        nextCharacterVisually(false, false);
     }
     
     public void moveHome() {
@@ -378,7 +378,7 @@ public class RichTextAreaBehavior {
         vflow().moveCaret(p, extendSelection);
     }
 
-    protected void nextCharacterVisually(boolean moveRight) {
+    protected void nextCharacterVisually(boolean moveRight, boolean extendSelection) {
         clearPhantomX();
 
         TextPos caretPos = getCaret();
@@ -399,7 +399,7 @@ public class RichTextAreaBehavior {
                 if(line < vflow().lineCount()) {
                     // next line
                     TextPos pos = new TextPos(line, 0, true);
-                    vflow().moveCaret(pos, false);
+                    vflow().moveCaret(pos, extendSelection);
                 }
                 return;
             }
@@ -410,7 +410,7 @@ public class RichTextAreaBehavior {
                     // prev line
                     TextCell prevCell = vflow().getCell(line);
                     TextPos pos = new TextPos(line, prevCell.getTextLength(), false);
-                    vflow().moveCaret(pos, false);
+                    vflow().moveCaret(pos, extendSelection);
                 }
                 return;
             }
@@ -418,14 +418,14 @@ public class RichTextAreaBehavior {
 
         boolean useBreakIterator = true;
         if (useBreakIterator) {
-            nextCharacterVisually_breakIterator(cell, caretPos, moveRight);
+            nextCharacterVisually_breakIterator(cell, caretPos, moveRight, extendSelection);
         } else {
-            nextCharacterVisually_textArea(cell, caretPos, moveRight);
+            nextCharacterVisually_textArea(cell, caretPos, moveRight, extendSelection);
         }
     }
     
     // TODO combine with previous method
-    private void nextCharacterVisually_breakIterator(TextCell cell, TextPos caretPos, boolean moveRight) {
+    private void nextCharacterVisually_breakIterator(TextCell cell, TextPos caretPos, boolean moveRight, boolean extendSelection) {
         // using default locale, same as TextInputControl.backward() for example
         BreakIterator br = BreakIterator.getCharacterInstance();
         String text = getPlainText(cell.getLineIndex());
@@ -438,12 +438,12 @@ public class RichTextAreaBehavior {
         }
         
         TextPos pos = new TextPos(caretPos.lineIndex(), ix, caretPos.leading());
-        vflow().moveCaret(pos, false);
+        vflow().moveCaret(pos, extendSelection);
         return;
     }
     
     @Deprecated // FIX remove, does not work correctly due to other bugs
-    private void nextCharacterVisually_textArea(TextCell cell, TextPos caretPos, boolean moveRight) { // FIX
+    private void nextCharacterVisually_textArea(TextCell cell, TextPos caretPos, boolean moveRight, boolean extendSelection) { // FIX
         Region r = cell.getContent();
         if(r instanceof TextFlow /* TODO eclipse autocompletion f */) {
             TextFlow f = (TextFlow)r;
@@ -464,7 +464,7 @@ public class RichTextAreaBehavior {
             if ((moveRight && charShape.getLayoutBounds().getMaxX() > caretBounds.getMaxX()) || 
                 (!moveRight && charShape.getLayoutBounds().getMinX() < caretBounds.getMinX())) {
                 TextPos pos = new TextPos(caretPos.lineIndex(), hit.getInsertionIndex(), !hit.isLeading());
-                vflow().moveCaret(pos, false);
+                vflow().moveCaret(pos, extendSelection);
                 return;
             }
         }
@@ -477,13 +477,11 @@ public class RichTextAreaBehavior {
     }
     
     public void selectLeft() {
-        // TODO
-        System.err.println("selectLeft");
+        nextCharacterVisually(false, true);
     }
     
     public void selectRight() {
-        // TODO
-        System.err.println("selectRight");
+        nextCharacterVisually(true, true);
     }
     
     public void selectDown() {

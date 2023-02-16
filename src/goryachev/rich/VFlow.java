@@ -892,7 +892,6 @@ public class VFlow extends Pane {
         }
     }
 
-    // TODO extend selection?
     // TODO move method to control?
     public void moveCaret(TextPos p, boolean extendSelection) {
         SelectionModel sm = control.getSelectionModel();
@@ -900,15 +899,14 @@ public class VFlow extends Pane {
             return;
         }
 
-        control.setCaretPosition(p); // TODO use selection model????
+        control.setCaretPosition(p); // TODO bind to selection model????
+
         Marker m = control.newMarker(p);
         if (extendSelection) {
             sm.extendSelection(m);
         } else {
             sm.setSelection(m, m);
         }
-        // FIX not needed here
-        scrollCaretToVisible();
     }
     
     protected void checkForExcessiveWhitespaceAtTheEnd() {
