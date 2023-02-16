@@ -28,22 +28,21 @@ import java.util.EnumSet;
 import javafx.event.EventType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import goryachev.rich.InputMap2.Modifier;
 
 // this class might be internal to InputMap2
-public record KeyBinding2(KeyCode code, EnumSet<Modifier> modifiers) {
+public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
     private static final boolean isMac = isMac();
     private static final boolean isWin = isWin();
 
     public static KeyBinding2 from(KeyEvent ev) {
-        EnumSet<Modifier> m = EnumSet.noneOf(Modifier.class);
+        EnumSet<KCondition> m = EnumSet.noneOf(KCondition.class);
         EventType<KeyEvent> t = ev.getEventType();
         if(t == KeyEvent.KEY_PRESSED) {
-            m.add(Modifier.KEY_PRESS);
+            m.add(KCondition.KEY_PRESS);
         } else if(t == KeyEvent.KEY_RELEASED) {
-            m.add(Modifier.KEY_RELEASE);
+            m.add(KCondition.KEY_RELEASE);
         } else if(t == KeyEvent.KEY_TYPED) {
-            m.add(Modifier.KEY_TYPED);
+            m.add(KCondition.KEY_TYPED);
         } else {
             // FIX what is it?
             return null;
@@ -68,23 +67,23 @@ public record KeyBinding2(KeyCode code, EnumSet<Modifier> modifiers) {
         }
 
         if (ev.isAltDown()) {
-            m.add(Modifier.ALT);
+            m.add(KCondition.ALT);
         }
 
         if (ev.isShiftDown()) {
-            m.add(Modifier.SHIFT);
+            m.add(KCondition.SHIFT);
         }
 
         if (shortcut) {
-            m.add(Modifier.SHORTCUT);
+            m.add(KCondition.SHORTCUT);
         }
 
         if (ctrl) {
-            m.add(Modifier.CTRL);
+            m.add(KCondition.CTRL);
         }
 
         if (meta) {
-            m.add(Modifier.META);
+            m.add(KCondition.META);
         }
 
         KeyCode code = ev.getCode();
@@ -94,48 +93,48 @@ public record KeyBinding2(KeyCode code, EnumSet<Modifier> modifiers) {
     }
 
     /** creates a key binding.  might return null if the specified modifiers refer to a different platform */
-    public static KeyBinding2 of(KeyCode code, Modifier... modifiers) {
-        EnumSet<Modifier> m = EnumSet.noneOf(Modifier.class);
-        for (Modifier modifier : modifiers) {
+    public static KeyBinding2 of(KeyCode code, KCondition... modifiers) {
+        EnumSet<KCondition> m = EnumSet.noneOf(KCondition.class);
+        for (KCondition modifier : modifiers) {
             m.add(modifier);
         }
 
         // TODO mac-windows for now.  might rethink the logic to support more platforms
         if (isMac) {
-            if (m.contains(Modifier.NOT_MAC)) {
+            if (m.contains(KCondition.NOT_MAC)) {
                 return null;
-            } else if (m.contains(Modifier.WINDOWS)) {
+            } else if (m.contains(KCondition.WINDOWS)) {
                 return null;
             }
         } else if (isWin) {
-            if (m.contains(Modifier.NOT_WINDOWS)) {
+            if (m.contains(KCondition.NOT_WINDOWS)) {
                 return null;
-            } else if (m.contains(Modifier.MAC)) {
+            } else if (m.contains(KCondition.MAC)) {
                 return null;
             }
         }
-        m.remove(Modifier.MAC);
-        m.remove(Modifier.NOT_MAC);
-        m.remove(Modifier.WINDOWS);
-        m.remove(Modifier.NOT_WINDOWS);
+        m.remove(KCondition.MAC);
+        m.remove(KCondition.NOT_MAC);
+        m.remove(KCondition.WINDOWS);
+        m.remove(KCondition.NOT_WINDOWS);
         
-        boolean pressed = m.contains(Modifier.KEY_PRESS);
-        boolean released = m.contains(Modifier.KEY_PRESS);
-        boolean typed = m.contains(Modifier.KEY_TYPED);
+        boolean pressed = m.contains(KCondition.KEY_PRESS);
+        boolean released = m.contains(KCondition.KEY_PRESS);
+        boolean typed = m.contains(KCondition.KEY_TYPED);
         
         int ct = 0;
-        Modifier t = null;
+        KCondition t = null;
         if (pressed) {
             ct++;
-            t = Modifier.KEY_PRESS;
+            t = KCondition.KEY_PRESS;
         }
         if (released) {
             ct++;
-            t = Modifier.KEY_RELEASE;
+            t = KCondition.KEY_RELEASE;
         }
         if (typed) {
             ct++;
-            t = Modifier.KEY_TYPED;
+            t = KCondition.KEY_TYPED;
         }
 
         // validate event type
@@ -144,7 +143,7 @@ public record KeyBinding2(KeyCode code, EnumSet<Modifier> modifiers) {
         }
         
         if(t == null) {
-            t = Modifier.KEY_PRESS;
+            t = KCondition.KEY_PRESS;
         }
         m.add(t);
 

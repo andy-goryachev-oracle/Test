@@ -27,7 +27,6 @@
 package goryachev.rich;
 
 import java.text.BreakIterator;
-import java.util.Locale;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.EventHandler;
@@ -95,17 +94,17 @@ public class RichTextAreaBehavior {
         m.add(this::moveEnd, KeyCode.END);
         m.add(this::pageDown, KeyCode.PAGE_DOWN);
         m.add(this::pageUp, KeyCode.PAGE_UP);
-        m.add(control::selectAll, KeyCode.A, InputMap2.Modifier.SHORTCUT);
-        m.add(control::documentStart, KeyCode.HOME, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
-        m.add(control::documentStart, KeyCode.UP, InputMap2.Modifier.SHORTCUT, InputMap2.Modifier.MAC);
-        m.add(control::documentEnd, KeyCode.END, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
-        m.add(control::documentEnd, KeyCode.DOWN, InputMap2.Modifier.SHORTCUT, InputMap2.Modifier.MAC);
-        m.add(this::selectLeft, KeyCode.LEFT, InputMap2.Modifier.SHIFT);
-        m.add(this::selectRight, KeyCode.RIGHT, InputMap2.Modifier.SHIFT);
-        m.add(this::selectUp, KeyCode.UP, InputMap2.Modifier.SHIFT);
-        m.add(this::selectDown, KeyCode.DOWN, InputMap2.Modifier.SHIFT);
-        m.add(this::selectPageUp, KeyCode.PAGE_UP, InputMap2.Modifier.SHIFT);
-        m.add(this::selectPageDown, KeyCode.PAGE_DOWN, InputMap2.Modifier.SHIFT);
+        m.add(control::selectAll, KeyCode.A, KCondition.SHORTCUT);
+        m.add(control::documentStart, KeyCode.HOME, KCondition.CTRL, KCondition.NOT_MAC);
+        m.add(control::documentStart, KeyCode.UP, KCondition.SHORTCUT, KCondition.MAC);
+        m.add(control::documentEnd, KeyCode.END, KCondition.CTRL, KCondition.NOT_MAC);
+        m.add(control::documentEnd, KeyCode.DOWN, KCondition.SHORTCUT, KCondition.MAC);
+        m.add(this::selectLeft, KeyCode.LEFT, KCondition.SHIFT);
+        m.add(this::selectRight, KeyCode.RIGHT, KCondition.SHIFT);
+        m.add(this::selectUp, KeyCode.UP, KCondition.SHIFT);
+        m.add(this::selectDown, KeyCode.DOWN, KCondition.SHIFT);
+        m.add(this::selectPageUp, KeyCode.PAGE_UP, KCondition.SHIFT);
+        m.add(this::selectPageDown, KeyCode.PAGE_DOWN, KCondition.SHIFT);
         return m;
     }
 
@@ -488,26 +487,18 @@ public class RichTextAreaBehavior {
     }
     
     public void selectDown() {
-        // TODO
-        System.err.println("selectDown");
         moveLine(1.0, true);
     }
     
     public void selectUp() {
-        // TODO
-        System.err.println("selectUp");
         moveLine(-1.0, true);
     }
     
     public void selectPageDown() {
-        // TODO
-        System.err.println("selectPageDown");
         moveLine(vflow().getViewHeight(), true);
     }
     
     public void selectPageUp() {
-        // TODO
-        System.err.println("selectPageUp");
         moveLine(-vflow().getViewHeight(), true);
     }
 }
