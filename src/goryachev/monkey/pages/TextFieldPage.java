@@ -26,7 +26,7 @@ package goryachev.monkey.pages;
 
 import java.util.Locale;
 import goryachev.monkey.util.OptionPane;
-import goryachev.monkey.util.PosChoice;
+import goryachev.monkey.util.PosSelector;
 import goryachev.monkey.util.TestPaneBase;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
@@ -72,7 +72,7 @@ public class TextFieldPage extends TestPaneBase {
             Locale.setDefault(loc);
         });
  
-        PosChoice posChoice = new PosChoice(control::setAlignment);
+        PosSelector posChoice = new PosSelector(control::setAlignment);
         
         ComboBox<PromptChoice> promptChoice = new ComboBox<>();
         promptChoice.setId("promptChoice");

@@ -31,11 +31,11 @@ import javafx.scene.control.ComboBox;
 /**
  * Alignment Option Selector.
  */
-public class PosChoice {
+public class PosSelector {
     public final ComboBox<Pos> field = new ComboBox<>();
 
-    public PosChoice(Consumer<Pos> client) {
-        field.setId("posChoice");
+    public PosSelector(Consumer<Pos> client) {
+        field.setId("PosSelector");
         field.getItems().setAll(Pos.values());
         field.getSelectionModel().selectedItemProperty().addListener((p) -> {
             Pos v = field.getSelectionModel().getSelectedItem();
