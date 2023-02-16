@@ -76,12 +76,14 @@ public class TextAreaPage extends TestPaneBase {
     
     private final ComboBox<String> fontChoice;
     private final ComboBox<Integer> fontSize;
-    private final TextArea textArea;
+    private final TextArea control;
     private Locale defaultLocale;
 
     public TextAreaPage() {
-        textArea = new TextArea();
-        textArea.setPromptText("<prompt>");
+        setId("TextAreaPage");
+        
+        control = new TextArea();
+        control.setPromptText("<prompt>");
         
         ComboBox<TextChoice> textChoice = new ComboBox<>();
         textChoice.setId("textChoice");
@@ -89,7 +91,7 @@ public class TextAreaPage extends TestPaneBase {
         textChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             String text = getText(c);
             Locale loc = getLocale(c);
-            textArea.setText(text);
+            control.setText(text);
             Locale.setDefault(loc);
         });
         
@@ -116,19 +118,19 @@ public class TextAreaPage extends TestPaneBase {
         CheckBox wrap = new CheckBox("wrap text");
         wrap.setId("wrapText");
         wrap.selectedProperty().addListener((s,p,on) -> {
-            textArea.setWrapText(on);
+            control.setWrapText(on);
         });
         
         CheckBox editable = new CheckBox("editable");
         editable.setId("editable");
-        editable.selectedProperty().bindBidirectional(textArea.editableProperty());
+        editable.selectedProperty().bindBidirectional(control.editableProperty());
         
         ComboBox<PromptChoice> promptChoice = new ComboBox<>();
         promptChoice.setId("promptChoice");
         promptChoice.getItems().setAll(PromptChoice.values());
         promptChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             String text = getPromptText(c);
-            textArea.setPromptText(text);
+            control.setPromptText(text);
         });
         
         ComboBox<FormatterChoice> formatterChoice = new ComboBox<>();
@@ -136,7 +138,7 @@ public class TextAreaPage extends TestPaneBase {
         formatterChoice.getItems().setAll(FormatterChoice.values());
         formatterChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             TextFormatter<?> f = getFormatter(c);
-            textArea.setTextFormatter(f);
+            control.setTextFormatter(f);
         });
         
         OptionPane p = new OptionPane();
@@ -153,7 +155,7 @@ public class TextAreaPage extends TestPaneBase {
         p.label("Formatter: TODO");
         // TODO p.option(formatterChoice);
         
-        setContent(textArea);
+        setContent(control);
         setOptions(p);
 
         FX.select(fontChoice, "System Regular");
@@ -165,7 +167,7 @@ public class TextAreaPage extends TestPaneBase {
     protected void updateFont() {
         Font f = getFont();
         System.err.println(f); // FIX
-        textArea.setFont(f);
+        control.setFont(f);
     }
     
     protected Font getFont() {

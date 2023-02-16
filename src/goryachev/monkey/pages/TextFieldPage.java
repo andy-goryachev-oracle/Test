@@ -24,6 +24,7 @@
  */
 package goryachev.monkey.pages;
 
+import goryachev.monkey.pages.TextAreaPage.PromptChoice;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.TestPaneBase;
 import java.util.Locale;
@@ -42,28 +43,64 @@ public class TextFieldPage extends TestPaneBase {
         RIGHT_TO_LEFT,
     }
     
-    private TextField textField;
+    enum PromptChoice {
+        NULL("null"),
+        SHORT("Short"),
+        LONG("Long"),
+        ;
+        private final String text;
+        PromptChoice(String text) { this.text = text; }
+        public String toString() { return text; }
+    }
+    
+    private TextField control;
     private Locale defaultLocale;
 
     public TextFieldPage() {
-        textField = new TextField();
-        textField.setAlignment(Pos.BASELINE_RIGHT);
-        textField.setPromptText("<prompt>");
+        setId("TextFieldPage");
+        
+        control = new TextField();
+        control.setAlignment(Pos.BASELINE_RIGHT);
         
         ComboBox<TextChoice> textChoice = new ComboBox<>();
+        textChoice.setId("textChoice");
         textChoice.getItems().setAll(TextChoice.values());
         textChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             String text = getText(c);
             Locale loc = getLocale(c);
-            textField.setText(text);
+            control.setText(text);
             Locale.setDefault(loc);
         });
         
         ComboBox<Pos> posChoice = new ComboBox<>();
+        posChoice.setId("posChoice");
         posChoice.getItems().setAll(Pos.values());
         posChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             Pos a = posChoice.getSelectionModel().getSelectedItem();
-            textField.setAlignment(a);
+            control.setAlignment(a);
+        });
+        
+        ComboBox<PromptChoice> promptChoice = new ComboBox<>();
+        promptChoice.setId("promptChoice");
+        promptChoice.getItems().setAll(PromptChoice.values());
+        promptChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+            String text = getPromptText(c);
+            control.setPromptText(text);
+        });
+        
+        ComboBox<Integer> prefColumnCount = new ComboBox<>();
+        prefColumnCount.setId("prefColumnCount");
+        prefColumnCount.getItems().setAll(
+            null,
+            1,
+            10,
+            100,
+            1000
+        );
+        prefColumnCount.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+            Integer ct = prefColumnCount.getSelectionModel().getSelectedItem();
+            int count = ct == null ? TextField.DEFAULT_PREF_COLUMN_COUNT : ct;
+            control.setPrefColumnCount(count);
         });
         
         OptionPane p = new OptionPane();
@@ -71,8 +108,14 @@ public class TextFieldPage extends TestPaneBase {
         p.option(textChoice);
         p.label("Alignment:");
         p.option(posChoice);
+        p.label("Prompt:");
+        p.option(promptChoice);
+        p.label("Preferred Column Count:");
+        p.option(prefColumnCount);
+        // TODO editable
+        // TODO font
         
-        setContent(textField);
+        setContent(control);
         setOptions(p);
         
         posChoice.getSelectionModel().select(Pos.BASELINE_RIGHT);
@@ -103,6 +146,19 @@ public class TextFieldPage extends TestPaneBase {
             return Locale.forLanguageTag("he");
         default:
             return defaultLocale;
+        }
+    }
+    
+    protected String getPromptText(PromptChoice ch) {
+        switch (ch) {
+        case LONG:
+            return "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>";
+        case SHORT:
+            return "yo";
+        case NULL:
+            return null;
+        default:
+            return "?" + ch;
         }
     }
 }
