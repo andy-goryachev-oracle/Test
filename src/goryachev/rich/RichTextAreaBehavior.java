@@ -88,7 +88,7 @@ public class RichTextAreaBehavior {
         m.add(this::moveEnd, KeyCode.END);
         m.add(this::pageDown, KeyCode.PAGE_DOWN);
         m.add(this::pageUp, KeyCode.PAGE_UP);
-        m.add(this::selectAll, KeyCode.A, InputMap2.Modifier.SHORTCUT);
+        m.add(control::selectAll, KeyCode.A, InputMap2.Modifier.SHORTCUT);
         m.add(control::documentStart, KeyCode.HOME, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
         m.add(control::documentStart, KeyCode.UP, InputMap2.Modifier.SHORTCUT, InputMap2.Modifier.MAC);
         m.add(control::documentEnd, KeyCode.END, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
@@ -346,20 +346,6 @@ public class RichTextAreaBehavior {
         moveLine(1.0); // TODO line spacing
     }
     
-    public void selectAll() {
-        StyledTextModel m = control.getModel();
-        if(m != null) {
-            int ix = m.getParagraphCount() - 1;
-            if (ix >= 0) {
-                String text = m.getPlainText(ix);
-                int cix = (text == null ? 0 : Math.max(0, text.length() - 1));
-                Marker end = control.newMarker(ix, cix, false);
-                control.getSelectionModel().setSelection(Marker.ZERO, end);
-                phantomX = -1.0;
-            }
-        }
-    }
-    
     protected void moveLine(double delta) {
         CaretInfo c = vflow().getCaretInfo();
         double x = c.x();
@@ -472,5 +458,9 @@ public class RichTextAreaBehavior {
         }
         
         System.err.println("* * * ERR failed to navigate within the TextFlow"); // FIX
+    }
+    
+    public void clearPhantomX() {
+        phantomX = -1.0;
     }
 }

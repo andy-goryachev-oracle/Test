@@ -149,4 +149,8 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
 
         super.dispose();
     }
+    
+    public void clearPhantomX() {
+        behavior.clearPhantomX();
+    }
 }

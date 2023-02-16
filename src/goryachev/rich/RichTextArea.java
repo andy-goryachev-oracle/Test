@@ -322,6 +322,12 @@ public class RichTextArea extends Control {
     public void select(TextPos anchor, TextPos caret) {
         // TODO or generic (pos, extendSelection) ?
         System.err.println("select anchor=" + anchor + " caret=" + caret); // FIX
+        SelectionModel sm = getSelectionModel();
+        if(sm != null) {
+            Marker manchor = newMarker(anchor);
+            Marker mcaret = newMarker(caret);
+            sm.setSelection(manchor, mcaret);
+        }
     }
     
     public int getParagraphCount() {
@@ -335,5 +341,24 @@ public class RichTextArea extends Control {
         }
         
         return getModel().getPlainText(modelIndex);
+    }
+    
+    private RichTextAreaSkin richTextAreaSkin() {
+        return (RichTextAreaSkin)getSkin();
+    }
+    
+    public void selectAll() {
+        StyledTextModel m = getModel();
+        if(m != null) {
+            int ix = m.getParagraphCount() - 1;
+            if (ix >= 0) {
+                // TODO create a method (getLastTextPos)
+                String text = m.getPlainText(ix);
+                int cix = (text == null ? 0 : Math.max(0, text.length() - 1));
+                Marker end = newMarker(ix, cix, false);
+                getSelectionModel().setSelection(Marker.ZERO, end);
+                richTextAreaSkin().clearPhantomX();
+            }
+        }
     }
 }
