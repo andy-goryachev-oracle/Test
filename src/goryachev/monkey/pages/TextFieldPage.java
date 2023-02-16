@@ -24,10 +24,10 @@
  */
 package goryachev.monkey.pages;
 
-import goryachev.monkey.pages.TextAreaPage.PromptChoice;
-import goryachev.monkey.util.OptionPane;
-import goryachev.monkey.util.TestPaneBase;
 import java.util.Locale;
+import goryachev.monkey.util.OptionPane;
+import goryachev.monkey.util.PosChoice;
+import goryachev.monkey.util.TestPaneBase;
 import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
@@ -71,14 +71,8 @@ public class TextFieldPage extends TestPaneBase {
             control.setText(text);
             Locale.setDefault(loc);
         });
-        
-        ComboBox<Pos> posChoice = new ComboBox<>();
-        posChoice.setId("posChoice");
-        posChoice.getItems().setAll(Pos.values());
-        posChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
-            Pos a = posChoice.getSelectionModel().getSelectedItem();
-            control.setAlignment(a);
-        });
+ 
+        PosChoice posChoice = new PosChoice(control::setAlignment);
         
         ComboBox<PromptChoice> promptChoice = new ComboBox<>();
         promptChoice.setId("promptChoice");
@@ -107,7 +101,7 @@ public class TextFieldPage extends TestPaneBase {
         p.label("Text:");
         p.option(textChoice);
         p.label("Alignment:");
-        p.option(posChoice);
+        p.option(posChoice.node());
         p.label("Prompt:");
         p.option(promptChoice);
         p.label("Preferred Column Count:");
@@ -118,7 +112,7 @@ public class TextFieldPage extends TestPaneBase {
         setContent(control);
         setOptions(p);
         
-        posChoice.getSelectionModel().select(Pos.BASELINE_RIGHT);
+        posChoice.select(Pos.BASELINE_RIGHT);
     }
     
     protected String getText(TextChoice ch) {
