@@ -142,10 +142,6 @@ public class RichTextArea extends Control {
         return displayCaretProperty;
     }
     
-//    public int getLineCount() {
-//        // TODO r/o property
-//    }
-    
     public void moveCurrentLine(int n) {
         // TODO clip
     }
@@ -293,8 +289,6 @@ public class RichTextArea extends Control {
      * Moves the caret to before the first character of the text, also clearing the selection.
      */
     public void documentStart() {
-        // TODO these should operate with selection model
-        System.err.println("documentStart");
         select(TextPos.ZERO);
     }
 
@@ -302,8 +296,6 @@ public class RichTextArea extends Control {
      * Moves the caret to after the last character of the text, also clearing the selection.
      */
     public void documentEnd() {
-        // TODO these should operate with selection model
-        System.err.println("documentEnd"); // FIX
         int line = getParagraphCount();
         if(line > 0) {
             --line;

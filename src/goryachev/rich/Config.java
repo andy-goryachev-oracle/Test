@@ -55,4 +55,10 @@ public class Config {
     
     /** block scroll size as a fraction of window height */
     public static final double scrollWheelBlockSize = 0.1;
+    
+    /** 
+     * Determines the distance between the caret and the top or bottom edge, in fraction of view height,
+     * for the scrollCaretToVisible operation.
+     */
+    public static final double scrollCaretToVisibleEdgeDistance = 0.25;
 }

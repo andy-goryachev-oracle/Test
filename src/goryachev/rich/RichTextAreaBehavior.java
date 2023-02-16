@@ -428,9 +428,8 @@ public class RichTextAreaBehavior {
     
     // TODO combine with previous method
     private void nextCharacterVisually_breakIterator(TextCell cell, TextPos caretPos, boolean moveRight) {
-        // FIX problem: default locale may not correspond to the actual writing system
-        // perhaps we can infer the locale from the surrounding text?
-        BreakIterator br = BreakIterator.getCharacterInstance(Locale.getDefault());
+        // using default locale, same as TextInputControl.backward() for example
+        BreakIterator br = BreakIterator.getCharacterInstance();
         String text = getPlainText(cell.getLineIndex());
         br.setText(text);
         int off = caretPos.charIndex();
