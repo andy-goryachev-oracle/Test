@@ -61,9 +61,9 @@ public record KeyBinding2(KeyCode code, EnumSet<Modifier> modifiers) {
             if (shortcut) {
                 meta = false;
             }
-        } else {
-            if (shortcut) {
-                ctrl = false;
+        } else if (isWin) {
+            if (ctrl) {
+                shortcut = false;
             }
         }
 

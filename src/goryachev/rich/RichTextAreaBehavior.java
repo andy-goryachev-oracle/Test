@@ -79,6 +79,7 @@ public class RichTextAreaBehavior {
     // or better make InputMap and KeyBinding2 public
     protected InputMap2 createInputMap() {
         InputMap2 m = new InputMap2();
+        // TODO move this:: methods to control
         m.add(this::moveLeft, KeyCode.LEFT);
         m.add(this::moveRight, KeyCode.RIGHT);
         m.add(this::moveUp, KeyCode.UP);
@@ -88,9 +89,9 @@ public class RichTextAreaBehavior {
         m.add(this::pageDown, KeyCode.PAGE_DOWN);
         m.add(this::pageUp, KeyCode.PAGE_UP);
         m.add(this::selectAll, KeyCode.A, InputMap2.Modifier.SHORTCUT);
-        m.add(control::documentStart, KeyCode.PAGE_UP, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
+        m.add(control::documentStart, KeyCode.HOME, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
         m.add(control::documentStart, KeyCode.UP, InputMap2.Modifier.SHORTCUT, InputMap2.Modifier.MAC);
-        m.add(control::documentEnd, KeyCode.PAGE_DOWN, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
+        m.add(control::documentEnd, KeyCode.END, InputMap2.Modifier.CTRL, InputMap2.Modifier.NOT_MAC);
         m.add(control::documentEnd, KeyCode.DOWN, InputMap2.Modifier.SHORTCUT, InputMap2.Modifier.MAC);
         return m;
     }
