@@ -413,7 +413,8 @@ public class RichTextAreaBehavior {
                 if(line >= 0) {
                     // prev line
                     TextCell prevCell = vflow().getCell(line);
-                    TextPos pos = new TextPos(line, prevCell.getTextLength(), false);
+                    cix = Math.max(0, prevCell.getTextLength() - 1);
+                    TextPos pos = new TextPos(line, cix, false);
                     vflow().moveCaret(pos, extendSelection);
                 }
                 return;
