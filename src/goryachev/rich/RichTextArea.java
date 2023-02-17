@@ -291,14 +291,14 @@ public class RichTextArea extends Control {
     /**
      * Moves the caret to before the first character of the text, also clearing the selection.
      */
-    public void documentStart() {
+    public void moveDocumentStart() {
         select(TextPos.ZERO);
     }
 
     /**
      * Moves the caret to after the last character of the text, also clearing the selection.
      */
-    public void documentEnd() {
+    public void moveDocumentEnd() {
         int line = getParagraphCount();
         if(line > 0) {
             --line;
@@ -363,5 +363,15 @@ public class RichTextArea extends Control {
                 richTextAreaSkin().clearPhantomX();
             }
         }
+    }
+    
+    public void selectDocumentStart() {
+        // TODO
+        System.err.println("selectDocumentStart"); // FIX
+    }
+    
+    public void selectDocumentEnd() {
+        // TODO
+        System.err.println("selectDocumentEnd"); // FIX
     }
 }

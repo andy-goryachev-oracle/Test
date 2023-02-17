@@ -95,16 +95,20 @@ public class RichTextAreaBehavior {
         m.add(this::pageDown, KeyCode.PAGE_DOWN);
         m.add(this::pageUp, KeyCode.PAGE_UP);
         m.add(control::selectAll, KeyCode.A, KCondition.SHORTCUT);
-        m.add(control::documentStart, KeyCode.HOME, KCondition.CTRL, KCondition.NOT_MAC);
-        m.add(control::documentStart, KeyCode.UP, KCondition.SHORTCUT, KCondition.MAC);
-        m.add(control::documentEnd, KeyCode.END, KCondition.CTRL, KCondition.NOT_MAC);
-        m.add(control::documentEnd, KeyCode.DOWN, KCondition.SHORTCUT, KCondition.MAC);
+        m.add(control::moveDocumentStart, KeyCode.HOME, KCondition.CTRL, KCondition.NOT_MAC);
+        m.add(control::moveDocumentStart, KeyCode.UP, KCondition.SHORTCUT, KCondition.MAC);
+        m.add(control::moveDocumentEnd, KeyCode.END, KCondition.CTRL, KCondition.NOT_MAC);
+        m.add(control::moveDocumentEnd, KeyCode.DOWN, KCondition.SHORTCUT, KCondition.MAC);
         m.add(this::selectLeft, KeyCode.LEFT, KCondition.SHIFT);
         m.add(this::selectRight, KeyCode.RIGHT, KCondition.SHIFT);
         m.add(this::selectUp, KeyCode.UP, KCondition.SHIFT);
         m.add(this::selectDown, KeyCode.DOWN, KCondition.SHIFT);
         m.add(this::selectPageUp, KeyCode.PAGE_UP, KCondition.SHIFT);
         m.add(this::selectPageDown, KeyCode.PAGE_DOWN, KCondition.SHIFT);
+        m.add(control::selectDocumentStart, KeyCode.HOME, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
+        m.add(control::selectDocumentStart, KeyCode.UP, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
+        m.add(control::selectDocumentEnd, KeyCode.END, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
+        m.add(control::selectDocumentEnd, KeyCode.DOWN, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
         return m;
     }
 
