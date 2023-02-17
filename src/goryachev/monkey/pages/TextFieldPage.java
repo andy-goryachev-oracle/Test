@@ -25,10 +25,13 @@
 package goryachev.monkey.pages;
 
 import java.util.Locale;
+import goryachev.monkey.util.FontSelector;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.PosSelector;
 import goryachev.monkey.util.TestPaneBase;
+import goryachev.monkey.util.TextSelector;
 import javafx.geometry.Pos;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 
@@ -41,16 +44,6 @@ public class TextFieldPage extends TestPaneBase {
         SHORT,
         LONG,
         RIGHT_TO_LEFT,
-    }
-    
-    enum PromptChoice {
-        NULL("null"),
-        SHORT("Short"),
-        LONG("Long"),
-        ;
-        private final String text;
-        PromptChoice(String text) { this.text = text; }
-        public String toString() { return text; }
     }
     
     private TextField control;
@@ -67,26 +60,21 @@ public class TextFieldPage extends TestPaneBase {
         textChoice.getItems().setAll(TextChoice.values());
         textChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             String text = getText(c);
-            Locale loc = getLocale(c);
             control.setText(text);
-            Locale.setDefault(loc);
         });
- 
-        PosSelector posChoice = new PosSelector(control::setAlignment);
         
-        ComboBox<PromptChoice> promptChoice = new ComboBox<>();
-        promptChoice.setId("promptChoice");
-        promptChoice.getItems().setAll(PromptChoice.values());
-        promptChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
-            String text = getPromptText(c);
-            control.setPromptText(text);
-        });
+        FontSelector fontSelector = new FontSelector("font", control::setFont);
+ 
+        PosSelector posSelector = new PosSelector(control::setAlignment);
+        
+        TextSelector promptChoice = Templates.promptChoice("promptChoice", control::setPromptText);
         
         ComboBox<Integer> prefColumnCount = new ComboBox<>();
         prefColumnCount.setId("prefColumnCount");
         prefColumnCount.getItems().setAll(
             null,
             1,
+            5,
             10,
             100,
             1000
@@ -97,22 +85,30 @@ public class TextFieldPage extends TestPaneBase {
             control.setPrefColumnCount(count);
         });
         
+        CheckBox editable = new CheckBox("editable");
+        editable.setId("editable");
+        editable.selectedProperty().bindBidirectional(control.editableProperty());
+        
         OptionPane p = new OptionPane();
         p.label("Text:");
         p.option(textChoice);
+        p.label("Font:");
+        p.option(fontSelector.fontNode());
+        p.label("Size:");
+        p.option(fontSelector.sizeNode());
         p.label("Alignment:");
-        p.option(posChoice.node());
+        p.option(posSelector.node());
         p.label("Prompt:");
-        p.option(promptChoice);
+        p.option(promptChoice.node());
         p.label("Preferred Column Count:");
         p.option(prefColumnCount);
-        // TODO editable
-        // TODO font
+        p.option(editable);
         
         setContent(control);
         setOptions(p);
         
-        posChoice.select(Pos.BASELINE_RIGHT);
+        posSelector.select(Pos.BASELINE_RIGHT);
+        fontSelector.selectSystemFont();
     }
     
     protected String getText(TextChoice ch) {
@@ -125,32 +121,6 @@ public class TextFieldPage extends TestPaneBase {
             return null;
         case RIGHT_TO_LEFT:
             return "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די";
-        default:
-            return "?" + ch;
-        }
-    }
-
-    protected Locale getLocale(TextChoice ch) {
-        if (defaultLocale == null) {
-            defaultLocale = Locale.getDefault();
-        }
-
-        switch (ch) {
-        case RIGHT_TO_LEFT:
-            return Locale.forLanguageTag("he");
-        default:
-            return defaultLocale;
-        }
-    }
-    
-    protected String getPromptText(PromptChoice ch) {
-        switch (ch) {
-        case LONG:
-            return "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>";
-        case SHORT:
-            return "yo";
-        case NULL:
-            return null;
         default:
             return "?" + ch;
         }

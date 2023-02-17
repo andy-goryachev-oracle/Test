@@ -22,33 +22,23 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.monkey.util;
+package goryachev.monkey.pages;
 
 import java.util.function.Consumer;
-import javafx.geometry.Pos;
-import javafx.scene.Node;
-import javafx.scene.control.ComboBox;
+import goryachev.monkey.util.TextSelector;
 
 /**
- * Alignment Option Selector.
+ *
  */
-public class PosSelector {
-    private final ComboBox<Pos> field = new ComboBox<>();
-
-    public PosSelector(Consumer<Pos> client) {
-        field.setId("PosSelector");
-        field.getItems().setAll(Pos.values());
-        field.getSelectionModel().selectedItemProperty().addListener((p) -> {
-            Pos v = field.getSelectionModel().getSelectedItem();
-            client.accept(v);
-        });
-    }
-    
-    public Node node() {
-        return field;
-    }
-    
-    public void select(Pos v) {
-        field.getSelectionModel().select(v);
+public class Templates {
+    public static TextSelector promptChoice(String id, Consumer<String> client) {
+        return TextSelector.fromTuples(
+            id,
+            client,
+            "null", null,
+            "Short", "yo",
+            "Long", "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>",
+            "RTL", "العربية"
+        );
     }
 }
