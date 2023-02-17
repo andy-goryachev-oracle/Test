@@ -24,13 +24,13 @@
  */
 package goryachev.monkey.pages;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import goryachev.monkey.util.FX;
+import goryachev.monkey.util.FontSelector;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.ShowCharacterRuns;
 import goryachev.monkey.util.TestPaneBase;
+import goryachev.monkey.util.TextSelector;
 import goryachev.monkey.util.WritingSystemsDemo;
 import javafx.scene.Group;
 import javafx.scene.control.CheckBox;
@@ -43,58 +43,24 @@ import javafx.scene.text.TextFlow;
  * TextFlow Page
  */
 public class TextFlowPage extends TestPaneBase {
-    enum TextChoice {
-        NULL("null"),
-        SHORT("Short"),
-        LONG("Long"),
-        RIGHT_TO_LEFT("Right-to-Left"),
-        UNICODE("Unicode"),
-        COMBINING("Combining Characters"),
-        FAIL_NAV("Navigation Fails"),
-        ;
-        private final String text;
-        TextChoice(String text) { this.text = text; }
-        public String toString() { return text; }
-    }
-    
-    private final ComboBox<TextChoice> textChoice;
-    private final ComboBox<String> fontChoice;
-    private final ComboBox<Integer> fontSize;
+    private final TextSelector textSelector;
+    private final FontSelector fontSelector;
     private final CheckBox showChars;
-    private final TextFlow textFlow;
+    private final TextFlow control;
     private Locale defaultLocale;
 
     public TextFlowPage() {
         setId("TextFlowPage");
         
-        textFlow = new TextFlow();
+        control = new TextFlow();
         
-        textChoice = new ComboBox<>();
-        textChoice.setId("textChoice");
-        textChoice.getItems().setAll(TextChoice.values());
-        textChoice.getSelectionModel().selectedItemProperty().addListener((c) -> {
-            updateTextFlow();
-        });
-        
-        fontChoice = new ComboBox<>();
-        fontChoice.setId("fontChoice");
-        fontChoice.getItems().setAll(collectFonts());
-        fontChoice.getSelectionModel().selectedItemProperty().addListener((x) -> {
-            updateTextFlow();
-        });
-        
-        fontSize = new ComboBox<>();
-        fontSize.setId("fontSize");
-        fontSize.getItems().setAll(
-            8,
-            12,
-            24,
-            48,
-            72
+        textSelector = TextSelector.fromPairs(
+            "textSelector", 
+            (t) -> updateTextFlow(),
+            Templates.multiLineTextPairs()
         );
-        fontSize.getSelectionModel().selectedItemProperty().addListener((x) -> {
-            updateTextFlow();
-        });
+        
+        fontSelector = new FontSelector("font", (f) -> updateTextFlow());
         
         showChars = new CheckBox("show characters");
         showChars.setId("showChars");
@@ -104,93 +70,32 @@ public class TextFlowPage extends TestPaneBase {
 
         OptionPane p = new OptionPane();
         p.label("Text:");
-        p.option(textChoice);
+        p.option(textSelector.node());
         p.label("Font:");
-        p.option(fontChoice);
+        p.option(fontSelector.fontNode());
         p.label("Font Size:");
-        p.option(fontSize);
+        p.option(fontSelector.sizeNode());
         p.option(showChars);
         
-        setContent(textFlow);
+        setContent(control);
         setOptions(p);
 
-        FX.select(fontChoice, "System Regular");
-        FX.select(fontSize, 12);
-        FX.select(textChoice, TextChoice.UNICODE);
+        fontSelector.selectSystemFont();
+        textSelector.selectFirst();
     }
     
     protected void updateTextFlow() {
-        TextChoice c = FX.getSelectedItem(textChoice);
-        if(c == null) {
-            return;
-        }
         
-        Font f = getFont();
-        String text = getText(c);
+        Font f = fontSelector.getFont();
+        String text = textSelector.getSelectedText();
         Text t = new Text(text);
         t.setFont(f);
         Text[] ts = new Text[] { t };
         
-        textFlow.getChildren().setAll(ts);
+        control.getChildren().setAll(ts);
         if(showChars.isSelected()) {
-            Group g = ShowCharacterRuns.createFor(textFlow);
-            textFlow.getChildren().add(g);
+            Group g = ShowCharacterRuns.createFor(control);
+            control.getChildren().add(g);
         }
-        
-        Locale loc = getLocale(c);
-                Locale.setDefault(loc);
-    }
-    
-    protected Font getFont() {
-        String name = fontChoice.getSelectionModel().getSelectedItem();
-        if(name == null) {
-            return null;
-        }
-        Integer size = fontSize.getSelectionModel().getSelectedItem();
-        if(size == null) {
-            size = 12;
-        }
-        return new Font(name, size);
-    }
-    
-    protected String getText(TextChoice ch) {
-        switch (ch) {
-        case LONG:
-            return "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>";
-        case SHORT:
-            return "yo";
-        case NULL:
-            return null;
-        case RIGHT_TO_LEFT:
-            return "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די";
-        case UNICODE:
-            return WritingSystemsDemo.getText();
-        case COMBINING:
-            return
-                "Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ\n" +
-                "Double diacritics: a\u0360b a\u0361b a\u0362b a\u035cb";
-        case FAIL_NAV:
-            return "Arabic: \u0627\u0644\u0639\u0631\u0628\u064a\u0629";
-        default:
-            return "?" + ch;
-        }
-    }
-    
-    protected Locale getLocale(TextChoice ch) {
-        if (defaultLocale == null) {
-            defaultLocale = Locale.getDefault();
-        }
-
-        switch (ch) {
-        case RIGHT_TO_LEFT:
-            return Locale.forLanguageTag("he");
-        default:
-            return defaultLocale;
-        }
-    }
-    
-    protected static List<String> collectFonts() {
-        ArrayList<String> rv = new ArrayList<>(Font.getFontNames());
-        return rv;
     }
 }
