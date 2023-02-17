@@ -76,7 +76,7 @@ public class FontSelector {
         fontField.getSelectionModel().select(name);
     }
     
-    protected Font getFont() {
+    public Font getFont() {
         String name = fontField.getSelectionModel().getSelectedItem();
         if(name == null) {
             return null;

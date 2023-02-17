@@ -40,9 +40,9 @@ public class ItemSelector<T> {
     
     private final ComboBox<Pair> field = new ComboBox<>();
     
-    public ItemSelector(String id, Consumer<T> client, Object ... items) {
+    public ItemSelector(String id, Consumer<T> client, Object ... displayValuePairs) {
         field.setId("PosSelector");
-        field.getItems().setAll(toPairs(items));
+        field.getItems().setAll(toPairs(displayValuePairs));
         field.setConverter(new StringConverter<Pair>() {
             @Override
             public String toString(Pair x) {

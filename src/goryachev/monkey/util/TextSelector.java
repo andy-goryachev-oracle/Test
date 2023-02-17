@@ -54,13 +54,12 @@ public class TextSelector {
             }
         });
         field.getSelectionModel().selectedItemProperty().addListener((p) -> {
-            Object v = field.getSelectionModel().getSelectedItem();
-            String text = toValue(v);
+            String text = getSelectedText();
             client.accept(text);
         });
     }
     
-    public static TextSelector fromTuples(String id, Consumer<String> client, Object ... pairs) {
+    public static TextSelector fromPairs(String id, Consumer<String> client, Object ... pairs) {
         ArrayList<Pair> a = new ArrayList<>();
         for(int i=0; i<pairs.length; ) {
             String display = (String)pairs[i++];
@@ -132,5 +131,10 @@ public class TextSelector {
 
     public void addPair(String display, String value) {
         field.getItems().add(new Pair(display, value));
+    }
+    
+    public String getSelectedText() {
+        Object v = field.getSelectionModel().getSelectedItem();
+        return toValue(v);
     }
 }
