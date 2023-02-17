@@ -66,7 +66,7 @@ public enum Model {
         case BILLION_LINES:
             return new DemoStyledTextModel(1_000_000_000, false);
         case DEMO:
-            return new DemoStyledModel();
+            return new DemoModel();
         case MONOSPACED:
             return new DemoStyledTextModel(100_000, true);
         case NULL:

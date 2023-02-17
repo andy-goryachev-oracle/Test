@@ -39,7 +39,6 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventType;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.input.MouseEvent;
@@ -53,7 +52,6 @@ import javafx.scene.shape.PathElement;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import goryachev.rich.impl.CellCache;
-import goryachev.rich.impl.Markers;
 import goryachev.rich.impl.SelectionHelper;
 import goryachev.rich.util.FxPathBuilder;
 import goryachev.rich.util.NewAPI;
@@ -175,6 +173,7 @@ public class VFlow extends Pane {
         System.err.println("updateModel"); // FIX
 
         // TODO fixing change model bug
+        // TODO duplicate call, there is one in recomputeLayout()
         invalidateLayout();
         
         control.getSelectionModel().clear();
@@ -720,7 +719,14 @@ public class VFlow extends Pane {
 
             // TODO actual box height might be different from h due to snapping?
             // TODO account for side components
-            double h = r.prefHeight(forWidth);
+            double h;
+            try {
+                h = r.prefHeight(forWidth);
+            } catch(Exception e) {
+                e.printStackTrace(); // FIX
+                System.err.println("i=" + i + " cell=" + control.getPlainText(cell.getLineIndex())); // FIX
+                h = 0;
+            }
             cell.setComputedHeight(h, forWidth);
             cell.setLocation(x, y);
 
@@ -821,7 +827,13 @@ public class VFlow extends Pane {
             double h = cell.getComputedHeight();
             double x = cell.getX();
             double y = cell.getY();
-            layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
+            // FIX bug
+            try {
+                layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
+            } catch(Exception e) {
+                e.printStackTrace(); // FIX
+                System.err.println("i=" + i + " cell=" + control.getPlainText(cell.getLineIndex())); // FIX
+            }
         }
     }
     
@@ -864,23 +876,11 @@ public class VFlow extends Pane {
         CaretInfo c = getCaretInfo();
         if (c == null) {
             // caret is outside of the layout; let's set the origin first to the caret position
-            // and then block scroll to the desired location (to show more of the selected text)
+            // and then block scroll to avoid scrolling past the document end, if needed
             SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
-            // TODO try to maximize the amount of selected text shown in the view
-            boolean bottom = sel == null ? false : sel.getAnchor().compareTo(sel.getCaret()) < 0;
             int ix = sel.getCaret().getLineIndex();
             Origin or = new Origin(ix, 0);
             setOrigin(or);
-            
-            // and now block scroll, if needed
-            c = getCaretInfo();
-            if(bottom) {
-                blockScroll(-getViewHeight() * Config.scrollCaretToVisibleEdgeDistance);
-            } else {
-                // skip if top
-                //blockScroll(getViewHeight() * (1 - Config.scrollCaretToVisibleEdgeDistance));
-            }
-            
             checkForExcessiveWhitespaceAtTheEnd();
         } else {
             // block scroll, if needed

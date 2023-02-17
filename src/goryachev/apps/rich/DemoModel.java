@@ -29,10 +29,10 @@ import javafx.scene.control.Button;
 import goryachev.rich.simple.SegmentStyledTextModel;
 
 /**
- * RichTextArea demo.
+ * RichTextArea demo model.
  */
-public class DemoStyledModel extends SegmentStyledTextModel {
-    public DemoStyledModel() {
+public class DemoModel extends SegmentStyledTextModel {
+    public DemoModel() {
         String ARABIC = "arabic";
         String CODE = "code";
         String RED = "red";
@@ -43,7 +43,7 @@ public class DemoStyledModel extends SegmentStyledTextModel {
 
         addSegment("RichTextArea Control", "-fx-font-size:200%;", UNDER);
         //nl();
-        addImage(DemoStyledModel.class.getResourceAsStream("image.png"));
+        addImage(DemoModel.class.getResourceAsStream("image.png"));
         addSegment("*** This text is styled with inline style ***", "-fx-font-size:100%; -fx-font-style:italic; -fx-fill:gray;");
         nl();
         addSegment("The following text is styled with a CSS stylesheet:");

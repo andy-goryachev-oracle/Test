@@ -304,16 +304,14 @@ public class RichTextArea extends Control {
             select(pos);
         }
     }
-    
+
+    /** selects from the anchor position to the document start */
     public void selectDocumentStart() {
-        // TODO
-        System.err.println("selectDocumentStart"); // FIX
         extendSelection(TextPos.ZERO);
     }
-    
+
+    /** selects from the anchor position to the document end */
     public void selectDocumentEnd() {
-        // TODO
-        System.err.println("selectDocumentEnd"); // FIX
         TextPos pos = getEndOfDocument();
         if(pos != null) {
             extendSelection(pos);
@@ -322,8 +320,6 @@ public class RichTextArea extends Control {
 
     /** Moves the caret to the specified position, clearing the selection */
     public void select(TextPos pos) {
-        // TODO validate position?
-        System.err.println("select " + pos); // FIX
         SelectionModel sm = getSelectionModel();
         if(sm != null) {
             Marker m = newMarker(pos);
@@ -373,7 +369,6 @@ public class RichTextArea extends Control {
         if((modelIndex < 0) || (modelIndex >= getParagraphCount())) {
             throw new IllegalArgumentException("No paragraph at index=" + modelIndex);
         }
-        
         return getModel().getPlainText(modelIndex);
     }
     
