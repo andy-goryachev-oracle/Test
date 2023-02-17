@@ -24,18 +24,16 @@
  */
 package goryachev.monkey.pages;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import goryachev.monkey.util.FX;
+import goryachev.monkey.util.FontSelector;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.TestPaneBase;
+import goryachev.monkey.util.TextSelector;
 import goryachev.monkey.util.WritingSystemsDemo;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.text.Font;
 
 /**
  * TextArea Page
@@ -55,33 +53,14 @@ public class TextAreaPage extends TestPaneBase {
         public String toString() { return text; }
     }
     
-    enum PromptChoice {
-        NULL("null"),
-        SHORT("Short"),
-        LONG("Long"),
-        ;
-        private final String text;
-        PromptChoice(String text) { this.text = text; }
-        public String toString() { return text; }
-    }
-    
-    enum FormatterChoice {
-        NULL("null"),
-        PREFIX("Prefix"),
-        ;
-        private final String text;
-        FormatterChoice(String text) { this.text = text; }
-        public String toString() { return text; }
-    }
-    
-    private final ComboBox<String> fontChoice;
-    private final ComboBox<Integer> fontSize;
-    private final TextArea textArea;
+    private final TextArea control;
     private Locale defaultLocale;
 
     public TextAreaPage() {
-        textArea = new TextArea();
-        textArea.setPromptText("<prompt>");
+        setId("TextAreaPage");
+        
+        control = new TextArea();
+        control.setPromptText("<prompt>");
         
         ComboBox<TextChoice> textChoice = new ComboBox<>();
         textChoice.setId("textChoice");
@@ -89,95 +68,53 @@ public class TextAreaPage extends TestPaneBase {
         textChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             String text = getText(c);
             Locale loc = getLocale(c);
-            textArea.setText(text);
+            control.setText(text);
             Locale.setDefault(loc);
         });
         
-        fontChoice = new ComboBox<>();
-        fontChoice.setId("fontChoice");
-        fontChoice.getItems().setAll(collectFonts());
-        fontChoice.getSelectionModel().selectedItemProperty().addListener((x) -> {
-            updateFont();
-        });
-        
-        fontSize = new ComboBox<>();
-        fontSize.setId("fontSize");
-        fontSize.getItems().setAll(
-            8,
-            12,
-            24,
-            48,
-            72
-        );
-        fontSize.getSelectionModel().selectedItemProperty().addListener((x) -> {
-            updateFont();
-        });
+        FontSelector fontSelector = new FontSelector("font", control::setFont);
         
         CheckBox wrap = new CheckBox("wrap text");
         wrap.setId("wrapText");
         wrap.selectedProperty().addListener((s,p,on) -> {
-            textArea.setWrapText(on);
+            control.setWrapText(on);
         });
         
         CheckBox editable = new CheckBox("editable");
         editable.setId("editable");
-        editable.selectedProperty().bindBidirectional(textArea.editableProperty());
+        editable.selectedProperty().bindBidirectional(control.editableProperty());
         
-        ComboBox<PromptChoice> promptChoice = new ComboBox<>();
-        promptChoice.setId("promptChoice");
-        promptChoice.getItems().setAll(PromptChoice.values());
-        promptChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
-            String text = getPromptText(c);
-            textArea.setPromptText(text);
-        });
+        TextSelector promptChoice = Templates.promptChoice("promptChoice", control::setPromptText);
+        promptChoice.addPair("Multiline", "1\n2\n3\n4");
         
-        ComboBox<FormatterChoice> formatterChoice = new ComboBox<>();
-        formatterChoice.setId("formatterChoice");
-        formatterChoice.getItems().setAll(FormatterChoice.values());
-        formatterChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
-            TextFormatter<?> f = getFormatter(c);
-            textArea.setTextFormatter(f);
-        });
+//        ComboBox<FormatterChoice> formatterChoice = new ComboBox<>();
+//        formatterChoice.setId("formatterChoice");
+//        formatterChoice.getItems().setAll(FormatterChoice.values());
+//        formatterChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+//            TextFormatter<?> f = getFormatter(c);
+//            control.setTextFormatter(f);
+//        });
         
         OptionPane p = new OptionPane();
         p.label("Text:");
         p.option(textChoice);
         p.label("Font:");
-        p.option(fontChoice);
+        p.option(fontSelector.fontNode());
         p.label("Font Size:");
-        p.option(fontSize);
+        p.option(fontSelector.sizeNode());
         p.option(wrap);
         p.option(editable);
         p.label("Prompt:");
-        p.option(promptChoice);
+        p.option(promptChoice.node());
         p.label("Formatter: TODO");
         // TODO p.option(formatterChoice);
         
-        setContent(textArea);
+        setContent(control);
         setOptions(p);
 
-        FX.select(fontChoice, "System Regular");
-        FX.select(fontSize, 12);
+        fontSelector.selectSystemFont();
         FX.select(textChoice, TextChoice.UNICODE);
-        FX.select(promptChoice, PromptChoice.NULL);
-    }
-    
-    protected void updateFont() {
-        Font f = getFont();
-        System.err.println(f); // FIX
-        textArea.setFont(f);
-    }
-    
-    protected Font getFont() {
-        String name = fontChoice.getSelectionModel().getSelectedItem();
-        if(name == null) {
-            return null;
-        }
-        Integer size = fontSize.getSelectionModel().getSelectedItem();
-        if(size == null) {
-            size = 12;
-        }
-        return new Font(name, size);
+        promptChoice.select(null);
     }
     
     protected String getText(TextChoice ch) {
@@ -202,32 +139,6 @@ public class TextAreaPage extends TestPaneBase {
             return "?" + ch;
         }
     }
-    
-    protected String getPromptText(PromptChoice ch) {
-        switch (ch) {
-        case LONG:
-            return "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>";
-        case SHORT:
-            return "yo";
-        case NULL:
-            return null;
-        default:
-            return "?" + ch;
-        }
-    }
-    
-    protected TextFormatter<?> getFormatter(FormatterChoice ch) {
-        switch (ch) {
-        case NULL:
-            return null;
-        case PREFIX:
-            // TODO converter, filter, too many options - code this later
-//            return new TextFormatter<Object>() {
-//            };
-        default:
-            throw new Error("?" + ch);
-        }
-    }
 
     protected Locale getLocale(TextChoice ch) {
         if (defaultLocale == null) {
@@ -240,11 +151,5 @@ public class TextAreaPage extends TestPaneBase {
         default:
             return defaultLocale;
         }
-    }
-    
-    protected static List<String> collectFonts() {
-        ArrayList<String> rv = new ArrayList<>(Font.getFontNames());
-        //rv.add(0, null);
-        return rv;
     }
 }

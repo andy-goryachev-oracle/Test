@@ -24,10 +24,14 @@
  */
 package goryachev.monkey.pages;
 
-import goryachev.monkey.util.OptionPane;
-import goryachev.monkey.util.TestPaneBase;
 import java.util.Locale;
+import goryachev.monkey.util.FontSelector;
+import goryachev.monkey.util.OptionPane;
+import goryachev.monkey.util.PosSelector;
+import goryachev.monkey.util.TestPaneBase;
+import goryachev.monkey.util.TextSelector;
 import javafx.geometry.Pos;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 
@@ -42,40 +46,69 @@ public class TextFieldPage extends TestPaneBase {
         RIGHT_TO_LEFT,
     }
     
-    private TextField textField;
+    private TextField control;
     private Locale defaultLocale;
 
     public TextFieldPage() {
-        textField = new TextField();
-        textField.setAlignment(Pos.BASELINE_RIGHT);
-        textField.setPromptText("<prompt>");
+        setId("TextFieldPage");
+        
+        control = new TextField();
+        control.setAlignment(Pos.BASELINE_RIGHT);
         
         ComboBox<TextChoice> textChoice = new ComboBox<>();
+        textChoice.setId("textChoice");
         textChoice.getItems().setAll(TextChoice.values());
         textChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             String text = getText(c);
-            Locale loc = getLocale(c);
-            textField.setText(text);
-            Locale.setDefault(loc);
+            control.setText(text);
         });
         
-        ComboBox<Pos> posChoice = new ComboBox<>();
-        posChoice.getItems().setAll(Pos.values());
-        posChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
-            Pos a = posChoice.getSelectionModel().getSelectedItem();
-            textField.setAlignment(a);
+        FontSelector fontSelector = new FontSelector("font", control::setFont);
+ 
+        PosSelector posSelector = new PosSelector(control::setAlignment);
+        
+        TextSelector promptChoice = Templates.promptChoice("promptChoice", control::setPromptText);
+        
+        ComboBox<Integer> prefColumnCount = new ComboBox<>();
+        prefColumnCount.setId("prefColumnCount");
+        prefColumnCount.getItems().setAll(
+            null,
+            1,
+            5,
+            10,
+            100,
+            1000
+        );
+        prefColumnCount.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+            Integer ct = prefColumnCount.getSelectionModel().getSelectedItem();
+            int count = ct == null ? TextField.DEFAULT_PREF_COLUMN_COUNT : ct;
+            control.setPrefColumnCount(count);
         });
+        
+        CheckBox editable = new CheckBox("editable");
+        editable.setId("editable");
+        editable.selectedProperty().bindBidirectional(control.editableProperty());
         
         OptionPane p = new OptionPane();
         p.label("Text:");
         p.option(textChoice);
+        p.label("Font:");
+        p.option(fontSelector.fontNode());
+        p.label("Size:");
+        p.option(fontSelector.sizeNode());
         p.label("Alignment:");
-        p.option(posChoice);
+        p.option(posSelector.node());
+        p.label("Prompt:");
+        p.option(promptChoice.node());
+        p.label("Preferred Column Count:");
+        p.option(prefColumnCount);
+        p.option(editable);
         
-        setContent(textField);
+        setContent(control);
         setOptions(p);
         
-        posChoice.getSelectionModel().select(Pos.BASELINE_RIGHT);
+        posSelector.select(Pos.BASELINE_RIGHT);
+        fontSelector.selectSystemFont();
     }
     
     protected String getText(TextChoice ch) {
@@ -90,19 +123,6 @@ public class TextFieldPage extends TestPaneBase {
             return "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די";
         default:
             return "?" + ch;
-        }
-    }
-
-    protected Locale getLocale(TextChoice ch) {
-        if (defaultLocale == null) {
-            defaultLocale = Locale.getDefault();
-        }
-
-        switch (ch) {
-        case RIGHT_TO_LEFT:
-            return Locale.forLanguageTag("he");
-        default:
-            return defaultLocale;
         }
     }
 }
