@@ -49,6 +49,7 @@ public class Pages {
             new DemoPage("TextFlow", TextFlowPage::new),
             new DemoPage("Label", LabelPage::new),
             new DemoPage("Accordion", AccordionPage::new),
+            new DemoPage("ChoiceBox", ChoiceBoxPage::new),
         };
     }
 }
