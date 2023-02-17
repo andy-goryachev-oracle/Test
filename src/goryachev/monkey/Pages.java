@@ -32,24 +32,24 @@ import goryachev.monkey.pages.*;
 public class Pages {
     public static DemoPage[] create() {
         return new DemoPage[] {
+            new DemoPage("Accordion", AccordionPage::new),
+            new DemoPage("Canvas", CanvasPage::new),
+            new DemoPage("Chart", ChartPage::new),
+            new DemoPage("ChoiceBox", ChoiceBoxPage::new),
             new DemoPage("ComboBox", ComboBoxPage::new),
             new DemoPage("Dual Focus JDK-8292933", DualFocusPage::new),
             new DemoPage("DatePicker in Alert", DatePickerPage::new),
             new DemoPage("HtmlEditor", HtmlEditorPage::new),
+            new DemoPage("Label", LabelPage::new),
             new DemoPage("ListView", ListViewPage::new),
-            new DemoPage("TableView", TableViewPage::new),
-            new DemoPage("TextField", TextFieldPage::new),
-            new DemoPage("TreeView", TreeViewPage::new),
-            new DemoPage("TreeTableView", TreeTableViewPage::new),
-            new DemoPage("Canvas", CanvasPage::new),
             new DemoPage("ScrollBar", ScrollBarPage::new),
-            new DemoPage("Chart", ChartPage::new),
+            new DemoPage("TableView", TableViewPage::new),
             new DemoPage("Text", TextPage::new),
             new DemoPage("TextArea", TextAreaPage::new),
+            new DemoPage("TextField", TextFieldPage::new),
             new DemoPage("TextFlow", TextFlowPage::new),
-            new DemoPage("Label", LabelPage::new),
-            new DemoPage("Accordion", AccordionPage::new),
-            new DemoPage("ChoiceBox", ChoiceBoxPage::new),
+            new DemoPage("TreeView", TreeViewPage::new),
+            new DemoPage("TreeTableView", TreeTableViewPage::new),
         };
     }
 }

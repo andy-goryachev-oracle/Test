@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -83,6 +83,7 @@ public class MonkeyTesterApp extends Application {
         });
         
         contentPane = new BorderPane();
+        contentPane.setId("ContentPane");
         
         SplitPane split = new SplitPane(listField, contentPane);
         split.setDividerPositions(0.15);
@@ -141,6 +142,7 @@ public class MonkeyTesterApp extends Application {
     }
 
     protected void updatePage(DemoPage p) {
+        FxSettings.store(contentPane);
         currentPage = p;
         contentPane.setCenter(p == null ? null : p.createPane());
         updateTitle();
@@ -148,7 +150,6 @@ public class MonkeyTesterApp extends Application {
     }
     
     protected void reloadCurrentPage() {
-        FxSettings.store(contentPane);
         updatePage(currentPage);
     }
     

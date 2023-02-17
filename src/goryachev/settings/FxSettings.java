@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Dialog;
 import javafx.stage.PopupWindow;
 import javafx.stage.Window;
 

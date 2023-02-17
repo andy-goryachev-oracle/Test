@@ -29,9 +29,10 @@ import goryachev.monkey.util.TextSelector;
 import goryachev.monkey.util.WritingSystemsDemo;
 
 /**
- *
+ * Text Templates
  */
 public class Templates {
+    // FIX remove
     public static TextSelector promptChoice(String id, Consumer<String> client) {
         return TextSelector.fromPairs(
             id,
@@ -52,6 +53,20 @@ public class Templates {
             "Right-to-Left", "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די",
             "Writing Systems", WritingSystemsDemo.getText(),
             "Combining Chars", "Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ\nDouble diacritics: a\u0360b a\u0361b a\u0362b a\u035cb",
+            "Failed Nav Bug", "Arabic: \u0627\u0644\u0639\u0631\u0628\u064a\u0629",
+            "Wrap Index Bug", "A regular Arabic verb, كَتَبَ‎ kataba (to write).", // Noto Sans Arabic Regular
+        };
+    }
+    
+    public static Object[] singleLineTextPairs() {
+        return new Object[] {
+            "Long", "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>",
+            "Short", "yo",
+            "Empty", "",
+            "null", null,
+            "Right-to-Left", "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די",
+            "Tibetan", "Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ",
+            "Double diacritics", "a\u0360b a\u0361b a\u0362b a\u035cb",
             "Failed Nav Bug", "Arabic: \u0627\u0644\u0639\u0631\u0628\u064a\u0629",
             "Wrap Index Bug", "A regular Arabic verb, كَتَبَ‎ kataba (to write).", // Noto Sans Arabic Regular
         };
