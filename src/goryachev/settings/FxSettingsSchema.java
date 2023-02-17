@@ -247,10 +247,8 @@ public class FxSettingsSchema {
         n.getSelectionModel().select(ix);
     }
     
-    // TODO just an idea, and it does not work
     private static boolean checkNoScene(WindowMonitor m, Node n) {
         if (n.getScene() == null) {
-            System.out.println("attachSceneListener " + n); // FIX
             class ChLi implements ChangeListener<Scene> {
                 private final Node node;
                 
@@ -261,12 +259,11 @@ public class FxSettingsSchema {
                 @Override
                 public void changed(ObservableValue<? extends Scene> src, Scene old, Scene scene) {
                     if (scene != null) {
-                        System.out.println("scene connected: " + n); // FIX
                         Window w = scene.getWindow();
                         if (w != null) {
                             n.sceneProperty().removeListener(this);
                             restoreNode(m, n);
-                            FxSettings.restoreWindow(w);
+                            FxSettings.restore(n);
                         }
                     }
                 }

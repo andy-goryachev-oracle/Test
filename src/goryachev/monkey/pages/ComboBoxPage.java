@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -36,18 +36,20 @@ import javafx.util.StringConverter;
  *
  */
 public class ComboBoxPage extends TestPaneBase {
-    private ComboBox comboBox;
+    private ComboBox control;
 
     public ComboBoxPage() {
-        comboBox = new ComboBox();
-        comboBox.getItems().setAll("0","1","2","3","4","5","6","7","8","9");
+        setId("ComboBoxPage");
+
+        control = new ComboBox();
+        control.getItems().setAll("0","1","2","3","4","5","6","7","8","9");
         
         VBox b = new VBox();
-        b.getChildren().add(comboBox);
+        b.getChildren().add(control);
         setContent(b);
         
         addButton("Set Converter", () -> {
-            comboBox.setConverter(new StringConverter() {
+            control.setConverter(new StringConverter() {
                 int toStringCounter = 0;
                 int fromStringCounter = 0;
 
@@ -65,15 +67,15 @@ public class ComboBoxPage extends TestPaneBase {
             new Timeline(
                 new KeyFrame(Duration.seconds(1.0), (ev) -> {
                     System.out.println("2");
-                    comboBox.setVisibleRowCount(2);
+                    control.setVisibleRowCount(2);
                 }),
                 new KeyFrame(Duration.seconds(2.0), (ev) -> {
                     System.out.println("20");
-                    comboBox.setVisibleRowCount(20);
+                    control.setVisibleRowCount(20);
                 }),
                 new KeyFrame(Duration.seconds(3.0), (ev) -> {
                     System.out.println("2");
-                    comboBox.setVisibleRowCount(2);
+                    control.setVisibleRowCount(2);
                 })
             ).play();
         });

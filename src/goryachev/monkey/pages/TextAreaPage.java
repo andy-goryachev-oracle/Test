@@ -24,37 +24,19 @@
  */
 package goryachev.monkey.pages;
 
-import java.util.Locale;
-import goryachev.monkey.util.FX;
 import goryachev.monkey.util.FontSelector;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.TestPaneBase;
 import goryachev.monkey.util.TextSelector;
-import goryachev.monkey.util.WritingSystemsDemo;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 
 /**
  * TextArea Page
  */
 public class TextAreaPage extends TestPaneBase {
-    enum TextChoice {
-        NULL("null"),
-        SHORT("Short"),
-        LONG("Long"),
-        RIGHT_TO_LEFT("Right-to-Left"),
-        UNICODE("Unicode"),
-        COMBINING("Combining Characters"),
-        FAIL_NAV("Navigation Fails"),
-        ;
-        private final String text;
-        TextChoice(String text) { this.text = text; }
-        public String toString() { return text; }
-    }
-    
     private final TextArea control;
-    private Locale defaultLocale;
+    private final TextSelector textSelector;
 
     public TextAreaPage() {
         setId("TextAreaPage");
@@ -62,15 +44,11 @@ public class TextAreaPage extends TestPaneBase {
         control = new TextArea();
         control.setPromptText("<prompt>");
         
-        ComboBox<TextChoice> textChoice = new ComboBox<>();
-        textChoice.setId("textChoice");
-        textChoice.getItems().setAll(TextChoice.values());
-        textChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
-            String text = getText(c);
-            Locale loc = getLocale(c);
-            control.setText(text);
-            Locale.setDefault(loc);
-        });
+        textSelector = TextSelector.fromPairs(
+            "textSelector", 
+            (t) -> control.setText(t),
+            Templates.multiLineTextPairs()
+        );
         
         FontSelector fontSelector = new FontSelector("font", control::setFont);
         
@@ -97,7 +75,7 @@ public class TextAreaPage extends TestPaneBase {
         
         OptionPane p = new OptionPane();
         p.label("Text:");
-        p.option(textChoice);
+        p.option(textSelector.node());
         p.label("Font:");
         p.option(fontSelector.fontNode());
         p.label("Font Size:");
@@ -112,44 +90,8 @@ public class TextAreaPage extends TestPaneBase {
         setContent(control);
         setOptions(p);
 
+        textSelector.selectFirst();
         fontSelector.selectSystemFont();
-        FX.select(textChoice, TextChoice.UNICODE);
         promptChoice.select(null);
-    }
-    
-    protected String getText(TextChoice ch) {
-        switch (ch) {
-        case LONG:
-            return "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>";
-        case SHORT:
-            return "yo";
-        case NULL:
-            return null;
-        case RIGHT_TO_LEFT:
-            return "العربية" + "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די";
-        case UNICODE:
-            return WritingSystemsDemo.getText();
-        case COMBINING:
-            return
-                "Tibetan HAKṢHMALAWARAYAṀ: \u0f67\u0f90\u0fb5\u0fa8\u0fb3\u0fba\u0fbc\u0fbb\u0f82\n(U+0f67 U+0f90 U+0fb5 U+0fa8 U+0fb3 U+0fba U+0fbc U+0fbb U+0f82)\n" +
-                "Double diacritics: a\u0360b a\u0361b a\u0362b a\u035cb";
-        case FAIL_NAV:
-            return "Arabic: \u0627\u0644\u0639\u0631\u0628\u064a\u0629";
-        default:
-            return "?" + ch;
-        }
-    }
-
-    protected Locale getLocale(TextChoice ch) {
-        if (defaultLocale == null) {
-            defaultLocale = Locale.getDefault();
-        }
-
-        switch (ch) {
-        case RIGHT_TO_LEFT:
-            return Locale.forLanguageTag("he");
-        default:
-            return defaultLocale;
-        }
     }
 }

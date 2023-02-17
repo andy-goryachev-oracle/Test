@@ -34,7 +34,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.PopupWindow;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 
 /**
@@ -131,6 +133,12 @@ public class FxSettings {
     private static void handleWindowOpening(Window w) {
         if (w instanceof PopupWindow) {
             return;
+        }
+        
+        if(w instanceof Stage s) {
+            if(s.getModality() != Modality.NONE) {
+                return;
+            }
         }
         
         restoreWindow(w);

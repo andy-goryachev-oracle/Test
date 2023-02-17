@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -24,7 +24,6 @@
  */
 package goryachev.monkey.pages;
 
-import java.util.Locale;
 import goryachev.monkey.util.FontSelector;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.PosSelector;
@@ -39,29 +38,20 @@ import javafx.scene.control.TextField;
  * TextField Page
  */
 public class TextFieldPage extends TestPaneBase {
-    enum TextChoice {
-        NULL,
-        SHORT,
-        LONG,
-        RIGHT_TO_LEFT,
-    }
+    private final TextField control;
+    private final TextSelector textSelector;
     
-    private TextField control;
-    private Locale defaultLocale;
-
     public TextFieldPage() {
         setId("TextFieldPage");
         
         control = new TextField();
         control.setAlignment(Pos.BASELINE_RIGHT);
         
-        ComboBox<TextChoice> textChoice = new ComboBox<>();
-        textChoice.setId("textChoice");
-        textChoice.getItems().setAll(TextChoice.values());
-        textChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
-            String text = getText(c);
-            control.setText(text);
-        });
+        textSelector = TextSelector.fromPairs(
+            "textSelector", 
+            (t) -> control.setText(t),
+            Templates.singleLineTextPairs()
+        );
         
         FontSelector fontSelector = new FontSelector("font", control::setFont);
  
@@ -91,7 +81,7 @@ public class TextFieldPage extends TestPaneBase {
         
         OptionPane p = new OptionPane();
         p.label("Text:");
-        p.option(textChoice);
+        p.option(textSelector.node());
         p.label("Font:");
         p.option(fontSelector.fontNode());
         p.label("Size:");
@@ -109,20 +99,5 @@ public class TextFieldPage extends TestPaneBase {
         
         posSelector.select(Pos.BASELINE_RIGHT);
         fontSelector.selectSystemFont();
-    }
-    
-    protected String getText(TextChoice ch) {
-        switch (ch) {
-        case LONG:
-            return "<beg-0123456789012345678901234567890123456789-|-0123456789012345678901234567890123456789-end>";
-        case SHORT:
-            return "yo";
-        case NULL:
-            return null;
-        case RIGHT_TO_LEFT:
-            return "העברעאיש (עברית) איז אַ סעמיטישע שפּראַך. מען שרייבט העברעאיש מיט די 22 אותיות פונעם אלף בית לשון קודש. די";
-        default:
-            return "?" + ch;
-        }
     }
 }
