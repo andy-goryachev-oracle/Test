@@ -299,20 +299,30 @@ public class RichTextArea extends Control {
      * Moves the caret to after the last character of the text, also clearing the selection.
      */
     public void moveDocumentEnd() {
-        int line = getParagraphCount();
-        if(line > 0) {
-            --line;
-            String text = getPlainText(line);
-            int cix = (text == null) ? 0 : text.length();
-            TextPos pos = new TextPos(line, cix, false);
+        TextPos pos = getEndOfDocument();
+        if(pos != null) {
             select(pos);
+        }
+    }
+    
+    public void selectDocumentStart() {
+        // TODO
+        System.err.println("selectDocumentStart"); // FIX
+        extendSelection(TextPos.ZERO);
+    }
+    
+    public void selectDocumentEnd() {
+        // TODO
+        System.err.println("selectDocumentEnd"); // FIX
+        TextPos pos = getEndOfDocument();
+        if(pos != null) {
+            extendSelection(pos);
         }
     }
 
     /** Moves the caret to the specified position, clearing the selection */
     public void select(TextPos pos) {
         // TODO validate position?
-        // TODO or generic (pos, extendSelection) ?
         System.err.println("select " + pos); // FIX
         SelectionModel sm = getSelectionModel();
         if(sm != null) {
@@ -321,10 +331,19 @@ public class RichTextArea extends Control {
         }
     }
     
+    /** Extends selection from the existing anchor to the new position. */
+    public void extendSelection(TextPos pos) {
+        // TODO validate position?
+        System.err.println("extendSelecttion " + pos); // FIX
+        SelectionModel sm = getSelectionModel();
+        if(sm != null) {
+            Marker m = newMarker(pos);
+            sm.extendSelection(m);
+        }
+    }
+    
     /** Selects the specified range */
     public void select(TextPos anchor, TextPos caret) {
-        // TODO or generic (pos, extendSelection) ?
-        System.err.println("select anchor=" + anchor + " caret=" + caret); // FIX
         SelectionModel sm = getSelectionModel();
         if(sm != null) {
             Marker manchor = newMarker(anchor);
@@ -336,6 +355,18 @@ public class RichTextArea extends Control {
     public int getParagraphCount() {
         StyledTextModel m = getModel();
         return (m == null) ? 0 : m.getParagraphCount();
+    }
+    
+    /** returns TextPos at the end of the document, or null if no document is present */
+    private TextPos getEndOfDocument() {
+        int line = getParagraphCount();
+        if(line > 0) {
+            --line;
+            String text = getPlainText(line);
+            int cix = (text == null) ? 0 : text.length();
+            return new TextPos(line, cix, false);
+        }
+        return null;
     }
     
     public String getPlainText(int modelIndex) {
@@ -363,15 +394,5 @@ public class RichTextArea extends Control {
                 richTextAreaSkin().clearPhantomX();
             }
         }
-    }
-    
-    public void selectDocumentStart() {
-        // TODO
-        System.err.println("selectDocumentStart"); // FIX
-    }
-    
-    public void selectDocumentEnd() {
-        // TODO
-        System.err.println("selectDocumentEnd"); // FIX
     }
 }
