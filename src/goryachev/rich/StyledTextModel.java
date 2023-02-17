@@ -26,7 +26,8 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
-import java.util.function.Consumer;
+import java.io.Writer;
+import javafx.scene.input.DataFormat;
 
 /**
  * Base class for a styled text model for use with {@link RichTextArea}.
@@ -83,4 +84,31 @@ public abstract class StyledTextModel {
     public void removeChangeListener(ChangeListener listener) {
         // TODO
     }
+
+    /** returns data formats supported by {@link export()} operation */
+    public DataFormat[] getSupportedFormats() {
+        return new DataFormat[] { DataFormat.PLAIN_TEXT };
+    }
+    
+    public boolean isFormatSupported(DataFormat format) {
+        for(DataFormat f: getSupportedFormats()) {
+            if(f.equals(format)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // TODO writer or OutputStream ?
+    public void export(DataFormat format, TextPos start, TextPos end, Writer wr) {
+        if(!isFormatSupported(format)) {
+            throw new IllegalArgumentException("Data format is not supported: " + format);
+        }
+        
+        // TODO
+    }
+    
+    // TODO replace from external source
+    
+    // TODO replace from string
 }
