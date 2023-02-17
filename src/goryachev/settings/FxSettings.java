@@ -87,17 +87,20 @@ public class FxSettings {
     public static void setName(Window w, String name) {
         // TODO
     }
-    
+
     private static WindowMonitor getWindowMonitor(Window w) {
+        if (w == null) {
+            return null;
+        }
         WindowMonitor m = monitors.get(w);
-        if(m == null) {
+        if (m == null) {
             String id = createID(w);
             m = new WindowMonitor(w, id);
             monitors.put(w, m);
         }
         return m;
     }
-    
+
     private static String createID(Window win) {
         // TODO use name provided by setName
         String prefix = win.getClass().getSimpleName() + ".";
@@ -231,13 +234,36 @@ public class FxSettings {
         }
     }
 
-    public static void restore(Node n) {
+    private static Window windowFor(Node n) {
         Scene sc = n.getScene();
         if (sc != null) {
             Window w = sc.getWindow();
             if (w != null) {
-               // FIX restoreWindow(w);
+                return w;
             }
+        }
+        return null;
+    }
+
+    private static WindowMonitor monitorFor(Node n) {
+        Window w = windowFor(n);
+        if (w != null) {
+            return getWindowMonitor(w);
+        }
+        return null;
+    }
+
+    public static void restore(Node n) {
+        WindowMonitor m = monitorFor(n);
+        if (m != null) {
+            FxSettingsSchema.restoreNode(m, n);
+        }
+    }
+
+    public static void store(Node n) {
+        WindowMonitor m = monitorFor(n);
+        if (m != null) {
+            FxSettingsSchema.storeNode(m, n);
         }
     }
 }

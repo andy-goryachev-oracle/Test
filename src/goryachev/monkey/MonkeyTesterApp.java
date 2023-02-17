@@ -148,6 +148,7 @@ public class MonkeyTesterApp extends Application {
     }
     
     protected void reloadCurrentPage() {
+        FxSettings.store(contentPane);
         updatePage(currentPage);
     }
     
