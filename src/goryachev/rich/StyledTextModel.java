@@ -27,6 +27,7 @@
 package goryachev.rich;
 
 import java.io.Writer;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javafx.scene.input.DataFormat;
 
 /**
@@ -44,7 +45,30 @@ import javafx.scene.input.DataFormat;
  */
 public abstract class StyledTextModel {
     public interface ChangeListener {
-        // TODO
+        /**
+         * Indicates a change in the model text.
+         * The listeners are updated *after* the corresponding changes have been made to the model.
+         * 
+         * @param start start of the text block
+         * @param end end of the affected text block
+         * @param charsAddedTop number of characters inserted on the same line as start
+         * @param linesAdded the number of paragraphs inserted between start and end
+         * @param charsAddedBottom number of characters inserted on the same line as end
+         */
+        public void eventTextUpdated(TextPos start, TextPos end, int charsAddedTop, int linesAdded, int charsAddedBottom);
+        
+        /**
+         * All text in the model has been changed, or the model has been replaced.
+         * The client should clear any caches, query the model, and rebuild everything from scratch.
+         */
+        public void eventAllTextReplaced();
+    }
+    
+    /**
+     * Indicates whether the model is editable.
+     */
+    public boolean isEditable() {
+        return false;
     }
 
     /**
@@ -59,6 +83,8 @@ public abstract class StyledTextModel {
      * @param index paragraph index in the range (0...{@link getParagraphCount()})
      */
     public abstract StyledParagraph getParagraph(int index);
+    
+    private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
 
     public StyledTextModel() {
     }
@@ -78,11 +104,11 @@ public abstract class StyledTextModel {
     }
     
     public void addChangeListener(ChangeListener listener) {
-        // TODO
+        listeners.add(listener);
     }
     
     public void removeChangeListener(ChangeListener listener) {
-        // TODO
+        listeners.remove(listener);
     }
 
     /** returns data formats supported by {@link export()} operation */
@@ -111,4 +137,6 @@ public abstract class StyledTextModel {
     // TODO replace from external source
     
     // TODO replace from string
+    
+    // TODO printing
 }

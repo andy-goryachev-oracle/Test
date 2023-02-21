@@ -28,8 +28,9 @@ import goryachev.monkey.util.WritingSystemsDemo;
 import goryachev.rich.StyledTextModel;
 import goryachev.rich.simple.SegmentStyledTextModel;
 
-public enum Model {
+public enum Models {
     DEMO("Demo"),
+    EDITABLE_PLAIN("Editable Plaintext Model"),
     WRITING_SYSTEMS("Writing Systems"),
     UNEVEN_SMALL("Uneven Small"),
     UNEVEN_LARGE("Uneven Large"),
@@ -49,7 +50,7 @@ public enum Model {
     
     private final String name;
     
-    Model(String name) {
+    Models(String name) {
         this.name = name;
     }
     
@@ -57,7 +58,7 @@ public enum Model {
         return name;
     }
 
-    public static StyledTextModel create(Model m) {
+    public static StyledTextModel create(Models m) {
         if(m == null) {
             return null;
         }
@@ -67,6 +68,8 @@ public enum Model {
             return new DemoStyledTextModel(1_000_000_000, false);
         case DEMO:
             return new DemoModel();
+        case EDITABLE_PLAIN:
+            return new EditablePlaintextModel();
         case MONOSPACED:
             return new DemoStyledTextModel(100_000, true);
         case NULL:

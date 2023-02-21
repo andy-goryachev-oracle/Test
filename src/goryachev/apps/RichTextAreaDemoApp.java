@@ -31,9 +31,9 @@ import goryachev.settings.FxSettings;
 /**
  * RichTextArea Demo Application.
  */
-public class RichTextAreaDemo extends Application {
+public class RichTextAreaDemoApp extends Application {
     public static void main(String[] args) {
-        Application.launch(RichTextAreaDemo.class, args);
+        Application.launch(RichTextAreaDemoApp.class, args);
     }
     
     @Override

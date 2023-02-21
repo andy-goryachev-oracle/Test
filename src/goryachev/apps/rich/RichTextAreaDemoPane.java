@@ -48,7 +48,7 @@ public class RichTextAreaDemoPane extends BorderPane {
     private static StyledTextModel model;
     public final ROptionPane op;
     public final RichTextArea richTextArea;
-    public final ComboBox<Model> modelField;
+    public final ComboBox<Models> modelField;
 
     public RichTextAreaDemoPane() {
         richTextArea = new RichTextArea();
@@ -65,7 +65,7 @@ public class RichTextAreaDemoPane extends BorderPane {
         vsplit.setOrientation(Orientation.VERTICAL);
         
         modelField = new ComboBox<>();
-        modelField.getItems().setAll(Model.values());
+        modelField.getItems().setAll(Models.values());
         modelField.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> updateModel());
         
         CheckBox wrapText = new CheckBox("wrap text");
@@ -119,8 +119,8 @@ public class RichTextAreaDemoPane extends BorderPane {
     }
     
     private StyledTextModel createModel() {
-        Model m = modelField.getSelectionModel().getSelectedItem();
-        return Model.create(m);
+        Models m = modelField.getSelectionModel().getSelectedItem();
+        return Models.create(m);
     }
 
     protected static Pane pane() {

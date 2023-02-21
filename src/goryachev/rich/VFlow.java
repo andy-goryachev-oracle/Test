@@ -878,10 +878,12 @@ public class VFlow extends Pane {
             // caret is outside of the layout; let's set the origin first to the caret position
             // and then block scroll to avoid scrolling past the document end, if needed
             SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
-            int ix = sel.getCaret().getLineIndex();
-            Origin or = new Origin(ix, 0);
-            setOrigin(or);
-            checkForExcessiveWhitespaceAtTheEnd();
+            if (sel != null) {
+                int ix = sel.getCaret().getLineIndex();
+                Origin or = new Origin(ix, 0);
+                setOrigin(or);
+                checkForExcessiveWhitespaceAtTheEnd();
+            }
         } else {
             // block scroll, if needed
             if (c.y0() < 0.0) {
