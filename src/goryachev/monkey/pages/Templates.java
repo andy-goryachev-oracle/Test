@@ -69,6 +69,9 @@ public class Templates {
             "Double diacritics", "a\u0360b a\u0361b a\u0362b a\u035cb",
             "Failed Nav Bug", "Arabic: \u0627\u0644\u0639\u0631\u0628\u064a\u0629",
             "Wrap Index Bug", "A regular Arabic verb, كَتَبَ‎ kataba (to write).", // Noto Sans Arabic Regular
+            "Newlines and Tabs", "1\t\n2\r3\r\n4",
+            "Single Newline", "\n",
+            "Single Tab", "\t",
         };
     }
 }
