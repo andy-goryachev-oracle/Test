@@ -49,7 +49,9 @@ public class TextFieldPage extends TestPaneBase {
         
         textSelector = TextSelector.fromPairs(
             "textSelector", 
-            (t) -> control.setText(t),
+            (t) -> {
+                control.setText(t);
+            },
             Templates.singleLineTextPairs()
         );
         
