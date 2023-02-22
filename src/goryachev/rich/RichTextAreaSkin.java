@@ -33,6 +33,7 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
+import goryachev.rich.RichTextArea.Action;
 import goryachev.rich.util.NewAPI;
 
 /**
@@ -153,5 +154,12 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     
     public void clearPhantomX() {
         behavior.clearPhantomX();
+    }
+    
+    public void execute(Action a) {
+        Runnable f = behavior.getFunction(a);
+        if(f != null) {
+            f.run();
+        }
     }
 }

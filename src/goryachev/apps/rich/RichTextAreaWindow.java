@@ -70,12 +70,12 @@ public class RichTextAreaWindow extends Stage {
         setWidth(1200);
         setHeight(600);
         
-        demoPane.richTextArea.caretPositionProperty().addListener((x) -> updateStatus());
-        demoPane.richTextArea.originProperty().addListener((x) -> updateStatus());
+        demoPane.control.caretPositionProperty().addListener((x) -> updateStatus());
+        demoPane.control.originProperty().addListener((x) -> updateStatus());
     }
 
     protected void updateStatus() {
-        RichTextArea t = demoPane.richTextArea;
+        RichTextArea t = demoPane.control;
         TextPos p = t.getCaretPosition();
         Origin origin = t.getOrigin();
 

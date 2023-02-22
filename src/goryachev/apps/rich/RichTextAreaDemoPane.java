@@ -47,14 +47,14 @@ import goryachev.rich.StyledTextModel;
 public class RichTextAreaDemoPane extends BorderPane {    
     private static StyledTextModel model;
     public final ROptionPane op;
-    public final RichTextArea richTextArea;
+    public final RichTextArea control;
     public final ComboBox<Models> modelField;
 
     public RichTextAreaDemoPane() {
-        richTextArea = new RichTextArea();
-        richTextArea.setModel(model());
+        control = new RichTextArea();
+        control.setModel(model());
 
-        SplitPane hsplit = new SplitPane(richTextArea, pane());
+        SplitPane hsplit = new SplitPane(control, pane());
         hsplit.setBorder(null);
         hsplit.setDividerPositions(0.9);
         hsplit.setOrientation(Orientation.HORIZONTAL);
@@ -69,14 +69,14 @@ public class RichTextAreaDemoPane extends BorderPane {
         modelField.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> updateModel());
         
         CheckBox wrapText = new CheckBox("wrap text");
-        wrapText.selectedProperty().bindBidirectional(richTextArea.wrapTextProperty());
+        wrapText.selectedProperty().bindBidirectional(control.wrapTextProperty());
         
         CheckBox displayCaret = new CheckBox("display caret");
-        displayCaret.selectedProperty().bindBidirectional(richTextArea.displayCaretProperty());
+        displayCaret.selectedProperty().bindBidirectional(control.displayCaretProperty());
         
         CheckBox fatCaret = new CheckBox("fat caret");
         fatCaret.selectedProperty().addListener((s,p,on) -> {
-            Node n = richTextArea.lookup(".caret");
+            Node n = control.lookup(".caret");
             if(n != null) {
                 if(on) {
                     n.setStyle("-fx-stroke-width:2; -fx-stroke:red; -fx-effect:dropshadow(gaussian,rgba(0,0,0,.5),5,0,1,1);");
@@ -89,21 +89,25 @@ public class RichTextAreaDemoPane extends BorderPane {
         ComboBox<Integer> tabSize = new ComboBox<>();
         tabSize.getItems().setAll(1, 2, 3, 4, 8, 16);
         tabSize.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
-            richTextArea.setTabSize(v);
+            control.setTabSize(v);
         });
         
-        Button reloadModel = new Button("Reload Model");
-        reloadModel.setOnAction((ev) -> reloadModel());
+        Button reloadModelButton = new Button("Reload Model");
+        reloadModelButton.setOnAction((ev) -> reloadModel());
+        
+        Button selectAllButton = new Button("Select All Action");
+        selectAllButton.setOnAction((ev) -> control.selectAll());
         
         op = new ROptionPane();
         op.label("Model:");
         op.option(modelField);
-        op.option(reloadModel);
+        op.option(reloadModelButton);
         op.option(wrapText);
         op.option(displayCaret);
         op.option(fatCaret);
         op.label("Tab Size:");
         op.option(tabSize);
+        op.option(selectAllButton);
         op.label("Blink Rate: TODO"); // TODO
         
         setCenter(vsplit);
@@ -118,11 +122,11 @@ public class RichTextAreaDemoPane extends BorderPane {
     
     protected void updateModel() {
         model = createModel();
-        richTextArea.setModel(model());
+        control.setModel(model());
     }
     
     protected void reloadModel() {
-        richTextArea.setModel(null);
+        control.setModel(null);
         updateModel();
     }
     

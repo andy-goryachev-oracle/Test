@@ -32,11 +32,24 @@ public class BehaviorBase2 {
     public BehaviorBase2() {        
     }
     
-    public void map(Runnable function, KeyCode code, KCondition ... modifiers) {
-        inputMap.add(this, function, code, modifiers);
+    public void map(Object actionTag, Runnable function) {
+        inputMap.add(actionTag, function);
+    }
+    
+    // or make inputMap public/part of the Control?
+    public void map(Object actionTag, Runnable function, KeyCode code, KCondition ... modifiers) {
+        inputMap.add(actionTag, function, code, modifiers);
+    }
+    
+    public void map(Object actionTag, KeyCode code, KCondition ... modifiers) {
+        inputMap.add(actionTag, code, modifiers);
+    }
+    
+    public Runnable getFunction(Object tag) {
+        return inputMap.getFunction(tag);
     }
 
     public void dispose() {
-        inputMap.dispose(this);
+        // TODO could unlink inputMap from the control
     }
 }

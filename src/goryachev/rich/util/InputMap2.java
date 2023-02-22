@@ -45,35 +45,55 @@ import javafx.scene.input.KeyCode;
  * Behavior:
  * - maps key bindings to action ids
  * - maps action ids to methods in the behavior
- *  
- *  
  */
 public class InputMap2 {
+    // keyBinding2 -> Runnable (FIX: Action tag)
+    // Action -> Runnable
     private final HashMap<Object,Object> map = new HashMap<>();
 
     public InputMap2() {
     }
 
-    // TODO or make KeyBinding2 class public with a bunch of factory methods
-    // TODO should take additional FxAction argument instead of Runnable?
-    public void add(Object owner, Runnable function, KeyCode code, KCondition ... modifiers) {
-        // TODO check for nulls
-        KeyBinding2 k = KeyBinding2.of(code, modifiers);
-        if(k != null) {
-            map.put(k, function);
-            //System.err.println("add " + k); // FIX
-        }
-        
-        List<Object> remove = getRemoveList(owner);
-        // FIX this will incorrectly remove a user defined function
-        remove.add(k);
+    /** adds a mapping: actionTag -> function */
+    public void add(Object actionTag, Runnable function) {
+        map.put(actionTag, function);
     }
 
-    /** returns a Runnable function object for the given Action.  Might return null. */
-    public Runnable getFunction(KeyBinding2 k) {
+    /** adds a mapping: keyBinding -> actionTag */
+    public void add(Object actionTag, KeyCode code, KCondition... modifiers) {
+        // TODO check for nulls
+        KeyBinding2 k = KeyBinding2.of(code, modifiers);
+        if (k != null) {
+            map.put(k, actionTag);
+        }
+    }
+
+    // map(Object owner, Object tag, Runnable function)
+    // map(Object owner, Object tag, KeyEvent, KCondition ...)
+
+    // TODO or make KeyBinding2 class public with a bunch of factory methods
+    // TODO should take additional FxAction argument instead of Runnable?
+    /** adds a mapping: keyBinding -> actionTag; and actionTag -> function */
+    public void add(Object actionTag, Runnable function, KeyCode code, KCondition... modifiers) {
+        // TODO check for nulls
+        KeyBinding2 k = KeyBinding2.of(code, modifiers);
+        if (k != null) {
+            map.put(k, actionTag);
+            map.put(actionTag, function);
+        }
+    }
+
+    /** returns a Runnable function object for the given Action or KeyBinding.  Might return null. */
+    public Runnable getFunction(Object k) {
         Object v = map.get(k);
         if (v instanceof Runnable r) {
             return r;
+        } else if(v != null) {
+            // try an action tag
+            Object f = map.get(v);
+            if(f instanceof Runnable r) {
+                return r;
+            }
         }
         return null;
     }
@@ -84,28 +104,4 @@ public class InputMap2 {
         // map can hold Actions as well
     }
     */
-
-    private List<Object> getRemoveList(Object owner) {
-        CompoundKey k = new CompoundKey(owner);
-        Object x = map.get(k);
-        if (x instanceof List list) {
-            return list;
-        }
-
-        ArrayList<Object> list = new ArrayList<>();
-        map.put(k, list);
-        return list;
-    }
-
-    public void dispose(Object owner) {
-        CompoundKey k = new CompoundKey(owner);
-        Object x = map.remove(k);
-
-        if (x instanceof List toRemove) {
-            for (Object r : toRemove) {
-                // FIX need to check if the entry was set by the user or by the owner
-                map.remove(r);
-            }
-        }
-    }
 }

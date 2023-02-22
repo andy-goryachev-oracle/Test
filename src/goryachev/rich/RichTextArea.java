@@ -61,11 +61,34 @@ import goryachev.rich.util.Util;
  * TODO line count r/o property
  */
 public class RichTextArea extends Control {
+    public enum Action {
+        MOVE_DOCUMENT_END,
+        MOVE_DOCUMENT_START,
+        MOVE_DOWN,
+        MOVE_END,
+        MOVE_HOME,
+        MOVE_LEFT,
+        MOVE_RIGHT,
+        MOVE_UP,
+        PAGE_DOWN,
+        PAGE_UP,
+        SELECT_ALL,
+        SELECT_DOCUMENT_END,
+        SELECT_DOCUMENT_START,
+        SELECT_DOWN,
+        SELECT_LEFT,
+        SELECT_PAGE_DOWN,
+        SELECT_PAGE_UP,
+        SELECT_RIGHT,
+        SELECT_UP,
+     }
+    
     protected final ObjectProperty<StyledTextModel> model = new SimpleObjectProperty<>(this, "model");
     protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(this, "displayCaret", true);
     private SimpleBooleanProperty editableProperty;
     protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(Config.caretBlinkPeriod));
     // TODO use selection model one, or a binding
+    @Deprecated
     protected final ReadOnlyObjectWrapper<TextPos> caretPosition = new ReadOnlyObjectWrapper<>(this, "caretPosition", null);
     // TODO property, pluggable models, or boolean (selection enabled?), do we need to allow for multiple selection?
     protected final SelectionModel selectionModel = new SingleSelectionModel();
@@ -290,6 +313,7 @@ public class RichTextArea extends Control {
         caretPosition.set(p);
     }
     
+    // TODO replace with selection model?
     public TextPos getCaretPosition() {
         return caretPosition.get();
     }
@@ -311,30 +335,24 @@ public class RichTextArea extends Control {
      * Moves the caret to before the first character of the text, also clearing the selection.
      */
     public void moveDocumentStart() {
-        select(TextPos.ZERO);
+        execute(Action.MOVE_DOCUMENT_START);
     }
 
     /**
      * Moves the caret to after the last character of the text, also clearing the selection.
      */
     public void moveDocumentEnd() {
-        TextPos pos = getEndOfDocument();
-        if(pos != null) {
-            select(pos);
-        }
+        execute(Action.MOVE_DOCUMENT_END);
     }
 
     /** selects from the anchor position to the document start */
     public void selectDocumentStart() {
-        extendSelection(TextPos.ZERO);
+        execute(Action.SELECT_DOCUMENT_START);
     }
 
     /** selects from the anchor position to the document end */
     public void selectDocumentEnd() {
-        TextPos pos = getEndOfDocument();
-        if(pos != null) {
-            extendSelection(pos);
-        }
+        execute(Action.SELECT_DOCUMENT_END);
     }
 
     /** Moves the caret to the specified position, clearing the selection */
@@ -372,18 +390,6 @@ public class RichTextArea extends Control {
         return (m == null) ? 0 : m.getParagraphCount();
     }
     
-    /** returns TextPos at the end of the document, or null if no document is present */
-    private TextPos getEndOfDocument() {
-        int line = getParagraphCount();
-        if(line > 0) {
-            --line;
-            String text = getPlainText(line);
-            int cix = (text == null) ? 0 : text.length();
-            return new TextPos(line, cix, false);
-        }
-        return null;
-    }
-    
     public String getPlainText(int modelIndex) {
         if((modelIndex < 0) || (modelIndex >= getParagraphCount())) {
             throw new IllegalArgumentException("No paragraph at index=" + modelIndex);
@@ -395,28 +401,13 @@ public class RichTextArea extends Control {
         return (RichTextAreaSkin)getSkin();
     }
 
-    // TODO or, instead, delegate to an action instead
-    public void selectAll() {
-        StyledTextModel m = getModel();
-        if(m != null) {
-            int ix = m.getParagraphCount() - 1;
-            if (ix >= 0) {
-                // TODO create a method (getLastTextPos)
-                // TODO move markers to model!!
-                // TODO add a special END_OF_DOCUMENT marker?
-                String text = m.getPlainText(ix);
-                int cix = (text == null ? 0 : Math.max(0, text.length() - 1));
-                Marker end = newMarker(ix, cix, false);
-                getSelectionModel().setSelection(Marker.ZERO, end);
-                richTextAreaSkin().clearPhantomX();
-            }
-        }
-    }
-    /*
     public void selectAll() {
         execute(Action.SELECT_ALL);
     }
-    */
+    
+    private void execute(Action a) {
+        richTextAreaSkin().execute(a);
+    }
 
     public void setTabSize(int n) {
         if ((n < 1) || (n > 32767)) {
@@ -443,4 +434,6 @@ public class RichTextArea extends Control {
         }
         return tabSizeProperty;
     }
+    
+    // TODO methods corresponding to remaining Action's
 }

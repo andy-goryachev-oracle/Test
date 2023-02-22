@@ -45,6 +45,7 @@ import javafx.scene.shape.PathElement;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
+import goryachev.rich.RichTextArea.Action;
 import goryachev.rich.util.BehaviorBase2;
 import goryachev.rich.util.KCondition;
 import goryachev.rich.util.KeyBinding2;
@@ -79,32 +80,32 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
         this.keyHandler = this::handleKeyEvent;
         this.modelListener = this::handleModel;
-        
-        map(this::moveLeft, KeyCode.LEFT);
-        map(this::moveRight, KeyCode.RIGHT);
-        map(this::moveUp, KeyCode.UP);
-        map(this::moveDown, KeyCode.DOWN);
-        map(this::moveHome, KeyCode.HOME);
-        map(this::moveEnd, KeyCode.END);
-        map(this::pageDown, KeyCode.PAGE_DOWN);
-        map(this::pageUp, KeyCode.PAGE_UP);
-        // FIX move control:: methods back to behavior
-        map(control::selectAll, KeyCode.A, KCondition.SHORTCUT);
-        map(control::moveDocumentStart, KeyCode.HOME, KCondition.CTRL, KCondition.NOT_MAC);
-        map(control::moveDocumentStart, KeyCode.UP, KCondition.SHORTCUT, KCondition.MAC);
-        map(control::moveDocumentEnd, KeyCode.END, KCondition.CTRL, KCondition.NOT_MAC);
-        map(control::moveDocumentEnd, KeyCode.DOWN, KCondition.SHORTCUT, KCondition.MAC);
-        map(this::selectLeft, KeyCode.LEFT, KCondition.SHIFT);
-        map(this::selectRight, KeyCode.RIGHT, KCondition.SHIFT);
-        map(this::selectUp, KeyCode.UP, KCondition.SHIFT);
-        map(this::selectDown, KeyCode.DOWN, KCondition.SHIFT);
-        map(this::selectPageUp, KeyCode.PAGE_UP, KCondition.SHIFT);
-        map(this::selectPageDown, KeyCode.PAGE_DOWN, KCondition.SHIFT);
-        // FIX move control:: methods back to behavior
-        map(control::selectDocumentStart, KeyCode.HOME, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
-        map(control::selectDocumentStart, KeyCode.UP, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
-        map(control::selectDocumentEnd, KeyCode.END, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
-        map(control::selectDocumentEnd, KeyCode.DOWN, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
+
+        map(Action.MOVE_LEFT, this::moveLeft, KeyCode.LEFT);
+        map(Action.MOVE_RIGHT, this::moveRight, KeyCode.RIGHT);
+        map(Action.MOVE_UP, this::moveUp, KeyCode.UP);
+        map(Action.MOVE_DOWN, this::moveDown, KeyCode.DOWN);
+        map(Action.MOVE_HOME, this::moveHome, KeyCode.HOME);
+        map(Action.MOVE_END, this::moveEnd, KeyCode.END);
+        map(Action.PAGE_DOWN, this::pageDown, KeyCode.PAGE_DOWN);
+        map(Action.PAGE_UP, this::pageUp, KeyCode.PAGE_UP);
+        map(Action.SELECT_ALL, this::selectAll, KeyCode.A, KCondition.SHORTCUT);
+        map(Action.MOVE_DOCUMENT_START, this::moveDocumentStart);
+        map(Action.MOVE_DOCUMENT_START, KeyCode.HOME, KCondition.CTRL, KCondition.NOT_MAC);
+        map(Action.MOVE_DOCUMENT_START, KeyCode.UP, KCondition.SHORTCUT, KCondition.MAC);
+        map(Action.MOVE_DOCUMENT_END, this::moveDocumentEnd);
+        map(Action.MOVE_DOCUMENT_END, KeyCode.END, KCondition.CTRL, KCondition.NOT_MAC);
+        map(Action.MOVE_DOCUMENT_END, KeyCode.DOWN, KCondition.SHORTCUT, KCondition.MAC);
+        map(Action.SELECT_LEFT, this::selectLeft, KeyCode.LEFT, KCondition.SHIFT);
+        map(Action.SELECT_RIGHT, this::selectRight, KeyCode.RIGHT, KCondition.SHIFT);
+        map(Action.SELECT_UP, this::selectUp, KeyCode.UP, KCondition.SHIFT);
+        map(Action.SELECT_DOWN, this::selectDown, KeyCode.DOWN, KCondition.SHIFT);
+        map(Action.SELECT_PAGE_UP, this::selectPageUp, KeyCode.PAGE_UP, KCondition.SHIFT);
+        map(Action.SELECT_PAGE_DOWN, this::selectPageDown, KeyCode.PAGE_DOWN, KCondition.SHIFT);
+        map(Action.SELECT_DOCUMENT_START, this::selectDocumentStart, KeyCode.HOME, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
+        map(Action.SELECT_DOCUMENT_START, this::selectDocumentStart, KeyCode.UP, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
+        map(Action.SELECT_DOCUMENT_END, this::selectDocumentEnd, KeyCode.END, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
+        map(Action.SELECT_DOCUMENT_END, this::selectDocumentEnd, KeyCode.DOWN, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
 
         this.textChangeListener = new StyledTextModel.ChangeListener() {
             @Override
@@ -190,6 +191,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         }
     }
 
+    // TODO possibly move to the inputMap
     public void handleKeyEvent(KeyEvent ev) {
         if (ev == null || ev.isConsumed()) {
             return;
@@ -439,7 +441,36 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     public void moveDown() {
         moveLine(1.0, false); // TODO line spacing
     }
+    
+    /**
+     * Moves the caret to before the first character of the text, also clearing the selection.
+     */
+    public void moveDocumentStart() {
+        control.select(TextPos.ZERO);
+    }
 
+    /**
+     * Moves the caret to after the last character of the text, also clearing the selection.
+     */
+    public void moveDocumentEnd() {
+        TextPos pos = getEndOfDocument();
+        if(pos != null) {
+            control.select(pos);
+        }
+    }
+    
+    /** returns TextPos at the end of the document, or null if no document is present */
+    private TextPos getEndOfDocument() {
+        int line = control.getParagraphCount();
+        if(line > 0) {
+            --line;
+            String text = getPlainText(line);
+            int cix = (text == null) ? 0 : text.length();
+            return new TextPos(line, cix, false);
+        }
+        return null;
+    }
+    
     protected void moveLine(double deltaPixels, boolean extendSelection) {
         CaretInfo c = vflow().getCaretInfo();
         double x = c.x();
@@ -581,6 +612,36 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     
     public void selectPageUp() {
         moveLine(-vflow().getViewHeight(), true);
+    }
+    
+    public void selectAll() {
+        StyledTextModel m = control.getModel();
+        if(m != null) {
+            int ix = m.getParagraphCount() - 1;
+            if (ix >= 0) {
+                // TODO create a method (getLastTextPos)
+                // TODO move markers to model!!
+                // TODO add a special END_OF_DOCUMENT marker?
+                String text = m.getPlainText(ix);
+                int cix = (text == null ? 0 : Math.max(0, text.length() - 1));
+                TextPos end = new TextPos(ix, cix, false);
+                control.select(TextPos.ZERO, end);
+                clearPhantomX();
+            }
+        }
+    }
+    
+    /** selects from the anchor position to the document start */
+    public void selectDocumentStart() {
+        control.extendSelection(TextPos.ZERO);
+    }
+
+    /** selects from the anchor position to the document end */
+    public void selectDocumentEnd() {
+        TextPos pos = getEndOfDocument();
+        if(pos != null) {
+            control.extendSelection(pos);
+        }
     }
     
     protected void handleTextUpdated(TextPos start, TextPos end, int charsAddedTop, int linesAdded, int charsAddedBottom) {
