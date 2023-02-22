@@ -27,6 +27,25 @@ package goryachev.rich;
 import java.util.HashMap;
 import javafx.scene.input.KeyCode;
 
+/**
+ * Input Map maps KeyBindings(2) to Action IDs (any object but Runnable or FxAction, typically an enum) and
+ * Action IDs to the actual actions (Runnable, FxAction, or lambda).
+ * 
+ * The input map may not be limited to a keyboard event, so looking up an action from an Action ID for a
+ * built-in functionality such as copy, paste, etc. is also permitted.
+ *  
+ * Example:
+ *  
+ * Control:
+ * - declares an enum action id.
+ * - declares public methods that lookup action id, then execute corresponding action (unless disabled)
+ * - might declare public FxActions (ex.: copyAction which delegate to action id)
+ * Behavior:
+ * - maps key bindings to action ids
+ * - maps action ids to methods in the behavior
+ *  
+ *  
+ */
 public class InputMap2 {
     private final HashMap<Object,Object> map = new HashMap<>();
 

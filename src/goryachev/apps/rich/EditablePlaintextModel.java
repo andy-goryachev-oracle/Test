@@ -30,6 +30,7 @@ import javafx.scene.text.TextFlow;
 import goryachev.rich.StyledParagraph;
 import goryachev.rich.StyledTextModel;
 import goryachev.rich.TextCell;
+import goryachev.rich.TextPos;
 
 public class EditablePlaintextModel extends StyledTextModel {
     private final ArrayList<String> paragraphs = new ArrayList();
@@ -73,5 +74,12 @@ public class EditablePlaintextModel extends StyledTextModel {
                 return new TextCell(index, f);
             }
         };
+    }
+    
+    // TODO go through paste handler?  ImportHandler(PLAIN_TEXT)
+    // TODO text might contain newlines
+    public void replace(TextPos start, TextPos end, String text) {
+        // TODO
+        System.err.println("replace start=" + start + " end=" + end + " text=[" + text + "]"); 
     }
 }

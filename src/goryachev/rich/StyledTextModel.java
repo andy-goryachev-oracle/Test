@@ -58,7 +58,7 @@ public abstract class StyledTextModel {
         public void eventTextUpdated(TextPos start, TextPos end, int charsAddedTop, int linesAdded, int charsAddedBottom);
         
         /**
-         * All text in the model has been changed, or the model has been replaced.
+         * All text in the model has been changed.
          * The client should clear any caches, query the model, and rebuild everything from scratch.
          */
         public void eventAllTextReplaced();
@@ -136,7 +136,18 @@ public abstract class StyledTextModel {
     
     // TODO replace from external source
     
-    // TODO replace from string
+    /**
+     * Equivalent of the user typing text.
+     * The style of the inserted text is determined by the model based on the surrounding text.
+     * After the model makes necessary changes, the model emits an event to all registered ChangeListeners.
+     * 
+     * @param start
+     * @param end
+     * @param text
+     */
+    public void replace(TextPos start, TextPos end, String text) {
+        // no-op in read-only model
+    }
     
     // TODO printing
 }

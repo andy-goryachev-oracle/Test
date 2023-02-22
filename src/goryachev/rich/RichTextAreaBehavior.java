@@ -29,6 +29,7 @@ package goryachev.rich;
 import java.text.BreakIterator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Bounds;
 import javafx.geometry.NodeOrientation;
@@ -62,6 +63,8 @@ public class RichTextAreaBehavior {
     private final RichTextArea control;
     private final InputMap2 inputMap;
     private final EventHandler<KeyEvent> keyHandler;
+    private final ChangeListener<StyledTextModel> modelListener;
+    private final StyledTextModel.ChangeListener textChangeListener;
     private final Timeline autoScrollTimer;
     private boolean autoScrollUp;
     private boolean fastAutoScroll;
@@ -71,10 +74,23 @@ public class RichTextAreaBehavior {
     public RichTextAreaBehavior(RichTextAreaSkin skin) {
         this.skin = skin;
         this.control = skin.getSkinnable();
-        
+
         this.inputMap = createInputMap();
         this.keyHandler = this::handleKeyEvent;
-        
+        this.modelListener = this::handleModel;
+
+        this.textChangeListener = new StyledTextModel.ChangeListener() {
+            @Override
+            public void eventTextUpdated(TextPos start, TextPos end, int top, int ins, int btm) {
+                handleTextUpdated(start, end, top, ins, btm);
+            }
+
+            @Override
+            public void eventAllTextReplaced() {
+                // TODO
+            }
+        };
+
         autoScrollTimer = new Timeline(new KeyFrame(autoScrollPeriod, (ev) -> {
             autoScroll();
         }));
@@ -85,7 +101,6 @@ public class RichTextAreaBehavior {
     // or better make InputMap and KeyBinding2 public
     protected InputMap2 createInputMap() {
         InputMap2 m = new InputMap2();
-        // TODO move this:: methods to control
         m.add(this::moveLeft, KeyCode.LEFT);
         m.add(this::moveRight, KeyCode.RIGHT);
         m.add(this::moveUp, KeyCode.UP);
@@ -94,6 +109,7 @@ public class RichTextAreaBehavior {
         m.add(this::moveEnd, KeyCode.END);
         m.add(this::pageDown, KeyCode.PAGE_DOWN);
         m.add(this::pageUp, KeyCode.PAGE_UP);
+        // FIX move control:: methods back to behavior
         m.add(control::selectAll, KeyCode.A, KCondition.SHORTCUT);
         m.add(control::moveDocumentStart, KeyCode.HOME, KCondition.CTRL, KCondition.NOT_MAC);
         m.add(control::moveDocumentStart, KeyCode.UP, KCondition.SHORTCUT, KCondition.MAC);
@@ -105,6 +121,7 @@ public class RichTextAreaBehavior {
         m.add(this::selectDown, KeyCode.DOWN, KCondition.SHIFT);
         m.add(this::selectPageUp, KeyCode.PAGE_UP, KCondition.SHIFT);
         m.add(this::selectPageDown, KeyCode.PAGE_DOWN, KCondition.SHIFT);
+        // FIX move control:: methods back to behavior
         m.add(control::selectDocumentStart, KeyCode.HOME, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
         m.add(control::selectDocumentStart, KeyCode.UP, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
         m.add(control::selectDocumentEnd, KeyCode.END, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
@@ -121,9 +138,19 @@ public class RichTextAreaBehavior {
         f.addEventFilter(ScrollEvent.ANY, this::handleScrollEvent);
 
         control.addEventHandler(KeyEvent.ANY, keyHandler);
+
+        // TODO ListenerHelper with fireImmediately flag would work well here
+        control.modelProperty().addListener(modelListener);
+        if(control.getModel() != null) {
+            control.getModel().addChangeListener(textChangeListener);
+        }
     }
 
     public void dispose() {
+        if(control.getModel() != null) {
+            control.getModel().removeChangeListener(textChangeListener);
+        }
+        control.modelProperty().removeListener(modelListener);
         control.removeEventHandler(KeyEvent.ANY, keyHandler);
     }
 
@@ -154,6 +181,16 @@ public class RichTextAreaBehavior {
 
         return sel.getCaret().getTextPos();
     }
+    
+    protected void handleModel(Object src, StyledTextModel old, StyledTextModel m) {
+        if (old != null) {
+            old.removeChangeListener(textChangeListener);
+        }
+
+        if (m != null) {
+            m.addChangeListener(textChangeListener);
+        }
+    }
 
     public void handleKeyEvent(KeyEvent ev) {
         if (ev == null || ev.isConsumed()) {
@@ -171,6 +208,47 @@ public class RichTextAreaBehavior {
                 ev.consume();
             }
         }
+
+        if (ev.getEventType() == KeyEvent.KEY_TYPED) {
+            String ch = ev.getCharacter();
+            handleKeyTyped(ch);
+        }
+    }
+
+    protected boolean isEditable() {
+        if (control.isEditable()) {
+            StyledTextModel m = control.getModel();
+            if (m != null) {
+                return m.isEditable();
+            }
+        }
+        return false;
+    }
+
+    protected void handleKeyTyped(String character) {
+        if (!isEditable()) {
+            return;
+        }
+
+        StyledTextModel m = control.getModel();
+        if (m == null) {
+            return;
+        }
+
+        SelectionModel sm = control.getSelectionModel();
+        if (sm == null) {
+            return;
+        }
+
+        // TODO utility method
+        SelectionSegment sel = sm.getSelectionSegment();
+        if (sel == null) {
+            return;
+        }
+
+        TextPos an = sel.getAnchor().getTextPos();
+        TextPos ca = sel.getCaret().getTextPos();
+        m.replace(an, ca, character);
     }
 
     protected void handleMouseClicked(MouseEvent ev) {
@@ -503,5 +581,13 @@ public class RichTextAreaBehavior {
     
     public void selectPageUp() {
         moveLine(-vflow().getViewHeight(), true);
+    }
+    
+    protected void handleTextUpdated(TextPos start, TextPos end, int charsAddedTop, int linesAdded, int charsAddedBottom) {
+        // TODO
+    }
+    
+    protected void handleAllTextReplaced() {
+        // TODO
     }
 }

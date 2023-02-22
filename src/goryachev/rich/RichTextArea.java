@@ -61,6 +61,7 @@ import goryachev.rich.util.Util;
 public class RichTextArea extends Control {
     protected final ObjectProperty<StyledTextModel> model = new SimpleObjectProperty<>(this, "model");
     protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(this, "displayCaret", true);
+    private SimpleBooleanProperty editableProperty;
     protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(Config.caretBlinkPeriod));
     // TODO use selection model one, or a binding
     protected final ReadOnlyObjectWrapper<TextPos> caretPosition = new ReadOnlyObjectWrapper<>(this, "caretPosition", null);
@@ -148,7 +149,21 @@ public class RichTextArea extends Control {
     }
     
     public boolean isEditable() {
-        return false;
+        if(editableProperty == null) {
+            return true;
+        }
+        return editableProperty().get();
+    }
+    
+    public void setEditable(boolean on) {
+        editableProperty().set(on);
+    }
+    
+    public BooleanProperty editableProperty() {
+        if(editableProperty == null) {
+            editableProperty = new SimpleBooleanProperty(this, "editable", true);
+        }
+        return editableProperty;
     }
     
     public boolean isHighlightCurrentLine() {
@@ -342,9 +357,9 @@ public class RichTextArea extends Control {
     public void select(TextPos anchor, TextPos caret) {
         SelectionModel sm = getSelectionModel();
         if(sm != null) {
-            Marker manchor = newMarker(anchor);
-            Marker mcaret = newMarker(caret);
-            sm.setSelection(manchor, mcaret);
+            Marker ma = newMarker(anchor);
+            Marker mc = newMarker(caret);
+            sm.setSelection(ma, mc);
         }
     }
     
@@ -375,13 +390,16 @@ public class RichTextArea extends Control {
     private RichTextAreaSkin richTextAreaSkin() {
         return (RichTextAreaSkin)getSkin();
     }
-    
+
+    // TODO or, instead, delegate to an action instead
     public void selectAll() {
         StyledTextModel m = getModel();
         if(m != null) {
             int ix = m.getParagraphCount() - 1;
             if (ix >= 0) {
                 // TODO create a method (getLastTextPos)
+                // TODO move markers to model!!
+                // TODO add a special END_OF_DOCUMENT marker?
                 String text = m.getPlainText(ix);
                 int cix = (text == null ? 0 : Math.max(0, text.length() - 1));
                 Marker end = newMarker(ix, cix, false);
@@ -390,4 +408,9 @@ public class RichTextArea extends Control {
             }
         }
     }
+    /*
+    public void selectAll() {
+        execute(Action.SELECT_ALL);
+    }
+    */
 }
