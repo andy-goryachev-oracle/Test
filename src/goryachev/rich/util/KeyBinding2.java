@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.rich.util;
 
 import java.util.EnumSet;
 import javafx.event.EventType;

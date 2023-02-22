@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.rich.util;
 
 import java.util.HashMap;
 import javafx.scene.input.KeyCode;
@@ -63,13 +63,18 @@ public class InputMap2 {
         }
     }
 
-    /** returns a Runnable object for the given Action.  Might return null. */
-    // TODO this should return FxAction which app developer can enable/disable
-    public Runnable getAction(KeyBinding2 k) {
+    /** returns a Runnable function object for the given Action.  Might return null. */
+    public Runnable getFunction(KeyBinding2 k) {
         Object v = map.get(k);
         if (v instanceof Runnable r) {
             return r;
         }
         return null;
     }
+    
+    // TODO this should return FxAction which app developer can enable/disable
+    /*
+    public FxAction getAction(Object tag) {
+    }
+    */
 }

@@ -45,6 +45,9 @@ import javafx.scene.shape.PathElement;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
+import goryachev.rich.util.InputMap2;
+import goryachev.rich.util.KCondition;
+import goryachev.rich.util.KeyBinding2;
 
 /**
  * RichTextArea Behavior.
@@ -199,8 +202,7 @@ public class RichTextAreaBehavior {
 
         KeyBinding2 k = KeyBinding2.from(ev);
         if (k != null) {
-            // this should return an FxAction which can be disabled
-            Runnable r = inputMap.getAction(k);
+            Runnable r = inputMap.getFunction(k);
             if (r != null) {
                 vflow().setSuppressBlink(true);
                 r.run();
@@ -209,6 +211,9 @@ public class RichTextAreaBehavior {
             }
         }
 
+        // TODO possibly onKeyTyped in inputMap?
+        // TODO something about consuming all key presses (yes) and key releases (not really)
+        // in TextInputControlBehavior:194
         if (ev.getEventType() == KeyEvent.KEY_TYPED) {
             String ch = ev.getCharacter();
             handleKeyTyped(ch);
