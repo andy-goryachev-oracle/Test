@@ -24,7 +24,9 @@
  */
 package goryachev.rich.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import javafx.scene.input.KeyCode;
 
 /**
@@ -54,13 +56,17 @@ public class InputMap2 {
 
     // TODO or make KeyBinding2 class public with a bunch of factory methods
     // TODO should take additional FxAction argument instead of Runnable?
-    public void add(Runnable r, KeyCode code, KCondition ... modifiers) {
+    public void add(Object owner, Runnable function, KeyCode code, KCondition ... modifiers) {
         // TODO check for nulls
         KeyBinding2 k = KeyBinding2.of(code, modifiers);
         if(k != null) {
-            map.put(k, r);
-            System.err.println("add " + k); // FIX
+            map.put(k, function);
+            //System.err.println("add " + k); // FIX
         }
+        
+        List<Object> remove = getRemoveList(owner);
+        // FIX this will incorrectly remove a user defined function
+        remove.add(k);
     }
 
     /** returns a Runnable function object for the given Action.  Might return null. */
@@ -75,6 +81,31 @@ public class InputMap2 {
     // TODO this should return FxAction which app developer can enable/disable
     /*
     public FxAction getAction(Object tag) {
+        // map can hold Actions as well
     }
     */
+
+    private List<Object> getRemoveList(Object owner) {
+        CompoundKey k = new CompoundKey(owner);
+        Object x = map.get(k);
+        if (x instanceof List list) {
+            return list;
+        }
+
+        ArrayList<Object> list = new ArrayList<>();
+        map.put(k, list);
+        return list;
+    }
+
+    public void dispose(Object owner) {
+        CompoundKey k = new CompoundKey(owner);
+        Object x = map.remove(k);
+
+        if (x instanceof List toRemove) {
+            for (Object r : toRemove) {
+                // FIX need to check if the entry was set by the user or by the owner
+                map.remove(r);
+            }
+        }
+    }
 }

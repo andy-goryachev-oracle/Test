@@ -45,7 +45,7 @@ import javafx.scene.shape.PathElement;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
-import goryachev.rich.util.InputMap2;
+import goryachev.rich.util.BehaviorBase2;
 import goryachev.rich.util.KCondition;
 import goryachev.rich.util.KeyBinding2;
 
@@ -61,10 +61,9 @@ import goryachev.rich.util.KeyBinding2;
  * Control:
  * - delegates to skin/behavior methods
  */
-public class RichTextAreaBehavior {
+public class RichTextAreaBehavior extends BehaviorBase2 {
     private final RichTextAreaSkin skin;
     private final RichTextArea control;
-    private final InputMap2 inputMap;
     private final EventHandler<KeyEvent> keyHandler;
     private final ChangeListener<StyledTextModel> modelListener;
     private final StyledTextModel.ChangeListener textChangeListener;
@@ -78,9 +77,34 @@ public class RichTextAreaBehavior {
         this.skin = skin;
         this.control = skin.getSkinnable();
 
-        this.inputMap = createInputMap();
         this.keyHandler = this::handleKeyEvent;
         this.modelListener = this::handleModel;
+        
+        map(this::moveLeft, KeyCode.LEFT);
+        map(this::moveRight, KeyCode.RIGHT);
+        map(this::moveUp, KeyCode.UP);
+        map(this::moveDown, KeyCode.DOWN);
+        map(this::moveHome, KeyCode.HOME);
+        map(this::moveEnd, KeyCode.END);
+        map(this::pageDown, KeyCode.PAGE_DOWN);
+        map(this::pageUp, KeyCode.PAGE_UP);
+        // FIX move control:: methods back to behavior
+        map(control::selectAll, KeyCode.A, KCondition.SHORTCUT);
+        map(control::moveDocumentStart, KeyCode.HOME, KCondition.CTRL, KCondition.NOT_MAC);
+        map(control::moveDocumentStart, KeyCode.UP, KCondition.SHORTCUT, KCondition.MAC);
+        map(control::moveDocumentEnd, KeyCode.END, KCondition.CTRL, KCondition.NOT_MAC);
+        map(control::moveDocumentEnd, KeyCode.DOWN, KCondition.SHORTCUT, KCondition.MAC);
+        map(this::selectLeft, KeyCode.LEFT, KCondition.SHIFT);
+        map(this::selectRight, KeyCode.RIGHT, KCondition.SHIFT);
+        map(this::selectUp, KeyCode.UP, KCondition.SHIFT);
+        map(this::selectDown, KeyCode.DOWN, KCondition.SHIFT);
+        map(this::selectPageUp, KeyCode.PAGE_UP, KCondition.SHIFT);
+        map(this::selectPageDown, KeyCode.PAGE_DOWN, KCondition.SHIFT);
+        // FIX move control:: methods back to behavior
+        map(control::selectDocumentStart, KeyCode.HOME, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
+        map(control::selectDocumentStart, KeyCode.UP, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
+        map(control::selectDocumentEnd, KeyCode.END, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
+        map(control::selectDocumentEnd, KeyCode.DOWN, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
 
         this.textChangeListener = new StyledTextModel.ChangeListener() {
             @Override
@@ -100,38 +124,6 @@ public class RichTextAreaBehavior {
         autoScrollTimer.setCycleCount(Timeline.INDEFINITE);
     }
 
-    // TODO alternatively, can expose addKeyBinding() and removeKeyBinding(),
-    // or better make InputMap and KeyBinding2 public
-    protected InputMap2 createInputMap() {
-        InputMap2 m = new InputMap2();
-        m.add(this::moveLeft, KeyCode.LEFT);
-        m.add(this::moveRight, KeyCode.RIGHT);
-        m.add(this::moveUp, KeyCode.UP);
-        m.add(this::moveDown, KeyCode.DOWN);
-        m.add(this::moveHome, KeyCode.HOME);
-        m.add(this::moveEnd, KeyCode.END);
-        m.add(this::pageDown, KeyCode.PAGE_DOWN);
-        m.add(this::pageUp, KeyCode.PAGE_UP);
-        // FIX move control:: methods back to behavior
-        m.add(control::selectAll, KeyCode.A, KCondition.SHORTCUT);
-        m.add(control::moveDocumentStart, KeyCode.HOME, KCondition.CTRL, KCondition.NOT_MAC);
-        m.add(control::moveDocumentStart, KeyCode.UP, KCondition.SHORTCUT, KCondition.MAC);
-        m.add(control::moveDocumentEnd, KeyCode.END, KCondition.CTRL, KCondition.NOT_MAC);
-        m.add(control::moveDocumentEnd, KeyCode.DOWN, KCondition.SHORTCUT, KCondition.MAC);
-        m.add(this::selectLeft, KeyCode.LEFT, KCondition.SHIFT);
-        m.add(this::selectRight, KeyCode.RIGHT, KCondition.SHIFT);
-        m.add(this::selectUp, KeyCode.UP, KCondition.SHIFT);
-        m.add(this::selectDown, KeyCode.DOWN, KCondition.SHIFT);
-        m.add(this::selectPageUp, KeyCode.PAGE_UP, KCondition.SHIFT);
-        m.add(this::selectPageDown, KeyCode.PAGE_DOWN, KCondition.SHIFT);
-        // FIX move control:: methods back to behavior
-        m.add(control::selectDocumentStart, KeyCode.HOME, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
-        m.add(control::selectDocumentStart, KeyCode.UP, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
-        m.add(control::selectDocumentEnd, KeyCode.END, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
-        m.add(control::selectDocumentEnd, KeyCode.DOWN, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
-        return m;
-    }
-
     public void install() {
         VFlow f = vflow();
         f.addEventFilter(MouseEvent.MOUSE_CLICKED, this::handleMouseClicked);
@@ -149,12 +141,15 @@ public class RichTextAreaBehavior {
         }
     }
 
+    @Override
     public void dispose() {
         if(control.getModel() != null) {
             control.getModel().removeChangeListener(textChangeListener);
         }
         control.modelProperty().removeListener(modelListener);
         control.removeEventHandler(KeyEvent.ANY, keyHandler);
+        
+        super.dispose();
     }
 
     protected VFlow vflow() {
