@@ -86,6 +86,12 @@ public class RichTextAreaDemoPane extends BorderPane {
             }
         });
         
+        ComboBox<Integer> tabSize = new ComboBox<>();
+        tabSize.getItems().setAll(1, 2, 3, 4, 8, 16);
+        tabSize.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
+            richTextArea.setTabSize(v);
+        });
+        
         Button reloadModel = new Button("Reload Model");
         reloadModel.setOnAction((ev) -> reloadModel());
         
@@ -96,6 +102,8 @@ public class RichTextAreaDemoPane extends BorderPane {
         op.option(wrapText);
         op.option(displayCaret);
         op.option(fatCaret);
+        op.label("Tab Size:");
+        op.option(tabSize);
         op.label("Blink Rate: TODO"); // TODO
         
         setCenter(vsplit);

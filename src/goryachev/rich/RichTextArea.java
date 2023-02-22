@@ -29,6 +29,8 @@ package goryachev.rich;
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyIntegerProperty;
+import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -67,6 +69,8 @@ public class RichTextArea extends Control {
     protected final ReadOnlyObjectWrapper<TextPos> caretPosition = new ReadOnlyObjectWrapper<>(this, "caretPosition", null);
     // TODO property, pluggable models, or boolean (selection enabled?), do we need to allow for multiple selection?
     protected final SelectionModel selectionModel = new SingleSelectionModel();
+    private ReadOnlyIntegerWrapper tabSizeProperty;
+    // TODO move to model?
     protected final Markers markers = new Markers(32);
 
     public RichTextArea() {
@@ -413,4 +417,30 @@ public class RichTextArea extends Control {
         execute(Action.SELECT_ALL);
     }
     */
+
+    public void setTabSize(int n) {
+        if ((n < 1) || (n > 32767)) {
+            throw new IllegalArgumentException("tab size out of range (1-32767) " + n);
+        }
+        tabSizePropertyPrivate().set(n);
+    }
+
+    public int getTabSize() {
+        if (tabSizeProperty == null) {
+            return 8;
+        }
+        return tabSizeProperty.get();
+    }
+
+    public ReadOnlyIntegerProperty tabSizeProperty() {
+        return tabSizePropertyPrivate().getReadOnlyProperty();
+    }
+
+    // or we could just create the property
+    private ReadOnlyIntegerWrapper tabSizePropertyPrivate() {
+        if (tabSizeProperty == null) {
+            tabSizeProperty = new ReadOnlyIntegerWrapper(8);
+        }
+        return tabSizeProperty;
+    }
 }

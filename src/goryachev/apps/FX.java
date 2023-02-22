@@ -24,6 +24,7 @@
  */
 package goryachev.apps;
 
+import javafx.scene.Node;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -50,10 +51,36 @@ public class FX {
         int ct = mb.getMenus().size();
         return mb.getMenus().get(ct - 1);
     }
-    
+
     public static SeparatorMenuItem separator(MenuBar mb) {
         SeparatorMenuItem m = new SeparatorMenuItem();
         lastMenu(mb).getItems().add(m);
         return m;
+    }
+
+    public static void setStyle(Node n, String name, String value) {
+        String oldStyle = n.getStyle();
+        String newStyle = changeStyle(oldStyle, name, value);
+        n.setStyle(newStyle);
+    }
+    
+    private static String changeStyle(String s, String name, String value) {
+        if (s == null) {
+            return name + ":" + value + "; ";
+        } else {
+            String token = name + ":";
+            // does not understand "name : value" with spaces
+            int ix = s.indexOf(token);
+            if(ix < 0) {
+                return s + " " + token + value + "; ";
+            } else {
+                int ixe = s.indexOf(";", ix);
+                if(ixe < 0) {
+                    return s.substring(0, ix) + token + value + "; ";
+                } else {
+                    return s.substring(0, ix) + token + value + s.substring(ixe);
+                }
+            }
+        }
     }
 }

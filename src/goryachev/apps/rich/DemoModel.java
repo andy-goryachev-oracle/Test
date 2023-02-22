@@ -60,7 +60,8 @@ public class DemoModel extends SegmentStyledTextModel {
         addSegment("        leading and trailing whitespace         ", null, CODE).nl();
         addSegment("A regular Arabic verb, كَتَبَ‎ kataba (to write).", null, ARABIC).nl();
         addSegment("Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ", null, LARGE).nl();
-        addSegment("Double diacritics: a\u0360b a\u0361b a\u0362b a\u035cb").nl(); 
+        addSegment("Double diacritics: a\u0360b a\u0361b a\u0362b a\u035cb").nl();
+        addSegment("Emojis: [🇺🇦❤️🏁🇺🇸🔥🦋😀😃😄😁😆😅🤣😂🙂🙃😉😊😇]", null, LARGE).nl();
         nl();
         addSegment("Halfwidth and FullWidth Forms", null, UNDER).nl();
         addSegment("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯ", "-fx-font-family:monospaced;").nl();

@@ -51,6 +51,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
+import goryachev.apps.FX;
 import goryachev.rich.impl.CellCache;
 import goryachev.rich.impl.SelectionHelper;
 import goryachev.rich.util.FxPathBuilder;
@@ -916,5 +917,11 @@ public class VFlow extends Pane {
         if(delta < 0) {
             blockScroll(delta);
         }
+    }
+    
+    public void updateTabSize() {
+        // TODO no other way but to set style to individual TextFlow instances in the layout
+        int tabSize = control.getTabSize();
+//        FX.setStyle(this, "-fx-tab-size", String.valueOf(tabSize));
     }
 }

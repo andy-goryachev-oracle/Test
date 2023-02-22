@@ -31,6 +31,7 @@ import goryachev.rich.simple.SegmentStyledTextModel;
 public enum Models {
     DEMO("Demo"),
     EDITABLE_PLAIN("Editable Plaintext Model"),
+    TABS("Tabs"),
     WRITING_SYSTEMS("Writing Systems"),
     UNEVEN_SMALL("Uneven Small"),
     UNEVEN_LARGE("Uneven Large"),
@@ -70,6 +71,8 @@ public enum Models {
             return new DemoModel();
         case EDITABLE_PLAIN:
             return new EditablePlaintextModel();
+        case TABS:
+            return tabs();
         case MONOSPACED:
             return new DemoStyledTextModel(100_000, true);
         case NULL:
@@ -101,5 +104,9 @@ public enum Models {
         default:
             throw new Error("?" + m);
         }
+    }
+
+    private static StyledTextModel tabs() {
+        return SegmentStyledTextModel.from("0\n\t1\n\t\t2\n\t\t\t3\n\t\t\t\t4\n0\n");
     }
 }
