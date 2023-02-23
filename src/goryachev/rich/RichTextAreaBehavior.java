@@ -112,11 +112,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             public void eventTextUpdated(TextPos start, TextPos end, int top, int ins, int btm) {
                 handleTextUpdated(start, end, top, ins, btm);
             }
-
-            @Override
-            public void eventAllTextReplaced() {
-                // TODO
-            }
         };
 
         autoScrollTimer = new Timeline(new KeyFrame(autoScrollPeriod, (ev) -> {
@@ -645,10 +640,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
     
     protected void handleTextUpdated(TextPos start, TextPos end, int charsAddedTop, int linesAdded, int charsAddedBottom) {
-        // TODO
-    }
-    
-    protected void handleAllTextReplaced() {
-        // TODO
+        // TODO vflow(): clear cache >= start, update layout
     }
 }

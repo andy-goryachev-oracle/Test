@@ -267,6 +267,7 @@ public class RichTextArea extends Control {
         return ((RichTextAreaSkin)getSkin()).getVFlow();
     }
 
+    // TODO TextPos
     public Marker getTextPosition(double screenX, double screenY) {
         Point2D local = vflow().screenToLocal(screenX, screenY);
         TextPos pos = vflow().getTextPos(local.getX(), local.getY());
@@ -275,11 +276,8 @@ public class RichTextArea extends Control {
         }
         return markers.newMarker(pos);
     }
-
-    public Marker newMarker(int index, int charIndex, boolean leading) {
-        return markers.newMarker(index, charIndex, leading);
-    }
     
+    // TODO move to model
     protected Marker newMarker(TextPos p) {
         return markers.newMarker(p);
     }
@@ -367,7 +365,7 @@ public class RichTextArea extends Control {
     /** Extends selection from the existing anchor to the new position. */
     public void extendSelection(TextPos pos) {
         // TODO validate position?
-        System.err.println("extendSelecttion " + pos); // FIX
+        System.err.println("extendSelection " + pos); // FIX
         SelectionModel sm = getSelectionModel();
         if(sm != null) {
             Marker m = newMarker(pos);

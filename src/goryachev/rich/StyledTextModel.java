@@ -35,11 +35,7 @@ import javafx.scene.input.DataFormat;
  * The text is considered to be a collection of paragraphs, represented by {@link StyledParagraph} class.
  * 
  * TODO events
- * TODO listeners
  * TODO editing
- * TODO is read only
- * TODO isModified()
- * TODO use properties?  r/o: line count, r/w: editable
  * 
  * TODO rename StyledTextModelBase?
  */
@@ -56,12 +52,6 @@ public abstract class StyledTextModel {
          * @param charsAddedBottom number of characters inserted on the same line as end
          */
         public void eventTextUpdated(TextPos start, TextPos end, int charsAddedTop, int linesAdded, int charsAddedBottom);
-        
-        /**
-         * All text in the model has been changed.
-         * The client should clear any caches, query the model, and rebuild everything from scratch.
-         */
-        public void eventAllTextReplaced();
     }
     
     /**
@@ -150,4 +140,12 @@ public abstract class StyledTextModel {
     }
     
     // TODO printing
+    
+    // TODO update markers
+    
+    protected void fireChangeEvent(TextPos start, TextPos end, int charsAddedTop, int linesAdded, int charsAddedBottom) {
+        for(ChangeListener li: listeners) {
+            li.eventTextUpdated(start, end, charsAddedTop, linesAdded, charsAddedBottom);
+        }
+    }
 }

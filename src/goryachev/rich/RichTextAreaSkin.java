@@ -142,14 +142,12 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
 
     @Override
     public void dispose() {
-        if (getSkinnable() == null) {
-            return;
+        if (getSkinnable() != null) {
+            behavior.dispose();
+            vflow.dispose();
+    
+            super.dispose();
         }
-
-        behavior.dispose();
-        vflow.dispose();
-
-        super.dispose();
     }
     
     public void clearPhantomX() {

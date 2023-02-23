@@ -76,10 +76,14 @@ public class EditablePlaintextModel extends StyledTextModel {
         };
     }
     
-    // TODO go through paste handler?  ImportHandler(PLAIN_TEXT)
+    // TODO go through import handler?  ImportHandler(PLAIN_TEXT)
     // TODO text might contain newlines
     public void replace(TextPos start, TextPos end, String text) {
         // TODO
-        System.err.println("replace start=" + start + " end=" + end + " text=[" + text + "]"); 
+        System.err.println("replace start=" + start + " end=" + end + " text=[" + text + "]");
+        
+        // update paragraphs
+        // update markers
+        // fire event
     }
 }
