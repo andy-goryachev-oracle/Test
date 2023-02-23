@@ -26,6 +26,7 @@ package goryachev.monkey.util;
 
 import java.util.List;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -35,6 +36,8 @@ import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+import javafx.stage.Window;
 
 /**
  * Shortcuts and convenience methods that should be a part of JavaFX.
@@ -104,8 +107,38 @@ public class FX {
     public static <T> void select(ComboBox<T> cb, T value) {
         cb.getSelectionModel().select(value);
     }
-    
+
     public static <T> T getSelectedItem(ComboBox<T> cb) {
         return cb.getSelectionModel().getSelectedItem();
+    }
+
+    public static Window getParentWindow(Object nodeOrWindow) {
+        if (nodeOrWindow == null) {
+            return null;
+        } else if (nodeOrWindow instanceof Window w) {
+            return w;
+        } else if (nodeOrWindow instanceof Node n) {
+            Scene s = n.getScene();
+            if (s != null) {
+                return s.getWindow();
+            }
+            return null;
+        } else {
+            throw new Error("Node or Window only");
+        }
+    }
+
+    /** cascades the window relative to its owner, if any */
+    public static void cascade(Stage w) {
+        if (w != null) {
+            Window p = w.getOwner();
+            if (p != null) {
+                double x = p.getX();
+                double y = p.getY();
+                double off = 20;
+                w.setX(x + off);
+                w.setY(y + off);
+            }
+        }
     }
 }
