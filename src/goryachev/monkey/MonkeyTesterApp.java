@@ -45,6 +45,9 @@ import javafx.scene.control.SplitPane;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
 /**
@@ -75,6 +78,18 @@ public class MonkeyTesterApp extends Application {
         status = new Label();
         status.setPadding(new Insets(2, 2, 2, 2));
         
+        Label spacer = new Label();
+        
+        Label ver = new Label();
+        
+        GridPane st = new GridPane();
+        st.add(status, 0, 0);
+        st.add(spacer, 1, 0);
+        st.add(ver, 2, 0);
+        GridPane.setVgrow(status, Priority.ALWAYS);
+        GridPane.setHgrow(spacer, Priority.ALWAYS);
+        GridPane.setVgrow(ver, Priority.ALWAYS);
+        
         pages.setAll(createPages());
         
         pageSelector = new ListView(pages);
@@ -94,7 +109,7 @@ public class MonkeyTesterApp extends Application {
         BorderPane bp = new BorderPane();        
         bp.setTop(createMenu());
         bp.setCenter(split);
-        bp.setBottom(status);
+        bp.setBottom(st);
 
         stage.setScene(new Scene(bp));
         stage.setWidth(1200);
@@ -166,7 +181,8 @@ public class MonkeyTesterApp extends Application {
     
     protected void updateStatus() {
         StringBuilder sb = new StringBuilder();
-        sb.append(System.getProperty("java.runtime.version"));
+        sb.append("   ");
+        sb.append(System.getProperty("javafx.runtime.version"));
         
         if(stage.getRenderScaleX() == stage.getRenderScaleY()) {
             sb.append("  scale=");
