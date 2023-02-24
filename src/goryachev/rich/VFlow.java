@@ -32,8 +32,8 @@ import javafx.animation.Timeline;
 import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventType;
@@ -51,7 +51,6 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
-import goryachev.apps.FX;
 import goryachev.rich.impl.CellCache;
 import goryachev.rich.impl.SelectionHelper;
 import goryachev.rich.util.FxPathBuilder;
@@ -173,11 +172,12 @@ public class VFlow extends Pane {
     public void updateModel() {
         System.err.println("updateModel"); // FIX
 
+        control.clearSelection();
+
         // TODO fixing change model bug
         // TODO duplicate call, there is one in recomputeLayout()
         invalidateLayout();
         
-        control.getSelectionModel().clear();
         setOrigin(Origin.ZERO);
         setOffsetX(0.0);
         cache.clear();
@@ -216,7 +216,7 @@ public class VFlow extends Pane {
         origin.set(p);
     }
     
-    public ReadOnlyObjectProperty<Origin> originProperty() {
+    public ReadOnlyProperty<Origin> originProperty() {
         return origin.getReadOnlyProperty();
     }
 
@@ -293,14 +293,17 @@ public class VFlow extends Pane {
             return;
         }
 
-        SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
-        if (sel == null) {
+        TextPos caret = control.getCaretPosition();
+        if (caret == null) {
             removeCaretAndSelection();
             return;
         }
-
-        Marker caret = sel.getCaret();
-
+        
+        TextPos anchor = control.getAnchorPosition();
+        if(anchor == null) {
+            anchor = caret;
+        }
+        
         // current line highlight
         if (control.isHighlightCurrentLine()) {
             FxPathBuilder caretLineBuilder = new FxPathBuilder();
@@ -311,9 +314,7 @@ public class VFlow extends Pane {
         // selection and caret
         FxPathBuilder selectionBuilder = new FxPathBuilder();
         FxPathBuilder caretBuilder = new FxPathBuilder();
-        Marker start = sel.getMin();
-        Marker end = sel.getMax();
-        createSelectionHighlight(selectionBuilder, start, end);
+        createSelectionHighlight(selectionBuilder, anchor, caret);
         createCaretPath(caretBuilder, caret);
 
         selectionHighlight.getElements().setAll(selectionBuilder.getPathElements());
@@ -326,32 +327,34 @@ public class VFlow extends Pane {
         caretPath.getElements().clear();
     }
 
-    protected void createCaretPath(FxPathBuilder b, Marker m) {
-        CaretInfo c = getCaretInfo(m);
+    protected void createCaretPath(FxPathBuilder b, TextPos p) {
+        CaretInfo c = getCaretInfo(p);
         if(c != null) {
             b.moveto(c.x(), c.y0());
             b.lineto(c.x(), c.y1());
         }
     }
 
-    protected void createSelectionHighlight(FxPathBuilder b, Marker startMarker, Marker endMarker) {
-        if ((startMarker == null) || (endMarker == null)) {
+    protected void createSelectionHighlight(FxPathBuilder b, TextPos start, TextPos end) {
+        // probably unnecessary
+        if ((start == null) || (end == null)) {
             return;
         }
 
-        int eq = startMarker.compareTo(endMarker);
+        int eq = start.compareTo(end);
         if (eq == 0) {
             return;
         } else if (eq > 0) {
-            // enforce startMarker < endMarker
-            throw new Error(startMarker + "<" + endMarker);
+            TextPos p = start;
+            start = end;
+            end = p;
         }
 
         int topCellIndex = topCellIndex();
-        if (endMarker.getLineIndex() < topCellIndex) {
+        if (end.lineIndex() < topCellIndex) {
             // selection is above visible area
             return;
-        } else if (startMarker.getLineIndex() >= (topCellIndex + layout.getVisibleCellCount())) {
+        } else if (start.lineIndex() >= (topCellIndex + layout.getVisibleCellCount())) {
             // selection is below visible area
             return;
         }
@@ -360,16 +363,16 @@ public class VFlow extends Pane {
         // translated to this VFlow coordinates.
         PathElement[] top;
         PathElement[] bottom;
-        if (startMarker.getLineIndex() == endMarker.getLineIndex()) {
-            top = getRangeShape(startMarker.getLineIndex(), startMarker.getLineOffset(), endMarker.getLineOffset());
+        if (start.lineIndex() == end.lineIndex()) {
+            top = getRangeShape(start.lineIndex(), start.getLineOffset(), end.getLineOffset());
             bottom = null;
         } else {
-            top = getRangeShape(startMarker.getLineIndex(), startMarker.getLineOffset(), -1);
+            top = getRangeShape(start.lineIndex(), start.getLineOffset(), -1);
             if (top == null) {
                 top = getRangeTop();
             }
 
-            bottom = getRangeShape(endMarker.getLineIndex(), 0, endMarker.getLineOffset());
+            bottom = getRangeShape(end.lineIndex(), 0, end.getLineOffset());
             if (bottom == null) {
                 bottom = getRangeBottom();
             }
@@ -387,8 +390,8 @@ public class VFlow extends Pane {
         new SelectionHelper(b, left, right).generate(top, bottom, topLTR, bottomLTR);
     }
 
-    protected void createCurrentLineHighlight(FxPathBuilder b, Marker caret) {
-        int ix = caret.getLineIndex();
+    protected void createCurrentLineHighlight(FxPathBuilder b, TextPos caret) {
+        int ix = caret.lineIndex();
         TextCell cell = layout.getVisibleCell(ix);
         if(cell != null) {
             if(control.isWrapText()) {
@@ -407,19 +410,18 @@ public class VFlow extends Pane {
         return layout.getTextPos(localX, localY);
     }
 
-    protected CaretInfo getCaretInfo(Marker m) {
-        return layout.getCaretInfo(m);
+    protected CaretInfo getCaretInfo(TextPos p) {
+        return layout.getCaretInfo(p);
     }
 
     /** returns caret sizing info, or null */
     public CaretInfo getCaretInfo() {
-        SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
-        if (sel == null) {
+        TextPos p = control.getCaretPosition();
+        if (p == null) {
             return null; // TODO check
         }
 
-        Marker m = sel.getCaret();
-        return getCaretInfo(m);
+        return getCaretInfo(p);
     }
 
     protected PathElement[] getRangeTop() {
@@ -878,9 +880,9 @@ public class VFlow extends Pane {
         if (c == null) {
             // caret is outside of the layout; let's set the origin first to the caret position
             // and then block scroll to avoid scrolling past the document end, if needed
-            SelectionSegment sel = control.getSelectionModel().getSelectionSegment();
-            if (sel != null) {
-                int ix = sel.getCaret().getLineIndex();
+            TextPos p = control.getCaretPosition();
+            if (p != null) {
+                int ix = p.lineIndex();
                 Origin or = new Origin(ix, 0);
                 setOrigin(or);
                 checkForExcessiveWhitespaceAtTheEnd();
@@ -895,23 +897,6 @@ public class VFlow extends Pane {
         }
     }
 
-    // TODO move method to control?
-    public void moveCaret(TextPos p, boolean extendSelection) {
-        SelectionModel sm = control.getSelectionModel();
-        if (sm == null) {
-            return;
-        }
-
-        control.setCaretPosition(p); // TODO bind to selection model????
-
-        Marker m = control.newMarker(p);
-        if (extendSelection) {
-            sm.extendSelection(m);
-        } else {
-            sm.setSelection(m, m);
-        }
-    }
-    
     protected void checkForExcessiveWhitespaceAtTheEnd() {
         double delta = layout.bottomHeight() - getViewHeight();
         if(delta < 0) {

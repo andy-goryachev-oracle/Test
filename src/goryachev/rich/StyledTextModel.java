@@ -29,6 +29,7 @@ package goryachev.rich;
 import java.io.Writer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javafx.scene.input.DataFormat;
+import goryachev.rich.impl.Markers;
 
 /**
  * Base class for a styled text model for use with {@link RichTextArea}.
@@ -75,6 +76,7 @@ public abstract class StyledTextModel {
     public abstract StyledParagraph getParagraph(int index);
     
     private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
+    private final Markers markers = new Markers(32);
 
     public StyledTextModel() {
     }
@@ -147,5 +149,10 @@ public abstract class StyledTextModel {
         for(ChangeListener li: listeners) {
             li.eventTextUpdated(start, end, charsAddedTop, linesAdded, charsAddedBottom);
         }
+    }
+
+    public Marker newMarker(TextPos pos) {
+        // TODO clamp position!
+        return markers.newMarker(pos);
     }
 }

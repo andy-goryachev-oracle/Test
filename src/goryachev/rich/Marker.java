@@ -33,9 +33,12 @@ import goryachev.rich.impl.Markers;
 
 /**
  * Tracks text position in the text document in the presence of edits.
+ * 
+ * TODO part of the model?  pass model to the constructor?
  */
 public class Marker implements Comparable<Marker> {
     public static final Marker ZERO = new Marker(new TextPos(0, 0, true));
+    // TODO a special DOCUMENT_END marker
     private final ReadOnlyObjectWrapper<TextPos> pos;
     
     private Marker(TextPos pos) {

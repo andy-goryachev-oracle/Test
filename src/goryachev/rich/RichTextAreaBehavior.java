@@ -161,21 +161,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         return vflow().getTextPos(localX, localY);
     }
 
-    /** returns caret position or null */
-    protected TextPos getCaret() {
-        SelectionModel sm = control.getSelectionModel();
-        if (sm == null) {
-            return null;
-        }
-
-        SelectionSegment sel = sm.getSelectionSegment();
-        if (sel == null) {
-            return null;
-        }
-
-        return sel.getCaret().getTextPos();
-    }
-    
     protected void handleModel(Object src, StyledTextModel old, StyledTextModel m) {
         if (old != null) {
             old.removeChangeListener(textChangeListener);
@@ -232,20 +217,14 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             return;
         }
 
-        SelectionModel sm = control.getSelectionModel();
-        if (sm == null) {
-            return;
+        TextPos ca = control.getCaretPosition();
+        if(ca != null) {
+            TextPos an = control.getAnchorPosition();
+            if(an == null) {
+                an = ca;
+            }
+            m.replace(an, ca, character);
         }
-
-        // TODO utility method
-        SelectionSegment sel = sm.getSelectionSegment();
-        if (sel == null) {
-            return;
-        }
-
-        TextPos an = sel.getAnchor().getTextPos();
-        TextPos ca = sel.getCaret().getTextPos();
-        m.replace(an, ca, character);
     }
 
     protected void handleMouseClicked(MouseEvent ev) {
@@ -270,13 +249,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             return;
         }
 
-        SelectionModel sm = control.getSelectionModel();
-        if (sm == null) {
-            return;
-        }
-
-        Marker m = getTextPosition(ev);
-        if (m == null) {
+        TextPos pos = getTextPosition(ev);
+        if (pos == null) {
             return;
         }
 
@@ -285,14 +259,11 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         if (ev.isShiftDown()) {
             // expand selection from the anchor point to the current position
             // clearing existing (possibly multiple) selection
-            sm.extendSelection(m);
+            control.extendSelection(pos);
         } else {
-            sm.setSelection(m, m);
-            sm.setAnchor(m);
+            control.select(pos, pos);
         }
 
-        TextPos pos = m.getTextPos();
-        control.setCaretPosition(pos);
         control.requestFocus();
     }
 
@@ -321,8 +292,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             stopAutoScroll();
         }
 
-        Marker pos = getTextPosition(ev);
-        control.getSelectionModel().extendSelection(pos);
+        TextPos pos = getTextPosition(ev);
+        control.extendSelection(pos);
     }
 
     protected void handleScrollEvent(ScrollEvent ev) {
@@ -345,13 +316,13 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         }
     }
 
-    protected Marker getTextPosition(MouseEvent ev) {
+    protected TextPos getTextPosition(MouseEvent ev) {
         double x = ev.getScreenX();
         double y = ev.getScreenY();
         return getTextPosition(x, y);
     }
 
-    protected Marker getTextPosition(double screenX, double screenY) {
+    protected TextPos getTextPosition(double screenX, double screenY) {
         return control.getTextPosition(screenX, screenY);
     }
     
@@ -388,9 +359,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         vflow().scrollToVisible(x, y);
         
         TextPos p = getTextPos(x, y);
-        
-        Marker m = control.newMarker(p);
-        control.getSelectionModel().extendSelection(m);
+        control.extendSelection(p);
     }
 
     public void pageDown() {
@@ -410,21 +379,21 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
     
     public void moveHome() {
-        TextPos p = getCaret();
+        TextPos p = control.getCaretPosition();
         if (p != null) {
             TextPos p2 = new TextPos(p.lineIndex(), 0, true);
-            vflow().moveCaret(p2, false);
+            control.moveCaret(p2, false);
             clearPhantomX();
         }
     }
     
     public void moveEnd() {
-        TextPos p = getCaret();
+        TextPos p = control.getCaretPosition();
         if (p != null) {
             String s = getPlainText(p.lineIndex());
             int len = (s == null ? 0 : s.length());
             TextPos p2 = new TextPos(p.lineIndex(), len, false);
-            vflow().moveCaret(p2, false);
+            control.moveCaret(p2, false);
             clearPhantomX();
         }
     }
@@ -483,14 +452,14 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             return;
         }
 
-        vflow().moveCaret(p, extendSelection);
+        control.moveCaret(p, extendSelection);
     }
 
     protected void nextCharacterVisually(boolean moveRight, boolean extendSelection) {
         clearPhantomX();
 
-        TextPos caretPos = getCaret();
-        if (caretPos == null) {
+        TextPos caret = control.getCaretPosition();
+        if (caret == null) {
             return; // TODO
         }
 
@@ -498,8 +467,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             moveRight = !moveRight;
         }
         
-        TextCell cell = vflow().getCell(caretPos.lineIndex());
-        int cix = caretPos.charIndex();
+        TextCell cell = vflow().getCell(caret.lineIndex());
+        int cix = caret.charIndex();
         if(moveRight) {
             cix++;
             if(cix >= cell.getTextLength()) {
@@ -507,19 +476,19 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                 if(line < vflow().lineCount()) {
                     // next line
                     TextPos pos = new TextPos(line, 0, true);
-                    vflow().moveCaret(pos, extendSelection);
+                    control.moveCaret(pos, extendSelection);
                 }
                 return;
             }
         } else {
-            if(caretPos.charIndex() == 0) {
+            if(caret.charIndex() == 0) {
                 int line = cell.getLineIndex() - 1;
                 if(line >= 0) {
                     // prev line
                     TextCell prevCell = vflow().getCell(line);
                     cix = Math.max(0, prevCell.getTextLength() - 1);
                     TextPos pos = new TextPos(line, cix, false);
-                    vflow().moveCaret(pos, extendSelection);
+                    control.moveCaret(pos, extendSelection);
                 }
                 return;
             }
@@ -527,9 +496,9 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
         boolean useBreakIterator = true;
         if (useBreakIterator) {
-            nextCharacterVisually_breakIterator(cell, caretPos, moveRight, extendSelection);
+            nextCharacterVisually_breakIterator(cell, caret, moveRight, extendSelection);
         } else {
-            nextCharacterVisually_textArea(cell, caretPos, moveRight, extendSelection);
+            nextCharacterVisually_textArea(cell, caret, moveRight, extendSelection);
         }
     }
     
@@ -547,7 +516,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         }
         
         TextPos pos = new TextPos(caretPos.lineIndex(), ix, caretPos.leading());
-        vflow().moveCaret(pos, extendSelection);
+        control.moveCaret(pos, extendSelection);
         return;
     }
     
@@ -573,7 +542,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             if ((moveRight && charShape.getLayoutBounds().getMaxX() > caretBounds.getMaxX()) || 
                 (!moveRight && charShape.getLayoutBounds().getMinX() < caretBounds.getMinX())) {
                 TextPos pos = new TextPos(caretPos.lineIndex(), hit.getInsertionIndex(), !hit.isLeading());
-                vflow().moveCaret(pos, extendSelection);
+                control.moveCaret(pos, extendSelection);
                 return;
             }
         }

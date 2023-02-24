@@ -106,7 +106,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         behavior = createBehavior();
         
         // TODO protect with listener helper (it's internal, shoud be made public) to avoid memory leak when changing skins
-        NewAPI.addChangeListener(vflow::handleSelectionChange, false, control.getSelectionModel().selectionSegmentProperty());
+        NewAPI.addChangeListener(vflow::handleSelectionChange, false, control.caretPositionProperty(), control.anchorPositionProperty());
         NewAPI.addChangeListener(vflow::updateRateRestartBlink, true, control.caretBlinkPeriodProperty());
         control.tabSizeProperty().addListener((s,p,c) -> vflow.updateTabSize());
         vscroll.valueProperty().addListener((ev) -> vflow.handleVerticalScroll());

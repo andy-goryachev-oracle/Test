@@ -41,10 +41,6 @@ public class Markers {
         markers = new WeakList<>(size);
     }
 
-    public Marker newMarker(int lineIndex, int charIndex, boolean leading) {
-        return newMarker(new TextPos(lineIndex, charIndex, leading));
-    }
-
     public Marker newMarker(TextPos p) {
         Marker m = Marker.create(this, p);
         markers.add(m);

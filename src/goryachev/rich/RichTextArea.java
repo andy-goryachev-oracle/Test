@@ -33,6 +33,7 @@ import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.css.CssMetaData;
@@ -45,7 +46,6 @@ import javafx.scene.AccessibleAttribute;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.Control;
 import javafx.util.Duration;
-import goryachev.rich.impl.Markers;
 import goryachev.rich.util.Util;
 
 /**
@@ -87,14 +87,9 @@ public class RichTextArea extends Control {
     protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(this, "displayCaret", true);
     private SimpleBooleanProperty editableProperty;
     protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(Config.caretBlinkPeriod));
-    // TODO use selection model one, or a binding
-    @Deprecated
-    protected final ReadOnlyObjectWrapper<TextPos> caretPosition = new ReadOnlyObjectWrapper<>(this, "caretPosition", null);
     // TODO property, pluggable models, or boolean (selection enabled?), do we need to allow for multiple selection?
     protected final SelectionModel selectionModel = new SingleSelectionModel();
     private ReadOnlyIntegerWrapper tabSizeProperty;
-    // TODO move to model?
-    protected final Markers markers = new Markers(32);
 
     public RichTextArea() {
         setFocusTraversable(true);
@@ -123,10 +118,6 @@ public class RichTextArea extends Control {
         return model;
     }
 
-    public SelectionModel getSelectionModel() {
-        return selectionModel;
-    }
-    
     /**
      * If a run of text exceeds the width of the {@code RichTextArea},
      * then this variable indicates whether the text should wrap onto
@@ -267,21 +258,15 @@ public class RichTextArea extends Control {
         return ((RichTextAreaSkin)getSkin()).getVFlow();
     }
 
-    // TODO TextPos
-    public Marker getTextPosition(double screenX, double screenY) {
+    public TextPos getTextPosition(double screenX, double screenY) {
         Point2D local = vflow().screenToLocal(screenX, screenY);
         TextPos pos = vflow().getTextPos(local.getX(), local.getY());
         if(pos == null) {
             return null;
         }
-        return markers.newMarker(pos);
+        return pos;
     }
     
-    // TODO move to model
-    protected Marker newMarker(TextPos p) {
-        return markers.newMarker(p);
-    }
-
     public ReadOnlyObjectProperty<Duration> caretBlinkPeriodProperty() {
         return caretBlinkPeriod.getReadOnlyProperty();
     }
@@ -297,31 +282,41 @@ public class RichTextArea extends Control {
         return caretBlinkPeriod.get();
     }
 
-    public void selectWord(Marker m) {
+    public void selectWord(TextPos p) {
         // TODO invoke an action?
+        // TODO use caret position
     }
 
-    public void selectLine(Marker m) {
+    public void selectLine(TextPos p) {
         // TODO invoke an action?
+        // TODO use caret position
     }
     
-    /** implementation detail: sets caret position */
-    @Deprecated // TODO remove, use selection methods
-    protected void setCaretPosition(TextPos p) {
-        caretPosition.set(p);
+    public void moveCaret(TextPos p, boolean extendSelection) {
+        if (extendSelection) {
+            extendSelection(p);
+        } else {
+            select(p, p);
+        }
     }
     
-    // TODO replace with selection model?
     public TextPos getCaretPosition() {
-        return caretPosition.get();
+        return caretPositionProperty().getValue();
     }
 
-    // TODO replace with a binding?
-    public ReadOnlyObjectProperty<TextPos> caretPositionProperty() {
-        return caretPosition.getReadOnlyProperty();
+    public ReadOnlyProperty<TextPos> caretPositionProperty() {
+        return selectionModel.caretPositionProperty();
     }
     
-    public ReadOnlyObjectProperty<Origin> originProperty() {
+    public TextPos getAnchorPosition() {
+        return anchorPositionProperty().getValue();
+    }
+    
+    public ReadOnlyProperty<TextPos> anchorPositionProperty() {
+        return selectionModel.anchorPositionProperty();
+    }
+    
+    public ReadOnlyProperty<Origin> originProperty() {
         return vflow().originProperty();
     }
 
@@ -352,37 +347,43 @@ public class RichTextArea extends Control {
     public void selectDocumentEnd() {
         execute(Action.SELECT_DOCUMENT_END);
     }
+    
+    public void selectAll() {
+        execute(Action.SELECT_ALL);
+    }
+
+    public void clearSelection() {
+        selectionModel.clear();
+    }
 
     /** Moves the caret to the specified position, clearing the selection */
     public void select(TextPos pos) {
-        SelectionModel sm = getSelectionModel();
-        if(sm != null) {
-            Marker m = newMarker(pos);
-            sm.setSelection(m, m);
+        StyledTextModel model = getModel();
+        if (model != null) {
+            Marker m = model.newMarker(pos);
+            selectionModel.setSelection(m, m);
+        }
+    }
+
+    /** Selects the specified range */
+    public void select(TextPos anchor, TextPos caret) {
+        StyledTextModel model = getModel();
+        if (model != null) {
+            Marker ma = model.newMarker(anchor);
+            Marker mc = model.newMarker(caret);
+            selectionModel.setSelection(ma, mc);
         }
     }
     
     /** Extends selection from the existing anchor to the new position. */
     public void extendSelection(TextPos pos) {
-        // TODO validate position?
-        System.err.println("extendSelection " + pos); // FIX
-        SelectionModel sm = getSelectionModel();
-        if(sm != null) {
-            Marker m = newMarker(pos);
-            sm.extendSelection(m);
+        StyledTextModel model = getModel();
+        if (model != null) {
+            Marker m = model.newMarker(pos);
+            selectionModel.extendSelection(m);
         }
     }
-    
-    /** Selects the specified range */
-    public void select(TextPos anchor, TextPos caret) {
-        SelectionModel sm = getSelectionModel();
-        if(sm != null) {
-            Marker ma = newMarker(anchor);
-            Marker mc = newMarker(caret);
-            sm.setSelection(ma, mc);
-        }
-    }
-    
+
     public int getParagraphCount() {
         StyledTextModel m = getModel();
         return (m == null) ? 0 : m.getParagraphCount();
@@ -397,10 +398,6 @@ public class RichTextArea extends Control {
     
     private RichTextAreaSkin richTextAreaSkin() {
         return (RichTextAreaSkin)getSkin();
-    }
-
-    public void selectAll() {
-        execute(Action.SELECT_ALL);
     }
     
     private void execute(Action a) {

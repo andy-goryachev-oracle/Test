@@ -180,15 +180,15 @@ public class TextCellLayout {
         return null;
     }
 
-    public CaretInfo getCaretInfo(Marker m) {
-        if (m != null) {
-            int ix = m.getLineIndex();
+    public CaretInfo getCaretInfo(TextPos p) {
+        if (p != null) {
+            int ix = p.lineIndex();
             TextCell cell = getCell(ix);
             if (cell != null) {
-                int charIndex = m.getCharIndex();
-                boolean leading = m.isLeading();
-                PathElement[] p = cell.getCaretShape(charIndex, leading);
-                return translateCaretInfo(cell, p);
+                int charIndex = p.charIndex();
+                boolean leading = p.leading();
+                PathElement[] pe = cell.getCaretShape(charIndex, leading);
+                return translateCaretInfo(cell, pe);
             }
         }
         return null;

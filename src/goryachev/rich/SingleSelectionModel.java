@@ -28,63 +28,87 @@ package goryachev.rich;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.ReadOnlyProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 
 /**
- * This SelectionModel support a single selection segment.
- * 
- * TODO selectedItemProperty
- * TODO selectedIndexProperty
- * TODO selectedItemsProperty
- * TODO selectedIndexesProperty
- * 
- * TODO maybe separate selection controller and selection model.
- * anchor belongs to a controller, transient selection that gets updated during dragging operation 
- * is a part of the controller, and once the drag is finished, the selection model is updated with the resulting
- * selection segment.
- * 
- * TODO perhaps change from Marker to TextPos since any kind of editing clears the selection
- * TODO consider a case where text is inserted by a background process, or where two views work off the same model.
+ * This SelectionModel supports a single selection segment.
  */
 public class SingleSelectionModel implements SelectionModel {
-    private final ReadOnlyObjectWrapper<SelectionSegment> selection = new ReadOnlyObjectWrapper<>();
     private Marker anchor;
+    private Marker caret;
+    private ReadOnlyObjectWrapper<TextPos> anchorPosition = new ReadOnlyObjectWrapper<>();
+    private ReadOnlyObjectWrapper<TextPos> caretPosition = new ReadOnlyObjectWrapper<>();
+    private final ChangeListener<TextPos> listener;
 
     public SingleSelectionModel() {
+        this.listener = (src,old,val) -> {
+            if(isAnchor(src)) {
+                anchorPosition.set(val);
+            } else {
+                caretPosition.set(val);
+            }
+        };
     }
     
-    public void setAnchor(Marker anchor) {
-        this.anchor = anchor;
-    }
-
     @Override
     public void clear() {
-        anchor = null;
-        selection.set(null);
+        setSelection(null, null);
     }
 
     @Override
-    public void setSelection(Marker anchor, Marker caret) {
-        System.err.println("setSelection a=" + anchor + " caret=" + caret); // FIX
-        this.anchor = anchor;
-        SelectionSegment seg = new SelectionSegment(anchor, caret);
-        selection.set(seg);
+    public void setSelection(Marker an, Marker ca) {
+        System.err.println("setSelection a=" + an + " caret=" + ca); // FIX
+        // the downside of having two properties instead of a single selection segment is that
+        // a change in selection would trigger one or two events
+        if(anchor != null) {
+            anchor.textPosProperty().removeListener(listener);
+        }
+        anchor = an;
+        if(anchor != null) {
+            anchor.textPosProperty().addListener(listener);
+            anchorPosition.set(anchor.getTextPos());
+        } else {
+            anchorPosition.set(null);
+        }
+        
+        if(caret != null) {
+            caret.textPosProperty().removeListener(listener);
+        }
+        caret = ca;
+        if(caret != null) {
+            caret.textPosProperty().addListener(listener);
+            caretPosition.set(caret.getTextPos());
+        } else {
+            caretPosition.set(null);
+        }
     }
 
     @Override
     public void extendSelection(Marker pos) {
-        if (anchor == null) {
-            anchor = pos;
+        Marker a = anchor;
+        if (a == null) {
+            a = pos;
         }
-        setSelection(anchor, pos);
+        setSelection(a, pos);
     }
 
     @Override
-    public ReadOnlyProperty<SelectionSegment> selectionSegmentProperty() {
-        return selection.getReadOnlyProperty();
+    public ReadOnlyProperty<TextPos> anchorPositionProperty() {
+        return anchorPosition.getReadOnlyProperty();
+    }
+
+    @Override
+    public ReadOnlyProperty<TextPos> caretPositionProperty() {
+        return caretPosition;
     }
     
-    @Override
-    public SelectionSegment getSelectionSegment() {
-        return selection.get();
+    private boolean isAnchor(ObservableValue<? extends TextPos> src) {
+        if(anchor != null) {
+            return anchor.textPosProperty() == src;
+        } else if(caret != null) {
+            return caret.textPosProperty() != src;
+        }
+        return false;
     }
 }

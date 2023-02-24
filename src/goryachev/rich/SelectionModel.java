@@ -39,11 +39,6 @@ import javafx.beans.property.ReadOnlyProperty;
  */
 public interface SelectionModel {
     /**
-     * Sets anchor.
-     */
-    public void setAnchor(Marker anchor);
-
-    /**
      * Clears the selection
      */
     public void clear();
@@ -59,13 +54,9 @@ public interface SelectionModel {
      */
     public void extendSelection(Marker pos);
     
-    /**
-     * Selection segment property.  The value can be null.
-     */
-    public ReadOnlyProperty<SelectionSegment> selectionSegmentProperty();
+    /** anchor position property */
+    public ReadOnlyProperty<TextPos> anchorPositionProperty();
 
-    /**
-     * returns current selection segment, or null.
-     */
-    public SelectionSegment getSelectionSegment();
+    /** caret position property */
+    public ReadOnlyProperty<TextPos> caretPositionProperty();
 }
