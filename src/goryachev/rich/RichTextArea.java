@@ -73,6 +73,8 @@ public class RichTextArea extends Control {
         PAGE_DOWN,
         PAGE_UP,
         SELECT_ALL,
+        SELECT_LINE,
+        SELECT_WORD,
         SELECT_DOCUMENT_END,
         SELECT_DOCUMENT_START,
         SELECT_DOWN,
@@ -282,16 +284,6 @@ public class RichTextArea extends Control {
         return caretBlinkPeriod.get();
     }
 
-    public void selectWord(TextPos p) {
-        // TODO invoke an action?
-        // TODO use caret position
-    }
-
-    public void selectLine(TextPos p) {
-        // TODO invoke an action?
-        // TODO use caret position
-    }
-    
     public void moveCaret(TextPos p, boolean extendSelection) {
         if (extendSelection) {
             extendSelection(p);
@@ -350,6 +342,14 @@ public class RichTextArea extends Control {
     
     public void selectAll() {
         execute(Action.SELECT_ALL);
+    }
+    
+    public void selectWord() {
+        execute(Action.SELECT_WORD);
+    }
+
+    public void selectLine() {
+        execute(Action.SELECT_LINE);
     }
 
     public void clearSelection() {

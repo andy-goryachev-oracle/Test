@@ -99,6 +99,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         map(Action.SELECT_DOCUMENT_START, this::selectDocumentStart, KeyCode.UP, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
         map(Action.SELECT_DOCUMENT_END, this::selectDocumentEnd, KeyCode.END, KCondition.SHIFT, KCondition.CTRL, KCondition.NOT_MAC);
         map(Action.SELECT_DOCUMENT_END, this::selectDocumentEnd, KeyCode.DOWN, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
+        map(Action.SELECT_LINE, this::selectLine);
+        map(Action.SELECT_WORD, this::selectWord);
 
         this.textChangeListener = new StyledTextModel.ChangeListener() {
             @Override
@@ -225,10 +227,10 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             int clicks = ev.getClickCount();
             switch (clicks) {
             case 2:
-                control.selectWord(getTextPosition(ev));
+                control.selectWord();
                 break;
             case 3:
-                control.selectLine(getTextPosition(ev));
+                control.selectLine();
                 break;
             }
         }
@@ -557,6 +559,20 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         TextPos pos = getEndOfDocument();
         if (pos != null) {
             control.extendSelection(pos);
+        }
+    }
+    
+    public void selectWord() {
+        // TODO
+    }
+    
+    public void selectLine() {
+        TextPos p = control.getCaretPosition();
+        if(p != null) {
+            int ix = p.lineIndex();
+            TextPos an = new TextPos(ix, 0, true);
+            TextPos ca = new TextPos(ix + 1, 0, true);
+            control.select(an, ca);
         }
     }
 
