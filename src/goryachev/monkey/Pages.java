@@ -50,6 +50,7 @@ public class Pages {
             new DemoPage("TextFlow", TextFlowPage::new),
             new DemoPage("TreeView", TreeViewPage::new),
             new DemoPage("TreeTableView", TreeTableViewPage::new),
+            new DemoPage("native2ascii", Native2AsciiPage::new),
         };
     }
 }
