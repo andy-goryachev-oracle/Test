@@ -51,6 +51,7 @@ public class RichTextAreaDemoPane extends BorderPane {
     public final ComboBox<Models> modelField;
 
     public RichTextAreaDemoPane() {
+        setId("RichTextAreaDemoPane");
         control = new RichTextArea();
         control.setModel(model());
 
@@ -69,12 +70,15 @@ public class RichTextAreaDemoPane extends BorderPane {
         modelField.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> updateModel());
         
         CheckBox wrapText = new CheckBox("wrap text");
+        wrapText.setId("wrapText");
         wrapText.selectedProperty().bindBidirectional(control.wrapTextProperty());
         
         CheckBox displayCaret = new CheckBox("display caret");
+        displayCaret.setId("displayCaret");
         displayCaret.selectedProperty().bindBidirectional(control.displayCaretProperty());
         
         CheckBox fatCaret = new CheckBox("fat caret");
+        fatCaret.setId("fatCaret");
         fatCaret.selectedProperty().addListener((s,p,on) -> {
             Node n = control.lookup(".caret");
             if(n != null) {
@@ -87,6 +91,7 @@ public class RichTextAreaDemoPane extends BorderPane {
         });
         
         ComboBox<Integer> tabSize = new ComboBox<>();
+        tabSize.setId("tabSize");
         tabSize.getItems().setAll(1, 2, 3, 4, 8, 16);
         tabSize.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
             control.setTabSize(v);

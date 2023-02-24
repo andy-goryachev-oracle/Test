@@ -31,19 +31,12 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.geometry.NodeOrientation;
-import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
-import javafx.scene.layout.Region;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.PathElement;
-import javafx.scene.text.HitInfo;
-import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 import goryachev.rich.RichTextArea.Action;
 import goryachev.rich.util.BehaviorBase2;
@@ -340,24 +333,24 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         fastAutoScroll = Math.abs(delta) > Config.fastAutoScrollThreshold;
         autoScrollTimer.play();
     }
-    
+
     protected void autoScroll() {
         double delta = fastAutoScroll ? Config.autoScrollStepFast : Config.autoStopStepSlow;
-        if(autoScrollUp) {
+        if (autoScrollUp) {
             delta = -delta;
         }
         vflow().blockScroll(delta);
-        
+
         double x = 0.0;
         double y;
-        if(autoScrollUp) {
+        if (autoScrollUp) {
             y = 0.0;
         } else {
             y = vflow().getViewHeight();
         }
-        
+
         vflow().scrollToVisible(x, y);
-        
+
         TextPos p = getTextPos(x, y);
         control.extendSelection(p);
     }
@@ -365,7 +358,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     public void pageDown() {
         moveLine(vflow().getViewHeight(), false);
     }
-    
+
     public void pageUp() {
         moveLine(-vflow().getViewHeight(), false);
     }
@@ -418,15 +411,15 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
      */
     public void moveDocumentEnd() {
         TextPos pos = getEndOfDocument();
-        if(pos != null) {
+        if (pos != null) {
             control.select(pos);
         }
     }
-    
+
     /** returns TextPos at the end of the document, or null if no document is present */
     private TextPos getEndOfDocument() {
         int line = control.getParagraphCount();
-        if(line > 0) {
+        if (line > 0) {
             --line;
             String text = getPlainText(line);
             int cix = (text == null) ? 0 : text.length();
@@ -434,7 +427,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         }
         return null;
     }
-    
+
     protected void moveLine(double deltaPixels, boolean extendSelection) {
         CaretInfo c = vflow().getCaretInfo();
         double x = c.x();
@@ -466,14 +459,14 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         if (isRTL()) {
             moveRight = !moveRight;
         }
-        
+
         TextCell cell = vflow().getCell(caret.lineIndex());
         int cix = caret.charIndex();
-        if(moveRight) {
+        if (moveRight) {
             cix++;
-            if(cix >= cell.getTextLength()) {
+            if (cix >= cell.getTextLength()) {
                 int line = cell.getLineIndex() + 1;
-                if(line < vflow().lineCount()) {
+                if (line < vflow().lineCount()) {
                     // next line
                     TextPos pos = new TextPos(line, 0, true);
                     control.moveCaret(pos, extendSelection);
@@ -481,9 +474,9 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                 return;
             }
         } else {
-            if(caret.charIndex() == 0) {
+            if (caret.charIndex() == 0) {
                 int line = cell.getLineIndex() - 1;
-                if(line >= 0) {
+                if (line >= 0) {
                     // prev line
                     TextCell prevCell = vflow().getCell(line);
                     cix = Math.max(0, prevCell.getTextLength() - 1);
@@ -494,62 +487,22 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             }
         }
 
-        boolean useBreakIterator = true;
-        if (useBreakIterator) {
-            nextCharacterVisually_breakIterator(cell, caret, moveRight, extendSelection);
-        } else {
-            nextCharacterVisually_textArea(cell, caret, moveRight, extendSelection);
-        }
-    }
-    
-    // TODO combine with previous method
-    private void nextCharacterVisually_breakIterator(TextCell cell, TextPos caretPos, boolean moveRight, boolean extendSelection) {
         // using default locale, same as TextInputControl.backward() for example
         BreakIterator br = BreakIterator.getCharacterInstance();
         String text = getPlainText(cell.getLineIndex());
         br.setText(text);
-        int off = caretPos.charIndex();
+        int off = caret.charIndex();
         int ix = moveRight ? br.following(off) : br.preceding(off);
-        if(ix == BreakIterator.DONE) {
+        if (ix == BreakIterator.DONE) {
             System.err.println(" --- SHOULD NOT HAPPEN: BreakIterator.DONE off=" + off); // FIX
             return;
         }
-        
-        TextPos pos = new TextPos(caretPos.lineIndex(), ix, caretPos.leading());
+
+        TextPos pos = new TextPos(caret.lineIndex(), ix, caret.leading());
         control.moveCaret(pos, extendSelection);
         return;
     }
-    
-    @Deprecated // FIX remove, does not work correctly due to other bugs
-    private void nextCharacterVisually_textArea(TextCell cell, TextPos caretPos, boolean moveRight, boolean extendSelection) { // FIX
-        Region r = cell.getContent();
-        if(r instanceof TextFlow /* TODO eclipse autocompletion f */) {
-            TextFlow f = (TextFlow)r;
-            PathElement[] caretShape = f.caretShape(caretPos.charIndex(), caretPos.leading());
-            if(caretShape.length == 4) {
-                System.err.println(" --- Split caret"); // FIX
-                caretShape = new PathElement[] {
-                    caretShape[0],
-                    caretShape[1]
-                };
-            }
-            
-            Bounds caretBounds = new Path(caretShape).getLayoutBounds();
-            double hitX = moveRight ? caretBounds.getMaxX() : caretBounds.getMinX();
-            double hitY = (caretBounds.getMinY() + caretBounds.getMaxY()) / 2;
-            HitInfo hit = f.hitTest(new Point2D(hitX, hitY));
-            Path charShape = new Path(f.rangeShape(hit.getCharIndex(), hit.getCharIndex() + 1));
-            if ((moveRight && charShape.getLayoutBounds().getMaxX() > caretBounds.getMaxX()) || 
-                (!moveRight && charShape.getLayoutBounds().getMinX() < caretBounds.getMinX())) {
-                TextPos pos = new TextPos(caretPos.lineIndex(), hit.getInsertionIndex(), !hit.isLeading());
-                control.moveCaret(pos, extendSelection);
-                return;
-            }
-        }
-        
-        System.err.println("* * * ERR failed to navigate within the TextFlow"); // FIX
-    }
-    
+
     public void clearPhantomX() {
         phantomX = -1.0;
     }
@@ -584,7 +537,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             int ix = m.getParagraphCount() - 1;
             if (ix >= 0) {
                 // TODO create a method (getLastTextPos)
-                // TODO move markers to model!!
                 // TODO add a special END_OF_DOCUMENT marker?
                 String text = m.getPlainText(ix);
                 int cix = (text == null ? 0 : Math.max(0, text.length() - 1));
@@ -594,7 +546,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             }
         }
     }
-    
+
     /** selects from the anchor position to the document start */
     public void selectDocumentStart() {
         control.extendSelection(TextPos.ZERO);
@@ -603,12 +555,12 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     /** selects from the anchor position to the document end */
     public void selectDocumentEnd() {
         TextPos pos = getEndOfDocument();
-        if(pos != null) {
+        if (pos != null) {
             control.extendSelection(pos);
         }
     }
-    
-    protected void handleTextUpdated(TextPos start, TextPos end, int charsAddedTop, int linesAdded, int charsAddedBottom) {
+
+    protected void handleTextUpdated(TextPos start, TextPos end, int addedTop, int linesAdded, int addedBottom) {
         // TODO vflow(): clear cache >= start, update layout
     }
 }

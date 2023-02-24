@@ -58,7 +58,7 @@ public class SingleSelectionModel implements SelectionModel {
 
     @Override
     public void setSelection(Marker an, Marker ca) {
-        System.err.println("setSelection a=" + an + " caret=" + ca); // FIX
+        //System.err.println("setSelection a=" + an + " caret=" + ca); // FIX
         // the downside of having two properties instead of a single selection segment is that
         // a change in selection would trigger one or two events
         if(anchor != null) {

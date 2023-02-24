@@ -150,10 +150,6 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         }
     }
     
-    public void clearPhantomX() {
-        behavior.clearPhantomX();
-    }
-    
     public void execute(Action a) {
         Runnable f = behavior.getFunction(a);
         if(f != null) {

@@ -212,7 +212,7 @@ public class VFlow extends Pane {
         if (p == null) {
             throw new NullPointerException();
         }
-        System.err.println("setOrigin " + p); // TODO
+        //System.err.println("setOrigin " + p); // FIX
         origin.set(p);
     }
     
@@ -558,14 +558,14 @@ public class VFlow extends Pane {
 
             Origin p = layout.fromAbsolutePosition(pos);
             // FIX
-            System.err.println(
-                "handleVerticalScroll" +
-                " val=" + vscroll.getValue() +
-                " pos=" + pos +
-                " visible=" + visible +
-                " origin=" + p +
-                " lineCount=" + lineCount()
-            );
+//            System.err.println(
+//                "handleVerticalScroll" +
+//                " val=" + vscroll.getValue() +
+//                " pos=" + pos +
+//                " visible=" + visible +
+//                " origin=" + p +
+//                " lineCount=" + lineCount()
+//            );
 
             setOrigin(p);
         }
@@ -668,7 +668,7 @@ public class VFlow extends Pane {
 
             layout = new TextCellLayout(this);
             layoutCells();
-            System.err.println("layoutCells " + layout); // TODO
+            //System.err.println("layoutCells " + layout); // FIX
 
             checkForExcessiveWhitespaceAtTheEnd();
             updateCaretAndSelection();
