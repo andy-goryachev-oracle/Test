@@ -54,7 +54,7 @@ public class MonkeyTesterApp extends Application {
     
     protected Stage stage;
     protected ObservableList<DemoPage> pages = FXCollections.observableArrayList();
-    protected ListView<DemoPage> listField;
+    protected ListView<DemoPage> pageSelector;
     protected BorderPane contentPane;
     protected DemoPage currentPage;
     protected Label status;
@@ -77,17 +77,18 @@ public class MonkeyTesterApp extends Application {
         
         pages.setAll(createPages());
         
-        listField = new ListView(pages);
-        listField.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        pageSelector = new ListView(pages);
+        pageSelector.setId("pageSelector");
+        pageSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             updatePage(c);
         });
         
         contentPane = new BorderPane();
-        contentPane.setId("ContentPane");
+        contentPane.setId("contentPane");
         
-        SplitPane split = new SplitPane(listField, contentPane);
+        SplitPane split = new SplitPane(pageSelector, contentPane);
         split.setDividerPositions(0.15);
-        SplitPane.setResizableWithParent(listField, Boolean.FALSE);
+        SplitPane.setResizableWithParent(pageSelector, Boolean.FALSE);
         SplitPane.setResizableWithParent(contentPane, Boolean.TRUE);
         
         BorderPane bp = new BorderPane();        
