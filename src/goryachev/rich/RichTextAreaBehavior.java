@@ -189,6 +189,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         if (ev.getEventType() == KeyEvent.KEY_TYPED) {
             String ch = ev.getCharacter();
             handleKeyTyped(ch);
+            ev.consume();
         }
     }
 

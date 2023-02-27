@@ -907,6 +907,7 @@ public class VFlow extends Pane {
     
     public void updateTabSize() {
         // TODO no other way but to set style to individual TextFlow instances in the layout
+        // TODO remember caret line position, do layout pass, block move to preserve the caret position
         int tabSize = control.getTabSize();
 //        FX.setStyle(this, "-fx-tab-size", String.valueOf(tabSize));
     }

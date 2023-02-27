@@ -66,7 +66,7 @@ public class RichTextAreaWindow extends Stage {
         scene.getStylesheets().add(RichTextAreaWindow.class.getResource("RichTextAreaDemo.css").toExternalForm());
 
         setScene(scene);
-        setTitle("RichTextArea Demo " + System.getProperty("java.version"));
+        setTitle("RichTextArea Demo " + System.getProperty("javafx.runtime.version") + " " + System.getProperty("java.version"));
         setWidth(1200);
         setHeight(600);
         

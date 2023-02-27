@@ -69,6 +69,10 @@ public class RichTextAreaDemoPane extends BorderPane {
         modelField.getItems().setAll(Models.values());
         modelField.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> updateModel());
         
+        CheckBox editable = new CheckBox("editable");
+        editable.setId("editable");
+        editable.selectedProperty().bindBidirectional(control.editableProperty());
+        
         CheckBox wrapText = new CheckBox("wrap text");
         wrapText.setId("wrapText");
         wrapText.selectedProperty().bindBidirectional(control.wrapTextProperty());
@@ -106,6 +110,7 @@ public class RichTextAreaDemoPane extends BorderPane {
         op = new ROptionPane();
         op.label("Model:");
         op.option(modelField);
+        op.option(editable);
         op.option(reloadModelButton);
         op.option(wrapText);
         op.option(displayCaret);
