@@ -107,6 +107,6 @@ public enum Models {
     }
 
     private static StyledTextModel tabs() {
-        return SegmentStyledTextModel.from("0\n\t1\n\t\t2\n\t\t\t3\n\t\t\t\t4\n0\n");
+        return SegmentStyledTextModel.from("0123456789012345678901234567890\n0\n\t1\n\t\t2\n\t\t\t3\n\t\t\t\t4\n0\n");
     }
 }

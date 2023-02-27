@@ -50,6 +50,7 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 import goryachev.rich.impl.CellCache;
 import goryachev.rich.impl.SelectionHelper;
@@ -693,6 +694,7 @@ public class VFlow extends Pane {
             return;
         }
 
+        int tabSize = control.getTabSize();
         boolean wrap = control.isWrapText();
         double forWidth = (wrap ? width : -1);
         int paragraphCount = lineCount();
@@ -716,6 +718,9 @@ public class VFlow extends Pane {
             getChildren().add(r);
             r.setMaxWidth(wrap ? width : Double.MAX_VALUE);
             r.setMaxHeight(USE_COMPUTED_SIZE);
+            if(r instanceof TextFlow f) {
+                f.setTabSize(tabSize);
+            }
 
             r.applyCss();
 
@@ -784,9 +789,12 @@ public class VFlow extends Pane {
             getChildren().add(r);
             r.setMaxWidth(wrap ? width : Double.MAX_VALUE);
             r.setMaxHeight(USE_COMPUTED_SIZE);
-            
-            r.applyCss();
+            if(r instanceof TextFlow f) {
+                f.setTabSize(tabSize);
+            }
 
+            r.applyCss();
+            
             layout.addCell(cell);
             
             // TODO actual box height might be different from h due to snapping?
@@ -906,9 +914,12 @@ public class VFlow extends Pane {
     }
     
     public void updateTabSize() {
+        CaretInfo c = getCaretInfo();
+        recomputeLayout();
+        
         // TODO no other way but to set style to individual TextFlow instances in the layout
         // TODO remember caret line position, do layout pass, block move to preserve the caret position
-        int tabSize = control.getTabSize();
+        //int tabSize = control.getTabSize();
 //        FX.setStyle(this, "-fx-tab-size", String.valueOf(tabSize));
     }
 }
