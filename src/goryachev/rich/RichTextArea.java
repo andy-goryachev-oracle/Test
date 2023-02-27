@@ -53,11 +53,9 @@ import goryachev.rich.util.Util;
  * 
  * TODO line spacing property
  * TODO content padding property
- * TODO focus enabled property (Node?)
  * TODO set size to content property
  * TODO highlight current line property
  * TODO tab size property
- * TODO selection model property
  * TODO line count r/o property
  */
 public class RichTextArea extends Control {
@@ -409,8 +407,8 @@ public class RichTextArea extends Control {
     }
 
     public void setTabSize(int n) {
-        if ((n < 1) || (n > 32767)) {
-            throw new IllegalArgumentException("tab size out of range (1-32767) " + n);
+        if ((n < 1) || (n > Config.maxTabSize)) {
+            throw new IllegalArgumentException("tab size out of range (1-" + Config.maxTabSize + ") " + n);
         }
         tabSizePropertyPrivate().set(n);
     }
@@ -426,7 +424,6 @@ public class RichTextArea extends Control {
         return tabSizePropertyPrivate().getReadOnlyProperty();
     }
 
-    // or we could just create the property
     private ReadOnlyIntegerWrapper tabSizePropertyPrivate() {
         if (tabSizeProperty == null) {
             tabSizeProperty = new ReadOnlyIntegerWrapper(8);
@@ -434,5 +431,5 @@ public class RichTextArea extends Control {
         return tabSizeProperty;
     }
     
-    // TODO methods corresponding to remaining Action's
+    // TODO methods corresponding to the remaining Actions
 }

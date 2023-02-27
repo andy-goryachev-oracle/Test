@@ -61,4 +61,7 @@ public class Config {
      * for the scrollCaretToVisible operation.
      */
     public static final double scrollCaretToVisibleEdgeDistance = 0.25;
+    
+    /** maximum tab size */
+    public static final int maxTabSize = 256;
 }
