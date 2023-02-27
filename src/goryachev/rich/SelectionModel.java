@@ -54,9 +54,23 @@ public interface SelectionModel {
      */
     public void extendSelection(Marker pos);
     
-    /** anchor position property */
+    /**
+     * Anchor position property.
+     */
     public ReadOnlyProperty<TextPos> anchorPositionProperty();
 
-    /** caret position property */
+    /**
+     * Caret position property.
+     */
     public ReadOnlyProperty<TextPos> caretPositionProperty();
+    
+    /**
+     * Selection segment property.  The value can be null.
+     */
+    public ReadOnlyProperty<SelectionSegment> selectionSegmentProperty();
+
+    /**
+     * Returns the current selection segment, or null.
+     */
+    public SelectionSegment getSelectionSegment();
 }

@@ -458,6 +458,7 @@ public class VFlow extends Pane {
         }
 
         if (endOffset < 0) {
+            // FIX to the edge?? but beware of RTL
             endOffset = cell.getTextLength();
         }
 

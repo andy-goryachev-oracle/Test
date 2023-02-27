@@ -308,6 +308,10 @@ public class RichTextArea extends Control {
         return selectionModel.anchorPositionProperty();
     }
     
+    public ReadOnlyProperty<SelectionSegment> selectionSegmentProperty() {
+        return selectionModel.selectionSegmentProperty();
+    }
+    
     public ReadOnlyProperty<Origin> originProperty() {
         return vflow().originProperty();
     }

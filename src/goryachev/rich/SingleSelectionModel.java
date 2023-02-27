@@ -35,58 +35,35 @@ import javafx.beans.value.ObservableValue;
  * This SelectionModel supports a single selection segment.
  */
 public class SingleSelectionModel implements SelectionModel {
-    private Marker anchor;
-    private Marker caret;
-    private ReadOnlyObjectWrapper<TextPos> anchorPosition = new ReadOnlyObjectWrapper<>();
-    private ReadOnlyObjectWrapper<TextPos> caretPosition = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<SelectionSegment> segment = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<TextPos> anchorPosition = new ReadOnlyObjectWrapper<>();
+    private final ReadOnlyObjectWrapper<TextPos> caretPosition = new ReadOnlyObjectWrapper<>();
     private final ChangeListener<TextPos> listener;
 
     public SingleSelectionModel() {
-        this.listener = (src,old,val) -> {
-            if(isAnchor(src)) {
+        this.listener = (src, old, val) -> {
+            if (isAnchor(src)) {
                 anchorPosition.set(val);
             } else {
                 caretPosition.set(val);
             }
         };
     }
-    
+
     @Override
     public void clear() {
-        setSelection(null, null);
+        setSelectionSegment(null);
     }
 
     @Override
     public void setSelection(Marker an, Marker ca) {
-        //System.err.println("setSelection a=" + an + " caret=" + ca); // FIX
-        // the downside of having two properties instead of a single selection segment is that
-        // a change in selection would trigger one or two events
-        if(anchor != null) {
-            anchor.textPosProperty().removeListener(listener);
-        }
-        anchor = an;
-        if(anchor != null) {
-            anchor.textPosProperty().addListener(listener);
-            anchorPosition.set(anchor.getTextPos());
-        } else {
-            anchorPosition.set(null);
-        }
-        
-        if(caret != null) {
-            caret.textPosProperty().removeListener(listener);
-        }
-        caret = ca;
-        if(caret != null) {
-            caret.textPosProperty().addListener(listener);
-            caretPosition.set(caret.getTextPos());
-        } else {
-            caretPosition.set(null);
-        }
+        SelectionSegment seg = new SelectionSegment(an, ca);
+        setSelectionSegment(seg);
     }
 
     @Override
     public void extendSelection(Marker pos) {
-        Marker a = anchor;
+        Marker a = anchor();
         if (a == null) {
             a = pos;
         }
@@ -102,13 +79,69 @@ public class SingleSelectionModel implements SelectionModel {
     public ReadOnlyProperty<TextPos> caretPositionProperty() {
         return caretPosition;
     }
-    
+
+    private void setSelectionSegment(SelectionSegment seg) {
+        //System.err.println("setSelection a=" + an + " caret=" + ca); // FIX
+
+        Marker m = anchor();
+        if (m != null) {
+            m.textPosProperty().removeListener(listener);
+        }
+
+        m = caret();
+        if (m != null) {
+            m.textPosProperty().removeListener(listener);
+        }
+
+        if (seg == null) {
+            anchorPosition.set(null);
+            caretPosition.set(null);
+        } else {
+            seg.getAnchor().textPosProperty().addListener(listener);
+            seg.getCaret().textPosProperty().addListener(listener);
+            anchorPosition.set(seg.getAnchor().getTextPos());
+            caretPosition.set(seg.getCaret().getTextPos());
+        }
+
+        segment.set(seg);
+    }
+
+    private Marker anchor() {
+        SelectionSegment seg = getSelectionSegment();
+        if (seg == null) {
+            return null;
+        }
+        return seg.getAnchor();
+    }
+
+    private Marker caret() {
+        SelectionSegment seg = getSelectionSegment();
+        if (seg == null) {
+            return null;
+        }
+        return seg.getCaret();
+    }
+
     private boolean isAnchor(ObservableValue<? extends TextPos> src) {
-        if(anchor != null) {
-            return anchor.textPosProperty() == src;
-        } else if(caret != null) {
-            return caret.textPosProperty() != src;
+        Marker an = anchor();
+        if (an != null) {
+            return an.textPosProperty() == src;
+        } else {
+            Marker ca = caret();
+            if (ca != null) {
+                return ca.textPosProperty() != src;
+            }
         }
         return false;
+    }
+
+    @Override
+    public ReadOnlyProperty<SelectionSegment> selectionSegmentProperty() {
+        return segment.getReadOnlyProperty();
+    }
+
+    @Override
+    public SelectionSegment getSelectionSegment() {
+        return segment.get();
     }
 }
