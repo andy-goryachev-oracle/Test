@@ -70,8 +70,8 @@ public class DemoModel extends SegmentStyledTextModel {
         addSegment("Halfwidth and FullWidth Forms", null, UNDER).nl();
         addSegment("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯ", "-fx-font-family:monospaced;").nl();
         addSegment("ABCDEFGHIJKLMNO", "-fx-font-family:monospaced;").nl();
-        // inline node segments break navigation, since they have no associated text
-        //addSegment("Inline Node [").addNodeSegment(() -> new Button("Button")).addSegment("].").nl();
+        // inline node segments break navigation, probably because of caret shape?
+        addSegment("Inline Node [").addNodeSegment(() -> new Button("Button")).addSegment("].").nl();
         nl(2);
 
         // TODO unicode codepoints

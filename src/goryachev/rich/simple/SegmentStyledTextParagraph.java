@@ -62,6 +62,12 @@ public class SegmentStyledTextParagraph implements StyledParagraph {
         public NodeSegment(Supplier<Node> generator) {
             this.generator = generator;
         }
+        
+        @Override
+        public String getText() {
+            // must be one character
+            return " ";
+        }
     }
 
     private int index; // TODO move to base class?
