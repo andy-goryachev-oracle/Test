@@ -56,6 +56,7 @@ public class Templates {
             "Failed Nav Bug", "Arabic: \u0627\u0644\u0639\u0631\u0628\u064a\u0629",
             "Wrap Index Bug", "A regular Arabic verb, كَتَبَ‎ kataba (to write).", // Noto Sans Arabic Regular
             "Emojis", "[🇺🇦❤️🏁🇺🇸🔥🦋\n😀 😃 😄 😁 😆 😅 🤣 😂\n🙂 🙃 😉 😊 😇]",
+            "Tabs", "0123456789012345678901234567890\n0\n\t1\n\t\t2\n\t\t\t3\n\t\t\t\t4\n0\n",
         };
     }
     
