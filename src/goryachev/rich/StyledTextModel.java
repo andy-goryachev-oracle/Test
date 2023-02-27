@@ -37,8 +37,6 @@ import goryachev.rich.impl.Markers;
  * 
  * TODO events
  * TODO editing
- * 
- * TODO rename StyledTextModelBase?
  */
 public abstract class StyledTextModel {
     public interface ChangeListener {
@@ -77,6 +75,7 @@ public abstract class StyledTextModel {
     
     private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
     private final Markers markers = new Markers(32);
+    // TODO special BEGIN/END markers? especially END?
 
     public StyledTextModel() {
     }
@@ -152,7 +151,27 @@ public abstract class StyledTextModel {
     }
 
     public Marker newMarker(TextPos pos) {
-        // TODO clamp position!
-        return markers.newMarker(pos);
+        TextPos p = clamp(pos);
+        return markers.newMarker(p);
+    }
+    
+    private TextPos clamp(TextPos p) {
+        int ct = getParagraphCount();
+        int ix = p.lineIndex();
+        if(ix < 0) {
+            return TextPos.ZERO;
+        } else if(ix < ct) {
+            return p;
+        } else {
+            if(ct == 0) {
+                return new TextPos(0, 0, false);
+            } else {
+                ix = ct - 1;
+                String s = getPlainText(ix);
+                int len = (s == null) ? 0: s.length();
+                int cix = Math.max(0, len - 1);
+                return new TextPos(ct - 1, cix, false);
+            }
+        }
     }
 }
