@@ -219,7 +219,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             if(an == null) {
                 an = ca;
             }
-            m.replace(an, ca, character, null, null);
+            m.replace(an, ca, character);
         }
     }
 

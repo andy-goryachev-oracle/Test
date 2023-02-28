@@ -114,7 +114,8 @@ public abstract class StyledTextModel {
 
     /** returns data formats supported by {@link export()} operation */
     public DataFormat[] getSupportedExportFormats() {
-        return new DataFormat[] { DataFormat.PLAIN_TEXT };
+        Set<DataFormat> formats = exportHandlers.keySet();
+        return formats.toArray(new DataFormat[formats.size()]);
     }
 
     protected ExportHandler getExportHandler(DataFormat format) {
@@ -122,6 +123,10 @@ public abstract class StyledTextModel {
     }
 
     // TODO writer or OutputStream ?
+    // plain text, rtf: Writer
+    // html: ?? (html, css, images)
+    // also, need to convert CSS into whatever form the export format supports.
+    // Perhaps, it should emit a sequence of StyledText's.
     public void export(DataFormat format, TextPos start, TextPos end, Writer wr) {
         ExportHandler h = getExportHandler(format);
         if (h == null) {
@@ -146,7 +151,7 @@ public abstract class StyledTextModel {
     }
 
     // TODO import from InputStream, String (multi-line), copy
-    public void importText(DataFormat format, TextPos start, TextPos end, Reader rd) {
+    public void importText(DataFormat format, TextPos start, TextPos end, Object input) {
         ImportHandler h = getImportHandler(format);
         if (h == null) {
             throw new IllegalArgumentException("Data format is not supported: " + format);
@@ -160,11 +165,13 @@ public abstract class StyledTextModel {
      * The style of the inserted text is determined by the model based on the surrounding text.
      * After the model makes necessary changes, the model emits an event to all registered ChangeListeners.
      * 
+     * Inserted text cannot include newlines, form feeds, etc.
+     * 
      * @param start
      * @param end
-     * @param text
+     * @param text text to be inserted.
      */
-    public void replace(TextPos start, TextPos end, String text, String directStyle, String[] css) {
+    public void replace(TextPos start, TextPos end, String text) {
         // no-op in read-only model
 
         // TODO or assume: removeRegion + insert from (string, styled string, styled string iterator)
@@ -177,6 +184,12 @@ public abstract class StyledTextModel {
     public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
         // no-op in read-only model
         // TODO the problem of applying a direct style is that it has to be intelligently merged, which
+        // entails a lot of non-trivial string processing
+    }
+    
+    public void removeStyle(TextPos start, TextPos end, String direct, String[] css) {
+        // no-op in read-only model
+        // TODO same problem in removing a direct style is that it has to be intelligently merged, which
         // entails a lot of non-trivial string processing
     }
     
