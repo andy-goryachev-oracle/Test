@@ -26,7 +26,10 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import java.io.Reader;
 import java.io.Writer;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javafx.scene.input.DataFormat;
 import goryachev.rich.impl.Markers;
@@ -51,6 +54,7 @@ public abstract class StyledTextModel {
          * @param charsAddedBottom number of characters inserted on the same line as end
          */
         public void eventTextUpdated(TextPos start, TextPos end, int charsAddedTop, int linesAdded, int charsAddedBottom);
+        // TODO or another Change class?
     }
     
     /**
@@ -74,6 +78,8 @@ public abstract class StyledTextModel {
     public abstract StyledParagraph getParagraph(int index);
     
     private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
+    private final HashMap<DataFormat,ImportHandler> importHandlers = new HashMap<>(4);
+    private final HashMap<DataFormat,ExportHandler> exportHandlers = new HashMap<>(4);
     private final Markers markers = new Markers(32);
     // TODO special BEGIN/END markers? especially END?
 
@@ -97,35 +103,57 @@ public abstract class StyledTextModel {
     public void addChangeListener(ChangeListener listener) {
         listeners.add(listener);
     }
-    
+
     public void removeChangeListener(ChangeListener listener) {
         listeners.remove(listener);
     }
 
+    public ExportHandler registerExportHandler(ExportHandler handler) {
+        return exportHandlers.put(handler.getDataFormat(), handler);
+    }
+
     /** returns data formats supported by {@link export()} operation */
-    public DataFormat[] getSupportedFormats() {
+    public DataFormat[] getSupportedExportFormats() {
         return new DataFormat[] { DataFormat.PLAIN_TEXT };
     }
-    
-    public boolean isFormatSupported(DataFormat format) {
-        for(DataFormat f: getSupportedFormats()) {
-            if(f.equals(format)) {
-                return true;
-            }
-        }
-        return false;
+
+    protected ExportHandler getExportHandler(DataFormat format) {
+        return exportHandlers.get(format);
     }
 
     // TODO writer or OutputStream ?
     public void export(DataFormat format, TextPos start, TextPos end, Writer wr) {
-        if(!isFormatSupported(format)) {
+        ExportHandler h = getExportHandler(format);
+        if (h == null) {
             throw new IllegalArgumentException("Data format is not supported: " + format);
         }
-        
+
         // TODO
     }
-    
-    // TODO replace from external source
+
+    public ImportHandler registerImportHandler(ImportHandler handler) {
+        return importHandlers.put(handler.getDataFormat(), handler);
+    }
+
+    /** returns data formats supported by {@link import()} operation */
+    public DataFormat[] getSupportedImportFormats() {
+        Set<DataFormat> formats = importHandlers.keySet();
+        return formats.toArray(new DataFormat[formats.size()]);
+    }
+
+    protected ImportHandler getImportHandler(DataFormat format) {
+        return importHandlers.get(format);
+    }
+
+    // TODO import from InputStream, String (multi-line), copy
+    public void importText(DataFormat format, TextPos start, TextPos end, Reader rd) {
+        ImportHandler h = getImportHandler(format);
+        if (h == null) {
+            throw new IllegalArgumentException("Data format is not supported: " + format);
+        }
+
+        // TODO
+    }
     
     /**
      * Equivalent of the user typing text.
@@ -136,17 +164,29 @@ public abstract class StyledTextModel {
      * @param end
      * @param text
      */
-    public void replace(TextPos start, TextPos end, String text) {
+    public void replace(TextPos start, TextPos end, String text, String directStyle, String[] css) {
         // no-op in read-only model
+
+        // TODO or assume: removeRegion + insert from (string, styled string, styled string iterator)
+        // TODO via input handler?
+        // TODO input: typed text; clipboard
+        // TODO replace with sequence: remove range + insert(text, directStyle, css[])
+        // TODO must work with multi-line text (separated by cr/crlf/lf)
+    }
+    
+    public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
+        // no-op in read-only model
+        // TODO the problem of applying a direct style is that it has to be intelligently merged, which
+        // entails a lot of non-trivial string processing
     }
     
     // TODO printing
     
     // TODO update markers
     
-    protected void fireChangeEvent(TextPos start, TextPos end, int charsAddedTop, int linesAdded, int charsAddedBottom) {
-        for(ChangeListener li: listeners) {
-            li.eventTextUpdated(start, end, charsAddedTop, linesAdded, charsAddedBottom);
+    protected void fireChangeEvent(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
+        for (ChangeListener li : listeners) {
+            li.eventTextUpdated(start, end, charsTop, linesAdded, charsBottom);
         }
     }
 
@@ -154,21 +194,21 @@ public abstract class StyledTextModel {
         TextPos p = clamp(pos);
         return markers.newMarker(p);
     }
-    
+
     private TextPos clamp(TextPos p) {
         int ct = getParagraphCount();
         int ix = p.lineIndex();
-        if(ix < 0) {
+        if (ix < 0) {
             return TextPos.ZERO;
-        } else if(ix < ct) {
+        } else if (ix < ct) {
             return p;
         } else {
-            if(ct == 0) {
+            if (ct == 0) {
                 return new TextPos(0, 0, false);
             } else {
                 ix = ct - 1;
                 String s = getPlainText(ix);
-                int len = (s == null) ? 0: s.length();
+                int len = (s == null) ? 0 : s.length();
                 int cix = Math.max(0, len - 1);
                 return new TextPos(ct - 1, cix, false);
             }

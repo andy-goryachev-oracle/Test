@@ -80,7 +80,7 @@ public class EditablePlaintextModel extends StyledTextModel {
     // TODO text might contain newlines
     // TODO possibly add styles
     @Override
-    public void replace(TextPos start, TextPos end, String text) {
+    public void replace(TextPos start, TextPos end, String text, String directStyle, String[] css) {
         // TODO
         System.err.println("replace start=" + start + " end=" + end + " text=[" + text + "]");
         
