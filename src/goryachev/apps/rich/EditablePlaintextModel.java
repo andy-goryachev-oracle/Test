@@ -78,8 +78,7 @@ public class EditablePlaintextModel extends StyledTextModel {
 
     @Override
     public void replace(TextPos start, TextPos end, String text) {
-        // TODO
-        System.err.println("replace start=" + start + " end=" + end + " text=[" + text + "]");
+        System.err.println("replace start=" + start + " end=" + end + " text=[" + text + "]"); // FIX
 
         // update paragraphs
         // update markers
@@ -98,6 +97,26 @@ public class EditablePlaintextModel extends StyledTextModel {
         paragraphs.set(ix, s2);
 
         fireChangeEvent(start, end, len, 0, 0);
+    }
+    
+    @Override
+    protected void insertLineBreak(TextPos pos) {
+        System.err.println("insertLineBreak pos=" + pos); // FIX
+        // TODO clamp position here? or presume all is ok?
+        int ix = pos.lineIndex();
+        if(ix >= getParagraphCount()) {
+            paragraphs.add("");
+        } else {
+            int cix = pos.getInsertionIndex();
+            String s = paragraphs.get(ix);
+            if(cix >= s.length()) {
+                paragraphs.add(ix + 1, "");
+            } else {
+                paragraphs.set(ix, s.substring(0, cix));
+                paragraphs.add(ix + 1, s.substring(cix));
+            }
+        }
+        fireChangeEvent(pos, pos, 0, 1, 0);
     }
 
     private static String insertText(String text, int index, String toInsert) {

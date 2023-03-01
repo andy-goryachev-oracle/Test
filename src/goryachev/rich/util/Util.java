@@ -39,6 +39,9 @@ import javafx.scene.shape.PathElement;
  * Utility methods to be moved to com.sun.javafx hierarchy.
  */
 public class Util {
+    private static final boolean isMac = initIsMac();
+    private static final boolean isWin = initIsWin();
+
     /**
      * Combines CssMetaData items in one unmodifiable list with the size equal to the number
      * of items it holds (i.e. with no unnecessary overhead).
@@ -108,5 +111,23 @@ public class Util {
             elements[i] = em;
         }
         return elements;
+    }
+    
+    private static boolean initIsMac() {
+        // PlatformUtil
+        return System.getProperty("os.name").startsWith("Mac");
+    }
+
+    private static boolean initIsWin() {
+        // PlatformUtil
+        return System.getProperty("os.name").startsWith("Windows");
+    }
+    
+    public static boolean isMac() {
+        return isMac;
+    }
+
+    public static boolean isWin() {
+        return isWin;
     }
 }

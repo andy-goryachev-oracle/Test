@@ -44,7 +44,7 @@ public class RichTextAreaWindow extends Stage {
     public final Label status;
     
     public RichTextAreaWindow() {
-        demoPane = new RichTextAreaDemoPane();
+        demoPane = new RichTextAreaDemoPane(null);
         
         MenuBar mb = new MenuBar();
         FX.menu(mb, "File");

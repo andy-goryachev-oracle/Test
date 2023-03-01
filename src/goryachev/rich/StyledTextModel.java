@@ -60,9 +60,7 @@ public abstract class StyledTextModel {
     /**
      * Indicates whether the model is editable.
      */
-    public boolean isEditable() {
-        return false;
-    }
+    public boolean isEditable() { return false; }
 
     /**
      * Returns the number of paragraphs in the model.
@@ -180,6 +178,10 @@ public abstract class StyledTextModel {
         // TODO replace with sequence: remove range + insert(text, directStyle, css[])
         // TODO must work with multi-line text (separated by cr/crlf/lf)
         // TODO make sure start < pos
+    }
+    
+    protected void insertLineBreak(TextPos pos) {
+        // no-op in read only model
     }
     
     public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {

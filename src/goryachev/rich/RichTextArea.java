@@ -68,6 +68,7 @@ public class RichTextArea extends Control {
         MOVE_LEFT,
         MOVE_RIGHT,
         MOVE_UP,
+        NEWLINE,
         PAGE_DOWN,
         PAGE_UP,
         SELECT_ALL,

@@ -26,6 +26,7 @@ package goryachev.apps.rich;
 
 import java.nio.charset.Charset;
 import java.util.Base64;
+import javafx.application.Platform;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -45,15 +46,14 @@ import goryachev.rich.StyledTextModel;
  * Main Panel contains RichTextArea, split panes for quick size adjustment, and an option pane.
  */
 public class RichTextAreaDemoPane extends BorderPane {    
-    private static StyledTextModel model;
+    private static StyledTextModel globalModel;
     public final ROptionPane op;
     public final RichTextArea control;
     public final ComboBox<Models> modelField;
 
-    public RichTextAreaDemoPane() {
+    public RichTextAreaDemoPane(StyledTextModel m) {
         setId("RichTextAreaDemoPane");
         control = new RichTextArea();
-        control.setModel(model());
 
         SplitPane hsplit = new SplitPane(control, pane());
         hsplit.setBorder(null);
@@ -66,8 +66,8 @@ public class RichTextAreaDemoPane extends BorderPane {
         vsplit.setOrientation(Orientation.VERTICAL);
         
         modelField = new ComboBox<>();
+        modelField.setId("modelField");
         modelField.getItems().setAll(Models.values());
-        modelField.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> updateModel());
         
         CheckBox editable = new CheckBox("editable");
         editable.setId("editable");
@@ -122,17 +122,29 @@ public class RichTextAreaDemoPane extends BorderPane {
         
         setCenter(vsplit);
         setRight(op);
-        
+
         modelField.getSelectionModel().selectFirst();
+
+        Platform.runLater(() -> {
+            // all this to make sure restore settings works correctly with second window loading the same model
+            if (m == null) {
+                if (globalModel == null) {
+                    globalModel = createModel();
+                }
+                control.setModel(globalModel);
+            } else {
+                control.setModel(m);
+            }
+
+            modelField.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
+                updateModel();
+            });
+        });
     }
-    
-    private static StyledTextModel model() {
-        return model;
-    }
-    
+
     protected void updateModel() {
-        model = createModel();
-        control.setModel(model());
+        globalModel = createModel();
+        control.setModel(globalModel);
     }
     
     protected void reloadModel() {

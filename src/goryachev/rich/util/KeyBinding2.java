@@ -31,9 +31,6 @@ import javafx.scene.input.KeyEvent;
 
 // this class might be internal to InputMap2
 public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
-    private static final boolean isMac = isMac();
-    private static final boolean isWin = isWin();
-
     public static KeyBinding2 from(KeyEvent ev) {
         EnumSet<KCondition> m = EnumSet.noneOf(KCondition.class);
         EventType<KeyEvent> t = ev.getEventType();
@@ -56,11 +53,11 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
         // only one - shortcut
         
         // why shortcut key logic is not public is unclear
-        if (isMac) {
+        if (Util.isMac()) {
             if (shortcut) {
                 meta = false;
             }
-        } else if (isWin) {
+        } else if (Util.isWin()) {
             if (ctrl) {
                 shortcut = false;
             }
@@ -100,13 +97,13 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
         }
 
         // TODO mac-windows for now.  might rethink the logic to support more platforms
-        if (isMac) {
+        if (Util.isMac()) {
             if (m.contains(KCondition.NOT_MAC)) {
                 return null;
             } else if (m.contains(KCondition.WINDOWS)) {
                 return null;
             }
-        } else if (isWin) {
+        } else if (Util.isWin()) {
             if (m.contains(KCondition.NOT_WINDOWS)) {
                 return null;
             } else if (m.contains(KCondition.MAC)) {
@@ -149,15 +146,5 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
 
         // TODO validate: shortcut and !(other shortcut modifier)
         return new KeyBinding2(code, m);
-    }
-
-    private static boolean isMac() {
-        // PlatformUtil
-        return System.getProperty("os.name").startsWith("Mac");
-    }
-
-    private static boolean isWin() {
-        // PlatformUtil
-        return System.getProperty("os.name").startsWith("Windows");
     }
 }

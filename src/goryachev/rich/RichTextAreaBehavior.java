@@ -42,6 +42,7 @@ import goryachev.rich.RichTextArea.Action;
 import goryachev.rich.util.BehaviorBase2;
 import goryachev.rich.util.KCondition;
 import goryachev.rich.util.KeyBinding2;
+import goryachev.rich.util.Util;
 
 /**
  * RichTextArea Behavior.
@@ -74,6 +75,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         this.keyHandler = this::handleKeyEvent;
         this.modelListener = this::handleModel;
 
+        map(Action.NEWLINE, this::insertLineBreak, KeyCode.ENTER);
         map(Action.MOVE_LEFT, this::moveLeft, KeyCode.LEFT);
         map(Action.MOVE_RIGHT, this::moveRight, KeyCode.RIGHT);
         map(Action.MOVE_UP, this::moveUp, KeyCode.UP);
@@ -186,11 +188,34 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         // TODO possibly onKeyTyped in inputMap?
         // TODO something about consuming all key presses (yes) and key releases (not really)
         // in TextInputControlBehavior:194
-        if (ev.getEventType() == KeyEvent.KEY_TYPED) {
-            String ch = ev.getCharacter();
-            handleKeyTyped(ch);
+        
+        String character = getValidKeyTyped(ev);
+        if (character != null) {
+            handleKeyTyped(character);
             ev.consume();
         }
+    }
+
+    protected String getValidKeyTyped(KeyEvent ev) {
+        if (ev.getEventType() == KeyEvent.KEY_TYPED) {
+            String ch = ev.getCharacter();
+            if (ch.length() > 0) {
+                // see TextInputControlBehavior:395
+                // Filter out control keys except control+Alt on PC or Alt on Mac
+                if (ev.isControlDown() || ev.isAltDown() || (Util.isMac() && ev.isMetaDown())) {
+                    if (!((ev.isControlDown() || Util.isMac()) && ev.isAltDown()))
+                        return null;
+                }
+
+                // Ignore characters in the control range and the ASCII delete
+                // character as well as meta key presses
+                if (ch.charAt(0) > 0x1F && ch.charAt(0) != 0x7F && !ev.isMetaDown()) {
+                    // Not sure about this one (original comment, not sure about it either)
+                    return ch;
+                }
+            }
+        }
+        return null;
     }
 
     protected boolean isEditable() {
@@ -212,7 +237,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         if (m == null) {
             return;
         }
-
+        
         TextPos ca = control.getCaretPosition();
         if(ca != null) {
             TextPos an = control.getAnchorPosition();
@@ -224,6 +249,27 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             TextPos p = TextPos.min(an, ca);
             TextPos p2 = new TextPos(p.lineIndex(), p.charIndex() + character.length(), p.leading());
             control.moveCaret(p2, false);
+            clearPhantomX();
+        }
+    }
+
+    public void insertLineBreak() {
+        if (!isEditable()) {
+            return;
+        }
+
+        StyledTextModel m = control.getModel();
+        if (m == null) {
+            return;
+        }
+        
+        TextPos pos = control.getCaretPosition();
+        if(pos != null) {
+            m.insertLineBreak(pos);
+            
+            TextPos p2 = new TextPos(pos.lineIndex() + 1, 0, true);
+            control.moveCaret(p2, false);
+            clearPhantomX();
         }
     }
 
