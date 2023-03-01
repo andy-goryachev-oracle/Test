@@ -87,8 +87,8 @@ public class EditablePlaintextModel extends StyledTextModel {
 
         removeRegion(start, end);
 
-        int ix = start.lineIndex();
-        int cix = start.getInsertionIndex();
+        int ix = start.index();
+        int cix = start.offset();
         String s = paragraphs.get(ix);
 
         // TODO insert new line, needs a different code path
@@ -103,11 +103,11 @@ public class EditablePlaintextModel extends StyledTextModel {
     protected void insertLineBreak(TextPos pos) {
         System.err.println("insertLineBreak pos=" + pos); // FIX
         // TODO clamp position here? or presume all is ok?
-        int ix = pos.lineIndex();
+        int ix = pos.index();
         if(ix >= getParagraphCount()) {
             paragraphs.add("");
         } else {
-            int cix = pos.getInsertionIndex();
+            int cix = pos.offset();
             String s = paragraphs.get(ix);
             if(cix >= s.length()) {
                 paragraphs.add(ix + 1, "");
@@ -130,31 +130,31 @@ public class EditablePlaintextModel extends StyledTextModel {
 
     private void removeRegion(TextPos start, TextPos end) {
         String s2;
-        int ix = start.lineIndex();
+        int ix = start.index();
         String text = paragraphs.get(ix);
 
-        if (ix == end.lineIndex()) {
+        if (ix == end.index()) {
             // TODO handle null text!
             int len = text.length();
-            if (end.charIndex() >= len) {
-                s2 = text.substring(0, start.charIndex());
+            if (end.offset() >= len) {
+                s2 = text.substring(0, start.offset());
             } else {
-                s2 = text.substring(0, start.charIndex()) + text.substring(end.charIndex());
+                s2 = text.substring(0, start.offset()) + text.substring(end.offset());
             }
             paragraphs.set(ix, s2);
         } else {
             // TODO check for document end here
-            s2 = text.substring(0, start.charIndex());
+            s2 = text.substring(0, start.offset());
             paragraphs.set(ix, s2);
 
-            int ct = end.lineIndex() - ix - 1;
+            int ct = end.index() - ix - 1;
             ix++;
             for (int i = 0; i < ct; i++) {
                 paragraphs.remove(ix);
             }
             ix++;
             text = paragraphs.get(ix);
-            s2 = text.substring(end.charIndex());
+            s2 = text.substring(end.offset());
             paragraphs.set(ix, s2);
         }
     }

@@ -352,10 +352,10 @@ public class VFlow extends Pane {
         }
 
         int topCellIndex = topCellIndex();
-        if (end.lineIndex() < topCellIndex) {
+        if (end.index() < topCellIndex) {
             // selection is above visible area
             return;
-        } else if (start.lineIndex() >= (topCellIndex + layout.getVisibleCellCount())) {
+        } else if (start.index() >= (topCellIndex + layout.getVisibleCellCount())) {
             // selection is below visible area
             return;
         }
@@ -364,16 +364,16 @@ public class VFlow extends Pane {
         // translated to this VFlow coordinates.
         PathElement[] top;
         PathElement[] bottom;
-        if (start.lineIndex() == end.lineIndex()) {
-            top = getRangeShape(start.lineIndex(), start.getInsertionIndex(), end.getInsertionIndex());
+        if (start.index() == end.index()) {
+            top = getRangeShape(start.index(), start.offset(), end.offset());
             bottom = null;
         } else {
-            top = getRangeShape(start.lineIndex(), start.getInsertionIndex(), -1);
+            top = getRangeShape(start.index(), start.offset(), -1);
             if (top == null) {
                 top = getRangeTop();
             }
 
-            bottom = getRangeShape(end.lineIndex(), 0, end.getInsertionIndex());
+            bottom = getRangeShape(end.index(), 0, end.offset());
             if (bottom == null) {
                 bottom = getRangeBottom();
             }
@@ -392,7 +392,7 @@ public class VFlow extends Pane {
     }
 
     protected void createCurrentLineHighlight(FxPathBuilder b, TextPos caret) {
-        int ix = caret.lineIndex();
+        int ix = caret.index();
         TextCell cell = layout.getVisibleCell(ix);
         if(cell != null) {
             if(control.isWrapText()) {
@@ -892,7 +892,7 @@ public class VFlow extends Pane {
             // and then block scroll to avoid scrolling past the document end, if needed
             TextPos p = control.getCaretPosition();
             if (p != null) {
-                int ix = p.lineIndex();
+                int ix = p.index();
                 Origin or = new Origin(ix, 0);
                 setOrigin(or);
                 checkForExcessiveWhitespaceAtTheEnd();

@@ -123,17 +123,17 @@ public class TextCellLayout {
             Insets pad = r.getPadding();
             double y = localY - cell.getY() - pad.getTop();
             if (y < 0) {
-                return new TextPos(cell.getLineIndex(), 0, true);
+                return new TextPos(cell.getLineIndex(), 0);
             } else if (y < cell.getComputedHeight()) {
                 // TODO move this to TextCell?
                 if (r instanceof TextFlow t) {
                     double x = localX - cell.getX() - pad.getLeft();
                     HitInfo h = t.hitTest(new Point2D(x, y));
                     if (h != null) {
-                        return new TextPos(cell.getLineIndex(), h.getCharIndex(), h.isLeading());
+                        return new TextPos(cell.getLineIndex(), h.getInsertionIndex());
                     }
                 } else {
-                    return new TextPos(cell.getLineIndex(), 0, true);
+                    return new TextPos(cell.getLineIndex(), 0);
                 }
             } else {
                 // TODO
@@ -143,9 +143,9 @@ public class TextCellLayout {
         Region r = cell.getContent();
         int cix = 0;
         if (r instanceof TextFlow f) {
-            cix = Math.max(0, NewAPI.getTextLength(f) - 1);
+            cix = NewAPI.getTextLength(f);
         }
-        return new TextPos(cell.getLineIndex(), cix, false);
+        return new TextPos(cell.getLineIndex(), cix);
     }
 
     /** returns the cell contained in this layout, or null */
@@ -182,11 +182,11 @@ public class TextCellLayout {
 
     public CaretInfo getCaretInfo(TextPos p) {
         if (p != null) {
-            int ix = p.lineIndex();
+            int ix = p.index();
             TextCell cell = getCell(ix);
             if (cell != null) {
-                int charIndex = p.charIndex();
-                boolean leading = p.leading();
+                int charIndex = p.offset();
+                boolean leading = true; // TODO verify
                 PathElement[] pe = cell.getCaretShape(charIndex, leading);
                 return translateCaretInfo(cell, pe);
             }

@@ -211,20 +211,19 @@ public abstract class StyledTextModel {
 
     private TextPos clamp(TextPos p) {
         int ct = getParagraphCount();
-        int ix = p.lineIndex();
+        int ix = p.index();
         if (ix < 0) {
             return TextPos.ZERO;
         } else if (ix < ct) {
             return p;
         } else {
             if (ct == 0) {
-                return new TextPos(0, 0, false);
+                return new TextPos(0, 0);
             } else {
                 ix = ct - 1;
                 String s = getPlainText(ix);
                 int len = (s == null) ? 0 : s.length();
-                int cix = Math.max(0, len - 1);
-                return new TextPos(ct - 1, cix, false);
+                return new TextPos(ct - 1, len);
             }
         }
     }

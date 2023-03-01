@@ -36,7 +36,6 @@ import goryachev.rich.impl.Markers;
  * TODO part of the model?  pass model to the constructor?
  */
 public class Marker implements Comparable<Marker> {
-    public static final Marker ZERO = new Marker(new TextPos(0, 0, true));
     private final ReadOnlyObjectWrapper<TextPos> pos;
     
     private Marker(TextPos pos) {
@@ -54,8 +53,7 @@ public class Marker implements Comparable<Marker> {
     public String toString() {
         return
             "Marker{index=" + getIndex() +
-            ", charIndex=" + getCharIndex() +
-            ", leading=" + isLeading() +
+            ", offset=" + getOffset() +
             "}";
     }
     
@@ -80,19 +78,11 @@ public class Marker implements Comparable<Marker> {
     }
 
     public int getIndex() {
-        return getTextPos().lineIndex();
+        return getTextPos().index();
     }
 
-    public int getCharIndex() {
-        return getTextPos().charIndex();
-    }
-
-    public boolean isLeading() {
-        return getTextPos().leading();
-    }
-
-    public int getInsertionIndex() {
-        return getTextPos().getInsertionIndex();
+    public int getOffset() {
+        return getTextPos().offset();
     }
 
     public void set(TextPos p) {

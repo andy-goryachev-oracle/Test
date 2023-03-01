@@ -29,24 +29,15 @@ package goryachev.rich;
  * Because it is immutable, it cannot track locations in the document which is being edited.
  * For that, use {@link Marker}. 
  */
-public record TextPos(int lineIndex, int charIndex, boolean leading) implements Comparable<TextPos> {
+public record TextPos(int index, int offset) implements Comparable<TextPos> {
 
-    public static final TextPos ZERO = new TextPos(0, 0, true);
-
-    public int getInsertionIndex() {
-        return leading ? charIndex : (charIndex + 1);
-    }
+    public static final TextPos ZERO = new TextPos(0, 0);
 
     @Override
     public int compareTo(TextPos p) {
-        int d = lineIndex - p.lineIndex;
+        int d = index - p.index;
         if (d == 0) {
-            d = getInsertionIndex() - p.getInsertionIndex();
-            if (d == 0) {
-                if (leading != p.leading) {
-                    return leading ? -1 : 1;
-                }
-            }
+            return offset() - p.offset();
         }
         return d;
     }

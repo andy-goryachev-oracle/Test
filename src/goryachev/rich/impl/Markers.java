@@ -72,9 +72,7 @@ public class Markers {
                 sb.append('{');
                 sb.append(m.getIndex());
                 sb.append(',');
-                sb.append(m.getCharIndex());
-                sb.append(',');
-                sb.append(m.isLeading() ? '⇤' : '⇥');
+                sb.append(m.getOffset());
                 sb.append('}');
             }
         }
@@ -94,24 +92,24 @@ public class Markers {
                     // unchanged
                 } else if(pos.compareTo(end) > 0) {
                     // shift
-                    int ix = pos.lineIndex();
-                    int cix = pos.getInsertionIndex();
+                    int ix = pos.index();
+                    int off = pos.offset();
                     int delta;
 
                     // TODO bug?
-                    if(ix == end.lineIndex()) {
-                        delta = charsBottom - (end.getInsertionIndex() - start.getInsertionIndex());
-                        cix += delta;
+                    if(ix == end.index()) {
+                        delta = charsBottom - (end.offset() - start.offset());
+                        off += delta;
                     }
-                    delta = linesAdded - (end.lineIndex() - start.lineIndex());
+                    delta = linesAdded - (end.index() - start.index());
                     ix += delta;
                     
-                    TextPos p = new TextPos(ix, cix, true);
+                    TextPos p = new TextPos(ix, off);
                     m.set(p);
                     System.out.println("  shift from " + pos + " -> " + p);  
                 } else {
                     // move to start
-                    TextPos p = new TextPos(start.lineIndex(), start.getInsertionIndex(), true);
+                    TextPos p = new TextPos(start.index(), start.offset());
                     System.out.println("  move to start " + pos + " -> " + p);  
                     m.set(p);
                 }

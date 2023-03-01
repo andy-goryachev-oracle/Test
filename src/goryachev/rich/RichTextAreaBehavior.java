@@ -247,7 +247,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             m.replace(an, ca, character);
 
             TextPos p = TextPos.min(an, ca);
-            TextPos p2 = new TextPos(p.lineIndex(), p.charIndex() + character.length(), p.leading());
+            TextPos p2 = new TextPos(p.index(), p.offset() + character.length());
             control.moveCaret(p2, false);
             clearPhantomX();
         }
@@ -267,7 +267,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         if(pos != null) {
             m.insertLineBreak(pos);
             
-            TextPos p2 = new TextPos(pos.lineIndex() + 1, 0, true);
+            TextPos p2 = new TextPos(pos.index() + 1, 0);
             control.moveCaret(p2, false);
             clearPhantomX();
         }
@@ -427,7 +427,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     public void moveHome() {
         TextPos p = control.getCaretPosition();
         if (p != null) {
-            TextPos p2 = new TextPos(p.lineIndex(), 0, true);
+            TextPos p2 = new TextPos(p.index(), 0);
             control.moveCaret(p2, false);
             clearPhantomX();
         }
@@ -436,9 +436,9 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     public void moveEnd() {
         TextPos p = control.getCaretPosition();
         if (p != null) {
-            String s = getPlainText(p.lineIndex());
+            String s = getPlainText(p.index());
             int len = (s == null ? 0 : s.length());
-            TextPos p2 = new TextPos(p.lineIndex(), len, false);
+            TextPos p2 = new TextPos(p.index(), len);
             control.moveCaret(p2, false);
             clearPhantomX();
         }
@@ -476,7 +476,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             --line;
             String text = getPlainText(line);
             int cix = (text == null) ? 0 : text.length();
-            return new TextPos(line, cix, false);
+            return new TextPos(line, cix);
         }
         return null;
     }
@@ -513,8 +513,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             moveRight = !moveRight;
         }
 
-        TextCell cell = vflow().getCell(caret.lineIndex());
-        int cix = caret.getInsertionIndex();
+        TextCell cell = vflow().getCell(caret.index());
+        int cix = caret.offset();
         if (moveRight) {
             cix++;
             if (cix > cell.getTextLength()) {
@@ -522,22 +522,22 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                 TextPos pos;
                 if (line < vflow().lineCount()) {
                     // next line
-                    pos = new TextPos(line, 0, true);
+                    pos = new TextPos(line, 0);
                 } else {
                     // end of last paragraph w/o newline
-                    pos = new TextPos(cell.getLineIndex(), cell.getTextLength(), true);
+                    pos = new TextPos(cell.getLineIndex(), cell.getTextLength());
                 }
                 control.moveCaret(pos, extendSelection);
                 return;
             }
         } else {
-            if (caret.getInsertionIndex() == 0) {
+            if (caret.offset() == 0) {
                 int line = cell.getLineIndex() - 1;
                 if (line >= 0) {
                     // prev line
                     TextCell prevCell = vflow().getCell(line);
-                    cix = Math.max(0, prevCell.getTextLength() - 1);
-                    TextPos pos = new TextPos(line, cix, false);
+                    cix = prevCell.getTextLength();
+                    TextPos pos = new TextPos(line, cix);
                     control.moveCaret(pos, extendSelection);
                 }
                 return;
@@ -548,14 +548,14 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         BreakIterator br = BreakIterator.getCharacterInstance();
         String text = getPlainText(cell.getLineIndex());
         br.setText(text);
-        int off = caret.getInsertionIndex();
+        int off = caret.offset();
         int ix = moveRight ? br.following(off) : br.preceding(off);
         if (ix == BreakIterator.DONE) {
             System.err.println(" --- SHOULD NOT HAPPEN: BreakIterator.DONE off=" + off); // FIX
             return;
         }
 
-        TextPos pos = new TextPos(caret.lineIndex(), ix, true);
+        TextPos pos = new TextPos(caret.index(), ix);
         control.moveCaret(pos, extendSelection);
         return;
     }
@@ -596,8 +596,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                 // TODO create a method (getLastTextPos)
                 // TODO add a special END_OF_DOCUMENT marker?
                 String text = m.getPlainText(ix);
-                int cix = (text == null ? 0 : Math.max(0, text.length() - 1));
-                TextPos end = new TextPos(ix, cix, false);
+                int cix = text.length();
+                TextPos end = new TextPos(ix, cix);
                 control.select(TextPos.ZERO, end);
                 clearPhantomX();
             }
@@ -624,9 +624,9 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     public void selectLine() {
         TextPos p = control.getCaretPosition();
         if(p != null) {
-            int ix = p.lineIndex();
-            TextPos an = new TextPos(ix, 0, true);
-            TextPos ca = new TextPos(ix + 1, 0, true);
+            int ix = p.index();
+            TextPos an = new TextPos(ix, 0);
+            TextPos ca = new TextPos(ix + 1, 0);
             control.select(an, ca);
         }
     }
