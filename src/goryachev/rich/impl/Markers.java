@@ -55,4 +55,37 @@ public class Markers {
 
         return m;
     }
+
+    public void update(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
+        for (int i = markers.size() - 1; i >= 0; --i) {
+            Marker m = markers.get(i);
+            if(m == null) {
+                markers.remove(i);
+            } else {
+                TextPos pos = m.getTextPos();
+                if(pos.compareTo(start) <= 0) {
+                    // unchanged
+                } else if(pos.compareTo(end) > 0) {
+                    // shift
+                    int ix = pos.lineIndex();
+                    int cix = pos.getInsertionIndex();
+                    int delta;
+
+                    if(ix == end.lineIndex()) {
+                        delta = charsBottom - (end.getInsertionIndex() - start.getInsertionIndex());
+                        cix += delta;
+                    }
+                    delta = linesAdded - (end.lineIndex() - start.lineIndex());
+                    ix += delta;
+                    
+                    TextPos p = new TextPos(ix, cix, true);
+                    m.set(p);
+                } else {
+                    // move to start
+                    TextPos p = new TextPos(start.lineIndex(), start.getInsertionIndex(), true);
+                    m.set(p);
+                }
+            }
+        }
+    }
 }

@@ -26,7 +26,6 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
-import java.io.Reader;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Set;
@@ -39,7 +38,7 @@ import goryachev.rich.impl.Markers;
  * The text is considered to be a collection of paragraphs, represented by {@link StyledParagraph} class.
  * 
  * TODO events
- * TODO editing
+ * TODO printing
  */
 public abstract class StyledTextModel {
     public interface ChangeListener {
@@ -196,11 +195,8 @@ public abstract class StyledTextModel {
         // entails a lot of non-trivial string processing
     }
     
-    // TODO printing
-    
-    // TODO update markers
-    
     protected void fireChangeEvent(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
+        markers.update(start, end, charsTop, linesAdded, charsBottom);
         for (ChangeListener li : listeners) {
             li.eventTextUpdated(start, end, charsTop, linesAdded, charsBottom);
         }

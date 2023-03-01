@@ -30,19 +30,20 @@ package goryachev.rich;
  * For that, use {@link Marker}. 
  */
 public record TextPos(int lineIndex, int charIndex, boolean leading) implements Comparable<TextPos> {
+
     public static final TextPos ZERO = new TextPos(0, 0, true);
 
     public int getInsertionIndex() {
         return leading ? charIndex : (charIndex + 1);
     }
-    
+
     @Override
     public int compareTo(TextPos p) {
         int d = lineIndex - p.lineIndex;
-        if(d == 0) {
+        if (d == 0) {
             d = getInsertionIndex() - p.getInsertionIndex();
-            if(d == 0) {
-                if(leading != p.leading) {
+            if (d == 0) {
+                if (leading != p.leading) {
                     return leading ? -1 : 1;
                 }
             }

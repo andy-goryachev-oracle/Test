@@ -28,7 +28,6 @@ package goryachev.rich;
 
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
-
 import goryachev.rich.impl.Markers;
 
 /**
@@ -38,7 +37,6 @@ import goryachev.rich.impl.Markers;
  */
 public class Marker implements Comparable<Marker> {
     public static final Marker ZERO = new Marker(new TextPos(0, 0, true));
-    // TODO a special DOCUMENT_END marker
     private final ReadOnlyObjectWrapper<TextPos> pos;
     
     private Marker(TextPos pos) {
@@ -55,7 +53,7 @@ public class Marker implements Comparable<Marker> {
     
     public String toString() {
         return
-            "Marker{index=" + getLineIndex() +
+            "Marker{index=" + getIndex() +
             ", charIndex=" + getCharIndex() +
             ", leading=" + isLeading() +
             "}";
@@ -80,20 +78,24 @@ public class Marker implements Comparable<Marker> {
     public TextPos getTextPos() {
         return pos.get();
     }
-    
-    public int getLineIndex() {
+
+    public int getIndex() {
         return getTextPos().lineIndex();
     }
-    
+
     public int getCharIndex() {
         return getTextPos().charIndex();
     }
-    
+
     public boolean isLeading() {
         return getTextPos().leading();
     }
-    
-    public int getLineOffset() {
+
+    public int getInsertionIndex() {
         return getTextPos().getInsertionIndex();
+    }
+
+    public void set(TextPos p) {
+        pos.set(p);
     }
 }
