@@ -514,20 +514,24 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         }
 
         TextCell cell = vflow().getCell(caret.lineIndex());
-        int cix = caret.charIndex();
+        int cix = caret.getInsertionIndex();
         if (moveRight) {
             cix++;
-            if (cix >= cell.getTextLength()) {
+            if (cix > cell.getTextLength()) {
                 int line = cell.getLineIndex() + 1;
+                TextPos pos;
                 if (line < vflow().lineCount()) {
                     // next line
-                    TextPos pos = new TextPos(line, 0, true);
-                    control.moveCaret(pos, extendSelection);
+                    pos = new TextPos(line, 0, true);
+                } else {
+                    // end of last paragraph w/o newline
+                    pos = new TextPos(cell.getLineIndex(), cell.getTextLength(), true);
                 }
+                control.moveCaret(pos, extendSelection);
                 return;
             }
         } else {
-            if (caret.charIndex() == 0) {
+            if (caret.getInsertionIndex() == 0) {
                 int line = cell.getLineIndex() - 1;
                 if (line >= 0) {
                     // prev line
@@ -544,14 +548,14 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         BreakIterator br = BreakIterator.getCharacterInstance();
         String text = getPlainText(cell.getLineIndex());
         br.setText(text);
-        int off = caret.charIndex();
+        int off = caret.getInsertionIndex();
         int ix = moveRight ? br.following(off) : br.preceding(off);
         if (ix == BreakIterator.DONE) {
             System.err.println(" --- SHOULD NOT HAPPEN: BreakIterator.DONE off=" + off); // FIX
             return;
         }
 
-        TextPos pos = new TextPos(caret.lineIndex(), ix, caret.leading());
+        TextPos pos = new TextPos(caret.lineIndex(), ix, true);
         control.moveCaret(pos, extendSelection);
         return;
     }
