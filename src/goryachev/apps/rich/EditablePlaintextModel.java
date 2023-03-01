@@ -75,14 +75,69 @@ public class EditablePlaintextModel extends StyledTextModel {
             }
         };
     }
-    
+
     @Override
     public void replace(TextPos start, TextPos end, String text) {
         // TODO
         System.err.println("replace start=" + start + " end=" + end + " text=[" + text + "]");
-        
+
         // update paragraphs
         // update markers
         // fire event
+        int len = text.length();
+
+        removeRegion(start, end);
+
+        int ix = start.lineIndex();
+        int cix = start.getInsertionIndex();
+        String s = paragraphs.get(ix);
+
+        // TODO insert new line, needs a different code path
+
+        String s2 = insertText(s, cix, text);
+        paragraphs.set(ix, s2);
+
+        fireChangeEvent(start, end, len, 0, 0);
+    }
+
+    private static String insertText(String text, int index, String toInsert) {
+        // TODO handle null text!
+        if (index >= text.length()) {
+            return text + toInsert;
+        } else {
+            return text.substring(0, index) + toInsert + text.substring(index);
+        }
+    }
+
+    // TODO this might be public
+    private void removeRegion(TextPos start, TextPos end) {
+        String s2;
+        int ix = start.lineIndex();
+        String text = paragraphs.get(ix);
+
+        if (ix == end.lineIndex()) {
+            // TODO handle null text!
+            int len = text.length();
+            if (end.charIndex() >= len) {
+                s2 = text.substring(0, start.charIndex());
+            } else {
+                s2 = text.substring(0, start.charIndex()) + text.substring(end.charIndex());
+            }
+            paragraphs.set(ix, s2);
+        } else {
+            // TODO check for document end here
+            s2 = text.substring(0, start.charIndex());
+            paragraphs.set(ix, s2);
+
+            int ct = end.lineIndex() - ix - 1;
+            ix++;
+            for (int i = 0; i < ct; i++) {
+                paragraphs.remove(ix);
+            }
+            ix++;
+            text = paragraphs.get(ix);
+            s2 = text.substring(end.charIndex());
+            paragraphs.set(ix, s2);
+        }
     }
 }

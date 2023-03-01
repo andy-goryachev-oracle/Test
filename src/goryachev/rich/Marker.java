@@ -94,6 +94,6 @@ public class Marker implements Comparable<Marker> {
     }
     
     public int getLineOffset() {
-        return getTextPos().getLineOffset();
+        return getTextPos().getInsertionIndex();
     }
 }

@@ -32,7 +32,7 @@ package goryachev.rich;
 public record TextPos(int lineIndex, int charIndex, boolean leading) implements Comparable<TextPos> {
     public static final TextPos ZERO = new TextPos(0, 0, true);
 
-    public int getLineOffset() {
+    public int getInsertionIndex() {
         return leading ? charIndex : (charIndex + 1);
     }
     
@@ -40,7 +40,7 @@ public record TextPos(int lineIndex, int charIndex, boolean leading) implements 
     public int compareTo(TextPos p) {
         int d = lineIndex - p.lineIndex;
         if(d == 0) {
-            d = getLineOffset() - p.getLineOffset();
+            d = getInsertionIndex() - p.getInsertionIndex();
             if(d == 0) {
                 if(leading != p.leading) {
                     return leading ? -1 : 1;
@@ -48,5 +48,14 @@ public record TextPos(int lineIndex, int charIndex, boolean leading) implements 
             }
         }
         return d;
+    }
+
+    public static TextPos min(TextPos a, TextPos b) {
+        int cmp = a.compareTo(b);
+        if (cmp <= 0) {
+            return a;
+        } else {
+            return b;
+        }
     }
 }

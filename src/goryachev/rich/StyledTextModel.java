@@ -179,6 +179,7 @@ public abstract class StyledTextModel {
         // TODO input: typed text; clipboard
         // TODO replace with sequence: remove range + insert(text, directStyle, css[])
         // TODO must work with multi-line text (separated by cr/crlf/lf)
+        // TODO make sure start < pos
     }
     
     public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {

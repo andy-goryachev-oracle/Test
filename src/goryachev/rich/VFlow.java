@@ -365,15 +365,15 @@ public class VFlow extends Pane {
         PathElement[] top;
         PathElement[] bottom;
         if (start.lineIndex() == end.lineIndex()) {
-            top = getRangeShape(start.lineIndex(), start.getLineOffset(), end.getLineOffset());
+            top = getRangeShape(start.lineIndex(), start.getInsertionIndex(), end.getInsertionIndex());
             bottom = null;
         } else {
-            top = getRangeShape(start.lineIndex(), start.getLineOffset(), -1);
+            top = getRangeShape(start.lineIndex(), start.getInsertionIndex(), -1);
             if (top == null) {
                 top = getRangeTop();
             }
 
-            bottom = getRangeShape(end.lineIndex(), 0, end.getLineOffset());
+            bottom = getRangeShape(end.lineIndex(), 0, end.getInsertionIndex());
             if (bottom == null) {
                 bottom = getRangeBottom();
             }
@@ -829,7 +829,8 @@ public class VFlow extends Pane {
     
     private void layoutNodes() {
         boolean wrap = control.isWrapText();
-        double w = wrap ? getWidth() : rightEdge(); // TODO padding
+        double hack = 20; // will this avoid wrapping when changing models? no, but helps when typing
+        double w = wrap ? getWidth() : (rightEdge() + hack); // TODO padding
 
         int sz = layout.getVisibleCellCount();
         for (int i=0; i < sz; i++) {
@@ -916,10 +917,15 @@ public class VFlow extends Pane {
     public void updateTabSize() {
         CaretInfo c = getCaretInfo();
         recomputeLayout();
-        
-        // TODO no other way but to set style to individual TextFlow instances in the layout
-        // TODO remember caret line position, do layout pass, block move to preserve the caret position
-        //int tabSize = control.getTabSize();
-//        FX.setStyle(this, "-fx-tab-size", String.valueOf(tabSize));
+        // TODO remember caret line position, do layout pass, block move to preserve the caret y position
+        // as it might shift (only if wrapping is enabled)
+        // also if wrap is off, might need a horizontal block scroll to keep caret in the same x position
+    }
+
+    public void handleTextUpdated(TextPos start, TextPos end, int addedTop, int linesAdded, int addedBottom) {
+        // TODO clear cache >= start, update layout
+        cache.clear();
+        // TODO rebuild from start.lineIndex()
+        recomputeLayout();
     }
 }

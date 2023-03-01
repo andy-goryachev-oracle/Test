@@ -220,6 +220,10 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                 an = ca;
             }
             m.replace(an, ca, character);
+
+            TextPos p = TextPos.min(an, ca);
+            TextPos p2 = new TextPos(p.lineIndex(), p.charIndex() + character.length(), p.leading());
+            control.moveCaret(p2, false);
         }
     }
 
@@ -578,6 +582,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     protected void handleTextUpdated(TextPos start, TextPos end, int addedTop, int linesAdded, int addedBottom) {
-        // TODO vflow(): clear cache >= start, update layout
+        vflow().handleTextUpdated(start, end, addedTop, linesAdded, addedBottom);
     }
 }

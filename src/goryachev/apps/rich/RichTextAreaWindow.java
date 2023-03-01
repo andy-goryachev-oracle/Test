@@ -86,6 +86,7 @@ public class RichTextAreaWindow extends Stage {
         if (p != null) {
             sb.append(" line=").append(p.lineIndex());
             sb.append(" char=").append(p.charIndex());
+            sb.append(p.leading() ? " leading" : " trailing");
         }
 
         status.setText(sb.toString());
