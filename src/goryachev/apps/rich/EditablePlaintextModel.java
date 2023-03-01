@@ -128,7 +128,6 @@ public class EditablePlaintextModel extends StyledTextModel {
         }
     }
 
-    // TODO this might be public
     private void removeRegion(TextPos start, TextPos end) {
         String s2;
         int ix = start.lineIndex();

@@ -56,6 +56,33 @@ public class Markers {
         return m;
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        boolean sep = false;
+        int sz = markers.size();
+        for (int i = 0; i < sz; i++) {
+            Marker m = markers.get(i);
+            if (m != null) {
+                if (sep) {
+                    sb.append(',');
+                } else {
+                    sep = true;
+                }
+                sb.append('{');
+                sb.append(m.getIndex());
+                sb.append(',');
+                sb.append(m.getCharIndex());
+                sb.append(',');
+                sb.append(m.isLeading() ? '⇤' : '⇥');
+                sb.append('}');
+            }
+        }
+        sb.append(']');
+        return sb.toString();
+    }
+
+    // TODO does not work correctly
     public void update(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
         for (int i = markers.size() - 1; i >= 0; --i) {
             Marker m = markers.get(i);
@@ -71,6 +98,7 @@ public class Markers {
                     int cix = pos.getInsertionIndex();
                     int delta;
 
+                    // TODO bug?
                     if(ix == end.lineIndex()) {
                         delta = charsBottom - (end.getInsertionIndex() - start.getInsertionIndex());
                         cix += delta;
@@ -80,9 +108,11 @@ public class Markers {
                     
                     TextPos p = new TextPos(ix, cix, true);
                     m.set(p);
+                    System.out.println("  shift from " + pos + " -> " + p);  
                 } else {
                     // move to start
                     TextPos p = new TextPos(start.lineIndex(), start.getInsertionIndex(), true);
+                    System.out.println("  move to start " + pos + " -> " + p);  
                     m.set(p);
                 }
             }
