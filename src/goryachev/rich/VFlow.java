@@ -305,6 +305,8 @@ public class VFlow extends Pane {
             anchor = caret;
         }
         
+        System.out.println("updateCaretAndSelection ca=" + caret + " an=" + anchor); // FIX
+        
         // current line highlight
         if (control.isHighlightCurrentLine()) {
             FxPathBuilder caretLineBuilder = new FxPathBuilder();

@@ -99,4 +99,8 @@ public class SelectionSegment implements Cloneable {
     public Marker getMax() {
         return max;
     }
+    
+    public String toString() {
+        return "SelectionSegment{" + min + ", " + max + ", caretAtMin=" + caretAtMin + "}";
+    }
 }

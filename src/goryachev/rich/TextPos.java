@@ -50,4 +50,8 @@ public record TextPos(int index, int offset) implements Comparable<TextPos> {
             return b;
         }
     }
+    
+    public String toString() {
+        return "TextPos{" + index + "," + offset + "}";
+    }
 }

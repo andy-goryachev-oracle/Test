@@ -71,6 +71,7 @@ public class EditablePlaintextModel extends StyledTextModel {
             public TextCell createTextCell() {
                 String text = getPlainText();
                 TextFlow f = new TextFlow(new Text(text));
+                f.setStyle("-fx-font-size:200%;");
                 return new TextCell(index, f);
             }
         };

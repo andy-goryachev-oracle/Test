@@ -43,20 +43,17 @@ public class Marker implements Comparable<Marker> {
     }
     
     public static Marker create(Markers owner, TextPos pos) {
-        if(owner == null) {
+        if (owner == null) {
             throw new IllegalArgumentException("must specify the owner");
         }
-        
+
         return new Marker(pos);
     }
-    
+
     public String toString() {
-        return
-            "Marker{index=" + getIndex() +
-            ", offset=" + getOffset() +
-            "}";
+        return "Marker{" + getIndex() + "," + getOffset() + "}";
     }
-    
+
     public ReadOnlyObjectProperty<TextPos> textPosProperty() {
         return pos.getReadOnlyProperty();
     }
@@ -85,7 +82,9 @@ public class Marker implements Comparable<Marker> {
         return getTextPos().offset();
     }
 
+    // TODO should not be public, must use accessor
     public void set(TextPos p) {
+        System.out.println("Marker.set " + p); // FIX
         pos.set(p);
     }
 }
