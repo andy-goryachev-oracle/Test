@@ -79,6 +79,12 @@ public class EditablePlaintextModel extends StyledTextModel {
     @Override
     public void replace(TextPos start, TextPos end, String text) {
         System.err.println("replace start=" + start + " end=" + end + " text=[" + text + "]"); // FIX
+        
+        if(start.compareTo(end) > 0) {
+            TextPos p = start;
+            start = end;
+            end = p;
+        }
 
         // update paragraphs
         // update markers
@@ -128,24 +134,24 @@ public class EditablePlaintextModel extends StyledTextModel {
         }
     }
 
+    // 'start' must be before 'end'
     private void removeRegion(TextPos start, TextPos end) {
-        String s2;
         int ix = start.index();
         String text = paragraphs.get(ix);
+        String newText;
 
         if (ix == end.index()) {
-            // TODO handle null text!
             int len = text.length();
             if (end.offset() >= len) {
-                s2 = text.substring(0, start.offset());
+                newText = text.substring(0, start.offset());
             } else {
-                s2 = text.substring(0, start.offset()) + text.substring(end.offset());
+                newText = text.substring(0, start.offset()) + text.substring(end.offset());
             }
-            paragraphs.set(ix, s2);
+            paragraphs.set(ix, newText);
         } else {
             // TODO check for document end here
-            s2 = text.substring(0, start.offset());
-            paragraphs.set(ix, s2);
+            newText = text.substring(0, start.offset());
+            paragraphs.set(ix, newText);
 
             int ct = end.index() - ix - 1;
             ix++;
@@ -154,8 +160,8 @@ public class EditablePlaintextModel extends StyledTextModel {
             }
             ix++;
             text = paragraphs.get(ix);
-            s2 = text.substring(end.offset());
-            paragraphs.set(ix, s2);
+            newText = text.substring(end.offset());
+            paragraphs.set(ix, newText);
         }
     }
 }
