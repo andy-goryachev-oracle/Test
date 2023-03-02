@@ -86,8 +86,8 @@ public class VFlow extends Pane {
     private boolean handleScrollEvents = true;
     private boolean vsbPressed;
     // TODO replace with ListenerHelper
-    InvalidationListener modelIL;
-    InvalidationListener wrapIL;
+    InvalidationListener modelLi;
+    InvalidationListener wrapLi;
 
     public VFlow(RichTextAreaSkin skin, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = skin.getSkinnable();
@@ -122,6 +122,7 @@ public class VFlow extends Pane {
         caretAnimation = new Timeline();
         caretAnimation.setCycleCount(Animation.INDEFINITE);
 
+        // TODO should this be explicitly uninstalled?
         caretPath.visibleProperty().bind(new BooleanBinding() {
             {
                 bind(
@@ -142,9 +143,9 @@ public class VFlow extends Pane {
                     (!control.isDisabled());
             }
         });
-        
-        control.modelProperty().addListener(modelIL = (p) -> updateModel());
-        control.wrapTextProperty().addListener(wrapIL = (p) -> updateWrap());
+
+        control.modelProperty().addListener(modelLi = (p) -> updateModel());
+        control.wrapTextProperty().addListener(wrapLi = (p) -> updateWrap());
         widthProperty().addListener((p) -> updateWidth());
         heightProperty().addListener((p) -> updateHeight());
         
@@ -166,8 +167,8 @@ public class VFlow extends Pane {
     }
     
     public void dispose() {
-        control.wrapTextProperty().removeListener(wrapIL);
-        control.modelProperty().removeListener(modelIL);
+        control.wrapTextProperty().removeListener(wrapLi);
+        control.modelProperty().removeListener(modelLi);
     }
     
     public void updateModel() {
@@ -189,7 +190,6 @@ public class VFlow extends Pane {
     protected void recomputeLayout() {
         invalidateLayout();
         layoutChildren();
-        updateCaretAndSelection();
     }
     
     public void updateWrap() {
@@ -284,6 +284,7 @@ public class VFlow extends Pane {
     }
     
     public void handleSelectionChange() {
+        System.out.println("handleSelectionChange"); // FIX
         updateCaretAndSelection();
         scrollCaretToVisible();
     }

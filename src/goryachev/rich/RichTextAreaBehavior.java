@@ -191,7 +191,9 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         
         String character = getValidKeyTyped(ev);
         if (character != null) {
+            vflow().setSuppressBlink(true);
             handleKeyTyped(character);
+            vflow().setSuppressBlink(false);
             ev.consume();
         }
     }

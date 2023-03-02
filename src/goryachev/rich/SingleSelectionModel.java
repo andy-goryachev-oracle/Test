@@ -81,7 +81,7 @@ public class SingleSelectionModel implements SelectionModel {
     }
 
     private void setSelectionSegment(SelectionSegment seg) {
-        System.err.println("setSelection " + seg); // FIX
+        System.out.println("setSelectionSegment " + seg); // FIX
 
         Marker m = anchor();
         if (m != null) {

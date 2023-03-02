@@ -60,29 +60,6 @@ public class SelectionSegment implements Cloneable {
             this.caretAtMin = true;
         }
     }
-
-    @Override
-    public int hashCode() {
-        int h = SelectionSegment.class.hashCode();
-        h = h * 31 + min.hashCode();
-        h = h * 31 + max.hashCode();
-        h = h * 31 + Boolean.hashCode(caretAtMin);
-        return h;
-    }
-    
-    @Override
-    public boolean equals(Object x) {
-        if(x == this) {
-            return true;
-        } else if(x instanceof SelectionSegment s) {
-            return
-                (caretAtMin == s.caretAtMin) &&
-                min.equals(s.min) &&
-                max.equals(s.max);
-        } else {
-            return false;
-        }
-    }
     
     public Marker getAnchor() {
         return caretAtMin ? max : min;

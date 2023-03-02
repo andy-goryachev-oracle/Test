@@ -179,7 +179,7 @@ public abstract class StyledTextModel {
         // TODO make sure start < pos
     }
     
-    protected void insertLineBreak(TextPos pos) {
+    public void insertLineBreak(TextPos pos) {
         // no-op in read only model
     }
     

@@ -79,7 +79,7 @@ public class EditablePlaintextModel extends StyledTextModel {
 
     @Override
     public void replace(TextPos start, TextPos end, String text) {
-        System.err.println("replace start=" + start + " end=" + end + " text=[" + text + "]"); // FIX
+        System.out.println("replace start=" + start + " end=" + end + " text=[" + text + "]"); // FIX
         
         if(start.compareTo(end) > 0) {
             TextPos p = start;
@@ -107,7 +107,7 @@ public class EditablePlaintextModel extends StyledTextModel {
     }
     
     @Override
-    protected void insertLineBreak(TextPos pos) {
+    public void insertLineBreak(TextPos pos) {
         System.err.println("insertLineBreak pos=" + pos); // FIX
         // TODO clamp position here? or presume all is ok?
         int ix = pos.index();
