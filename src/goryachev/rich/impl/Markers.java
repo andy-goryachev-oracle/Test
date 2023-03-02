@@ -26,94 +26,123 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich.impl;
 
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import goryachev.rich.Marker;
 import goryachev.rich.TextPos;
-import goryachev.rich.util.WeakList;
 
 /**
  * Manages Markers.
  */
 public class Markers {
-    private static final int LIMIT_MARKER_COUNT_SAFEGUARD = 1_000_000;
-    private final WeakList<Marker> markers;
+    private HashMap<TextPos,List<WeakReference<Marker>>> markers;
 
-    public Markers(int size) {
-        markers = new WeakList<>(size);
+    public Markers() {
+        markers = new HashMap<>();
     }
 
-    public Marker newMarker(TextPos p) {
-        Marker m = Marker.create(this, p);
-        markers.add(m);
-
-        // safeguard
-        if (markers.size() > LIMIT_MARKER_COUNT_SAFEGUARD) {
-            markers.gc();
-            if (markers.size() > LIMIT_MARKER_COUNT_SAFEGUARD) {
-                throw new RuntimeException("too many markers");
+    public Marker newMarker(TextPos pos) {
+        List<WeakReference<Marker>> refs = markers.get(pos);
+        if (refs != null) {
+            for (int i = refs.size() - 1; i >= 0; --i) {
+                WeakReference<Marker> ref = refs.get(i);
+                Marker m = ref.get();
+                if (m == null) {
+                    refs.remove(i);
+                } else {
+                    return m;
+                }
             }
         }
 
+        Marker m = Marker.create(this, pos);
+        if (refs == null) {
+            refs = new ArrayList<>(2);
+        }
+        refs.add(new WeakReference<>(m));
+        markers.put(pos, refs);
         return m;
     }
 
     public String toString() {
+        ArrayList<TextPos> list = new ArrayList<>(markers.keySet());
+        Collections.sort(list);
+        
         StringBuilder sb = new StringBuilder();
         sb.append('[');
         boolean sep = false;
-        int sz = markers.size();
+        int sz = list.size();
         for (int i = 0; i < sz; i++) {
-            Marker m = markers.get(i);
-            if (m != null) {
-                if (sep) {
-                    sb.append(',');
-                } else {
-                    sep = true;
-                }
-                sb.append('{');
-                sb.append(m.getIndex());
+            TextPos p = list.get(i);
+            if (sep) {
                 sb.append(',');
-                sb.append(m.getOffset());
-                sb.append('}');
+            } else {
+                sep = true;
             }
+            sb.append('{');
+            sb.append(p.index());
+            sb.append(',');
+            sb.append(p.offset());
+            sb.append('}');
         }
         sb.append(']');
         return sb.toString();
     }
 
-    // TODO does not work correctly
     public void update(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
-        for (int i = markers.size() - 1; i >= 0; --i) {
-            Marker m = markers.get(i);
-            if(m == null) {
-                markers.remove(i);
-            } else {
-                TextPos pos = m.getTextPos();
-                if(pos.compareTo(start) <= 0) {
-                    // unchanged
-                } else if(pos.compareTo(end) > 0) {
-                    // shift
-                    int ix = pos.index();
-                    int off = pos.offset();
-                    int delta;
+        HashMap<TextPos, List<WeakReference<Marker>>> m2 = new HashMap<>(markers.size());
 
-                    // TODO bug?
-                    if(ix == end.index()) {
-                        delta = charsBottom - (end.offset() - start.offset());
-                        off += delta;
+        for (TextPos pos : markers.keySet()) {
+            List<WeakReference<Marker>> refs = markers.get(pos);
+            TextPos p;
+            if (pos.compareTo(start) < 0) {
+                // unchanged
+                p = pos;
+            } else if (pos.compareTo(end) < 0) {
+                // section removed, move marker to start
+                p = start;
+                System.out.println("  move to start " + pos + " -> " + p);
+            } else {
+                // shift
+                int ix = pos.index();
+                int off;
+                if (ix == end.index()) {
+                    if (start.index() == end.index()) {
+                        // all on the same line
+                        off = pos.offset() - (end.offset() - start.offset()) + charsTop + charsBottom;
+                    } else {
+                        off = pos.offset() - end.offset() + charsBottom;
                     }
-                    delta = linesAdded - (end.index() - start.index());
-                    ix += delta;
-                    
-                    TextPos p = new TextPos(ix, off);
-                    m.set(p);
-                    System.out.println("  shift from " + pos + " -> " + p);  
                 } else {
-                    // move to start
-                    TextPos p = new TextPos(start.index(), start.offset());
-                    System.out.println("  move to start " + pos + " -> " + p);  
+                    // edit happened earlier, offset is unchanged
+                    off = pos.offset();
+                }
+
+                ix += linesAdded - (end.index() - start.index());
+
+                p = new TextPos(ix, off);
+                System.out.println("  shift from " + pos + " -> " + p);
+            }
+
+            // update markers with the new position, removing gc'ed
+            for (int i = refs.size() - 1; i >= 0; i--) {
+                Marker m = refs.get(i).get();
+                if (m == null) {
+                    refs.remove(i);
+                } else {
                     m.set(p);
                 }
             }
+
+            if (refs.size() > 0) {
+                m2.put(p, refs);
+            }
         }
+
+        markers = m2;
     }
 }

@@ -77,7 +77,7 @@ public abstract class StyledTextModel {
     private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
     private final HashMap<DataFormat,ImportHandler> importHandlers = new HashMap<>(4);
     private final HashMap<DataFormat,ExportHandler> exportHandlers = new HashMap<>(4);
-    private final Markers markers = new Markers(32);
+    private final Markers markers = new Markers();
     // TODO special BEGIN/END markers? especially END?
 
     public StyledTextModel() {
