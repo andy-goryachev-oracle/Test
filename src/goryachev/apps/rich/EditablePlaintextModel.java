@@ -150,19 +150,14 @@ public class EditablePlaintextModel extends StyledTextModel {
             }
             paragraphs.set(ix, newText);
         } else {
-            // TODO check for document end here
-            newText = text.substring(0, start.offset());
+            newText = text.substring(0, start.offset()) + paragraphs.get(end.index()).substring(end.offset());
             paragraphs.set(ix, newText);
 
-            int ct = end.index() - ix - 1;
+            int ct = end.index() - ix;
             ix++;
             for (int i = 0; i < ct; i++) {
                 paragraphs.remove(ix);
             }
-            ix++;
-            text = paragraphs.get(ix);
-            newText = text.substring(end.offset());
-            paragraphs.set(ix, newText);
         }
     }
 }

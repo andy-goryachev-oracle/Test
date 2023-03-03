@@ -94,6 +94,12 @@ public class Markers {
     }
 
     public void update(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
+        if(start.compareTo(end) > 0) {
+            TextPos p = start;
+            start = end;
+            end = p;
+        }
+        
         HashMap<TextPos, List<WeakReference<Marker>>> m2 = new HashMap<>(markers.size());
 
         for (TextPos pos : markers.keySet()) {

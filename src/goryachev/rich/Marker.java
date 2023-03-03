@@ -82,9 +82,8 @@ public class Marker implements Comparable<Marker> {
         return getTextPos().offset();
     }
 
-    // TODO should not be public, must use accessor
+    // TODO should not be public, can only be called from Markers.update()
     public void set(TextPos p) {
-        System.out.println("Marker.set " + p); // FIX
         pos.set(p);
     }
 }
