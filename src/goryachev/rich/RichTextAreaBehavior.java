@@ -75,22 +75,24 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         this.keyHandler = this::handleKeyEvent;
         this.modelListener = this::handleModel;
 
-        map(Action.NEWLINE, this::insertLineBreak, KeyCode.ENTER);
+        map(Action.BACKSPACE, this::backspace, KeyCode.BACK_SPACE);
+        map(Action.DELETE, this::delete, KeyCode.DELETE);
         map(Action.MOVE_LEFT, this::moveLeft, KeyCode.LEFT);
         map(Action.MOVE_RIGHT, this::moveRight, KeyCode.RIGHT);
         map(Action.MOVE_UP, this::moveUp, KeyCode.UP);
         map(Action.MOVE_DOWN, this::moveDown, KeyCode.DOWN);
         map(Action.MOVE_HOME, this::moveHome, KeyCode.HOME);
         map(Action.MOVE_END, this::moveEnd, KeyCode.END);
-        map(Action.PAGE_DOWN, this::pageDown, KeyCode.PAGE_DOWN);
-        map(Action.PAGE_UP, this::pageUp, KeyCode.PAGE_UP);
-        map(Action.SELECT_ALL, this::selectAll, KeyCode.A, KCondition.SHORTCUT);
         map(Action.MOVE_DOCUMENT_START, this::moveDocumentStart);
         map(Action.MOVE_DOCUMENT_START, KeyCode.HOME, KCondition.CTRL, KCondition.NOT_MAC);
         map(Action.MOVE_DOCUMENT_START, KeyCode.UP, KCondition.SHORTCUT, KCondition.MAC);
         map(Action.MOVE_DOCUMENT_END, this::moveDocumentEnd);
         map(Action.MOVE_DOCUMENT_END, KeyCode.END, KCondition.CTRL, KCondition.NOT_MAC);
         map(Action.MOVE_DOCUMENT_END, KeyCode.DOWN, KCondition.SHORTCUT, KCondition.MAC);
+        map(Action.NEWLINE, this::insertLineBreak, KeyCode.ENTER);
+        map(Action.PAGE_DOWN, this::pageDown, KeyCode.PAGE_DOWN);
+        map(Action.PAGE_UP, this::pageUp, KeyCode.PAGE_UP);
+        map(Action.SELECT_ALL, this::selectAll, KeyCode.A, KCondition.SHORTCUT);
         map(Action.SELECT_LEFT, this::selectLeft, KeyCode.LEFT, KCondition.SHIFT);
         map(Action.SELECT_RIGHT, this::selectRight, KeyCode.RIGHT, KCondition.SHIFT);
         map(Action.SELECT_UP, this::selectUp, KeyCode.UP, KCondition.SHIFT);
@@ -151,6 +153,17 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     
     protected boolean isRTL() {
         return (control.getEffectiveNodeOrientation() == NodeOrientation.RIGHT_TO_LEFT);
+    }
+
+    /** returns text length.  the caller must ensure the index is valid. */
+    protected int getTextLength(int index) {
+        String text = getPlainText(index);
+        return text == null ? 0 : text.length();
+    }
+    
+    protected String getPlainText(int modelIndex) {
+        StyledTextModel m = control.getModel();
+        return (m == null) ? null : m.getPlainText(modelIndex);
     }
 
     /** accepting VFlow coordinates */
@@ -220,6 +233,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         return null;
     }
 
+    /** returns true if both control and model are editable */
     protected boolean isEditable() {
         if (control.isEditable()) {
             StyledTextModel m = control.getModel();
@@ -236,10 +250,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         }
 
         StyledTextModel m = control.getModel();
-        if (m == null) {
-            return;
-        }
-        
         TextPos ca = control.getCaretPosition();
         if(ca != null) {
             TextPos an = control.getAnchorPosition();
@@ -261,10 +271,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         }
 
         StyledTextModel m = control.getModel();
-        if (m == null) {
-            return;
-        }
-        
         TextPos pos = control.getCaretPosition();
         if(pos != null) {
             m.insertLineBreak(pos);
@@ -374,11 +380,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         return control.getTextPosition(screenX, screenY);
     }
     
-    protected String getPlainText(int modelIndex) {
-        StyledTextModel m = control.getModel();
-        return (m == null) ? null : m.getPlainText(modelIndex);
-    }
-
     protected void stopAutoScroll() {
         autoScrollTimer.stop();
     }
@@ -419,11 +420,11 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     public void moveRight() {
-        nextCharacterVisually(true, false);
+        moveCharacter(true, false);
     }
 
     public void moveLeft() {
-        nextCharacterVisually(false, false);
+        moveCharacter(false, false);
     }
     
     public void moveHome() {
@@ -502,13 +503,19 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
         control.moveCaret(p, extendSelection);
     }
-
-    protected void nextCharacterVisually(boolean moveRight, boolean extendSelection) {
+    
+    protected void moveCharacter(boolean moveRight, boolean extendSelection) {
         clearPhantomX();
-
+        TextPos p = nextCharacterVisually(moveRight);
+        if (p != null) {
+            control.moveCaret(p, extendSelection);
+        }
+    }
+    
+    protected TextPos nextCharacterVisually(boolean moveRight) {
         TextPos caret = control.getCaretPosition();
         if (caret == null) {
-            return; // TODO
+            return null; // TODO
         }
 
         if (isRTL()) {
@@ -521,16 +528,15 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             cix++;
             if (cix > cell.getTextLength()) {
                 int line = cell.getLineIndex() + 1;
-                TextPos pos;
+                TextPos p;
                 if (line < vflow().lineCount()) {
                     // next line
-                    pos = new TextPos(line, 0);
+                    p = new TextPos(line, 0);
                 } else {
                     // end of last paragraph w/o newline
-                    pos = new TextPos(cell.getLineIndex(), cell.getTextLength());
+                    p = new TextPos(cell.getLineIndex(), cell.getTextLength());
                 }
-                control.moveCaret(pos, extendSelection);
-                return;
+                return p;
             }
         } else {
             if (caret.offset() == 0) {
@@ -539,10 +545,9 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                     // prev line
                     TextCell prevCell = vflow().getCell(line);
                     cix = prevCell.getTextLength();
-                    TextPos pos = new TextPos(line, cix);
-                    control.moveCaret(pos, extendSelection);
+                    return new TextPos(line, cix);
                 }
-                return;
+                return null;
             }
         }
 
@@ -554,12 +559,9 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         int ix = moveRight ? br.following(off) : br.preceding(off);
         if (ix == BreakIterator.DONE) {
             System.err.println(" --- SHOULD NOT HAPPEN: BreakIterator.DONE off=" + off); // FIX
-            return;
+            return null;
         }
-
-        TextPos pos = new TextPos(caret.index(), ix);
-        control.moveCaret(pos, extendSelection);
-        return;
+        return new TextPos(caret.index(), ix);
     }
 
     public void clearPhantomX() {
@@ -567,11 +569,11 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
     
     public void selectLeft() {
-        nextCharacterVisually(false, true);
+        moveCharacter(false, true);
     }
     
     public void selectRight() {
-        nextCharacterVisually(true, true);
+        moveCharacter(true, true);
     }
     
     public void selectDown() {
@@ -622,10 +624,10 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     public void selectWord() {
         // TODO
     }
-    
+
     public void selectLine() {
         TextPos p = control.getCaretPosition();
-        if(p != null) {
+        if (p != null) {
             int ix = p.index();
             TextPos an = new TextPos(ix, 0);
             TextPos ca = new TextPos(ix + 1, 0);
@@ -635,5 +637,24 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
     protected void handleTextUpdated(TextPos start, TextPos end, int addedTop, int linesAdded, int addedBottom) {
         vflow().handleTextUpdated(start, end, addedTop, linesAdded, addedBottom);
+    }
+
+    public void backspace() {
+        if (!isEditable()) {
+            return;
+        }
+        // TODO
+    }
+
+    public void delete() {
+        if (!isEditable()) {
+            return;
+        }
+
+        TextPos start = control.getCaretPosition();
+        TextPos end = nextCharacterVisually(true);
+        if(end != null) {
+            control.getModel().replace(start, end, "");
+        }
     }
 }

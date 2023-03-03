@@ -34,9 +34,33 @@ import goryachev.rich.TextPos;
 
 public class EditablePlaintextModel extends StyledTextModel {
     private final ArrayList<String> paragraphs = new ArrayList();
+    private static final String STYLE = "-fx-font-size:200%;";
 
     public EditablePlaintextModel() {
         paragraphs.add("");
+    }
+
+    @Override
+    public StyledParagraph getParagraph(int index) {
+        return new StyledParagraph() {
+            @Override
+            public String getPlainText() {
+                return EditablePlaintextModel.this.getPlainText(index);
+            }
+
+            @Override
+            public int getIndex() {
+                return index;
+            }
+
+            @Override
+            public TextCell createTextCell() {
+                String text = getPlainText();
+                TextFlow f = new TextFlow(new Text(text));
+                f.setStyle(STYLE);
+                return new TextCell(index, f);
+            }
+        };
     }
 
     @Override
@@ -55,29 +79,6 @@ public class EditablePlaintextModel extends StyledTextModel {
     }
 
     @Override
-    public StyledParagraph getParagraph(int index) {
-        return new StyledParagraph() {
-            @Override
-            public String getPlainText() {
-                return EditablePlaintextModel.this.getPlainText(index);
-            }
-            
-            @Override
-            public int getIndex() {
-                return index;
-            }
-            
-            @Override
-            public TextCell createTextCell() {
-                String text = getPlainText();
-                TextFlow f = new TextFlow(new Text(text));
-                f.setStyle("-fx-font-size:200%;");
-                return new TextCell(index, f);
-            }
-        };
-    }
-
-    @Override
     public void replace(TextPos start, TextPos end, String text) {
         System.out.println("replace start=" + start + " end=" + end + " text=[" + text + "]"); // FIX
         
@@ -87,9 +88,6 @@ public class EditablePlaintextModel extends StyledTextModel {
             end = p;
         }
 
-        // update paragraphs
-        // update markers
-        // fire event
         int len = text.length();
 
         removeRegion(start, end);
@@ -97,8 +95,6 @@ public class EditablePlaintextModel extends StyledTextModel {
         int ix = start.index();
         int cix = start.offset();
         String s = paragraphs.get(ix);
-
-        // TODO insert new line, needs a different code path
 
         String s2 = insertText(s, cix, text);
         paragraphs.set(ix, s2);
@@ -109,7 +105,6 @@ public class EditablePlaintextModel extends StyledTextModel {
     @Override
     public void insertLineBreak(TextPos pos) {
         System.err.println("insertLineBreak pos=" + pos); // FIX
-        // TODO clamp position here? or presume all is ok?
         int ix = pos.index();
         if(ix >= getParagraphCount()) {
             paragraphs.add("");
@@ -127,7 +122,6 @@ public class EditablePlaintextModel extends StyledTextModel {
     }
 
     private static String insertText(String text, int index, String toInsert) {
-        // TODO handle null text!
         if (index >= text.length()) {
             return text + toInsert;
         } else {
@@ -135,7 +129,7 @@ public class EditablePlaintextModel extends StyledTextModel {
         }
     }
 
-    // 'start' must be before 'end'
+    // the caller must ensure 'start' <= 'end'
     private void removeRegion(TextPos start, TextPos end) {
         int ix = start.index();
         String text = paragraphs.get(ix);

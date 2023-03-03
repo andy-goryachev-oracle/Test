@@ -60,6 +60,8 @@ import goryachev.rich.util.Util;
  */
 public class RichTextArea extends Control {
     public enum Action {
+        BACKSPACE,
+        DELETE,
         MOVE_DOCUMENT_END,
         MOVE_DOCUMENT_START,
         MOVE_DOWN,
