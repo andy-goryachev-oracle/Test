@@ -345,21 +345,24 @@ public class TextCellLayout {
         int topIx = topIndex();
         int btmIx = bottomIndex();
         double y = delta;
-        
-        if(delta < 0) {
+
+        if (delta < 0) {
             // do not scroll above the top edge
             double top = -origin.offset() - topHeight;
-            if(y < top) {
+            if (y < top) {
                 return new Origin(topIx, 0.0);
             }
         } else {
             // do not scroll past (bottom edge - visible area)
             double max = bottomHeight - flowHeight;
-            if(y > max) {
+            if (max < 0) {
+                return null;
+            }
+            if (y > max) {
                 y = max;
             }
         }
-        
+
         int ix = binarySearch(y, topIx, btmIx - 1);
         TextCell cell = getCell(ix);
         return new Origin(cell.getLineIndex(), y - cell.getY());

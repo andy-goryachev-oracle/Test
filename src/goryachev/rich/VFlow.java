@@ -868,23 +868,25 @@ public class VFlow extends Pane {
     public void scroll(double fractionOfHeight) {
         blockScroll(getViewHeight() * fractionOfHeight);
     }
-    
+
     /** scroll by a number of pixels, delta must not exceed the view height in absolute terms */
     public void blockScroll(double delta) {
         Origin p = layout.computeOrigin(delta);
-        setOrigin(p);
+        if (p != null) {
+            setOrigin(p);
+        }
     }
 
     /** scrolls to visible area, using vflow coordinates */
     public void scrollToVisible(double x, double y) {
-        if(y < 0.0) {
+        if (y < 0.0) {
             // above viewport
             blockScroll(y);
-        } else if(y >= getViewHeight()) {
+        } else if (y >= getViewHeight()) {
             // below viewport
             blockScroll(y - getViewHeight());
         }
-        
+
         // TODO forgot horizontal scrolling??
     }
 

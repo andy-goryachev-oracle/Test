@@ -49,12 +49,15 @@ import goryachev.rich.util.Util;
  *
  * BehaviorBase and InputMap are not public, so had to invent my own.
  * 
- * TODO
  * Behavior:
- * - maps key bindings to actions
- * - action: invokes methods of control
+ * - maps key bindings to action tags
+ * - maps action tags to functions (default implementation)
+ * - function: provides default implementation
  * Control:
- * - delegates to skin/behavior methods
+ * - allows for re-mapping of an action tag to an alternative implementation
+ * - executes code associated with an action tag (default or alternative)
+ * - TODO manages Action instances upon demand
+ * - TODO allows for restoring the default mapping
  */
 public class RichTextAreaBehavior extends BehaviorBase2 {
     private final RichTextAreaSkin skin;
