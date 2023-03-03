@@ -54,4 +54,16 @@ public record TextPos(int index, int offset) implements Comparable<TextPos> {
     public String toString() {
         return "TextPos{" + index + "," + offset + "}";
     }
+
+    /** returns true if index and offset are the same. */
+    public boolean isSameIndexAndOffset(TextPos p) {
+        // added this method in case we need to add leading/trailing flag
+        // semantics of this test is the insertion points are the same.
+        if (p != null) {
+            if (index == p.index) {
+                return (offset == p.offset);
+            }
+        }
+        return false;
+    }
 }

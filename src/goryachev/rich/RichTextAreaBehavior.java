@@ -503,27 +503,28 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
         control.moveCaret(p, extendSelection);
     }
-    
+
     protected void moveCharacter(boolean moveRight, boolean extendSelection) {
+        TextPos caret = control.getCaretPosition();
+        if (caret == null) {
+            return;
+        }
+
         clearPhantomX();
-        TextPos p = nextCharacterVisually(moveRight);
+
+        TextPos p = nextCharacterVisually(caret, moveRight);
         if (p != null) {
             control.moveCaret(p, extendSelection);
         }
     }
-    
-    protected TextPos nextCharacterVisually(boolean moveRight) {
-        TextPos caret = control.getCaretPosition();
-        if (caret == null) {
-            return null; // TODO
-        }
 
+    protected TextPos nextCharacterVisually(TextPos start, boolean moveRight) {
         if (isRTL()) {
             moveRight = !moveRight;
         }
 
-        TextCell cell = vflow().getCell(caret.index());
-        int cix = caret.offset();
+        TextCell cell = vflow().getCell(start.index());
+        int cix = start.offset();
         if (moveRight) {
             cix++;
             if (cix > cell.getTextLength()) {
@@ -539,7 +540,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                 return p;
             }
         } else {
-            if (caret.offset() == 0) {
+            if (start.offset() == 0) {
                 int line = cell.getLineIndex() - 1;
                 if (line >= 0) {
                     // prev line
@@ -555,13 +556,20 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         BreakIterator br = BreakIterator.getCharacterInstance();
         String text = getPlainText(cell.getLineIndex());
         br.setText(text);
-        int off = caret.offset();
-        int ix = moveRight ? br.following(off) : br.preceding(off);
-        if (ix == BreakIterator.DONE) {
-            System.err.println(" --- SHOULD NOT HAPPEN: BreakIterator.DONE off=" + off); // FIX
+        int off = start.offset();
+        try {
+            int ix = moveRight ? br.following(off) : br.preceding(off);
+            if (ix == BreakIterator.DONE) {
+                System.err.println(" --- SHOULD NOT HAPPEN: BreakIterator.DONE off=" + off); // FIX
+                return null;
+            }
+            return new TextPos(start.index(), ix);
+        } catch(Exception e) {
+            // TODO need to use a logger!
+            System.err.println("offset=" + off + " text=[" + text + "]");
+            e.printStackTrace();
             return null;
         }
-        return new TextPos(caret.index(), ix);
     }
 
     public void clearPhantomX() {
@@ -643,7 +651,22 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         if (!isEditable()) {
             return;
         }
-        // TODO
+
+        if (hasSelection()) {
+            deleteSelection();
+        } else {
+            TextPos end = control.getCaretPosition();
+            if (end == null) {
+                return;
+            }
+
+            TextPos start = nextCharacterVisually(end, false);
+            if (start != null) {
+                control.getModel().replace(start, end, "");
+                control.moveCaret(start, false);
+                clearPhantomX();
+            }
+        }
     }
 
     public void delete() {
@@ -651,10 +674,40 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             return;
         }
 
-        TextPos start = control.getCaretPosition();
-        TextPos end = nextCharacterVisually(true);
-        if(end != null) {
-            control.getModel().replace(start, end, "");
+        if (hasSelection()) {
+            deleteSelection();
+        } else {
+            TextPos start = control.getCaretPosition();
+            TextPos end = nextCharacterVisually(start, true);
+            if (end != null) {
+                control.getModel().replace(start, end, "");
+                control.moveCaret(start, false);
+                clearPhantomX();
+            }
         }
+    }
+
+    protected boolean hasSelection() {
+        TextPos ca = control.getCaretPosition();
+        if (ca != null) {
+            TextPos an = control.getAnchorPosition();
+            if (an != null) {
+                return !ca.isSameIndexAndOffset(an);
+            }
+        }
+        return false;
+    }
+
+    protected void deleteSelection() {
+        TextPos start = control.getCaretPosition();
+        TextPos end = control.getAnchorPosition();
+        if (start.compareTo(end) > 0) {
+            TextPos p = start;
+            start = end;
+            end = p;
+        }
+        control.getModel().replace(start, end, "");
+        control.moveCaret(start, false);
+        clearPhantomX();
     }
 }
