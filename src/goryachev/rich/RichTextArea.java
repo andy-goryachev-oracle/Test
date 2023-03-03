@@ -62,6 +62,8 @@ public class RichTextArea extends Control {
     public enum Action {
         BACKSPACE,
         DELETE,
+        INSERT_TAB,
+        INSERT_LINE_BREAK,
         MOVE_DOCUMENT_END,
         MOVE_DOCUMENT_START,
         MOVE_DOWN,
@@ -70,7 +72,6 @@ public class RichTextArea extends Control {
         MOVE_LEFT,
         MOVE_RIGHT,
         MOVE_UP,
-        NEWLINE,
         PAGE_DOWN,
         PAGE_UP,
         SELECT_ALL,

@@ -80,6 +80,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
         map(Action.BACKSPACE, this::backspace, KeyCode.BACK_SPACE);
         map(Action.DELETE, this::delete, KeyCode.DELETE);
+        map(Action.INSERT_LINE_BREAK, this::insertLineBreak, KeyCode.ENTER);
+        map(Action.INSERT_TAB, this::insertTab, KeyCode.TAB);
         map(Action.MOVE_LEFT, this::moveLeft, KeyCode.LEFT);
         map(Action.MOVE_RIGHT, this::moveRight, KeyCode.RIGHT);
         map(Action.MOVE_UP, this::moveUp, KeyCode.UP);
@@ -92,7 +94,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         map(Action.MOVE_DOCUMENT_END, this::moveDocumentEnd);
         map(Action.MOVE_DOCUMENT_END, KeyCode.END, KCondition.CTRL, KCondition.NOT_MAC);
         map(Action.MOVE_DOCUMENT_END, KeyCode.DOWN, KCondition.SHORTCUT, KCondition.MAC);
-        map(Action.NEWLINE, this::insertLineBreak, KeyCode.ENTER);
         map(Action.PAGE_DOWN, this::pageDown, KeyCode.PAGE_DOWN);
         map(Action.PAGE_UP, this::pageUp, KeyCode.PAGE_UP);
         map(Action.SELECT_ALL, this::selectAll, KeyCode.A, KCondition.SHORTCUT);
@@ -266,6 +267,10 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             control.moveCaret(p2, false);
             clearPhantomX();
         }
+    }
+    
+    public void insertTab() {
+        handleKeyTyped("\t");
     }
 
     public void insertLineBreak() {
