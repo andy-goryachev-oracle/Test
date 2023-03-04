@@ -62,8 +62,8 @@ public class RichTextArea extends Control {
     public enum Action {
         BACKSPACE,
         DELETE,
-        INSERT_TAB,
         INSERT_LINE_BREAK,
+        INSERT_TAB,
         MOVE_DOCUMENT_END,
         MOVE_DOCUMENT_START,
         MOVE_DOWN,
@@ -75,16 +75,16 @@ public class RichTextArea extends Control {
         PAGE_DOWN,
         PAGE_UP,
         SELECT_ALL,
-        SELECT_LINE,
-        SELECT_WORD,
         SELECT_DOCUMENT_END,
         SELECT_DOCUMENT_START,
         SELECT_DOWN,
         SELECT_LEFT,
+        SELECT_LINE,
         SELECT_PAGE_DOWN,
         SELECT_PAGE_UP,
         SELECT_RIGHT,
         SELECT_UP,
+        SELECT_WORD,
      }
     
     protected final ObjectProperty<StyledTextModel> model = new SimpleObjectProperty<>(this, "model");
@@ -165,29 +165,25 @@ public class RichTextArea extends Control {
     public BooleanProperty displayCaretProperty() {
         return displayCaretProperty;
     }
-    
-    public void moveCurrentLine(int n) {
-        // TODO clip
-    }
-    
+
     public boolean isEditable() {
-        if(editableProperty == null) {
+        if (editableProperty == null) {
             return true;
         }
         return editableProperty().get();
     }
-    
+
     public void setEditable(boolean on) {
         editableProperty().set(on);
     }
-    
+
     public BooleanProperty editableProperty() {
-        if(editableProperty == null) {
+        if (editableProperty == null) {
             editableProperty = new SimpleBooleanProperty(this, "editable", true);
         }
         return editableProperty;
     }
-    
+
     public boolean isHighlightCurrentLine() {
         // TODO
         return true;
@@ -435,5 +431,5 @@ public class RichTextArea extends Control {
         return tabSizeProperty;
     }
     
-    // TODO methods corresponding to the remaining Actions
+    // TODO methods corresponding to the remaining Action tags
 }
