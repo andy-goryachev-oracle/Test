@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -72,8 +72,11 @@ public class ListViewPage extends TestPaneBase {
     protected ListView<Object> list;
     
     public ListViewPage() {
+        setId("ListViewPage");
+        
         // selector
         demoSelector = new ComboBox<>();
+        demoSelector.setId("demoSelector");
         demoSelector.getItems().addAll(Demo.values());
         demoSelector.setEditable(false);
         demoSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
@@ -81,6 +84,7 @@ public class ListViewPage extends TestPaneBase {
         });
 
         selectionSelector = new ComboBox<>();
+        selectionSelector.setId("selectionSelector");
         selectionSelector.getItems().addAll(Selection.values());
         selectionSelector.setEditable(false);
         selectionSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
@@ -88,6 +92,7 @@ public class ListViewPage extends TestPaneBase {
         });
         
         nullFocusModel = new CheckBox("null focus model");
+        nullFocusModel.setId("nullFocusModel");
         nullFocusModel.selectedProperty().addListener((s,p,c) -> {
             updatePane();
         });
@@ -101,6 +106,11 @@ public class ListViewPage extends TestPaneBase {
         clearButton.setOnAction((ev) -> {
             list.getItems().clear();
         });
+        
+        Button jumpButton = new Button("Jump");
+        jumpButton.setOnAction((ev) -> {
+            jump();
+        });
 
         // layout
 
@@ -112,6 +122,7 @@ public class ListViewPage extends TestPaneBase {
         p.label("Selection Model:");
         p.option(selectionSelector);
         p.option(nullFocusModel);
+        p.option(jumpButton);
         setOptions(p);
 
         demoSelector.getSelectionModel().selectFirst();
@@ -227,5 +238,12 @@ public class ListViewPage extends TestPaneBase {
             sb.append(i);
         }
         return System.currentTimeMillis() + "." + System.nanoTime() + "." + sb;
+    }
+    
+    protected void jump() {
+        int sz = list.getItems().size();
+        int ix = sz / 2;
+        list.getSelectionModel().select(ix);
+        list.scrollTo(ix);
     }
 }
