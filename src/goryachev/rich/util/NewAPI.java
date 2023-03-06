@@ -26,11 +26,16 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich.util;
 
+import javafx.application.ConditionalFeature;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.stage.Screen;
 
 /**
  * These APIs should be added to JavaFX.
@@ -79,7 +84,58 @@ public class NewAPI {
         }
     }
 
+    public static boolean isTouchSupported() {
+        return Platform.isSupported(ConditionalFeature.INPUT_TOUCH);
+    }
+
     /** TODO need com.sun.javafx.scene.control.ListenerHelper to be public
     public static ListenerHelper listenerHelper() {
     } */
+    
+    // com.sun.javafx.util.Utils:769
+    public static Screen getScreenForPoint(final double x, final double y) {
+        ObservableList<Screen> screens = Screen.getScreens();
+
+        // first check whether the point is inside some screen
+        for (Screen screen: screens) {
+            // can't use screen.bounds.contains, because it returns true for
+            // the min + width point
+            Rectangle2D r = screen.getBounds();
+            if (
+                (x >= r.getMinX()) && 
+                (x < r.getMaxX()) && 
+                (y >= r.getMinY()) && 
+                (y < r.getMaxY())
+            ) {
+                return screen;
+            }
+        }
+
+        // the point is not inside any screen, find the closest screen now
+        Screen selectedScreen = Screen.getPrimary();
+        double minDistance = Double.MAX_VALUE;
+        for (Screen screen: screens) {
+            Rectangle2D r = screen.getBounds();
+            double dx = getOuterDistance(r.getMinX(), r.getMaxX(), x);
+            double dy = getOuterDistance(r.getMinY(), r.getMaxY(), y);
+            double distance = dx * dx + dy * dy;
+            if (minDistance >= distance) {
+                minDistance = distance;
+                selectedScreen = screen;
+            }
+        }
+
+        return selectedScreen;
+    }
+
+    // com.sun.javafx.util.Utils:839
+    private static double getOuterDistance(double v0, double v1, double v) {
+        if (v <= v0) {
+            return v0 - v;
+        }
+        if (v >= v1) {
+            return v - v1;
+        }
+        return 0;
+    }
 }

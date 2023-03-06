@@ -34,6 +34,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -104,6 +106,12 @@ public class RichTextAreaDemoPane extends BorderPane {
         Button reloadModelButton = new Button("Reload Model");
         reloadModelButton.setOnAction((ev) -> reloadModel());
         
+        CheckBox customPopup = new CheckBox("custom popup menu");
+        customPopup.setId("customPopup");
+        customPopup.selectedProperty().addListener((s,p,v) -> {
+            setCustomPopup(v);
+        });
+        
         Button selectAllButton = new Button("Select All Action");
         selectAllButton.setOnAction((ev) -> control.selectAll());
         
@@ -117,6 +125,7 @@ public class RichTextAreaDemoPane extends BorderPane {
         op.option(fatCaret);
         op.label("Tab Size:");
         op.option(tabSize);
+        op.option(customPopup);
         op.option(selectAllButton);
         op.label("Blink Rate: TODO"); // TODO
         
@@ -199,6 +208,16 @@ public class RichTextAreaDemoPane extends BorderPane {
     protected String generateStylesheet(boolean fat) {
         String s = ".rich-text-area .caret { -fx-stroke-width:" + (fat ? 2 : 1) + "; }";
         return "data:text/css;base64," + Base64.getEncoder().encodeToString(s.getBytes(Charset.forName("utf-8")));
+    }
+    
+    protected void setCustomPopup(boolean on) {
+        if(on) {
+            ContextMenu m = new ContextMenu();
+            m.getItems().add(new MenuItem("Custom Context Menu"));
+            control.setContextMenu(m);
+        } else {
+            control.setContextMenu(null);
+        }
     }
     
     //

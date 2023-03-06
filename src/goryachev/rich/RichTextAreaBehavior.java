@@ -30,18 +30,26 @@ import java.text.BreakIterator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.NodeOrientation;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.stage.Screen;
 import javafx.util.Duration;
 import goryachev.rich.RichTextArea.Action;
 import goryachev.rich.util.BehaviorBase2;
 import goryachev.rich.util.KCondition;
 import goryachev.rich.util.KeyBinding2;
+import goryachev.rich.util.NewAPI;
 import goryachev.rich.util.Util;
 
 /**
@@ -70,11 +78,11 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     private boolean fastAutoScroll;
     private double phantomX = -1.0;
     private static final Duration autoScrollPeriod = Duration.millis(Config.autoScrollPeriod);
+    private ContextMenu contextMenu = new ContextMenu();
 
     public RichTextAreaBehavior(RichTextAreaSkin skin) {
         this.skin = skin;
         this.control = skin.getSkinnable();
-
         this.keyHandler = this::handleKeyEvent;
         this.modelListener = this::handleModel;
 
@@ -132,6 +140,9 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         f.addEventFilter(ScrollEvent.ANY, this::handleScrollEvent);
 
         control.addEventHandler(KeyEvent.ANY, keyHandler);
+        
+        // TODO there is no way to override the default behavior, such as clear selection or select word under cursor
+        control.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, this::contextMenuRequested);
 
         // TODO ListenerHelper with fireImmediately flag would work well here
         control.modelProperty().addListener(modelListener);
@@ -304,10 +315,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     protected void handleMousePressed(MouseEvent ev) {
-        // TODO
         if (ev.isPopupTrigger()) {
-            // TODO use onContextMenu ?
-            // TODO clear selection if click happened outside of said selection?
             return;
         }
 
@@ -324,6 +332,10 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             control.extendSelection(pos);
         } else {
             control.select(pos, pos);
+        }
+
+        if (contextMenu.isShowing()) {
+            contextMenu.hide();
         }
 
         control.requestFocus();
@@ -731,5 +743,102 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         control.getModel().replace(start, end, "");
         control.moveCaret(start, false);
         clearPhantomX();
+    }
+
+    // see TextAreaBehavior:338
+    public void contextMenuRequested(ContextMenuEvent ev) {
+        if (contextMenu.isShowing()) {
+            contextMenu.hide();
+        } else if (control.getContextMenu() == null && control.getOnContextMenuRequested() == null) {
+            double screenX = ev.getScreenX();
+            double screenY = ev.getScreenY();
+            double sceneX = ev.getSceneX();
+
+            if (NewAPI.isTouchSupported()) {
+                /* TODO
+                Point2D menuPos;
+                if (control.getSelection().getLength() == 0) {
+                    skin.positionCaret(skin.getIndex(ev.getX(), ev.getY()), false);
+                    menuPos = skin.getMenuPosition();
+                } else {
+                    menuPos = skin.getMenuPosition();
+                    if (menuPos != null && (menuPos.getX() <= 0 || menuPos.getY() <= 0)) {
+                        skin.positionCaret(skin.getIndex(ev.getX(), ev.getY()), false);
+                        menuPos = skin.getMenuPosition();
+                    }
+                }
+
+                if (menuPos != null) {
+                    Point2D p = control.localToScene(menuPos);
+                    Scene scene = control.getScene();
+                    Window window = scene.getWindow();
+                    Point2D location = new Point2D(window.getX() + scene.getX() + p.getX(),
+                        window.getY() + scene.getY() + p.getY());
+                    screenX = location.getX();
+                    sceneX = p.getX();
+                    screenY = location.getY();
+                }
+                */
+            }
+
+            populateContextMenu();
+
+            double menuWidth = contextMenu.prefWidth(-1);
+            double menuX = screenX - (NewAPI.isTouchSupported() ? (menuWidth / 2) : 0);
+            Screen currentScreen = NewAPI.getScreenForPoint(screenX, 0);
+            Rectangle2D bounds = currentScreen.getBounds();
+
+            // what is this??
+            if (menuX < bounds.getMinX()) {
+                control.getProperties().put("CONTEXT_MENU_SCREEN_X", screenX);
+                control.getProperties().put("CONTEXT_MENU_SCENE_X", sceneX);
+                contextMenu.show(control, bounds.getMinX(), screenY);
+            } else if (screenX + menuWidth > bounds.getMaxX()) {
+                double leftOver = menuWidth - (bounds.getMaxX() - screenX);
+                control.getProperties().put("CONTEXT_MENU_SCREEN_X", screenX);
+                control.getProperties().put("CONTEXT_MENU_SCENE_X", sceneX);
+                contextMenu.show(control, screenX - leftOver, screenY);
+            } else {
+                control.getProperties().put("CONTEXT_MENU_SCREEN_X", 0);
+                control.getProperties().put("CONTEXT_MENU_SCENE_X", 0);
+                contextMenu.show(control, menuX, screenY);
+            }
+        }
+
+        ev.consume();
+    }
+
+    private void populateContextMenu() {
+        ObservableList<MenuItem> items = contextMenu.getItems();
+        items.clear();
+
+        MenuItem m;
+        items.add(m = new MenuItem("Undo"));
+        m.setDisable(true); // TODO undoMI.setDisable(!getNode().isUndoable());
+
+        items.add(m = new MenuItem("Redo"));
+        m.setDisable(true); // TODO redoMI.setDisable(!getNode().isRedoable());
+
+        items.add(new SeparatorMenuItem());
+
+        items.add(m = new MenuItem("Cut"));
+        m.setDisable(true); // TODO
+
+        items.add(m = new MenuItem("Copy"));
+        m.setDisable(true); // TODO
+
+        items.add(m = new MenuItem("Paste"));
+        // TODO intersection of clipboard and control import formats
+        m.setDisable(true); // TODO pasteMI.setDisable(!Clipboard.getSystemClipboard().hasString());
+
+        items.add(new SeparatorMenuItem());
+
+        items.add(m = new MenuItem("Select All"));
+        m.setOnAction((ev) -> control.selectAll());
+
+        // TODO: control.hasSelection()
+        //        cutMI.setDisable(!hasSelection);
+        //        copyMI.setDisable(!hasSelection);
+        //        deleteMI.setDisable(!hasSelection);
     }
 }
