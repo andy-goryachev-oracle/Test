@@ -520,6 +520,20 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
         clearPhantomX();
 
+        if(!extendSelection) {
+            TextPos ca = control.getCaretPosition();
+            TextPos an = control.getAnchorPosition();
+            int d = ca.compareTo(an);
+            // jump over selection if it exists
+            if (d < 0) {
+                control.moveCaret(moveRight ? an : ca, extendSelection);
+                return;
+            } else if(d > 0) {
+                control.moveCaret(moveRight ? ca : an, extendSelection);
+                return;
+            }
+        }
+
         TextPos p = nextCharacterVisually(caret, moveRight);
         if (p != null) {
             control.moveCaret(p, extendSelection);
