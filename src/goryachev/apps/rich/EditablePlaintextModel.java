@@ -130,7 +130,8 @@ public class EditablePlaintextModel extends StyledTextModel {
     }
 
     // the caller must ensure 'start' <= 'end'
-    private void removeRegion(TextPos start, TextPos end) {
+    @Override
+    protected void removeRegion(TextPos start, TextPos end) {
         int ix = start.index();
         String text = paragraphs.get(ix);
         String newText;

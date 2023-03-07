@@ -24,6 +24,7 @@
  */
 package goryachev.rich;
 
+import java.util.function.Supplier;
 import javafx.scene.Node;
 
 /**
@@ -55,6 +56,11 @@ public interface StyledText {
     public boolean isParagraph();
     
     /**
+     * Returns true if this segment is a line break.
+     */
+    public boolean isLineBreak();
+    
+    /**
      * Returns the text associated with this segment.
      * Must be one character for inline nodes, must be null for node paragraphs.
      */
@@ -73,10 +79,10 @@ public interface StyledText {
     public String[] getStyles();
     
     /**
-     * This method must return a non-null a new instance of Node when {@link isText()} is false.
-     * The method must return null if {@link isText()} is true.
+     * This method must return a non-null instance when {@link isText()} is false, or null 
+     * when {@link isText()} is true.
      */
-    public Node createNode();
+    public Supplier<Node> getNodeGenerator();
     
     // TODO associated object encapsulating model-specific internal data (paste, dnd, etc.)
 }

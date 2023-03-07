@@ -284,6 +284,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         handleKeyTyped("\t");
     }
 
+    @Deprecated // TODO use the new replace
     public void insertLineBreak() {
         if (!isEditable()) {
             return;

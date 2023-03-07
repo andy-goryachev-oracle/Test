@@ -162,12 +162,14 @@ public abstract class StyledTextModel {
      * The style of the inserted text is determined by the model based on the surrounding text.
      * After the model makes necessary changes, the model emits an event to all registered ChangeListeners.
      * 
-     * Inserted text cannot include newlines, form feeds, etc.
+     * Inserted text cannot include any control characters (< 0x20) such as newlines, with a single exception
+     * of the TAB character.
      * 
      * @param start
      * @param end
      * @param text text to be inserted.
      */
+    @Deprecated // use the new method
     public void replace(TextPos start, TextPos end, String text) {
         // no-op in read-only model
 
@@ -179,9 +181,82 @@ public abstract class StyledTextModel {
         // TODO make sure start < pos
     }
     
-    public void insertLineBreak(TextPos pos) {
-        // no-op in read only model
+    /**
+     * Replaces given range with the provided styled text.
+     * When inserting a plain text, the style is taken from preceding text segment, or, if the text is being
+     * inserted into the beginning of the document, the style is taken from the following text segment.
+     * 
+     * @param start start position
+     * @param end end position
+     * @param input StyledInput
+     * @return text position at the end of the inserted text, or null if the model is read only
+     */
+    public TextPos replace_NEW(TextPos start, TextPos end, StyledInput input) {
+        if (isEditable()) {
+            int cmp = start.compareTo(end);
+            if (cmp > 0) {
+                // make sure start < end
+                TextPos p = start;
+                start = end;
+                end = p;
+            }
+            
+            if(cmp != 0) {
+                removeRegion(start, end);
+            }
+
+            int index = start.index();
+            int offset = start.offset();
+            int top = 0;
+            int btm = 0;
+            
+            StyledText seg;
+            while ((seg = input.nextSegment()) != null) {
+                if(seg.isParagraph()) {
+                    offset = 0;
+                    btm = 0;
+                    index++;
+                }
+                
+                int len = insertSegment(index, offset, seg);
+                offset += len;
+                
+                if(index == start.index()) {
+                    top += len;
+                }
+
+                if (seg.isLineBreak()) {
+                    index++;
+                    btm = 0;
+                } else {
+                    btm += len;
+                }
+            }
+
+            int lines = index - start.index();
+            fireChangeEvent(start, end, top, lines, btm);
+            
+            return new TextPos(index, offset);
+        }
+        return null;
     }
+
+    protected void removeRegion(TextPos start, TextPos end) {
+        throw new UnsupportedOperationException();
+    }
+
+    /** returns the character count of the inserted text */
+    protected int insertSegment(int index, int offset, StyledText text) {
+        throw new UnsupportedOperationException();
+    }
+
+    // TODO remove, use multi-line replace()
+    @Deprecated
+    protected void insertLineBreak(TextPos pos) {
+        throw new UnsupportedOperationException();
+    }
+    
+    // TODO protected void insertText(TextPos, String);
     
     public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
         // no-op in read-only model
