@@ -27,13 +27,13 @@ package goryachev.apps.rich;
 import java.util.ArrayList;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import goryachev.rich.EditableStyledTextModel;
 import goryachev.rich.StyledParagraph;
 import goryachev.rich.StyledText;
-import goryachev.rich.StyledTextModel;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 
-public class EditablePlaintextModel extends StyledTextModel {
+public class EditablePlaintextModel extends EditableStyledTextModel {
     private final ArrayList<String> paragraphs = new ArrayList();
     private static final String STYLE = "-fx-font-size:200%;";
 
@@ -62,11 +62,6 @@ public class EditablePlaintextModel extends StyledTextModel {
                 return new TextCell(index, f);
             }
         };
-    }
-
-    @Override
-    public boolean isEditable() {
-        return true;
     }
 
     @Override
@@ -166,5 +161,15 @@ public class EditablePlaintextModel extends StyledTextModel {
                 paragraphs.remove(ix);
             }
         }
+    }
+    
+    @Override
+    public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeStyle(TextPos start, TextPos end, String direct, String[] css) {
+        throw new UnsupportedOperationException();
     }
 }

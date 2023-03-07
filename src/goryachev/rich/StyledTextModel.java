@@ -59,7 +59,7 @@ public abstract class StyledTextModel {
     /**
      * Indicates whether the model is editable.
      */
-    public boolean isEditable() { return false; }
+    public abstract boolean isEditable();
 
     /**
      * Returns the number of paragraphs in the model.
@@ -74,8 +74,40 @@ public abstract class StyledTextModel {
      */
     public abstract StyledParagraph getParagraph(int index);
     
+    /**
+     * This method gets called only by an editable model.
+     * start is guaranteed to precede end.
+     * 
+     * @param start
+     * @param end
+     */
+    protected abstract void removeRegion(TextPos start, TextPos end);
+
+    /** returns the character count of the inserted text */
+    protected abstract int insertSegment(int index, int offset, StyledText text);
+
+    // TODO remove, use multi-line replace()
+    @Deprecated
+    protected void insertLineBreak(TextPos pos) {
+        throw new UnsupportedOperationException();
+    }
+    
+    public abstract void applyStyle(TextPos start, TextPos end, String direct, String[] css);
+//    {
+//        // no-op in read-only model
+//        // TODO the problem of applying a direct style is that it has to be intelligently merged, which
+//        // entails a lot of non-trivial string processing
+//    }
+    
+    public abstract void removeStyle(TextPos start, TextPos end, String direct, String[] css);
+//    {
+//        // no-op in read-only model
+//        // TODO same problem in removing a direct style is that it has to be intelligently merged, which
+//        // entails a lot of non-trivial string processing
+//    }
+    
     private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
-    private final HashMap<DataFormat,ImportHandler> importHandlers = new HashMap<>(4);
+    private final HashMap<DataFormat,ImportHandler> importHandlers = new HashMap<>(4); // TODO one hash map?
     private final HashMap<DataFormat,ExportHandler> exportHandlers = new HashMap<>(4);
     private final Markers markers = new Markers();
     // TODO special BEGIN/END markers? especially END?
@@ -236,42 +268,6 @@ public abstract class StyledTextModel {
             return new TextPos(index, offset);
         }
         return null;
-    }
-
-    /**
-     * This method gets called only by an editable model.
-     * start is guaranteed to precede end.
-     * 
-     * @param start
-     * @param end
-     */
-    protected void removeRegion(TextPos start, TextPos end) {
-        throw new UnsupportedOperationException();
-    }
-
-    /** returns the character count of the inserted text */
-    protected int insertSegment(int index, int offset, StyledText text) {
-        throw new UnsupportedOperationException();
-    }
-
-    // TODO remove, use multi-line replace()
-    @Deprecated
-    protected void insertLineBreak(TextPos pos) {
-        throw new UnsupportedOperationException();
-    }
-    
-    // TODO protected void insertText(TextPos, String);
-    
-    public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
-        // no-op in read-only model
-        // TODO the problem of applying a direct style is that it has to be intelligently merged, which
-        // entails a lot of non-trivial string processing
-    }
-    
-    public void removeStyle(TextPos start, TextPos end, String direct, String[] css) {
-        // no-op in read-only model
-        // TODO same problem in removing a direct style is that it has to be intelligently merged, which
-        // entails a lot of non-trivial string processing
     }
     
     protected void fireChangeEvent(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
