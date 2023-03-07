@@ -24,23 +24,53 @@
  */
 package goryachev.rich;
 
-/**
- * Class represents a source of styled text segments.
- */
-public abstract class StyledInput {
-    /**
-     * Returns the next segment, or null if no more segments.
-     */
-    public abstract StyledText nextSegment();
+import java.util.function.Supplier;
+import javafx.scene.Node;
+
+public class StringStyledText implements StyledText {
+    private final String text;
+    private final String direct;
+    private final String[] css;
     
-    /**
-     * Creates a plain text styled input.
-     * @param text
-     * @param css 
-     * @param direct 
-     * @return
-     */
-    public static StyledInput of(String text, String direct, String[] css) {
-        return new StringStyledInput(text == null ? "" : text, direct, css);
+    // TODO perhaps make this protected to avoid checking for invalid chars (<0x20)
+    public StringStyledText(String text, String direct, String[] css) {
+        this.text = text;
+        this.direct = direct;
+        this.css = css;
+    }
+
+    @Override
+    public boolean isText() {
+        return true;
+    }
+
+    @Override
+    public boolean isParagraph() {
+        return false;
+    }
+
+    @Override
+    public boolean isLineBreak() {
+        return false;
+    }
+
+    @Override
+    public String getText() {
+        return text;
+    }
+
+    @Override
+    public String getDirectStyle() {
+        return direct;
+    }
+
+    @Override
+    public String[] getStyles() {
+        return css;
+    }
+
+    @Override
+    public Supplier<Node> getNodeGenerator() {
+        return null;
     }
 }

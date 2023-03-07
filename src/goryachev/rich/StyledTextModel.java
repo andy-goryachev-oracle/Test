@@ -158,40 +158,37 @@ public abstract class StyledTextModel {
     }
     
     /**
-     * Equivalent of the user typing text.
-     * The style of the inserted text is determined by the model based on the surrounding text.
-     * After the model makes necessary changes, the model emits an event to all registered ChangeListeners.
-     * 
-     * Inserted text cannot include any control characters (< 0x20) such as newlines, with a single exception
-     * of the TAB character.
-     * 
+     * Replaces the given range with the provided plain text.
+     * This is a convenience method that calls {@link #replace(TextPos,TextPos,StyledInput)}
+     *
      * @param start
      * @param end
-     * @param text text to be inserted.
+     * @param text
+     * @return
      */
-    @Deprecated // use the new method
-    public void replace(TextPos start, TextPos end, String text) {
-        // no-op in read-only model
-
-        // TODO or assume: removeRegion + insert from (string, styled string, styled string iterator)
-        // TODO via input handler?
-        // TODO input: typed text; clipboard
-        // TODO replace with sequence: remove range + insert(text, directStyle, css[])
-        // TODO must work with multi-line text (separated by cr/crlf/lf)
-        // TODO make sure start < pos
+    public TextPos replace(TextPos start, TextPos end, String text) {
+        if (isEditable()) {
+            // TODO get style
+            String direct = null;
+            String[] css = null;
+            return replace(start, end, StyledInput.of(text, direct, css));
+        }
+        return null;
     }
     
     /**
-     * Replaces given range with the provided styled text.
+     * Replaces the given range with the provided styled text.
      * When inserting a plain text, the style is taken from preceding text segment, or, if the text is being
      * inserted into the beginning of the document, the style is taken from the following text segment.
+     * 
+     * After the model applies the requested changes, an event is sent to all the registered ChangeListeners.
      * 
      * @param start start position
      * @param end end position
      * @param input StyledInput
      * @return text position at the end of the inserted text, or null if the model is read only
      */
-    public TextPos replace_NEW(TextPos start, TextPos end, StyledInput input) {
+    public TextPos replace(TextPos start, TextPos end, StyledInput input) {
         if (isEditable()) {
             int cmp = start.compareTo(end);
             if (cmp > 0) {
@@ -241,6 +238,13 @@ public abstract class StyledTextModel {
         return null;
     }
 
+    /**
+     * This method gets called only by an editable model.
+     * start is guaranteed to precede end.
+     * 
+     * @param start
+     * @param end
+     */
     protected void removeRegion(TextPos start, TextPos end) {
         throw new UnsupportedOperationException();
     }

@@ -85,4 +85,10 @@ public interface StyledText {
     public Supplier<Node> getNodeGenerator();
     
     // TODO associated object encapsulating model-specific internal data (paste, dnd, etc.)
+    
+    public static final StyledText LINEBREAK = new StringStyledText(null, null, null) {
+        public boolean isLineBreak() {
+            return true;
+        }
+    };
 }

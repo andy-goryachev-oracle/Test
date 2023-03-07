@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import goryachev.rich.StyledParagraph;
+import goryachev.rich.StyledText;
 import goryachev.rich.StyledTextModel;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
@@ -78,8 +79,8 @@ public class EditablePlaintextModel extends StyledTextModel {
         return paragraphs.get(index);
     }
 
-    @Override
-    public void replace(TextPos start, TextPos end, String text) {
+    // TODO remove
+    public void replace_OLD(TextPos start, TextPos end, String text) {
         System.out.println("replace start=" + start + " end=" + end + " text=[" + text + "]"); // FIX
         
         if(start.compareTo(end) > 0) {
@@ -92,16 +93,27 @@ public class EditablePlaintextModel extends StyledTextModel {
 
         removeRegion(start, end);
 
-        int ix = start.index();
-        int cix = start.offset();
-        String s = paragraphs.get(ix);
+        int index = start.index();
+        int offset = start.offset();
+        String s = paragraphs.get(index);
 
-        String s2 = insertText(s, cix, text);
-        paragraphs.set(ix, s2);
+        String s2 = insertText(s, offset, text);
+        paragraphs.set(index, s2);
 
         fireChangeEvent(start, end, len, 0, 0);
     }
     
+    @Override
+    protected int insertSegment(int index, int offset, StyledText segment) {
+        String s = paragraphs.get(index);
+        String text = segment.getText();
+
+        String s2 = insertText(s, offset, text);
+        paragraphs.set(index, s2);
+        return text.length();
+    }
+    
+    // FIX remove
     @Override
     public void insertLineBreak(TextPos pos) {
         System.err.println("insertLineBreak pos=" + pos); // FIX
