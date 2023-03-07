@@ -117,6 +117,7 @@ public class TestPaneBase  extends BorderPane {
     
     public void setContent(Node content) {
         contentPane.setCenter(content);
+        BorderPane.setAlignment(content, Pos.TOP_LEFT);
     }
     
     public void setOptions(Node n) {
