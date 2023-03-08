@@ -27,12 +27,13 @@ package goryachev.apps.rich;
 import java.util.ArrayList;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import goryachev.rich.EditableStyledTextModel;
 import goryachev.rich.StyledParagraph;
-import goryachev.rich.StyledTextModel;
+import goryachev.rich.StyledText;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 
-public class EditablePlaintextModel extends StyledTextModel {
+public class EditablePlaintextModel extends EditableStyledTextModel {
     private final ArrayList<String> paragraphs = new ArrayList();
     private static final String STYLE = "-fx-font-size:200%;";
 
@@ -64,11 +65,6 @@ public class EditablePlaintextModel extends StyledTextModel {
     }
 
     @Override
-    public boolean isEditable() {
-        return true;
-    }
-
-    @Override
     public int getParagraphCount() {
         return paragraphs.size();
     }
@@ -78,8 +74,8 @@ public class EditablePlaintextModel extends StyledTextModel {
         return paragraphs.get(index);
     }
 
-    @Override
-    public void replace(TextPos start, TextPos end, String text) {
+    // TODO remove
+    public void replace_OLD(TextPos start, TextPos end, String text) {
         System.out.println("replace start=" + start + " end=" + end + " text=[" + text + "]"); // FIX
         
         if(start.compareTo(end) > 0) {
@@ -92,33 +88,39 @@ public class EditablePlaintextModel extends StyledTextModel {
 
         removeRegion(start, end);
 
-        int ix = start.index();
-        int cix = start.offset();
-        String s = paragraphs.get(ix);
+        int index = start.index();
+        int offset = start.offset();
+        String s = paragraphs.get(index);
 
-        String s2 = insertText(s, cix, text);
-        paragraphs.set(ix, s2);
+        String s2 = insertText(s, offset, text);
+        paragraphs.set(index, s2);
 
         fireChangeEvent(start, end, len, 0, 0);
     }
     
     @Override
-    public void insertLineBreak(TextPos pos) {
-        System.err.println("insertLineBreak pos=" + pos); // FIX
-        int ix = pos.index();
-        if(ix >= getParagraphCount()) {
+    protected int insertSegment(int index, int offset, StyledText segment) {
+        String s = paragraphs.get(index);
+        String text = segment.getText();
+
+        String s2 = insertText(s, offset, text);
+        paragraphs.set(index, s2);
+        return text.length();
+    }
+    
+    @Override
+    protected void insertLineBreak(int index, int offset) {
+        if(index >= getParagraphCount()) {
             paragraphs.add("");
         } else {
-            int cix = pos.offset();
-            String s = paragraphs.get(ix);
-            if(cix >= s.length()) {
-                paragraphs.add(ix + 1, "");
+            String s = paragraphs.get(index);
+            if(offset >= s.length()) {
+                paragraphs.add(index + 1, "");
             } else {
-                paragraphs.set(ix, s.substring(0, cix));
-                paragraphs.add(ix + 1, s.substring(cix));
+                paragraphs.set(index, s.substring(0, offset));
+                paragraphs.add(index + 1, s.substring(offset));
             }
         }
-        fireChangeEvent(pos, pos, 0, 1, 0);
     }
 
     private static String insertText(String text, int index, String toInsert) {
@@ -130,7 +132,8 @@ public class EditablePlaintextModel extends StyledTextModel {
     }
 
     // the caller must ensure 'start' <= 'end'
-    private void removeRegion(TextPos start, TextPos end) {
+    @Override
+    protected void removeRegion(TextPos start, TextPos end) {
         int ix = start.index();
         String text = paragraphs.get(ix);
         String newText;
@@ -153,5 +156,20 @@ public class EditablePlaintextModel extends StyledTextModel {
                 paragraphs.remove(ix);
             }
         }
+    }
+    
+    @Override
+    protected void insertParagraph(int index, StyledText segment) {
+        // no-op
+    }
+    
+    @Override
+    public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeStyle(TextPos start, TextPos end, String direct, String[] css) {
+        throw new UnsupportedOperationException();
     }
 }

@@ -57,6 +57,8 @@ import goryachev.rich.util.Util;
  * TODO highlight current line property
  * TODO tab size property
  * TODO line count r/o property
+ * 
+ * TODO add methods corresponding to the remaining Action tags
  */
 public class RichTextArea extends Control {
     public enum Action {
@@ -430,6 +432,9 @@ public class RichTextArea extends Control {
         }
         return tabSizeProperty;
     }
-    
-    // TODO methods corresponding to the remaining Action tags
+
+    // TODO return the new caret position?
+    public void replaceText(TextPos start, TextPos end, String text) {
+        // TODO additional method for StyledStream?
+    }
 }

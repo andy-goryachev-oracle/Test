@@ -59,7 +59,7 @@ public abstract class StyledTextModel {
     /**
      * Indicates whether the model is editable.
      */
-    public boolean isEditable() { return false; }
+    public abstract boolean isEditable();
 
     /**
      * Returns the number of paragraphs in the model.
@@ -74,8 +74,40 @@ public abstract class StyledTextModel {
      */
     public abstract StyledParagraph getParagraph(int index);
     
+    /**
+     * This method gets called only by an editable model.
+     * start is guaranteed to precede end.
+     * 
+     * @param start
+     * @param end
+     */
+    protected abstract void removeRegion(TextPos start, TextPos end);
+
+    /** returns the character count of the inserted text */
+    protected abstract int insertSegment(int index, int offset, StyledText text);
+
+    /** inserts a line break */
+    protected abstract void insertLineBreak(int index, int offset);
+    
+    /** inserts a paragraph node */
+    protected abstract void insertParagraph(int index, StyledText segment);
+    
+    public abstract void applyStyle(TextPos start, TextPos end, String direct, String[] css);
+//    {
+//        // no-op in read-only model
+//        // TODO the problem of applying a direct style is that it has to be intelligently merged, which
+//        // entails a lot of non-trivial string processing
+//    }
+    
+    public abstract void removeStyle(TextPos start, TextPos end, String direct, String[] css);
+//    {
+//        // no-op in read-only model
+//        // TODO same problem in removing a direct style is that it has to be intelligently merged, which
+//        // entails a lot of non-trivial string processing
+//    }
+    
     private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
-    private final HashMap<DataFormat,ImportHandler> importHandlers = new HashMap<>(4);
+    private final HashMap<DataFormat,ImportHandler> importHandlers = new HashMap<>(4); // TODO one hash map?
     private final HashMap<DataFormat,ExportHandler> exportHandlers = new HashMap<>(4);
     private final Markers markers = new Markers();
     // TODO special BEGIN/END markers? especially END?
@@ -158,41 +190,83 @@ public abstract class StyledTextModel {
     }
     
     /**
-     * Equivalent of the user typing text.
-     * The style of the inserted text is determined by the model based on the surrounding text.
-     * After the model makes necessary changes, the model emits an event to all registered ChangeListeners.
-     * 
-     * Inserted text cannot include newlines, form feeds, etc.
-     * 
+     * Replaces the given range with the provided plain text.
+     * This is a convenience method that calls {@link #replace(TextPos,TextPos,StyledInput)}
+     *
      * @param start
      * @param end
-     * @param text text to be inserted.
+     * @param text
+     * @return
      */
-    public void replace(TextPos start, TextPos end, String text) {
-        // no-op in read-only model
+    public TextPos replace(TextPos start, TextPos end, String text) {
+        if (isEditable()) {
+            // TODO get style
+            String direct = null;
+            String[] css = null;
+            return replace(start, end, StyledInput.of(text, direct, css));
+        }
+        return null;
+    }
+    
+    /**
+     * Replaces the given range with the provided styled text.
+     * When inserting a plain text, the style is taken from preceding text segment, or, if the text is being
+     * inserted into the beginning of the document, the style is taken from the following text segment.
+     * 
+     * After the model applies the requested changes, an event is sent to all the registered ChangeListeners.
+     * 
+     * @param start start position
+     * @param end end position
+     * @param input StyledInput
+     * @return text position at the end of the inserted text, or null if the model is read only
+     */
+    public TextPos replace(TextPos start, TextPos end, StyledInput input) {
+        if (isEditable()) {
+            int cmp = start.compareTo(end);
+            if (cmp > 0) {
+                // make sure start < end
+                TextPos p = start;
+                start = end;
+                end = p;
+            }
+            
+            if(cmp != 0) {
+                removeRegion(start, end);
+            }
 
-        // TODO or assume: removeRegion + insert from (string, styled string, styled string iterator)
-        // TODO via input handler?
-        // TODO input: typed text; clipboard
-        // TODO replace with sequence: remove range + insert(text, directStyle, css[])
-        // TODO must work with multi-line text (separated by cr/crlf/lf)
-        // TODO make sure start < pos
-    }
-    
-    public void insertLineBreak(TextPos pos) {
-        // no-op in read only model
-    }
-    
-    public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
-        // no-op in read-only model
-        // TODO the problem of applying a direct style is that it has to be intelligently merged, which
-        // entails a lot of non-trivial string processing
-    }
-    
-    public void removeStyle(TextPos start, TextPos end, String direct, String[] css) {
-        // no-op in read-only model
-        // TODO same problem in removing a direct style is that it has to be intelligently merged, which
-        // entails a lot of non-trivial string processing
+            int index = start.index();
+            int offset = start.offset();
+            int top = 0;
+            int btm = 0;
+            
+            StyledText seg;
+            while ((seg = input.nextSegment()) != null) {
+                if(seg.isParagraph()) {
+                    offset = 0;
+                    btm = 0;
+                    index++;
+                    insertParagraph(index, seg);
+                } else if(seg.isText()) {
+                    int len = insertSegment(index, offset, seg);
+                    if(index == start.index()) {
+                        top += len;
+                    }
+                    offset += len;
+                    btm += len;
+                } else if(seg.isLineBreak()) {
+                    insertLineBreak(index, offset);
+                    index++;
+                    offset = 0;
+                    btm = 0;
+                }
+            }
+
+            int lines = index - start.index();
+            fireChangeEvent(start, end, top, lines, btm);
+            
+            return new TextPos(index, offset);
+        }
+        return null;
     }
     
     protected void fireChangeEvent(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
