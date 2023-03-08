@@ -25,8 +25,8 @@
 package goryachev.rich.simple;
 
 import javafx.scene.image.Image;
-import goryachev.rich.StyledParagraph;
 import goryachev.rich.TextCell;
+import goryachev.rich.model.StyledParagraph;
 
 public class SimpleStyledImageParagraph implements StyledParagraph {
     private final int index; // TODO move to base class?

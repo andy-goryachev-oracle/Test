@@ -54,6 +54,8 @@ import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 import goryachev.rich.impl.CellCache;
 import goryachev.rich.impl.SelectionHelper;
+import goryachev.rich.model.StyledParagraph;
+import goryachev.rich.model.StyledTextModel;
 import goryachev.rich.util.FxPathBuilder;
 import goryachev.rich.util.NewAPI;
 import goryachev.rich.util.Util;

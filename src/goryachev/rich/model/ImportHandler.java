@@ -22,17 +22,21 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.rich.model;
+
+import javafx.scene.input.DataFormat;
 
 /**
- * Editable StyledTextModel base class.
+ * Facilitates import of styled text into a StyledTextModel.
  */
-public abstract class EditableStyledTextModel extends StyledTextModel {
-    public EditableStyledTextModel() {
-    }
+public abstract class ImportHandler {
+    private final DataFormat format;
 
-    @Override
-    public boolean isEditable() {
-        return true;
+    public ImportHandler(DataFormat f) {
+        this.format = f;
+    }
+    
+    public DataFormat getDataFormat() {
+        return format;
     }
 }

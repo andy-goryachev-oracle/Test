@@ -24,13 +24,16 @@
  */
 // This code borrows heavily from the following project, with permission from the author:
 // https://github.com/andy-goryachev/FxEditor
-package goryachev.rich;
+package goryachev.rich.model;
 
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javafx.scene.input.DataFormat;
+import goryachev.rich.Marker;
+import goryachev.rich.RichTextArea;
+import goryachev.rich.TextPos;
 import goryachev.rich.impl.Markers;
 
 /**
@@ -150,7 +153,7 @@ public abstract class StyledTextModel {
         return formats.toArray(new DataFormat[formats.size()]);
     }
 
-    protected ExportHandler getExportHandler(DataFormat format) {
+    public ExportHandler getExportHandler(DataFormat format) {
         return exportHandlers.get(format);
     }
 
@@ -178,7 +181,7 @@ public abstract class StyledTextModel {
         return formats.toArray(new DataFormat[formats.size()]);
     }
 
-    protected ImportHandler getImportHandler(DataFormat format) {
+    public ImportHandler getImportHandler(DataFormat format) {
         return importHandlers.get(format);
     }
 

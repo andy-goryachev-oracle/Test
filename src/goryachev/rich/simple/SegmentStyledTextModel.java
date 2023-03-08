@@ -34,9 +34,9 @@ import java.util.ArrayList;
 import java.util.function.Supplier;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
-import goryachev.rich.ReadOnlyStyledTextModel;
-import goryachev.rich.StyledParagraph;
-import goryachev.rich.StyledText;
+import goryachev.rich.model.ReadOnlyStyledTextModel;
+import goryachev.rich.model.StyledParagraph;
+import goryachev.rich.model.StyledText;
 
 /**
  * A read-only styled text model that consists of styled text segments.

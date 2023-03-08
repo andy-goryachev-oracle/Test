@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.rich.model;
 
 import java.util.function.Supplier;
 import javafx.scene.Node;

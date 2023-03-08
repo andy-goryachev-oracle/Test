@@ -22,21 +22,25 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
-
-import javafx.scene.input.DataFormat;
+package goryachev.rich.model;
 
 /**
- * Facilitates import of styled text into a StyledTextModel.
+ * Class represents a source of styled text segments.
  */
-public abstract class ImportHandler {
-    private final DataFormat format;
-
-    public ImportHandler(DataFormat f) {
-        this.format = f;
-    }
+public abstract class StyledInput {
+    /**
+     * Returns the next segment, or null if no more segments.
+     */
+    public abstract StyledText nextSegment();
     
-    public DataFormat getDataFormat() {
-        return format;
+    /**
+     * Creates a plain text styled input.
+     * @param text
+     * @param css 
+     * @param direct 
+     * @return
+     */
+    public static StyledInput of(String text, String direct, String[] css) {
+        return new StringStyledInput(text == null ? "" : text, direct, css);
     }
 }

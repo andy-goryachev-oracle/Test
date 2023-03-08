@@ -46,6 +46,7 @@ import javafx.scene.AccessibleAttribute;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.Control;
 import javafx.util.Duration;
+import goryachev.rich.model.StyledTextModel;
 import goryachev.rich.util.Util;
 
 /**

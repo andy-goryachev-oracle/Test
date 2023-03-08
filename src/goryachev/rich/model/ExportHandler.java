@@ -22,47 +22,31 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.rich.model;
+
+import javafx.scene.input.DataFormat;
+import goryachev.rich.TextPos;
 
 /**
- * Read-only StyledTextModel base class.
+ * Facilitates export of styled text from a StyledTextModel.
  */
-public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
-    public ReadOnlyStyledTextModel() {
+public abstract class ExportHandler {
+    /**
+     * exports the content in the handler's format as a String
+     * 
+     * @param start
+     * @param end
+     * @return
+     */
+    public abstract String toString(TextPos start, TextPos end);
+
+    private final DataFormat format;
+
+    public ExportHandler(DataFormat f) {
+        this.format = f;
     }
 
-    @Override
-    public boolean isEditable() {
-        return false;
-    }
-
-    @Override
-    protected void removeRegion(TextPos start, TextPos end) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected int insertTextSegment(int index, int offset, StyledText text) {
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    protected void insertLineBreak(int index, int offset) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    protected void insertParagraph(int index, StyledText segment) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeStyle(TextPos start, TextPos end, String direct, String[] css) {
-        throw new UnsupportedOperationException();
+    public DataFormat getDataFormat() {
+        return format;
     }
 }

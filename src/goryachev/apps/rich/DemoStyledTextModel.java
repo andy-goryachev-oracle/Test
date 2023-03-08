@@ -28,9 +28,9 @@ import java.util.AbstractList;
 import java.util.Collection;
 import java.util.RandomAccess;
 import javafx.scene.text.TextFlow;
-import goryachev.rich.ReadOnlyStyledTextModel;
-import goryachev.rich.StyledParagraph;
 import goryachev.rich.TextCell;
+import goryachev.rich.model.ReadOnlyStyledTextModel;
+import goryachev.rich.model.StyledParagraph;
 import goryachev.rich.util.NewAPI;
 
 /**

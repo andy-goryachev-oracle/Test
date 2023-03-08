@@ -22,30 +22,55 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.rich.model;
 
-import javafx.scene.input.DataFormat;
+import java.util.function.Supplier;
+import javafx.scene.Node;
 
-/**
- * Facilitates export of styled text from a StyledTextModel.
- */
-public abstract class ExportHandler {
-    /**
-     * exports the content in the handler's format as a String
-     * 
-     * @param start
-     * @param end
-     * @return
-     */
-    public abstract String toString(TextPos start, TextPos end);
-
-    private final DataFormat format;
-
-    public ExportHandler(DataFormat f) {
-        this.format = f;
+public class StringStyledText implements StyledText {
+    private final String text;
+    private final String direct;
+    private final String[] css;
+    
+    // TODO perhaps make this protected to avoid checking for invalid chars (<0x20)
+    public StringStyledText(String text, String direct, String[] css) {
+        this.text = text;
+        this.direct = direct;
+        this.css = css;
     }
 
-    public DataFormat getDataFormat() {
-        return format;
+    @Override
+    public boolean isText() {
+        return true;
+    }
+
+    @Override
+    public boolean isParagraph() {
+        return false;
+    }
+
+    @Override
+    public boolean isLineBreak() {
+        return false;
+    }
+
+    @Override
+    public String getText() {
+        return text;
+    }
+
+    @Override
+    public String getDirectStyle() {
+        return direct;
+    }
+
+    @Override
+    public String[] getStyles() {
+        return css;
+    }
+
+    @Override
+    public Supplier<Node> getNodeGenerator() {
+        return null;
     }
 }

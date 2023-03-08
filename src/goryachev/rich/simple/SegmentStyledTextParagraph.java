@@ -30,8 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import javafx.scene.Node;
-import goryachev.rich.StyledParagraph;
 import goryachev.rich.TextCell;
+import goryachev.rich.model.StyledParagraph;
 
 public class SegmentStyledTextParagraph implements StyledParagraph {
     

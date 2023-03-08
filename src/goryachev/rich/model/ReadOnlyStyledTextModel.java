@@ -22,55 +22,49 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+package goryachev.rich.model;
 
-import java.util.function.Supplier;
-import javafx.scene.Node;
+import goryachev.rich.TextPos;
 
-public class StringStyledText implements StyledText {
-    private final String text;
-    private final String direct;
-    private final String[] css;
+/**
+ * Read-only StyledTextModel base class.
+ */
+public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
+    public ReadOnlyStyledTextModel() {
+    }
+
+    @Override
+    public boolean isEditable() {
+        return false;
+    }
+
+    @Override
+    protected void removeRegion(TextPos start, TextPos end) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected int insertTextSegment(int index, int offset, StyledText text) {
+        throw new UnsupportedOperationException();
+    }
     
-    // TODO perhaps make this protected to avoid checking for invalid chars (<0x20)
-    public StringStyledText(String text, String direct, String[] css) {
-        this.text = text;
-        this.direct = direct;
-        this.css = css;
+    @Override
+    protected void insertLineBreak(int index, int offset) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isText() {
-        return true;
+    protected void insertParagraph(int index, StyledText segment) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isParagraph() {
-        return false;
+    public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isLineBreak() {
-        return false;
-    }
-
-    @Override
-    public String getText() {
-        return text;
-    }
-
-    @Override
-    public String getDirectStyle() {
-        return direct;
-    }
-
-    @Override
-    public String[] getStyles() {
-        return css;
-    }
-
-    @Override
-    public Supplier<Node> getNodeGenerator() {
-        return null;
+    public void removeStyle(TextPos start, TextPos end, String direct, String[] css) {
+        throw new UnsupportedOperationException();
     }
 }

@@ -27,11 +27,11 @@ package goryachev.apps.rich;
 import java.util.ArrayList;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import goryachev.rich.EditableStyledTextModel;
-import goryachev.rich.StyledParagraph;
-import goryachev.rich.StyledText;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
+import goryachev.rich.model.EditableStyledTextModel;
+import goryachev.rich.model.StyledParagraph;
+import goryachev.rich.model.StyledText;
 
 public class EditablePlaintextModel extends EditableStyledTextModel {
     private final ArrayList<String> paragraphs = new ArrayList();
