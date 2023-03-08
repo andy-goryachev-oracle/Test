@@ -42,7 +42,7 @@ public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
     }
 
     @Override
-    protected int insertSegment(int index, int offset, StyledText text) {
+    protected int insertTextSegment(int index, int offset, StyledText text) {
         throw new UnsupportedOperationException();
     }
     

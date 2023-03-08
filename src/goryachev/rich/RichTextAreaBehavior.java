@@ -293,9 +293,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         TextPos pos = control.getCaretPosition();
         if(pos != null) {
             TextPos an = control.getAnchorPosition();
-            m.replace(an, pos, StyledInput.of("\n", null, null));
-            
-            TextPos p2 = new TextPos(pos.index() + 1, 0);
+            TextPos p2 = m.replace(an, pos, StyledInput.of("\n", null, null));
             control.moveCaret(p2, false);
             clearPhantomX();
         }

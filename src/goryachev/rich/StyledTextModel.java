@@ -83,8 +83,11 @@ public abstract class StyledTextModel {
      */
     protected abstract void removeRegion(TextPos start, TextPos end);
 
-    /** returns the character count of the inserted text */
-    protected abstract int insertSegment(int index, int offset, StyledText text);
+    /**
+     * This method is called to insert a single text segment at the given position.
+     * @return the character count of the inserted text
+     */
+    protected abstract int insertTextSegment(int index, int offset, StyledText text);
 
     /** inserts a line break */
     protected abstract void insertLineBreak(int index, int offset);
@@ -247,7 +250,7 @@ public abstract class StyledTextModel {
                     index++;
                     insertParagraph(index, seg);
                 } else if(seg.isText()) {
-                    int len = insertSegment(index, offset, seg);
+                    int len = insertTextSegment(index, offset, seg);
                     if(index == start.index()) {
                         top += len;
                     }

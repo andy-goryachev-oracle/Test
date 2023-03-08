@@ -74,32 +74,8 @@ public class EditablePlaintextModel extends EditableStyledTextModel {
         return paragraphs.get(index);
     }
 
-    // TODO remove
-    public void replace_OLD(TextPos start, TextPos end, String text) {
-        System.out.println("replace start=" + start + " end=" + end + " text=[" + text + "]"); // FIX
-        
-        if(start.compareTo(end) > 0) {
-            TextPos p = start;
-            start = end;
-            end = p;
-        }
-
-        int len = text.length();
-
-        removeRegion(start, end);
-
-        int index = start.index();
-        int offset = start.offset();
-        String s = paragraphs.get(index);
-
-        String s2 = insertText(s, offset, text);
-        paragraphs.set(index, s2);
-
-        fireChangeEvent(start, end, len, 0, 0);
-    }
-    
     @Override
-    protected int insertSegment(int index, int offset, StyledText segment) {
+    protected int insertTextSegment(int index, int offset, StyledText segment) {
         String s = paragraphs.get(index);
         String text = segment.getText();
 
