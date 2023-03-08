@@ -86,11 +86,11 @@ public abstract class StyledTextModel {
     /** returns the character count of the inserted text */
     protected abstract int insertSegment(int index, int offset, StyledText text);
 
-    // TODO remove, use multi-line replace()
-    @Deprecated
-    protected void insertLineBreak(TextPos pos) {
-        throw new UnsupportedOperationException();
-    }
+    /** inserts a line break */
+    protected abstract void insertLineBreak(int index, int offset);
+    
+    /** inserts a paragraph node */
+    protected abstract void insertParagraph(int index, StyledText segment);
     
     public abstract void applyStyle(TextPos start, TextPos end, String direct, String[] css);
 //    {
@@ -245,20 +245,19 @@ public abstract class StyledTextModel {
                     offset = 0;
                     btm = 0;
                     index++;
-                }
-                
-                int len = insertSegment(index, offset, seg);
-                offset += len;
-                
-                if(index == start.index()) {
-                    top += len;
-                }
-
-                if (seg.isLineBreak()) {
-                    index++;
-                    btm = 0;
-                } else {
+                    insertParagraph(index, seg);
+                } else if(seg.isText()) {
+                    int len = insertSegment(index, offset, seg);
+                    if(index == start.index()) {
+                        top += len;
+                    }
+                    offset += len;
                     btm += len;
+                } else if(seg.isLineBreak()) {
+                    insertLineBreak(index, offset);
+                    index++;
+                    offset = 0;
+                    btm = 0;
                 }
             }
 

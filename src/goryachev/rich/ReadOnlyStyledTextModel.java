@@ -45,6 +45,16 @@ public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
     protected int insertSegment(int index, int offset, StyledText text) {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    protected void insertLineBreak(int index, int offset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void insertParagraph(int index, StyledText segment) {
+        throw new UnsupportedOperationException();
+    }
 
     @Override
     public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {

@@ -108,24 +108,19 @@ public class EditablePlaintextModel extends EditableStyledTextModel {
         return text.length();
     }
     
-    // FIX remove
     @Override
-    public void insertLineBreak(TextPos pos) {
-        System.err.println("insertLineBreak pos=" + pos); // FIX
-        int ix = pos.index();
-        if(ix >= getParagraphCount()) {
+    protected void insertLineBreak(int index, int offset) {
+        if(index >= getParagraphCount()) {
             paragraphs.add("");
         } else {
-            int cix = pos.offset();
-            String s = paragraphs.get(ix);
-            if(cix >= s.length()) {
-                paragraphs.add(ix + 1, "");
+            String s = paragraphs.get(index);
+            if(offset >= s.length()) {
+                paragraphs.add(index + 1, "");
             } else {
-                paragraphs.set(ix, s.substring(0, cix));
-                paragraphs.add(ix + 1, s.substring(cix));
+                paragraphs.set(index, s.substring(0, offset));
+                paragraphs.add(index + 1, s.substring(offset));
             }
         }
-        fireChangeEvent(pos, pos, 0, 1, 0);
     }
 
     private static String insertText(String text, int index, String toInsert) {
@@ -161,6 +156,11 @@ public class EditablePlaintextModel extends EditableStyledTextModel {
                 paragraphs.remove(ix);
             }
         }
+    }
+    
+    @Override
+    protected void insertParagraph(int index, StyledText segment) {
+        // no-op
     }
     
     @Override

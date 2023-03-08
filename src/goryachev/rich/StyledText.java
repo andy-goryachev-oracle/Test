@@ -87,8 +87,14 @@ public interface StyledText {
     // TODO associated object encapsulating model-specific internal data (paste, dnd, etc.)
     
     public static final StyledText LINEBREAK = new StringStyledText(null, null, null) {
+        @Override
         public boolean isLineBreak() {
             return true;
+        }
+
+        @Override
+        public boolean isText() {
+            return false;
         }
     };
 }
