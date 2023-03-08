@@ -37,7 +37,10 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.DataFormat;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
@@ -842,17 +845,35 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     public void copy() {
-        // TODO
-        System.out.println("copy");
+        System.out.println("copy"); // FIX
+        if (hasSelection()) {
+            StyledTextModel m = control.getModel();
+            DataFormat[] fs = m.getSupportedExportFormats();
+            if(fs.length > 0) {
+                TextPos start = control.getAnchorPosition();
+                TextPos end = control.getCaretPosition();
+                if(start.compareTo(end) > 0) {
+                    TextPos p = start;
+                    start = end;
+                    end = p;
+                }
+                
+                ClipboardContent c = new ClipboardContent();
+                for(DataFormat f: fs) {
+                    ExportHandler h = m.getExportHandler(f);
+                    String s = h.toString(start, end);
+                    c.put(f, s);
+                }
+                Clipboard.getSystemClipboard().setContent(c);
+            }
+        }
     }
 
     public void cut() {
-        // TODO
-        System.out.println("cut");
+        System.out.println("cut"); // FIX
     }
 
     public void paste() {
-        // TODO
-        System.out.println("paste");
+        System.out.println("paste"); // FIX
     }
 }
