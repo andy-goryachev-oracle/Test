@@ -30,7 +30,9 @@ import goryachev.monkey.util.ShowCharacterRuns;
 import goryachev.monkey.util.TestPaneBase;
 import goryachev.monkey.util.TextSelector;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.control.CheckBox;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -42,6 +44,7 @@ public class TextPage extends TestPaneBase {
     private final FontSelector fontSelector;
     private final CheckBox showChars;
     private final Group textGroup;
+    private Text control;
 
     public TextPage() {
         setId("TextPage");
@@ -61,6 +64,12 @@ public class TextPage extends TestPaneBase {
         showChars.selectedProperty().addListener((p) -> {
             updateText();
         });
+        
+        CheckBox wrap = new CheckBox("set wrap width");
+        wrap.setId("wrap");
+        wrap.selectedProperty().addListener((p) -> {
+            updateWrap(wrap.selectedProperty().get());
+        });
 
         OptionPane p = new OptionPane();
         p.label("Text:");
@@ -69,9 +78,11 @@ public class TextPage extends TestPaneBase {
         p.option(fontSelector.fontNode());
         p.label("Font Size:");
         p.option(fontSelector.sizeNode());
+        // FIX fails to reduce width if enabled
+        //p.option(wrap);
         p.option(showChars);
         
-        setContent(textGroup);
+        setContent(new BorderPane(textGroup));
         setOptions(p);
 
         textSelector.selectFirst();
@@ -82,13 +93,24 @@ public class TextPage extends TestPaneBase {
         String text = textSelector.getSelectedText();
         Font f = fontSelector.getFont();
 
-        Text t = new Text(text);
-        t.setFont(f);
+        control = new Text(text);
+        control.setFont(f);
         
-        textGroup.getChildren().setAll(t);
+        textGroup.getChildren().setAll(control);
         if(showChars.isSelected()) {
-            Group g = ShowCharacterRuns.createFor(t);
+            Group g = ShowCharacterRuns.createFor(control);
             textGroup.getChildren().add(g);
+        }
+    }
+
+    protected void updateWrap(boolean on) {
+        if (on) {
+            Parent p = textGroup.getParent();
+            if (p instanceof BorderPane bp) {
+                control.wrappingWidthProperty().bind(bp.widthProperty());
+            }
+        } else {
+            control.wrappingWidthProperty().unbind();
         }
     }
 }
