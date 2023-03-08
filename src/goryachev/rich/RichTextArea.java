@@ -63,6 +63,8 @@ import goryachev.rich.util.Util;
 public class RichTextArea extends Control {
     public enum Action {
         BACKSPACE,
+        COPY,
+        CUT,
         DELETE,
         INSERT_LINE_BREAK,
         INSERT_TAB,
@@ -76,6 +78,7 @@ public class RichTextArea extends Control {
         MOVE_UP,
         PAGE_DOWN,
         PAGE_UP,
+        PASTE,
         SELECT_ALL,
         SELECT_DOCUMENT_END,
         SELECT_DOCUMENT_START,
@@ -436,5 +439,17 @@ public class RichTextArea extends Control {
     // TODO return the new caret position?
     public void replaceText(TextPos start, TextPos end, String text) {
         // TODO additional method for StyledStream?
+    }
+    
+    public void copy() {
+        execute(Action.COPY);
+    }
+    
+    public void cut() {
+        execute(Action.CUT);
+    }
+    
+    public void paste() {
+        execute(Action.PASTE);
     }
 }

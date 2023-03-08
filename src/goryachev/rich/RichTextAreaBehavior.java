@@ -87,6 +87,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         this.modelListener = this::handleModel;
 
         map(Action.BACKSPACE, this::backspace, KeyCode.BACK_SPACE);
+        map(Action.COPY, this::copy, KeyCode.C, KCondition.SHORTCUT);
+        map(Action.CUT, this::cut, KeyCode.X, KCondition.SHORTCUT);
         map(Action.DELETE, this::delete, KeyCode.DELETE);
         map(Action.INSERT_LINE_BREAK, this::insertLineBreak, KeyCode.ENTER);
         map(Action.INSERT_TAB, this::insertTab, KeyCode.TAB);
@@ -104,6 +106,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         map(Action.MOVE_DOCUMENT_END, KeyCode.DOWN, KCondition.SHORTCUT, KCondition.MAC);
         map(Action.PAGE_DOWN, this::pageDown, KeyCode.PAGE_DOWN);
         map(Action.PAGE_UP, this::pageUp, KeyCode.PAGE_UP);
+        map(Action.PASTE, this::paste, KeyCode.V, KCondition.SHORTCUT);
         map(Action.SELECT_ALL, this::selectAll, KeyCode.A, KCondition.SHORTCUT);
         map(Action.SELECT_LEFT, this::selectLeft, KeyCode.LEFT, KCondition.SHIFT);
         map(Action.SELECT_RIGHT, this::selectRight, KeyCode.RIGHT, KCondition.SHIFT);
@@ -638,11 +641,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         if(m != null) {
             int ix = m.getParagraphCount() - 1;
             if (ix >= 0) {
-                // TODO create a method (getLastTextPos)
-                // TODO add a special END_OF_DOCUMENT marker?
-                String text = m.getPlainText(ix);
-                int cix = text == null ? 0 : text.length();
-                TextPos end = new TextPos(ix, cix);
+                int off = getTextLength(ix);
+                TextPos end = new TextPos(ix, off);
                 control.select(TextPos.ZERO, end);
                 clearPhantomX();
             }
@@ -839,5 +839,20 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         //        cutMI.setDisable(!hasSelection);
         //        copyMI.setDisable(!hasSelection);
         //        deleteMI.setDisable(!hasSelection);
+    }
+
+    public void copy() {
+        // TODO
+        System.out.println("copy");
+    }
+
+    public void cut() {
+        // TODO
+        System.out.println("cut");
+    }
+
+    public void paste() {
+        // TODO
+        System.out.println("paste");
     }
 }
