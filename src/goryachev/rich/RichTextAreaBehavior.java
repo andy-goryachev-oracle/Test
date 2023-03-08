@@ -50,6 +50,7 @@ import javafx.stage.Screen;
 import javafx.util.Duration;
 import goryachev.rich.RichTextArea.Action;
 import goryachev.rich.model.ExportHandler;
+import goryachev.rich.model.PlainTextStyledOutput;
 import goryachev.rich.model.StyledInput;
 import goryachev.rich.model.StyledTextModel;
 import goryachev.rich.util.BehaviorBase2;
@@ -849,34 +850,47 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
     public void copy() {
         System.out.println("copy"); // FIX
-        if (hasSelection()) {
-            StyledTextModel m = control.getModel();
-            DataFormat[] fs = m.getSupportedExportFormats();
-            if(fs.length > 0) {
-                TextPos start = control.getAnchorPosition();
-                TextPos end = control.getCaretPosition();
-                if(start.compareTo(end) > 0) {
-                    TextPos p = start;
-                    start = end;
-                    end = p;
-                }
-                
-                ClipboardContent c = new ClipboardContent();
-                for(DataFormat f: fs) {
-                    ExportHandler h = m.getExportHandler(f);
-                    String s = h.toString(start, end);
-                    c.put(f, s);
-                }
-                Clipboard.getSystemClipboard().setContent(c);
-            }
-        }
+        copy(false);
     }
 
     public void cut() {
         System.out.println("cut"); // FIX
+        copy(true);
     }
 
     public void paste() {
         System.out.println("paste"); // FIX
+        // for all supported import handlers (must come in the order from richer to simpler)
+        // if clipboard has the format, import
+    }
+    
+    protected void copy(boolean cut) {
+        if (hasSelection()) {
+            StyledTextModel m = control.getModel();
+            DataFormat[] fs = m.getSupportedExportFormats();
+            if (fs.length > 0) {
+                TextPos start = control.getAnchorPosition();
+                TextPos end = control.getCaretPosition();
+                if (start.compareTo(end) > 0) {
+                    TextPos p = start;
+                    start = end;
+                    end = p;
+                }
+
+                ClipboardContent c = new ClipboardContent();
+                for (DataFormat f : fs) {
+                    // FIX from model! for copy
+                    PlainTextStyledOutput out = new PlainTextStyledOutput();
+                    m.export(f, start, end, out);
+                    String s = out.toString();
+                    c.put(f, s);
+                }
+                Clipboard.getSystemClipboard().setContent(c);
+
+                if (cut) {
+                    deleteSelection();
+                }
+            }
+        }
     }
 }

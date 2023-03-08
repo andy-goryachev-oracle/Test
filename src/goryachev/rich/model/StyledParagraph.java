@@ -36,7 +36,8 @@ public interface StyledParagraph {
      * Creates Nodes which provide visual representation of the paragraph.
      * This method must create new Nodes each time, in order to support multiple RichTextArea instances
      * connected to the same model.
-     * The nodes are not reused, so they must not maintain strong reference back to the model.
+     * The nodes are not reused, and might be created repeatedly,
+     * so the model must not keep strong references to these nodes.
      */
     public TextCell createTextCell();
     

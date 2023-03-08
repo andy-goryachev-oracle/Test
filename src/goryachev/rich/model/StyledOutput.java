@@ -25,23 +25,14 @@
 package goryachev.rich.model;
 
 /**
- * Class represents a source of styled text segments for the purposes of
- * pasting, importing, or loading from a file.
+ * Class represents a consumer of styled text segments for the purposes of
+ * exporting, copying, or saving to a file.
  */
-public abstract class StyledInput {
+public interface StyledOutput {
     /**
-     * Returns the next segment, or null if no more segments.
+     * Appends the next styled segment to the output.
+     * 
+     * @param segment
      */
-    public abstract StyledText nextSegment();
-    
-    /**
-     * Creates a plain text styled input.
-     * @param text
-     * @param css 
-     * @param direct 
-     * @return
-     */
-    public static StyledInput of(String text, String direct, String[] css) {
-        return new StringStyledInput(text == null ? "" : text, direct, css);
-    }
+    public void append(StyledText segment);
 }

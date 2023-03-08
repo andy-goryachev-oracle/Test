@@ -38,7 +38,7 @@ public abstract class ExportHandler {
      * @param end
      * @return
      */
-    public abstract String toString(TextPos start, TextPos end);
+    public abstract void export(TextPos start, TextPos end, StyledOutput out);
 
     private final DataFormat format;
 

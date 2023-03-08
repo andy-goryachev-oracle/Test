@@ -44,6 +44,7 @@ import javafx.scene.Node;
  * is provided between StyledText attributes and the (default) RichTextArea CSS.
  * This might require a StyleSheet + supported subset of -fx- properties.
  */
+// TODO rename StyledSegment
 public interface StyledText {
     /**
      * Returns true if this segment is a text segment.

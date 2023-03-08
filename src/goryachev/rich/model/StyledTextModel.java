@@ -26,7 +26,6 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich.model;
 
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -153,7 +152,7 @@ public abstract class StyledTextModel {
         return formats.toArray(new DataFormat[formats.size()]);
     }
 
-    public ExportHandler getExportHandler(DataFormat format) {
+    protected ExportHandler getExportHandler(DataFormat format) {
         return exportHandlers.get(format);
     }
 
@@ -162,7 +161,7 @@ public abstract class StyledTextModel {
     // html: ?? (html, css, images)
     // also, need to convert CSS into whatever form the export format supports.
     // Perhaps, it should emit a sequence of StyledText's.
-    public void export(DataFormat format, TextPos start, TextPos end, Writer wr) {
+    public void export(DataFormat format, TextPos start, TextPos end, StyledOutput out) {
         ExportHandler h = getExportHandler(format);
         if (h == null) {
             throw new IllegalArgumentException("Data format is not supported: " + format);
@@ -181,7 +180,7 @@ public abstract class StyledTextModel {
         return formats.toArray(new DataFormat[formats.size()]);
     }
 
-    public ImportHandler getImportHandler(DataFormat format) {
+    protected ImportHandler getImportHandler(DataFormat format) {
         return importHandlers.get(format);
     }
 

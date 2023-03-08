@@ -24,24 +24,29 @@
  */
 package goryachev.rich.model;
 
-/**
- * Class represents a source of styled text segments for the purposes of
- * pasting, importing, or loading from a file.
- */
-public abstract class StyledInput {
-    /**
-     * Returns the next segment, or null if no more segments.
-     */
-    public abstract StyledText nextSegment();
+public class PlainTextStyledOutput implements StyledOutput {
+    private final StringBuilder sb;
+    private String newline = System.getProperty("line.separator");
     
-    /**
-     * Creates a plain text styled input.
-     * @param text
-     * @param css 
-     * @param direct 
-     * @return
-     */
-    public static StyledInput of(String text, String direct, String[] css) {
-        return new StringStyledInput(text == null ? "" : text, direct, css);
+    public PlainTextStyledOutput(int size) {
+        sb = new StringBuilder(size);
+    }
+    
+    public PlainTextStyledOutput() {
+        this(2048);
+    }
+    
+    public void setLineSeparator(String s) {
+        newline = s;
+    }
+
+    @Override
+    public void append(StyledText seg) {
+        if(seg.isLineBreak()) {
+            sb.append(newline);
+        } else if(seg.isText()) {
+            String text = seg.getText();
+            sb.append(text);
+        }
     }
 }
