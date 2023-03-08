@@ -641,7 +641,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                 // TODO create a method (getLastTextPos)
                 // TODO add a special END_OF_DOCUMENT marker?
                 String text = m.getPlainText(ix);
-                int cix = text.length();
+                int cix = text == null ? 0 : text.length();
                 TextPos end = new TextPos(ix, cix);
                 control.select(TextPos.ZERO, end);
                 clearPhantomX();
