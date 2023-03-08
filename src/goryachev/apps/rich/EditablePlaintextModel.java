@@ -30,6 +30,7 @@ import javafx.scene.text.TextFlow;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 import goryachev.rich.model.EditableStyledTextModel;
+import goryachev.rich.model.PlainTextFormatHandler;
 import goryachev.rich.model.StyledParagraph;
 import goryachev.rich.model.StyledText;
 
@@ -39,6 +40,7 @@ public class EditablePlaintextModel extends EditableStyledTextModel {
 
     public EditablePlaintextModel() {
         paragraphs.add("");
+        registerDataFormatHandler(new PlainTextFormatHandler());
     }
 
     @Override

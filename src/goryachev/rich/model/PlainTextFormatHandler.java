@@ -24,29 +24,21 @@
  */
 package goryachev.rich.model;
 
-public class PlainTextStyledOutput implements StyledOutput {
-    private final StringBuilder sb;
-    private String newline = System.getProperty("line.separator");
-    
-    public PlainTextStyledOutput(int size) {
-        sb = new StringBuilder(size);
-    }
-    
-    public PlainTextStyledOutput() {
-        this(2048);
-    }
-    
-    public void setLineSeparator(String s) {
-        newline = s;
+import javafx.scene.input.DataFormat;
+
+public class PlainTextFormatHandler extends DataFormatHandler {
+    public PlainTextFormatHandler() {
+        super(DataFormat.PLAIN_TEXT);
     }
 
     @Override
-    public void append(StyledText seg) {
-        if(seg.isLineBreak()) {
-            sb.append(newline);
-        } else if(seg.isText()) {
-            String text = seg.getText();
-            sb.append(text);
-        }
+    public StyledInput getStyledInput(Object src) {
+        String text = (src == null) ? "" : src.toString();
+        return StyledInput.of(text, null, null);
+    }
+
+    @Override
+    public StyledOutput getStyledOutput(Object options) {
+        return new StringBuilderStyledOutput();
     }
 }

@@ -49,9 +49,9 @@ import javafx.scene.input.ScrollEvent;
 import javafx.stage.Screen;
 import javafx.util.Duration;
 import goryachev.rich.RichTextArea.Action;
-import goryachev.rich.model.ExportHandler;
-import goryachev.rich.model.PlainTextStyledOutput;
+import goryachev.rich.model.DataFormatHandler;
 import goryachev.rich.model.StyledInput;
+import goryachev.rich.model.StyledOutput;
 import goryachev.rich.model.StyledTextModel;
 import goryachev.rich.util.BehaviorBase2;
 import goryachev.rich.util.KCondition;
@@ -849,25 +849,43 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     public void copy() {
-        System.out.println("copy"); // FIX
         copy(false);
     }
 
     public void cut() {
-        System.out.println("cut"); // FIX
         copy(true);
     }
 
     public void paste() {
-        System.out.println("paste"); // FIX
-        // for all supported import handlers (must come in the order from richer to simpler)
-        // if clipboard has the format, import
+        if (isEditable()) {
+            StyledTextModel m = control.getModel();
+            DataFormat[] fs = m.getSupportedDataFormats();
+            if (fs.length > 0) {
+                if (hasSelection()) {
+                    deleteSelection();
+                }
+
+                for (DataFormat f : fs) {
+                    if (Clipboard.getSystemClipboard().hasContent(f)) {
+                        // import clipboard content
+                        Object src = Clipboard.getSystemClipboard().getContent(f);
+                        TextPos caret = control.getCaretPosition();
+                        TextPos anchor = control.getAnchorPosition();
+                        DataFormatHandler h = m.getDataFormatHandler(f);
+                        StyledInput in = h.getStyledInput(src);
+                        TextPos p = m.replace(caret, anchor, in);
+                        control.moveCaret(p, false);
+                        return;
+                    }
+                }
+            }
+        }
     }
-    
+
     protected void copy(boolean cut) {
         if (hasSelection()) {
             StyledTextModel m = control.getModel();
-            DataFormat[] fs = m.getSupportedExportFormats();
+            DataFormat[] fs = m.getSupportedDataFormats();
             if (fs.length > 0) {
                 TextPos start = control.getAnchorPosition();
                 TextPos end = control.getCaretPosition();
@@ -878,16 +896,20 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                 }
 
                 ClipboardContent c = new ClipboardContent();
+                // TODO on error: catch exception, log and provide audible feedback
                 for (DataFormat f : fs) {
-                    // FIX from model! for copy
-                    PlainTextStyledOutput out = new PlainTextStyledOutput();
-                    m.export(f, start, end, out);
-                    String s = out.toString();
-                    c.put(f, s);
+                    DataFormatHandler h = m.getDataFormatHandler(f);
+                    // problem: styled output depends on the export options
+                    StyledOutput out = h.getStyledOutput(null);
+                    m.exportText(start, end, out);
+                    Object v = out.getOutput();
+                    if (v != null) {
+                        c.put(f, v);
+                    }
                 }
                 Clipboard.getSystemClipboard().setContent(c);
 
-                if (cut) {
+                if (isEditable() && cut) {
                     deleteSelection();
                 }
             }

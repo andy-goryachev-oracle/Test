@@ -24,29 +24,34 @@
  */
 package goryachev.rich.model;
 
-import javafx.scene.input.DataFormat;
-import goryachev.rich.TextPos;
+public class StringBuilderStyledOutput implements StyledOutput {
+    private final StringBuilder sb;
+    private String newline = System.getProperty("line.separator");
 
-/**
- * Facilitates export of styled text from a StyledTextModel.
- */
-public abstract class ExportHandler {
-    /**
-     * exports the content in the handler's format as a String
-     * 
-     * @param start
-     * @param end
-     * @return
-     */
-    public abstract void export(TextPos start, TextPos end, StyledOutput out);
-
-    private final DataFormat format;
-
-    public ExportHandler(DataFormat f) {
-        this.format = f;
+    public StringBuilderStyledOutput(int initialCapacity) {
+        sb = new StringBuilder(initialCapacity);
     }
 
-    public DataFormat getDataFormat() {
-        return format;
+    public StringBuilderStyledOutput() {
+        this(1024);
+    }
+
+    public void setLineSeparator(String s) {
+        newline = s;
+    }
+
+    @Override
+    public void append(StyledText seg) {
+        if (seg.isLineBreak()) {
+            sb.append(newline);
+        } else if (seg.isText()) {
+            String text = seg.getText();
+            sb.append(text);
+        }
+    }
+
+    @Override
+    public Object getOutput() {
+        return sb.toString();
     }
 }

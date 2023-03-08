@@ -25,14 +25,33 @@
 package goryachev.rich.model;
 
 import javafx.scene.input.DataFormat;
+import goryachev.rich.TextPos;
 
 /**
- * Facilitates import of styled text into a StyledTextModel.
+ * Facilitates import/export of styled text into/from a StyledTextModel.
  */
-public abstract class ImportHandler {
+public abstract class DataFormatHandler {
+    /**
+     * Creates a StyledInput for the given source.
+     * TODO explain
+     *
+     * @param src
+     * @return
+     */
+    public abstract StyledInput getStyledInput(Object src);
+    
+    /**
+     * Creates a StyledOutput for the specified options.
+     * TODO explain
+     *
+     * @param options
+     * @return
+     */
+    public abstract StyledOutput getStyledOutput(Object options);
+    
     private final DataFormat format;
 
-    public ImportHandler(DataFormat f) {
+    public DataFormatHandler(DataFormat f) {
         this.format = f;
     }
     

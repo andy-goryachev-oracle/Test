@@ -112,8 +112,7 @@ public abstract class StyledTextModel {
 //    }
     
     private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
-    private final HashMap<DataFormat,ImportHandler> importHandlers = new HashMap<>(4); // TODO one hash map?
-    private final HashMap<DataFormat,ExportHandler> exportHandlers = new HashMap<>(4);
+    private final HashMap<DataFormat,DataFormatHandler> handlers = new HashMap<>(4);
     private final Markers markers = new Markers();
     // TODO special BEGIN/END markers? especially END?
 
@@ -142,57 +141,46 @@ public abstract class StyledTextModel {
         listeners.remove(listener);
     }
 
-    public ExportHandler registerExportHandler(ExportHandler handler) {
-        return exportHandlers.put(handler.getDataFormat(), handler);
+    public DataFormatHandler registerDataFormatHandler(DataFormatHandler h) {
+        return handlers.put(h.getDataFormat(), h);
     }
 
-    /** returns data formats supported by {@link export()} operation */
-    public DataFormat[] getSupportedExportFormats() {
-        Set<DataFormat> formats = exportHandlers.keySet();
+    /** returns supported data formats */
+    public DataFormat[] getSupportedDataFormats() {
+        // TODO must come in specific order: from richer to simpler
+        Set<DataFormat> formats = handlers.keySet();
         return formats.toArray(new DataFormat[formats.size()]);
     }
 
-    protected ExportHandler getExportHandler(DataFormat format) {
-        return exportHandlers.get(format);
+    public DataFormatHandler getDataFormatHandler(DataFormat format) {
+        return handlers.get(format);
     }
 
+    /*
     // TODO writer or OutputStream ?
     // plain text, rtf: Writer
     // html: ?? (html, css, images)
     // also, need to convert CSS into whatever form the export format supports.
     // Perhaps, it should emit a sequence of StyledText's.
     public void export(DataFormat format, TextPos start, TextPos end, StyledOutput out) {
-        ExportHandler h = getExportHandler(format);
-        if (h == null) {
-            throw new IllegalArgumentException("Data format is not supported: " + format);
-        }
+//        ExportHandler h = getExportHandler(format);
+//        if (h == null) {
+//            throw new IllegalArgumentException("Data format is not supported: " + format);
+//        }
 
         // TODO
-    }
-
-    public ImportHandler registerImportHandler(ImportHandler handler) {
-        return importHandlers.put(handler.getDataFormat(), handler);
-    }
-
-    /** returns data formats supported by {@link import()} operation */
-    public DataFormat[] getSupportedImportFormats() {
-        Set<DataFormat> formats = importHandlers.keySet();
-        return formats.toArray(new DataFormat[formats.size()]);
-    }
-
-    protected ImportHandler getImportHandler(DataFormat format) {
-        return importHandlers.get(format);
     }
 
     // TODO import from InputStream, String (multi-line), copy
     public void importText(DataFormat format, TextPos start, TextPos end, Object input) {
-        ImportHandler h = getImportHandler(format);
-        if (h == null) {
-            throw new IllegalArgumentException("Data format is not supported: " + format);
-        }
+//        DataFormatHandler h = getImportHandler(format);
+//        if (h == null) {
+//            throw new IllegalArgumentException("Data format is not supported: " + format);
+//        }
 
         // TODO
     }
+    */
     
     /**
      * Replaces the given range with the provided plain text.
@@ -280,6 +268,22 @@ public abstract class StyledTextModel {
 
         for (ChangeListener li : listeners) {
             li.eventTextUpdated(start, end, charsTop, linesAdded, charsBottom);
+        }
+    }
+
+    public void exportText(TextPos start, TextPos end, StyledOutput out) {
+        int cmp = start.compareTo(end);
+        if (cmp > 0) {
+            // make sure start < end
+            TextPos p = start;
+            start = end;
+            end = p;
+        }
+
+        if (start.index() == end.index()) {
+            // part of one line
+        } else {
+            // multi-line
         }
     }
 
