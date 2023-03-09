@@ -31,6 +31,8 @@ import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 import goryachev.rich.model.EditableStyledTextModel;
 import goryachev.rich.model.PlainTextFormatHandler;
+import goryachev.rich.model.StringStyledText;
+import goryachev.rich.model.StyledOutput;
 import goryachev.rich.model.StyledParagraph;
 import goryachev.rich.model.StyledText;
 
@@ -135,12 +137,27 @@ public class EditablePlaintextModel extends EditableStyledTextModel {
             }
         }
     }
-    
+
     @Override
     protected void insertParagraph(int index, StyledText segment) {
         // no-op
     }
-    
+
+    @Override
+    protected void exportSegments(int index, int startOffset, int endOffset, StyledOutput out) {
+        String text = getPlainText(index);
+        if (endOffset < 0) {
+            endOffset = text.length();
+        }
+
+        if ((startOffset != 0) || (endOffset != text.length())) {
+            text = text.substring(startOffset, endOffset);
+        }
+
+        StringStyledText seg = new StringStyledText(text, null, null);
+        out.append(seg);
+    }
+
     @Override
     public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
         throw new UnsupportedOperationException();

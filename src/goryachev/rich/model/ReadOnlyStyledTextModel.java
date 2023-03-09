@@ -67,4 +67,9 @@ public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
     public void removeStyle(TextPos start, TextPos end, String direct, String[] css) {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    protected void exportSegments(int index, int startOffset, int endOffset, StyledOutput out) {
+        throw new UnsupportedOperationException();
+    }
 }

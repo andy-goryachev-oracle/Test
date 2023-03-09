@@ -97,6 +97,16 @@ public abstract class StyledTextModel {
     /** inserts a paragraph node */
     protected abstract void insertParagraph(int index, StyledText segment);
     
+    /**
+     * Exports part of the paragraph as a sequence of styled segments.
+     * 
+     * @param index paragraph's model index
+     * @param startOffset start offset
+     * @param endOffset end offset.  if -1 then export to the paragraph length
+     * @param out
+     */
+    protected abstract void exportSegments(int index, int startOffset, int endOffset, StyledOutput out);
+    
     public abstract void applyStyle(TextPos start, TextPos end, String direct, String[] css);
 //    {
 //        // no-op in read-only model
@@ -280,10 +290,36 @@ public abstract class StyledTextModel {
             end = p;
         }
 
-        if (start.index() == end.index()) {
+        int ix0 = start.index();
+        int ix1 = end.index();
+        if (ix0 == ix1) {
             // part of one line
+            exportSegments(start.index(), start.offset(), end.offset(), out);
         } else {
             // multi-line
+            boolean lineBreak = false;
+            for(int ix=start.index(); ix<=end.index(); ix++) {
+                if(lineBreak) {
+                    out.append(StyledText.LINEBREAK);
+                } else {
+                    lineBreak = true;
+                }
+                
+                int off0;
+                int off1;
+                if(ix == ix0) {
+                    off0 = start.offset();
+                    off1 = -1;
+                } else if(ix == ix1) {
+                    off0 = 0;
+                    off1 = -1;
+                } else {
+                    off0 = 0;
+                    off1 = end.offset();
+                }
+                
+                exportSegments(ix, off0, off1, out);
+            }
         }
     }
 
