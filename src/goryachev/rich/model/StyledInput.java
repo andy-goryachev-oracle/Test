@@ -32,7 +32,7 @@ public abstract class StyledInput {
     /**
      * Returns the next segment, or null if no more segments.
      */
-    public abstract StyledText nextSegment();
+    public abstract StyledSegment nextSegment();
     
     /**
      * Creates a plain text styled input.

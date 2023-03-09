@@ -39,7 +39,6 @@ import goryachev.rich.impl.Markers;
  * Base class for a styled text model for use with {@link RichTextArea}.
  * The text is considered to be a collection of paragraphs, represented by {@link StyledParagraph} class.
  * 
- * TODO events
  * TODO printing
  */
 public abstract class StyledTextModel {
@@ -55,7 +54,8 @@ public abstract class StyledTextModel {
          * @param charsAddedBottom number of characters inserted on the same line as end
          */
         public void eventTextUpdated(TextPos start, TextPos end, int charsAddedTop, int linesAdded, int charsAddedBottom);
-        // TODO or another Change class?
+        
+        // TODO eventStyleUpdated (index1...index2)
     }
     
     /**
@@ -89,13 +89,13 @@ public abstract class StyledTextModel {
      * This method is called to insert a single text segment at the given position.
      * @return the character count of the inserted text
      */
-    protected abstract int insertTextSegment(int index, int offset, StyledText text);
+    protected abstract int insertTextSegment(int index, int offset, StyledSegment text);
 
     /** inserts a line break */
     protected abstract void insertLineBreak(int index, int offset);
     
     /** inserts a paragraph node */
-    protected abstract void insertParagraph(int index, StyledText segment);
+    protected abstract void insertParagraph(int index, StyledSegment segment);
     
     /**
      * Exports part of the paragraph as a sequence of styled segments.
@@ -108,18 +108,8 @@ public abstract class StyledTextModel {
     protected abstract void exportSegments(int index, int startOffset, int endOffset, StyledOutput out);
     
     public abstract void applyStyle(TextPos start, TextPos end, String direct, String[] css);
-//    {
-//        // no-op in read-only model
-//        // TODO the problem of applying a direct style is that it has to be intelligently merged, which
-//        // entails a lot of non-trivial string processing
-//    }
     
     public abstract void removeStyle(TextPos start, TextPos end, String direct, String[] css);
-//    {
-//        // no-op in read-only model
-//        // TODO same problem in removing a direct style is that it has to be intelligently merged, which
-//        // entails a lot of non-trivial string processing
-//    }
     
     private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
     private final HashMap<DataFormat,DataFormatHandler> handlers = new HashMap<>(4);
@@ -216,7 +206,7 @@ public abstract class StyledTextModel {
             int top = 0;
             int btm = 0;
             
-            StyledText seg;
+            StyledSegment seg;
             while ((seg = input.nextSegment()) != null) {
                 if(seg.isParagraph()) {
                     offset = 0;
@@ -274,7 +264,7 @@ public abstract class StyledTextModel {
             boolean lineBreak = false;
             for(int ix=start.index(); ix<=end.index(); ix++) {
                 if(lineBreak) {
-                    out.append(StyledText.LINEBREAK);
+                    out.append(StyledSegment.LINE_BREAK);
                 } else {
                     lineBreak = true;
                 }

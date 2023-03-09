@@ -34,7 +34,7 @@ public interface StyledOutput {
      * 
      * @param segment
      */
-    public void append(StyledText segment);
+    public void append(StyledSegment segment);
 
     /**
      * Returns accumulated data.  May return null if no accumulation has been performed or

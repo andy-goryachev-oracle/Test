@@ -44,7 +44,7 @@ public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
     }
 
     @Override
-    protected int insertTextSegment(int index, int offset, StyledText text) {
+    protected int insertTextSegment(int index, int offset, StyledSegment text) {
         throw new UnsupportedOperationException();
     }
     
@@ -54,7 +54,7 @@ public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
     }
 
     @Override
-    protected void insertParagraph(int index, StyledText segment) {
+    protected void insertParagraph(int index, StyledSegment segment) {
         throw new UnsupportedOperationException();
     }
 

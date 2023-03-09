@@ -31,10 +31,10 @@ import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 import goryachev.rich.model.EditableStyledTextModel;
 import goryachev.rich.model.PlainTextFormatHandler;
-import goryachev.rich.model.StringStyledText;
+import goryachev.rich.model.StringStyledSegment;
 import goryachev.rich.model.StyledOutput;
 import goryachev.rich.model.StyledParagraph;
-import goryachev.rich.model.StyledText;
+import goryachev.rich.model.StyledSegment;
 
 public class EditablePlaintextModel extends EditableStyledTextModel {
     private final ArrayList<String> paragraphs = new ArrayList();
@@ -79,7 +79,7 @@ public class EditablePlaintextModel extends EditableStyledTextModel {
     }
 
     @Override
-    protected int insertTextSegment(int index, int offset, StyledText segment) {
+    protected int insertTextSegment(int index, int offset, StyledSegment segment) {
         String s = paragraphs.get(index);
         String text = segment.getText();
 
@@ -139,7 +139,7 @@ public class EditablePlaintextModel extends EditableStyledTextModel {
     }
 
     @Override
-    protected void insertParagraph(int index, StyledText segment) {
+    protected void insertParagraph(int index, StyledSegment segment) {
         // no-op
     }
 
@@ -154,7 +154,7 @@ public class EditablePlaintextModel extends EditableStyledTextModel {
             text = text.substring(startOffset, endOffset);
         }
 
-        StringStyledText seg = new StringStyledText(text, null, null);
+        StringStyledSegment seg = new StringStyledSegment(text, null, null);
         out.append(seg);
     }
 

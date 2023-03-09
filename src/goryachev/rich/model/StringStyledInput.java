@@ -38,14 +38,14 @@ public class StringStyledInput extends StyledInput {
     }
 
     @Override
-    public StyledText nextSegment() {
+    public StyledSegment nextSegment() {
         if (offset < text.length()) {
             int c = text.charAt(offset);
             // is it a line break;?
             switch(c) {
             case '\n':
                 offset++;
-                return StyledText.LINEBREAK;
+                return StyledSegment.LINE_BREAK;
             case '\r':
                 c = charAt(++offset);
                 switch(c) {
@@ -53,18 +53,18 @@ public class StringStyledInput extends StyledInput {
                     offset++;
                     break;
                 }
-                return StyledText.LINEBREAK;
+                return StyledSegment.LINE_BREAK;
             }
 
             int ix = indexOfLineBreak(offset);
             if (ix < 0) {
                 String s = text.substring(offset);
                 offset = text.length();
-                return new StringStyledText(s, direct, css);
+                return new StringStyledSegment(s, direct, css);
             } else {
                 String s = text.substring(offset, ix);
                 offset = ix;
-                return new StringStyledText(s, direct, css);
+                return new StringStyledSegment(s, direct, css);
             }
         }
         return null;

@@ -43,9 +43,10 @@ import javafx.scene.Node;
  * UNLESS, specific attributes are used (colors, fonts, font attributes, paragraph attributes), and a mapping
  * is provided between StyledText attributes and the (default) RichTextArea CSS.
  * This might require a StyleSheet + supported subset of -fx- properties.
+ * 
+ * TODO in addition to is*(), add getType() returning an enum { TEXT, PARAGRAPH, INLINE_NODE, LINE_BREAK }
  */
-// TODO rename StyledSegment
-public interface StyledText {
+public interface StyledSegment {
     /**
      * Returns true if this segment is a text segment.
      */
@@ -87,7 +88,7 @@ public interface StyledText {
     
     // TODO associated object encapsulating model-specific internal data (paste, dnd, etc.)
     
-    public static final StyledText LINEBREAK = new StringStyledText(null, null, null) {
+    public static final StyledSegment LINE_BREAK = new StringStyledSegment(null, null, null) {
         @Override
         public boolean isLineBreak() {
             return true;

@@ -27,13 +27,14 @@ package goryachev.rich.model;
 import java.util.function.Supplier;
 import javafx.scene.Node;
 
-public class StringStyledText implements StyledText {
+public class StringStyledSegment implements StyledSegment {
     private final String text;
     private final String direct;
     private final String[] css;
     
     // TODO perhaps make this protected to avoid checking for invalid chars (<0x20)
-    public StringStyledText(String text, String direct, String[] css) {
+    // may be different factory methods of(String), of(String[])
+    public StringStyledSegment(String text, String direct, String[] css) {
         this.text = text;
         this.direct = direct;
         this.css = css;
