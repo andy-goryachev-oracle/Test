@@ -47,14 +47,11 @@ public class DemoModel extends SegmentStyledTextModel {
 
         addSegment("RichTextArea Control", "-fx-font-size:200%;", UNDER);
         //nl();
-        addImage(DemoModel.class.getResourceAsStream("image.png"));
-        addSegment("*** This text is styled with inline style ***", "-fx-font-size:100%; -fx-font-style:italic; -fx-fill:gray;");
-        nl();
-        addSegment("The following text is styled with a CSS stylesheet:");
-        nl().nl();
+        addImage(DemoModel.class.getResourceAsStream("panel-of-the-horses.jpg"));
+        nl(2);
         addSegment("/**", null, RED, CODE);
         nl();
-        addSegment(" * RichTextArea demo.", null, RED, CODE);
+        addSegment(" * RichTextArea Demo.", null, RED, CODE);
         nl();
         addSegment(" */", null, RED, CODE);
         nl();
@@ -64,17 +61,8 @@ public class DemoModel extends SegmentStyledTextModel {
         addSegment("Application {", null, CODE);
         nl();
         addSegment("}", null, CODE);
-        nl(3);
-        addSegment("        leading and trailing whitespace         ", null, CODE).nl();
-        addSegment("A regular Arabic verb, كَتَبَ‎ kataba (to write).", null, ARABIC).nl();
-        addSegment("Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ", null, LARGE).nl();
-        addSegment("Double diacritics: a\u0360b a\u0361b a\u0362b a\u035cb").nl();
-        addSegment("Emojis: [🇺🇦❤️🏁🇺🇸🔥🦋😀😃😄😁😆😅🤣😂🙂🙃😉😊😇]", null, LARGE).nl();
-        nl();
-        addSegment("Halfwidth and FullWidth Forms", null, UNDER).nl();
-        addSegment("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯ", "-fx-font-family:monospaced;").nl();
-        addSegment("ABCDEFGHIJKLMNO", "-fx-font-family:monospaced;").nl();
-        // inline node segments break navigation, probably because of caret shape?
+        nl(2);
+        // inline nodes
         addSegment("Inline Nodes: ");
         addNodeSegment(() -> {
             TextField f = new TextField();
@@ -85,6 +73,16 @@ public class DemoModel extends SegmentStyledTextModel {
         addSegment(" ");
         addNodeSegment(() -> new Button("OK"));
         addSegment(" "); // FIX cannot navigate over this segment
+        nl(2);
+        addSegment("A regular Arabic verb, كَتَبَ‎ kataba (to write).", null, ARABIC).nl();
+        addSegment("Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ", null, LARGE).nl();
+        addSegment("Double diacritics: a\u0360b a\u0361b a\u0362b a\u035cb").nl();
+        addSegment("Emojis: [🇺🇦❤️🏁🇺🇸🔥🦋😀😃😄😁😆😅🤣😂🙂🙃😉😊😇]", null, LARGE).nl();
+        nl();
+        addSegment("Halfwidth and FullWidth Forms", null, UNDER).nl();
+        addSegment("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯ", "-fx-font-family:monospaced;").nl();
+        addSegment("ABCDEFGHIJKLMNO", "-fx-font-family:monospaced;").nl();
+        addSegment("        leading and trailing whitespace         ", null, CODE).nl();
         nl(3);
 
         // TODO unicode codepoints
@@ -118,7 +116,7 @@ public class DemoModel extends SegmentStyledTextModel {
         }
         
         nl();
-        addSegment("The End.", null);
+        addSegment("\t\t終 The End.", "-fx-font-size:200%;", null);
         nl();
     }
     
