@@ -727,6 +727,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         }
     }
 
+    // TODO move to control?
     protected boolean hasSelection() {
         TextPos ca = control.getCaretPosition();
         if (ca != null) {
@@ -814,38 +815,40 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         ev.consume();
     }
 
-    private void populateContextMenu() {
+    protected void populateContextMenu() {
+        boolean sel = hasSelection();
+        boolean paste = (findFormatForPaste() != null);
+        
         ObservableList<MenuItem> items = contextMenu.getItems();
         items.clear();
 
         MenuItem m;
         items.add(m = new MenuItem("Undo"));
-        m.setDisable(true); // TODO undoMI.setDisable(!getNode().isUndoable());
+        m.setOnAction((ev) -> control.undo());
+        m.setDisable(!control.isUndoable());
 
         items.add(m = new MenuItem("Redo"));
-        m.setDisable(true); // TODO redoMI.setDisable(!getNode().isRedoable());
+        m.setOnAction((ev) -> control.redo());
+        m.setDisable(!control.isRedoable());
 
         items.add(new SeparatorMenuItem());
 
         items.add(m = new MenuItem("Cut"));
-        m.setDisable(true); // TODO
+        m.setOnAction((ev) -> control.cut());
+        m.setDisable(!sel);
 
         items.add(m = new MenuItem("Copy"));
-        m.setDisable(true); // TODO
+        m.setOnAction((ev) -> control.copy());
+        m.setDisable(!sel);
 
         items.add(m = new MenuItem("Paste"));
-        // TODO intersection of clipboard and control import formats
-        m.setDisable(true); // TODO pasteMI.setDisable(!Clipboard.getSystemClipboard().hasString());
+        m.setOnAction((ev) -> control.paste());
+        m.setDisable(!paste);
 
         items.add(new SeparatorMenuItem());
 
         items.add(m = new MenuItem("Select All"));
         m.setOnAction((ev) -> control.selectAll());
-
-        // TODO: control.hasSelection()
-        //        cutMI.setDisable(!hasSelection);
-        //        copyMI.setDisable(!hasSelection);
-        //        deleteMI.setDisable(!hasSelection);
     }
 
     public void copy() {
@@ -857,29 +860,39 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     public void paste() {
+        DataFormat f = findFormatForPaste();
+        if (f != null) {
+            if (hasSelection()) {
+                deleteSelection();
+            }
+
+            Object src = Clipboard.getSystemClipboard().getContent(f);
+            TextPos caret = control.getCaretPosition();
+            TextPos anchor = control.getAnchorPosition();
+            StyledTextModel m = control.getModel();
+            DataFormatHandler h = m.getDataFormatHandler(f);
+            StyledInput in = h.getStyledInput(src);
+            TextPos p = m.replace(caret, anchor, in);
+            control.moveCaret(p, false);
+        }
+    }
+
+    /** 
+     * returns a format that can be imported by a model, based on the clipboard content and model being editable.
+     */
+    protected DataFormat findFormatForPaste() {
         if (isEditable()) {
             StyledTextModel m = control.getModel();
             DataFormat[] fs = m.getSupportedDataFormats();
             if (fs.length > 0) {
-                if (hasSelection()) {
-                    deleteSelection();
-                }
-
                 for (DataFormat f : fs) {
                     if (Clipboard.getSystemClipboard().hasContent(f)) {
-                        // import clipboard content
-                        Object src = Clipboard.getSystemClipboard().getContent(f);
-                        TextPos caret = control.getCaretPosition();
-                        TextPos anchor = control.getAnchorPosition();
-                        DataFormatHandler h = m.getDataFormatHandler(f);
-                        StyledInput in = h.getStyledInput(src);
-                        TextPos p = m.replace(caret, anchor, in);
-                        control.moveCaret(p, false);
-                        return;
+                        return f;
                     }
                 }
             }
         }
+        return null;
     }
 
     protected void copy(boolean cut) {

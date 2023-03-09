@@ -453,4 +453,22 @@ public class RichTextArea extends Control {
     public void paste() {
         execute(Action.PASTE);
     }
+    
+    public void undo() {
+        // TODO
+    }
+    
+    public boolean isUndoable() {
+        // TODO
+        return false;
+    }
+    
+    public void redo() {
+        // TODO
+    }
+    
+    public boolean isRedoable() {
+        // TODO
+        return false;
+    }
 }

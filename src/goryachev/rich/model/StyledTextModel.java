@@ -166,32 +166,6 @@ public abstract class StyledTextModel {
         return handlers.get(format);
     }
 
-    /*
-    // TODO writer or OutputStream ?
-    // plain text, rtf: Writer
-    // html: ?? (html, css, images)
-    // also, need to convert CSS into whatever form the export format supports.
-    // Perhaps, it should emit a sequence of StyledText's.
-    public void export(DataFormat format, TextPos start, TextPos end, StyledOutput out) {
-//        ExportHandler h = getExportHandler(format);
-//        if (h == null) {
-//            throw new IllegalArgumentException("Data format is not supported: " + format);
-//        }
-
-        // TODO
-    }
-
-    // TODO import from InputStream, String (multi-line), copy
-    public void importText(DataFormat format, TextPos start, TextPos end, Object input) {
-//        DataFormatHandler h = getImportHandler(format);
-//        if (h == null) {
-//            throw new IllegalArgumentException("Data format is not supported: " + format);
-//        }
-
-        // TODO
-    }
-    */
-    
     /**
      * Replaces the given range with the provided plain text.
      * This is a convenience method that calls {@link #replace(TextPos,TextPos,StyledInput)}
