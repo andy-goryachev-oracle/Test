@@ -78,6 +78,8 @@ public class RichTextArea extends Control {
         MOVE_LEFT,
         MOVE_RIGHT,
         MOVE_UP,
+        MOVE_WORD_NEXT,
+        MOVE_WORD_PREVIOUS,
         PAGE_DOWN,
         PAGE_UP,
         PASTE,
@@ -340,13 +342,13 @@ public class RichTextArea extends Control {
     }
     
     /** Moves the caret to the next word. */
-    public void moveNextWord() {
-        // TODO
+    public void moveWordNext() {
+        execute(Cmd.MOVE_WORD_NEXT);
     }
     
     /** Moves the caret to the previous word. */
-    public void movePreviousWord() {
-        // TODO
+    public void moveWordPrevious() {
+        execute(Cmd.MOVE_WORD_PREVIOUS);
     }
 
     /** selects from the anchor position to the document start */

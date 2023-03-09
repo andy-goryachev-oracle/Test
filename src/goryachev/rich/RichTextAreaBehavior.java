@@ -111,6 +111,12 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         map(Cmd.MOVE_DOCUMENT_END, this::moveDocumentEnd);
         map(Cmd.MOVE_DOCUMENT_END, KeyCode.END, KCondition.CTRL, KCondition.NOT_MAC);
         map(Cmd.MOVE_DOCUMENT_END, KeyCode.DOWN, KCondition.SHORTCUT, KCondition.MAC);
+        map(Cmd.MOVE_WORD_NEXT, this::moveWordNext);
+        map(Cmd.MOVE_WORD_NEXT, KeyCode.RIGHT, KCondition.CTRL, KCondition.NOT_MAC);
+        map(Cmd.MOVE_WORD_NEXT, KeyCode.RIGHT, KCondition.OPTION, KCondition.MAC);
+        map(Cmd.MOVE_WORD_PREVIOUS, this::moveWordPrevious);
+        map(Cmd.MOVE_WORD_PREVIOUS, KeyCode.LEFT, KCondition.CTRL, KCondition.NOT_MAC);
+        map(Cmd.MOVE_WORD_PREVIOUS, KeyCode.LEFT, KCondition.OPTION, KCondition.MAC);
         map(Cmd.PAGE_DOWN, this::pageDown, KeyCode.PAGE_DOWN);
         map(Cmd.PAGE_UP, this::pageUp, KeyCode.PAGE_UP);
         map(Cmd.PASTE, this::paste, KeyCode.V, KCondition.SHORTCUT);
@@ -128,7 +134,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         map(Cmd.SELECT_LINE, this::selectLine);
         map(Cmd.SELECT_WORD, this::selectWord);
 
-        this.textChangeListener = new StyledTextModel.ChangeListener() {
+        textChangeListener = new StyledTextModel.ChangeListener() {
             @Override
             public void eventTextUpdated(TextPos start, TextPos end, int top, int ins, int btm) {
                 handleTextUpdated(start, end, top, ins, btm);
@@ -208,6 +214,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
     // TODO possibly move to the inputMap
     public void handleKeyEvent(KeyEvent ev) {
+        //System.out.println("handleKeyEvent: " + ev); // FIX
         if (ev == null || ev.isConsumed()) {
             return;
         }
@@ -927,5 +934,17 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                 }
             }
         }
+    }
+    
+    /** Moves the caret to the next word. */
+    public void moveWordNext() {
+        // TODO
+        System.err.println("moveWordNext"); // FIX
+    }
+    
+    /** Moves the caret to the previous word. */
+    public void moveWordPrevious() {
+        // TODO
+        System.err.println("moveWordPrevious"); // FIX
     }
 }

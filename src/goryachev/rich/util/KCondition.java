@@ -34,6 +34,7 @@ public enum KCondition {
     META,
     SHIFT,
     SHORTCUT, // ctrl on windows, command on mac
+    OPTION, // mapped to alt on mac
     /** event type */
     KEY_PRESS,
     KEY_RELEASE,

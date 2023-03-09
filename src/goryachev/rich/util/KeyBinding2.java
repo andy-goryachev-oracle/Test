@@ -103,10 +103,17 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
             } else if (m.contains(KCondition.WINDOWS)) {
                 return null;
             }
+
+            if (m.contains(KCondition.OPTION)) {
+                m.remove(KCondition.OPTION);
+                m.add(KCondition.ALT);
+            }
         } else if (Util.isWin()) {
             if (m.contains(KCondition.NOT_WINDOWS)) {
                 return null;
             } else if (m.contains(KCondition.MAC)) {
+                return null;
+            } else if (m.contains(KCondition.OPTION)) {
                 return null;
             }
         }
