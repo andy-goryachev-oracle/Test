@@ -312,10 +312,10 @@ public abstract class StyledTextModel {
                     off1 = -1;
                 } else if(ix == ix1) {
                     off0 = 0;
-                    off1 = -1;
+                    off1 = end.offset();
                 } else {
                     off0 = 0;
-                    off1 = end.offset();
+                    off1 = -1;
                 }
                 
                 exportSegments(ix, off0, off1, out);
