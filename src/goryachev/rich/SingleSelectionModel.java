@@ -81,8 +81,6 @@ public class SingleSelectionModel implements SelectionModel {
     }
 
     private void setSelectionSegment(SelectionSegment seg) {
-        System.out.println("setSelectionSegment " + seg); // FIX
-
         Marker m = anchor();
         if (m != null) {
             m.textPosProperty().removeListener(listener);

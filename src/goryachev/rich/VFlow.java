@@ -174,8 +174,6 @@ public class VFlow extends Pane {
     }
     
     public void updateModel() {
-        System.err.println("updateModel"); // FIX
-
         control.clearSelection();
 
         // TODO fixing change model bug
@@ -286,7 +284,6 @@ public class VFlow extends Pane {
     }
     
     public void handleSelectionChange() {
-        System.out.println("handleSelectionChange"); // FIX
         updateCaretAndSelection();
         scrollCaretToVisible();
     }
@@ -308,7 +305,7 @@ public class VFlow extends Pane {
             anchor = caret;
         }
         
-        System.out.println("updateCaretAndSelection ca=" + caret + " an=" + anchor); // FIX
+        //System.out.println("updateCaretAndSelection ca=" + caret + " an=" + anchor); // FIX
         
         // current line highlight
         if (control.isHighlightCurrentLine()) {

@@ -273,7 +273,7 @@ public abstract class StyledTextModel {
     }
     
     protected void fireChangeEvent(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
-        System.out.println("fireChangeEvent start=" + start + " end=" + end + " top=" + charsTop + " lines=" + linesAdded + " btm=" + charsBottom); // FIX
+        //System.out.println("fireChangeEvent start=" + start + " end=" + end + " top=" + charsTop + " lines=" + linesAdded + " btm=" + charsBottom); // FIX
         markers.update(start, end, charsTop, linesAdded, charsBottom);
 
         for (ChangeListener li : listeners) {
