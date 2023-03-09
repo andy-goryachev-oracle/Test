@@ -62,7 +62,8 @@ import goryachev.rich.util.Util;
  * TODO add methods corresponding to the remaining Action tags
  */
 public class RichTextArea extends Control {
-    public enum Action {
+    /** command tags */
+    public enum Cmd {
         BACKSPACE,
         COPY,
         CUT,
@@ -328,36 +329,46 @@ public class RichTextArea extends Control {
      * Moves the caret to before the first character of the text, also clearing the selection.
      */
     public void moveDocumentStart() {
-        execute(Action.MOVE_DOCUMENT_START);
+        execute(Cmd.MOVE_DOCUMENT_START);
     }
 
     /**
      * Moves the caret to after the last character of the text, also clearing the selection.
      */
     public void moveDocumentEnd() {
-        execute(Action.MOVE_DOCUMENT_END);
+        execute(Cmd.MOVE_DOCUMENT_END);
+    }
+    
+    /** Moves the caret to the next word. */
+    public void moveNextWord() {
+        // TODO
+    }
+    
+    /** Moves the caret to the previous word. */
+    public void movePreviousWord() {
+        // TODO
     }
 
     /** selects from the anchor position to the document start */
     public void selectDocumentStart() {
-        execute(Action.SELECT_DOCUMENT_START);
+        execute(Cmd.SELECT_DOCUMENT_START);
     }
 
     /** selects from the anchor position to the document end */
     public void selectDocumentEnd() {
-        execute(Action.SELECT_DOCUMENT_END);
+        execute(Cmd.SELECT_DOCUMENT_END);
     }
     
     public void selectAll() {
-        execute(Action.SELECT_ALL);
+        execute(Cmd.SELECT_ALL);
     }
     
     public void selectWord() {
-        execute(Action.SELECT_WORD);
+        execute(Cmd.SELECT_WORD);
     }
 
     public void selectLine() {
-        execute(Action.SELECT_LINE);
+        execute(Cmd.SELECT_LINE);
     }
 
     public void clearSelection() {
@@ -408,7 +419,7 @@ public class RichTextArea extends Control {
         return (RichTextAreaSkin)getSkin();
     }
     
-    private void execute(Action a) {
+    private void execute(Cmd a) {
         richTextAreaSkin().execute(a);
     }
 
@@ -443,15 +454,15 @@ public class RichTextArea extends Control {
     }
     
     public void copy() {
-        execute(Action.COPY);
+        execute(Cmd.COPY);
     }
     
     public void cut() {
-        execute(Action.CUT);
+        execute(Cmd.CUT);
     }
     
     public void paste() {
-        execute(Action.PASTE);
+        execute(Cmd.PASTE);
     }
     
     public void undo() {

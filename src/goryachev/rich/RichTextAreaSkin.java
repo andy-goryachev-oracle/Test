@@ -33,7 +33,7 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
-import goryachev.rich.RichTextArea.Action;
+import goryachev.rich.RichTextArea.Cmd;
 import goryachev.rich.util.NewAPI;
 
 /**
@@ -150,7 +150,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         }
     }
     
-    public void execute(Action a) {
+    public void execute(Cmd a) {
         Runnable f = behavior.getFunction(a);
         if(f != null) {
             f.run();
