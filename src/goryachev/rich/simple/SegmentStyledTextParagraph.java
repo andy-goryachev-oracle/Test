@@ -34,42 +34,6 @@ import goryachev.rich.TextCell;
 import goryachev.rich.model.StyledParagraph;
 
 public class SegmentStyledTextParagraph implements StyledParagraph {
-    
-    public static abstract class Segment {
-        public String getText() { return null; }
-    }
-    
-    public static class TextSegment extends Segment {
-        public final String text;
-        public final String style;
-        public final String[] css;
-
-        public TextSegment(String text, String style, String[] css) {
-            this.text = text;
-            this.style = style;
-            this.css = css;
-        }
-
-        @Override
-        public String getText() {
-            return text;
-        }
-    }
-    
-    public static class NodeSegment extends Segment {
-        public final Supplier<Node> generator;
-        
-        public NodeSegment(Supplier<Node> generator) {
-            this.generator = generator;
-        }
-        
-        @Override
-        public String getText() {
-            // must be one character
-            return " ";
-        }
-    }
-
     private int index; // TODO move to base class?
     private ArrayList<Segment> segments;
 
@@ -129,5 +93,42 @@ public class SegmentStyledTextParagraph implements StyledParagraph {
     
     public void addSegment(Supplier<Node> generator) {
         segments().add(new NodeSegment(generator));
+    }
+    
+    public static abstract class Segment {
+        public String getText() { return null; }
+    }
+    
+    /** text segment */
+    public static class TextSegment extends Segment {
+        public final String text;
+        public final String style;
+        public final String[] css;
+
+        public TextSegment(String text, String style, String[] css) {
+            this.text = text;
+            this.style = style;
+            this.css = css;
+        }
+
+        @Override
+        public String getText() {
+            return text;
+        }
+    }
+    
+    /** inline node segment */
+    public static class NodeSegment extends Segment {
+        public final Supplier<Node> generator;
+        
+        public NodeSegment(Supplier<Node> generator) {
+            this.generator = generator;
+        }
+        
+        @Override
+        public String getText() {
+            // must be one character
+            return " ";
+        }
     }
 }

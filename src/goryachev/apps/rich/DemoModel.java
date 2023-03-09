@@ -25,13 +25,17 @@
 package goryachev.apps.rich;
 import java.util.Arrays;
 import java.util.Random;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import goryachev.rich.simple.SegmentStyledTextModel;
 
 /**
  * RichTextArea demo model.
  */
 public class DemoModel extends SegmentStyledTextModel {
+    private final SimpleStringProperty textField = new SimpleStringProperty();
+    
     public DemoModel() {
         String ARABIC = "arabic";
         String CODE = "code";
@@ -71,8 +75,17 @@ public class DemoModel extends SegmentStyledTextModel {
         addSegment("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯ", "-fx-font-family:monospaced;").nl();
         addSegment("ABCDEFGHIJKLMNO", "-fx-font-family:monospaced;").nl();
         // inline node segments break navigation, probably because of caret shape?
-        //addSegment("Inline Node [").addNodeSegment(() -> new Button("Button")).addSegment("].").nl();
-        nl(2);
+        addSegment("Inline Nodes: ");
+        addNodeSegment(() -> {
+            TextField f = new TextField();
+            f.setPrefColumnCount(20);
+            f.textProperty().bindBidirectional(textField);
+            return f;
+        });
+        addSegment(" ");
+        addNodeSegment(() -> new Button("OK"));
+        addSegment(" "); // FIX cannot navigate over this segment
+        nl(3);
 
         // TODO unicode codepoints
 //        addSegment("Mongolian ᠨᠢᠷᠤᠭᠤ niruγu (нуруу nuruu)", null, null).nl();
