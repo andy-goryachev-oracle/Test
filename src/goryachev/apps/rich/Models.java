@@ -31,11 +31,12 @@ import goryachev.rich.simple.SegmentStyledTextModel;
 public enum Models {
     DEMO("Demo"),
     EDITABLE_PLAIN("Editable Plaintext Model"),
+    MONOSPACED("Monospaced"),
+    NULL("null"),
     TABS("Tabs"),
     WRITING_SYSTEMS("Writing Systems"),
     UNEVEN_SMALL("Uneven Small"),
     UNEVEN_LARGE("Uneven Large"),
-    NULL("null"),
     ZERO_LINES("0 Lines"),
     ONE_LINE("1 Line"),
     TEN_LINES("10 Lines"),
@@ -43,7 +44,6 @@ public enum Models {
     BILLION_LINES("1,000,000 Lines"),
     LARGE_TEXT("Large text"),
     LARGE_TEXT_LONG("Large Text, Long"),
-    MONOSPACED("Monospaced"),
     NO_LAST_NEWLINE_SHORT("No Last Newline, Short"),
     NO_LAST_NEWLINE_MEDIUM("No Last Newline, Medium"),
     NO_LAST_NEWLINE_LONG("No Last Newline, Long"),
@@ -74,7 +74,7 @@ public enum Models {
         case TABS:
             return tabs();
         case MONOSPACED:
-            return new DemoStyledTextModel(100_000, true);
+            return new DemoStyledTextModel(2_000_000_000, true);
         case NULL:
             return null;
         case ONE_LINE:

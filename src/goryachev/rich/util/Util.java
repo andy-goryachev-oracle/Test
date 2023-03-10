@@ -127,7 +127,18 @@ public class Util {
         return isMac;
     }
 
-    public static boolean isWin() {
+    public static boolean isWindows() {
         return isWin;
+    }
+    
+    /**
+     * Simple utility function which clamps the given value to be strictly
+     * between the min and max values.
+     */
+    // see com.sun.javafx.util.Utils:77
+    public static int clamp(int min, int value, int max) {
+        if (value < min) return min;
+        if (value > max) return max;
+        return value;
     }
 }

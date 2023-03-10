@@ -79,6 +79,7 @@ public class RichTextArea extends Control {
         MOVE_RIGHT,
         MOVE_UP,
         MOVE_WORD_NEXT,
+        MOVE_WORD_NEXT_END,
         MOVE_WORD_PREVIOUS,
         PAGE_DOWN,
         PAGE_UP,
@@ -94,6 +95,9 @@ public class RichTextArea extends Control {
         SELECT_RIGHT,
         SELECT_UP,
         SELECT_WORD,
+        SELECT_WORD_NEXT,
+        SELECT_WORD_NEXT_END,
+        SELECT_WORD_PREVIOUS,
      }
     
     protected final ObjectProperty<StyledTextModel> model = new SimpleObjectProperty<>(this, "model");
@@ -340,16 +344,6 @@ public class RichTextArea extends Control {
     public void moveDocumentEnd() {
         execute(Cmd.MOVE_DOCUMENT_END);
     }
-    
-    /** Moves the caret to the next word. */
-    public void moveWordNext() {
-        execute(Cmd.MOVE_WORD_NEXT);
-    }
-    
-    /** Moves the caret to the previous word. */
-    public void moveWordPrevious() {
-        execute(Cmd.MOVE_WORD_PREVIOUS);
-    }
 
     /** selects from the anchor position to the document start */
     public void selectDocumentStart() {
@@ -483,5 +477,55 @@ public class RichTextArea extends Control {
     public boolean isRedoable() {
         // TODO
         return false;
+    }
+    
+    /**
+     * Moves the caret to the beginning of previous word. This function
+     * also has the effect of clearing the selection.
+     */
+    public void previousWord() {
+        execute(Cmd.MOVE_WORD_PREVIOUS);
+    }
+
+    /**
+     * Moves the caret to the beginning of next word. This function
+     * also has the effect of clearing the selection.
+     */
+    public void nextWord() {
+        execute(Cmd.MOVE_WORD_NEXT);
+    }
+
+    /**
+     * Moves the caret to the end of the next word. This function
+     * also has the effect of clearing the selection.
+     */
+    public void endOfNextWord() {
+        execute(Cmd.MOVE_WORD_NEXT_END);
+    }
+
+    /**
+     * Moves the caret to the beginning of previous word. This does not cause
+     * the selection to be cleared. Rather, the anchor stays put and the caretPosition is
+     * moved to the beginning of previous word.
+     */
+    public void selectPreviousWord() {
+        execute(Cmd.SELECT_WORD_PREVIOUS);
+    }
+
+    /**
+     * Moves the caret to the beginning of next word. This does not cause
+     * the selection to be cleared. Rather, the anchor stays put and the caretPosition is
+     * moved to the beginning of next word.
+     */
+    public void selectNextWord() {
+        execute(Cmd.SELECT_WORD_NEXT);
+    }
+
+    /**
+     * Moves the caret to the end of the next word. This does not cause
+     * the selection to be cleared.
+     */
+    public void selectEndOfNextWord() {
+        execute(Cmd.SELECT_WORD_NEXT_END);
     }
 }

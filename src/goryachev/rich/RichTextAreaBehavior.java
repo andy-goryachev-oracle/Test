@@ -111,10 +111,11 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         map(Cmd.MOVE_DOCUMENT_END, this::moveDocumentEnd);
         map(Cmd.MOVE_DOCUMENT_END, KeyCode.END, KCondition.CTRL, KCondition.NOT_MAC);
         map(Cmd.MOVE_DOCUMENT_END, KeyCode.DOWN, KCondition.SHORTCUT, KCondition.MAC);
-        map(Cmd.MOVE_WORD_NEXT, this::moveWordNext);
+        map(Cmd.MOVE_WORD_NEXT, this::nextWord);
         map(Cmd.MOVE_WORD_NEXT, KeyCode.RIGHT, KCondition.CTRL, KCondition.NOT_MAC);
         map(Cmd.MOVE_WORD_NEXT, KeyCode.RIGHT, KCondition.OPTION, KCondition.MAC);
-        map(Cmd.MOVE_WORD_PREVIOUS, this::moveWordPrevious);
+        map(Cmd.MOVE_WORD_NEXT_END, this::endOfNextWord);
+        map(Cmd.MOVE_WORD_PREVIOUS, this::previousWord);
         map(Cmd.MOVE_WORD_PREVIOUS, KeyCode.LEFT, KCondition.CTRL, KCondition.NOT_MAC);
         map(Cmd.MOVE_WORD_PREVIOUS, KeyCode.LEFT, KCondition.OPTION, KCondition.MAC);
         map(Cmd.PAGE_DOWN, this::pageDown, KeyCode.PAGE_DOWN);
@@ -133,6 +134,9 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         map(Cmd.SELECT_DOCUMENT_END, this::selectDocumentEnd, KeyCode.DOWN, KCondition.SHIFT, KCondition.SHORTCUT, KCondition.MAC);
         map(Cmd.SELECT_LINE, this::selectLine);
         map(Cmd.SELECT_WORD, this::selectWord);
+        map(Cmd.SELECT_WORD_NEXT, this::selectNextWord);
+        map(Cmd.SELECT_WORD_NEXT_END, this::selectEndOfNextWord);
+        map(Cmd.SELECT_WORD_PREVIOUS, this::selectPreviousWord);
 
         textChangeListener = new StyledTextModel.ChangeListener() {
             @Override
@@ -567,6 +571,90 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             control.moveCaret(p, extendSelection);
         }
     }
+    
+    @Deprecated // FIX remove
+    protected void moveWord(boolean moveRight, boolean extendSelection) {
+        // TODO
+//        TextPos caret = control.getCaretPosition();
+//        if (caret == null) {
+//            return;
+//        }
+//
+//        clearPhantomX();
+//
+//        if(!extendSelection) {
+//            TextPos ca = control.getCaretPosition();
+//            TextPos an = control.getAnchorPosition();
+//            int d = ca.compareTo(an);
+//            // jump over selection if it exists
+//            if (d < 0) {
+//                control.moveCaret(moveRight ? an : ca, extendSelection);
+//                return;
+//            } else if(d > 0) {
+//                control.moveCaret(moveRight ? ca : an, extendSelection);
+//                return;
+//            }
+//        }
+//
+//        TextPos p = moveWord2(caret, moveRight);
+//        if (p != null) {
+//            control.moveCaret(p, extendSelection);
+//        }
+    }
+    
+    protected TextPos moveWord2(TextPos start, boolean moveRight) {
+        if (isRTL()) {
+            moveRight = !moveRight;
+        }
+
+        TextCell cell = vflow().getCell(start.index());
+        int cix = start.offset();
+        if (moveRight) {
+            cix++;
+            if (cix > cell.getTextLength()) {
+                int line = cell.getLineIndex() + 1;
+                TextPos p;
+                if (line < vflow().lineCount()) {
+                    // next line
+                    p = new TextPos(line, 0);
+                } else {
+                    // end of last paragraph w/o newline
+                    p = new TextPos(cell.getLineIndex(), cell.getTextLength());
+                }
+                return p;
+            }
+        } else {
+            if (start.offset() == 0) {
+                int line = cell.getLineIndex() - 1;
+                if (line >= 0) {
+                    // prev line
+                    TextCell prevCell = vflow().getCell(line);
+                    cix = prevCell.getTextLength();
+                    return new TextPos(line, cix);
+                }
+                return null;
+            }
+        }
+
+        // using default locale, same as TextInputControl.backward() for example
+        BreakIterator br = BreakIterator.getCharacterInstance();
+        String text = getPlainText(cell.getLineIndex());
+        br.setText(text);
+        int off = start.offset();
+        try {
+            int ix = moveRight ? br.following(off) : br.preceding(off);
+            if (ix == BreakIterator.DONE) {
+                System.err.println(" --- SHOULD NOT HAPPEN: BreakIterator.DONE off=" + off); // FIX
+                return null;
+            }
+            return new TextPos(start.index(), ix);
+        } catch(Exception e) {
+            // TODO need to use a logger!
+            System.err.println("offset=" + off + " text=[" + text + "]");
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     protected TextPos nextCharacterVisually(TextPos start, boolean moveRight) {
         if (isRTL()) {
@@ -677,7 +765,51 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
     
     public void selectWord() {
-        // TODO
+        TextPos caret = control.getCaretPosition();
+        if(caret == null) {
+            return;
+        }
+
+        int index = caret.index();
+        String text = getPlainText(index);
+        if(text == null) {
+            return;
+        }
+        
+        // using default locale, same as TextInputControl.backward() for example
+        BreakIterator br = BreakIterator.getWordInstance();
+        br.setText(text);
+        int off = caret.offset();
+        try {
+            int off0 = br.preceding(off);
+            if (off0 == BreakIterator.DONE) {
+                System.err.println(" --- no previous word off=" + off); // FIX
+                return;
+            }
+            
+            int off1 = br.following(off);
+            if (off1 == BreakIterator.DONE) {
+                System.err.println(" --- no following word off=" + off); // FIX
+                return;
+            }
+            
+            TextPos p0 = new TextPos(index, off0);
+            TextPos p1 = new TextPos(index, off1);
+            control.select(p0, p1);
+        } catch(Exception e) {
+            // TODO need to use a logger!
+            System.err.println("offset=" + off + " text=[" + text + "]");
+            e.printStackTrace();
+        }
+    }
+    
+    public void selectWord2() {
+        control.previousWord();
+        if (Util.isWindows()) {
+            control.selectNextWord();
+        } else {
+            control.selectEndOfNextWord();
+        }
     }
 
     public void selectLine() {
@@ -935,16 +1067,175 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             }
         }
     }
-    
-    /** Moves the caret to the next word. */
-    public void moveWordNext() {
-        // TODO
-        System.err.println("moveWordNext"); // FIX
+
+    /**
+     * Moves the caret to the beginning of previous word. This function
+     * also has the effect of clearing the selection.
+     */
+    public void previousWord() {
+        previousWord(false);
+    }
+
+    /**
+     * Moves the caret to the beginning of next word. This function
+     * also has the effect of clearing the selection.
+     */
+    public void nextWord() {
+        nextWord(false);
+    }
+
+    /**
+     * Moves the caret to the end of the next word. This function
+     * also has the effect of clearing the selection.
+     */
+    public void endOfNextWord() {
+        endOfNextWord(false);
+    }
+
+    /**
+     * Moves the caret to the beginning of previous word. This does not cause
+     * the selection to be cleared. Rather, the anchor stays put and the caretPosition is
+     * moved to the beginning of previous word.
+     */
+    public void selectPreviousWord() {
+        previousWord(true);
+    }
+
+    /**
+     * Moves the caret to the beginning of next word. This does not cause
+     * the selection to be cleared. Rather, the anchor stays put and the caretPosition is
+     * moved to the beginning of next word.
+     */
+    public void selectNextWord() {
+        nextWord(true);
+    }
+
+    /**
+     * Moves the caret to the end of the next word. This does not cause
+     * the selection to be cleared.
+     */
+    public void selectEndOfNextWord() {
+        endOfNextWord(true);
+    }
+
+    protected void previousWord(boolean extendSelection) {
+        TextPos caret = control.getCaretPosition();
+        if (caret != null) {
+            clearPhantomX();
+
+            TextPos p = previousWordFrom(caret);
+            if (p != null) {
+                control.moveCaret(p, extendSelection);
+            }
+        }
     }
     
-    /** Moves the caret to the previous word. */
-    public void moveWordPrevious() {
-        // TODO
-        System.err.println("moveWordPrevious"); // FIX
+    protected void nextWord(boolean extendSelection) {
+        TextPos caret = control.getCaretPosition();
+        if (caret != null) {
+            clearPhantomX();
+
+            TextPos p = nextWordFrom(caret);
+            if (p != null) {
+                control.moveCaret(p, extendSelection);
+            }
+        }
+    }
+    
+    protected void endOfNextWord(boolean extendSelection) {
+        TextPos caret = control.getCaretPosition();
+        if (caret != null) {
+            clearPhantomX();
+
+            TextPos p = endOfNextWordFrom(caret);
+            if (p != null) {
+                control.moveCaret(p, extendSelection);
+            }
+        }
+    }
+
+    protected TextPos previousWordFrom(TextPos caret) {
+        int index = caret.index();
+        String text = getPlainText(index);
+        if ((text == null) || (text.length() == 0)) {
+            return null;
+        }
+
+        BreakIterator br = BreakIterator.getWordInstance();
+        br.setText(text);
+
+        int len = text.length();
+        int offset = caret.offset();
+        int off = br.preceding(Util.clamp(0, offset, len));
+
+        // Skip the non-word region, then move/select to the beginning of the word.
+        while (off != BreakIterator.DONE && !Character.isLetterOrDigit(text.charAt(Util.clamp(0, off, len - 1)))) {
+            off = br.preceding(Util.clamp(0, off, len));
+        }
+
+        return new TextPos(index, off);
+    }
+
+    protected TextPos nextWordFrom(TextPos caret) {
+        int index = caret.index();
+        String text = getPlainText(index);
+        if ((text == null) || (text.length() == 0)) {
+            return null;
+        }
+
+        BreakIterator br = BreakIterator.getWordInstance();
+        br.setText(text);
+
+        int len = text.length();
+        int offset = caret.offset();
+
+        int last = br.following(Util.clamp(0, offset, len - 1));
+        int current = br.next();
+
+        // Skip whitespace characters to the beginning of next word, but
+        // stop at newline. Then move the caret or select a range.
+        while (current != BreakIterator.DONE) {
+            for (int off = last; off <= current; off++) {
+                char ch = text.charAt(Util.clamp(0, off, len - 1));
+                // Avoid using Character.isSpaceChar() and Character.isWhitespace(),
+                // because they include LINE_SEPARATOR, PARAGRAPH_SEPARATOR, etc.
+                if (ch != ' ' && ch != '\t') {
+                    return new TextPos(index, off);
+                }
+            }
+            last = current;
+            current = br.next();
+        }
+
+        return new TextPos(index, len);
+    }
+
+    protected TextPos endOfNextWordFrom(TextPos caret) {
+        int index = caret.index();
+        String text = getPlainText(index);
+        if ((text == null) || (text.length() == 0)) {
+            return null;
+        }
+
+        BreakIterator br = BreakIterator.getWordInstance();
+        br.setText(text);
+
+        int textLength = text.length();
+        int offset = caret.offset();
+        int last = br.following(Util.clamp(0, offset, textLength));
+        int current = br.next();
+
+        // skip the non-word region, then move/select to the end of the word.
+        while (current != BreakIterator.DONE) {
+            for (int p = last; p <= current; p++) {
+                if (!Character.isLetterOrDigit(text.charAt(Util.clamp(0, p, textLength - 1)))) {
+                    return new TextPos(index, p);
+                }
+            }
+            last = current;
+            current = br.next();
+        }
+
+        return new TextPos(index, textLength);
     }
 }

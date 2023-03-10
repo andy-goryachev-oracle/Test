@@ -57,7 +57,7 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
             if (shortcut) {
                 meta = false;
             }
-        } else if (Util.isWin()) {
+        } else if (Util.isWindows()) {
             if (ctrl) {
                 shortcut = false;
             }
@@ -108,7 +108,7 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
                 m.remove(KCondition.OPTION);
                 m.add(KCondition.ALT);
             }
-        } else if (Util.isWin()) {
+        } else if (Util.isWindows()) {
             if (m.contains(KCondition.NOT_WINDOWS)) {
                 return null;
             } else if (m.contains(KCondition.MAC)) {
