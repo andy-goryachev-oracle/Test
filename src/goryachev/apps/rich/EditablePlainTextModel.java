@@ -36,11 +36,16 @@ import goryachev.rich.model.StyledOutput;
 import goryachev.rich.model.StyledParagraph;
 import goryachev.rich.model.StyledSegment;
 
-public class EditablePlaintextModel extends EditableStyledTextModel {
+/**
+ * Editable plain text model.
+ * 
+ * TODO should it be here or as a standard model?
+ */
+public class EditablePlainTextModel extends EditableStyledTextModel {
     private final ArrayList<String> paragraphs = new ArrayList();
     private static final String STYLE = "-fx-font-size:200%;";
 
-    public EditablePlaintextModel() {
+    public EditablePlainTextModel() {
         paragraphs.add("");
         registerDataFormatHandler(new PlainTextFormatHandler());
     }
@@ -50,7 +55,7 @@ public class EditablePlaintextModel extends EditableStyledTextModel {
         return new StyledParagraph() {
             @Override
             public String getPlainText() {
-                return EditablePlaintextModel.this.getPlainText(index);
+                return EditablePlainTextModel.this.getPlainText(index);
             }
 
             @Override
