@@ -141,4 +141,29 @@ public class Util {
         if (value > max) return max;
         return value;
     }
+
+    /**
+     * A safe substring method which is tolerant to null text, and offsets being outside of the text boundaries.
+     * 
+     * @param text source text or null
+     * @param start start offset, must be >= 0
+     * @param end end offset
+     * @return a non-null substring
+     */
+    public static String substring(String text, int start, int end) {
+        if (text == null) {
+            return "";
+        }
+
+        int len = text.length();
+        if((end < 0) || (end > len)) {
+            end = len;
+        }
+
+        if ((start == 0) && (end == len)) {
+            return text;
+        }
+
+        return text.substring(start, end);
+    }
 }

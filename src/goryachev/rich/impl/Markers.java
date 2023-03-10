@@ -93,6 +93,8 @@ public class Markers {
         return sb.toString();
     }
 
+    // TODO unit test
+    // TODO do we need (leading/trailing) bias in TextPos?
     public void update(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
         if(start.compareTo(end) > 0) {
             TextPos p = start;

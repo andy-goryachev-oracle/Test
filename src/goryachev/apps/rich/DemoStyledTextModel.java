@@ -122,14 +122,17 @@ public class DemoStyledTextModel extends ReadOnlyStyledTextModel {
              @Override
              public TextCell createTextCell() {
                  TextCell c = new TextCell(index);
-                 c.addSegment(String.valueOf(index), monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:darkgreen;", null);
+                 String s = String.valueOf(index);
+
+                 c.addSegment(s, monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:darkgreen;", null);
                  c.addSegment(" / ", monospaced ? "-fx-font-family:Monospaced;" : null, null);
-                 c.addSegment(String.valueOf(SList.this.size()), monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:black;", null);
+                 c.addSegment(String.valueOf(SList.this.size()),
+                     monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:black;", null);
                  if (monospaced) {
                      c.addSegment(" (monospaced)", monospaced ? "-fx-font-family:Monospaced;" : null, null);
                  }
                  return c;
              }
          }
-    }
+     }
  }

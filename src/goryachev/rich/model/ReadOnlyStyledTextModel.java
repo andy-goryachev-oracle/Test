@@ -31,6 +31,7 @@ import goryachev.rich.TextPos;
  */
 public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
     public ReadOnlyStyledTextModel() {
+        registerDataFormatHandler(new PlainTextFormatHandler());
     }
 
     @Override
@@ -69,7 +70,7 @@ public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
     }
     
     @Override
-    protected void exportSegments(int index, int startOffset, int endOffset, StyledOutput out) {
-        throw new UnsupportedOperationException();
+    protected void exportSegments(int index, int start, int end, StyledOutput out) {
+        exportPlaintextSegments(index, start, end, out);
     }
 }

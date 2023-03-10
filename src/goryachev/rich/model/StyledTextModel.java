@@ -34,6 +34,7 @@ import goryachev.rich.Marker;
 import goryachev.rich.RichTextArea;
 import goryachev.rich.TextPos;
 import goryachev.rich.impl.Markers;
+import goryachev.rich.util.Util;
 
 /**
  * Base class for a styled text model for use with {@link RichTextArea}.
@@ -309,5 +310,13 @@ public abstract class StyledTextModel {
                 return new TextPos(ct - 1, len);
             }
         }
+    }
+
+    /** exports plain text segments only */
+    protected void exportPlaintextSegments(int index, int startOffset, int endOffset, StyledOutput out) {
+        String text = getPlainText(index);
+        text = Util.substring(text, startOffset, endOffset);
+        StringStyledSegment seg = new StringStyledSegment(text, null, null);
+        out.append(seg);
     }
 }
