@@ -1047,22 +1047,26 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                     end = p;
                 }
 
-                ClipboardContent c = new ClipboardContent();
-                // TODO on error: catch exception, log and provide audible feedback
-                for (DataFormat f : fs) {
-                    DataFormatHandler h = m.getDataFormatHandler(f);
-                    // problem: styled output depends on the export options
-                    StyledOutput out = h.getStyledOutput(null);
-                    m.exportText(start, end, out);
-                    Object v = out.getOutput();
-                    if (v != null) {
-                        c.put(f, v);
+                try {
+                    ClipboardContent c = new ClipboardContent();
+                    for (DataFormat f : fs) {
+                        DataFormatHandler h = m.getDataFormatHandler(f);
+                        // problem: styled output depends on the export options
+                        StyledOutput out = h.getStyledOutput(null);
+                        m.exportText(start, end, out);
+                        Object v = out.getOutput();
+                        if (v != null) {
+                            c.put(f, v);
+                        }
                     }
-                }
-                Clipboard.getSystemClipboard().setContent(c);
-
-                if (isEditable() && cut) {
-                    deleteSelection();
+                    Clipboard.getSystemClipboard().setContent(c);
+    
+                    if (isEditable() && cut) {
+                        deleteSelection();
+                    }
+                } catch(Exception | OutOfMemoryError e) {
+                    // TODO log exception
+                    NewAPI.provideErrorFeedback(control);
                 }
             }
         }

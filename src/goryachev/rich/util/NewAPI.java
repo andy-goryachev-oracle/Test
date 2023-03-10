@@ -138,4 +138,21 @@ public class NewAPI {
         }
         return 0;
     }
+
+    /**
+     * Invoked when the user attempts an invalid operation,
+     * such as pasting into an uneditable <code>TextInputControl</code>
+     * that has focus. The default implementation beeps.
+     *
+     * @param originator the <code>Node</code> the error occurred in, may be <code>null</code>
+     *                   indicating the error condition is not directly associated with a <code>Node</code>
+     */
+    // TODO this probably should be in Platform
+    public static void provideErrorFeedback(Node originator) {
+        beep();
+    }
+    
+    public static void beep() {
+        // TODO not supported in FX
+    }
 }
