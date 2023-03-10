@@ -41,8 +41,8 @@ public class NotebookModel extends SegmentStyledTextModel {
         
         addSegment("Bifurcation Diagram", "-fx-font-size:200%;", UNDER);
         nl(2);
-        addSegment("In mathematics, particularly in dynamical systems, a ", "-fx-font-weight:900;", GRAY);
-        addSegment("bifurcation diagram ");
+        addSegment("In mathematics, particularly in dynamical systems, a ", null, GRAY);
+        addSegment("bifurcation diagram ", "-fx-font-weight:bold;"); // FIX does not work on mac
         addSegment("shows the values visited or approached asymptotically (fixed points, periodic orbits, or chaotic attractors) of a system as a function of a bifurcation parameter in the system. It is usual to represent stable values with a solid line and unstable values with a dotted line, although often the unstable points are omitted. Bifurcation diagrams enable the visualization of bifurcation theory.", null, GRAY);
         nl(2);
         addSegment("An example is the bifurcation diagram of the logistic map:", null, GRAY);
