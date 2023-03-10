@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.function.Supplier;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Region;
 import goryachev.rich.model.ReadOnlyStyledTextModel;
 import goryachev.rich.model.StyledParagraph;
 
@@ -118,6 +119,14 @@ public class SegmentStyledTextModel extends ReadOnlyStyledTextModel {
         return this;
     }
     
+    public SegmentStyledTextModel addParagraph(Supplier<Region> generator) {
+        int ix = paragraphs.size();
+        NodeStyledParagraph p = new NodeStyledParagraph(ix, generator);
+        paragraphs.add(p);
+        return this;
+    }
+    
+    /** adds inline node segment */
     public SegmentStyledTextModel addNodeSegment(Supplier<Node> generator) {
         SegmentStyledTextParagraph p = lastSegmentStyledTextParagraph();
         p.addSegment(generator);

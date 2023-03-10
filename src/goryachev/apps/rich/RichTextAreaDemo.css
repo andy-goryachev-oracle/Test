@@ -15,14 +15,23 @@
 }
 
 .underline {
-    -fx-underline: true;
+    -fx-underline:true;
 }
 
 .arabic {
-	-fx-font-family: "Tahoma";
+	-fx-font-family:"Tahoma";
 	-fx-font-size: 200%;
 }
 
 .large {
 	-fx-font-size: 200%;
+}
+
+.eq {
+	-fx-font-family: "serif";
+}
+
+.sub {
+	-fx-text-origin: bottom;
+	-fx-font-size: 70%;
 }

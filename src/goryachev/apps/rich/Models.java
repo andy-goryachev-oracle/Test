@@ -31,6 +31,7 @@ import goryachev.rich.simple.SegmentStyledTextModel;
 public enum Models {
     DEMO("Demo"),
     EDITABLE_PLAIN("Editable Plaintext Model"),
+    NOTEBOOK("Notebook"),
     MONOSPACED("Monospaced"),
     NULL("null"),
     TABS("Tabs"),
@@ -75,6 +76,8 @@ public enum Models {
             return tabs();
         case MONOSPACED:
             return new DemoStyledTextModel(2_000_000_000, true);
+        case NOTEBOOK:
+            return new NotebookModel();
         case NULL:
             return null;
         case ONE_LINE:
