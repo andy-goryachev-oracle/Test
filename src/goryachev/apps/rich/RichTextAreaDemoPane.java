@@ -126,8 +126,8 @@ public class RichTextAreaDemoPane extends BorderPane {
         op.label("Tab Size:");
         op.option(tabSize);
         op.option(customPopup);
-        op.option(selectAllButton);
-        op.label("Blink Rate: TODO"); // TODO
+        //op.option(selectAllButton);
+        //op.label("Blink Rate: TODO"); // TODO
         
         setCenter(vsplit);
         setRight(op);
