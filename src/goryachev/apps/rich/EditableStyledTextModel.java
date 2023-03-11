@@ -26,8 +26,16 @@ package goryachev.apps.rich;
 
 import goryachev.rich.TextPos;
 
-public class EditableStyledModel extends EditablePlainTextModel {
-    public EditableStyledModel() {
+/**
+ * Editable styled text model.
+ * 
+ * TODO style segments or plain text + style runs?
+ * TODO use styles (direct + css) or attributes (bold, italic, font size, text color)?
+ * TODO RTF format handler
+ * TODO native format handler
+ */
+public class EditableStyledTextModel extends EditablePlainTextModel {
+    public EditableStyledTextModel() {
         
     }
     

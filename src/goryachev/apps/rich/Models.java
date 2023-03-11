@@ -74,7 +74,7 @@ public enum Models {
         case EDITABLE_PLAIN:
             return new EditablePlainTextModel();
         case EDITABLE_STYLED:
-            return new EditableStyledModel();
+            return new EditableStyledTextModel();
         case TABS:
             return tabs();
         case MONOSPACED:
