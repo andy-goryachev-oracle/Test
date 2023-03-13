@@ -31,7 +31,14 @@ import goryachev.rich.TextCell;
 /**
  * Represents a single styled text paragraph, a light weight item in a model.
  */
-public interface StyledParagraph {
+public abstract class StyledParagraph {
+    /**
+     * Returns plain text for the give paragraph.  This text should be the same as the result of 'copy'
+     * operation performed on the paragraph, and must not contain line separator.
+     * This method might return null if no text is associated with the paragraph.
+     */
+    public abstract String getPlainText();
+
     /**
      * Creates Nodes which provide visual representation of the paragraph.
      * This method must create new Nodes each time, in order to support multiple RichTextArea instances
@@ -39,17 +46,18 @@ public interface StyledParagraph {
      * The nodes are not reused, and might be created repeatedly,
      * so the model must not keep strong references to these nodes.
      */
-    public TextCell createTextCell();
-    
+    public abstract TextCell createTextCell();
+
+    private final int index;
+
+    public StyledParagraph(int index) {
+        this.index = index;
+    }
+
     /**
      * Returns the model paragraph index.
      */
-    public int getIndex();
-    
-    /**
-     * Returns plain text for the give paragraph.  This text should be the same as the result of 'copy'
-     * operation performed on the paragraph, and must not contain line separator.
-     * This method might return null if no text is associated with the paragraph.
-     */
-    public String getPlainText();
+    public final int getIndex() {
+        return index;
+    }
 }

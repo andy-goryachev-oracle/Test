@@ -25,28 +25,21 @@
 package goryachev.rich.model;
 
 import java.util.function.Supplier;
-import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import goryachev.rich.TextCell;
 
-public class NodeStyledParagraph implements StyledParagraph {
-    private final int index; // TODO move to base class?
+public class NodeStyledParagraph extends StyledParagraph {
     private final Supplier<Region> generator;
-    
+
     public NodeStyledParagraph(int index, Supplier<Region> generator) {
-        this.index = index;
+        super(index);
         this.generator = generator;
-    }
-    
-    @Override
-    public TextCell createTextCell() {
-        Region n = generator.get();
-        return new TextCell(index, new NodeCellPane(n));
     }
 
     @Override
-    public int getIndex() {
-        return index;
+    public TextCell createTextCell() {
+        Region n = generator.get();
+        return new TextCell(getIndex(), new NodeCellPane(n));
     }
 
     @Override

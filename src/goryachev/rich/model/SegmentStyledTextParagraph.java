@@ -32,12 +32,11 @@ import java.util.function.Supplier;
 import javafx.scene.Node;
 import goryachev.rich.TextCell;
 
-public class SegmentStyledTextParagraph implements StyledParagraph {
-    private int index; // TODO move to base class?
+public class SegmentStyledTextParagraph extends StyledParagraph {
     private ArrayList<Segment> segments;
 
     public SegmentStyledTextParagraph(int index) {
-        this.index = index;
+        super(index);
     }
     
     @Override
@@ -71,11 +70,6 @@ public class SegmentStyledTextParagraph implements StyledParagraph {
             sb.append(s.getText());
         }
         return sb.toString();
-    }
-
-    @Override
-    public int getIndex() {
-        return index;
     }
     
     protected List<Segment> segments() {
