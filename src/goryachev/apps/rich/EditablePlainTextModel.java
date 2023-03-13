@@ -25,8 +25,6 @@
 package goryachev.apps.rich;
 
 import java.util.ArrayList;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 import goryachev.rich.model.EditableStyledTextModel;
@@ -66,9 +64,9 @@ public class EditablePlainTextModel extends EditableStyledTextModel {
             @Override
             public TextCell createTextCell() {
                 String text = getPlainText();
-                TextFlow f = new TextFlow(new Text(text));
-                f.setStyle(STYLE);
-                return new TextCell(index, f);
+                TextCell c = new TextCell(index);
+                c.addSegment(text, STYLE, null);
+                return c;
             }
         };
     }

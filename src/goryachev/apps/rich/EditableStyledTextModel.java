@@ -24,10 +24,17 @@
  */
 package goryachev.apps.rich;
 
+import java.util.ArrayList;
+import goryachev.rich.Marker;
+import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
+import goryachev.rich.model.StyledParagraph;
 
 /**
  * Editable styled text model.
+ * 
+ * Extends the plain text editable model, adding styled runs, using an ordered
+ * list of markers and a limited set of supported attributes.
  * 
  * TODO style segments or plain text + style runs?
  * TODO use styles (direct + css) or attributes (bold, italic, font size, text color)?
@@ -35,10 +42,38 @@ import goryachev.rich.TextPos;
  * TODO native format handler
  */
 public class EditableStyledTextModel extends EditablePlainTextModel {
+    private final ArrayList<StyledRun> runs = new ArrayList<>();
+
     public EditableStyledTextModel() {
-        
+
     }
     
+    @Override
+    public StyledParagraph getParagraph(int index) {
+        return new StyledParagraph() {
+            @Override
+            public String getPlainText() {
+                return EditableStyledTextModel.this.getPlainText(index);
+            }
+
+            @Override
+            public int getIndex() {
+                return index;
+            }
+
+            @Override
+            public TextCell createTextCell() {
+                String text = getPlainText();
+                TextCell c = new TextCell(index);
+                // TODO populate segments
+                int start = 0;
+                // next, styles
+                //f.setStyle(STYLE);
+                return c;
+            }
+        };
+    }
+
     @Override
     public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
         // TODO
@@ -47,5 +82,16 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
     @Override
     public void removeStyle(TextPos start, TextPos end, String direct, String[] css) {
         // TODO
+    }
+    
+    /** Represents a text run with a specific style */
+    public static class StyledRun {
+        public final Marker marker;
+        public final StyleAttrs attributes;
+        
+        public StyledRun(Marker marker, StyleAttrs a) {
+            this.marker = marker;
+            this.attributes = a;
+        }
     }
 }
