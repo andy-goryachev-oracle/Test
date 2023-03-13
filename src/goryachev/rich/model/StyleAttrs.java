@@ -46,6 +46,7 @@ public class StyleAttrs {
     }
     
     private final HashMap<Attr,Object> attributes = new HashMap<>();
+    private String style;
     
     public StyleAttrs() {
     }
@@ -62,5 +63,18 @@ public class StyleAttrs {
         } else {
             throw new IllegalArgumentException(a + " requires value of type " + a.type);
         }
+        style = null;
+    }
+
+    public String getStyle() {
+        if (style == null) {
+            style = createStyleString();
+        }
+        return style;
+    }
+
+    private String createStyleString() {
+        // TODO
+        return null;
     }
 }

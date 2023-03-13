@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import goryachev.rich.Marker;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
+import goryachev.rich.model.StyleAttrs.Attr;
 
 /**
  * Editable styled text model.
@@ -44,6 +45,14 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
     private final ArrayList<StyledRun> runs = new ArrayList<>();
 
     public EditableStyledTextModel() {
+        Marker m0 = newMarker(TextPos.ZERO);
+        Marker m1 = newMarker(new TextPos(0, 0)); // FIX trailing is needed here!
+        StyleAttrs a = new StyleAttrs();
+        a.set(Attr.FONT_FAMILY, "System");
+        a.set(Attr.FONT_SIZE, 1.0);
+        
+        runs.add(new StyledRun(m0, a));
+        runs.add(new StyledRun(m1, null));
     }
     
     @Override
@@ -63,10 +72,10 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
             public TextCell createTextCell() {
                 String text = getPlainText();
                 TextCell c = new TextCell(index);
-                // TODO populate segments
-                int start = 0;
-                // next, styles
-                //f.setStyle(STYLE);
+                StyleRunGenerator g = new StyleRunGenerator(text, 0, text.length());
+                while(g.next()) {
+                    c.addSegment(g.text(), g.style(), null);
+                }
                 return c;
             }
         };
@@ -90,6 +99,48 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
         public StyledRun(Marker marker, StyleAttrs a) {
             this.marker = marker;
             this.attributes = a;
+        }
+    }
+    
+    /** generates styles */
+    protected class StyleRunGenerator {
+        private final String text;
+        private int offset;
+        private final int end;
+        private String segment;
+        private StyledRun run;
+        
+        public StyleRunGenerator(String text, int start, int end) {
+            this.text = text;
+            this.offset = start;
+            this.end = end;
+        }
+        
+        /**
+         * prepares the next segment by setting text and style fields and returning true.
+         * returns false when the end of text is reached. 
+         */
+        public boolean next() {
+            if(offset < end) {
+                int start = offset;
+                
+                // TODO set segment, style
+                segment = text;
+                offset += text.length();
+                run = runs.get(0);
+                
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        public String text() {
+            return segment;
+        }
+        
+        public String style() {
+            return run.attributes.getStyle();
         }
     }
 }
