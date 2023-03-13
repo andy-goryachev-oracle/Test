@@ -27,7 +27,6 @@ package goryachev.rich.simple;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
-import javafx.scene.Group;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 
@@ -37,14 +36,12 @@ import javafx.scene.layout.Region;
  */
 public class NodeCellPane extends Pane {
     private final Region content;
-    private final Group imageView;
     private static final Insets PADDING = new Insets(1, 1, 1, 1);
 
     public NodeCellPane(Region n) {
         this.content = n;
 
-        imageView = new Group(n);
-        getChildren().add(imageView);
+        getChildren().add(n);
 
         setPadding(PADDING);
         getStyleClass().add("node-cell-pane");
@@ -52,25 +49,16 @@ public class NodeCellPane extends Pane {
 
     @Override
     protected void layoutChildren() {
-        double width = getWidth();
-        double sc;
-        if (width < content.getWidth()) {
-            sc = width / content.getWidth();
-        } else {
-            sc = 1.0;
-        }
-        // FIX not applicable!  do not scale
-        imageView.setScaleX(sc);
-        imageView.setScaleY(sc);
-
+        double w = getWidth();
+        double h = content.prefHeight(w);
         double x0 = snappedLeftInset();
         double y0 = snappedTopInset();
         layoutInArea(
-            imageView,
+            content,
             x0,
             y0,
-            content.getWidth() * sc,
-            content.getHeight() * sc,
+            w,
+            h,
             0,
             PADDING,
             true,
@@ -82,17 +70,6 @@ public class NodeCellPane extends Pane {
 
     @Override
     protected double computePrefHeight(double width) {
-        double w = content.getWidth();
-        if (w == 0.0) {
-            return content.prefHeight(width);
-        }
-
-        double pad = snappedTopInset() + snappedBottomInset();
-        if (width != -1) {
-            if (width < w) {
-                return pad + (content.getHeight() * width / w);
-            }
-        }
-        return pad + (content.getHeight());
+        return content.prefHeight(width) + snappedTopInset() + snappedBottomInset();
     }
 }
