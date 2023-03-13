@@ -80,11 +80,9 @@ public class DemoStyledTextModel extends ReadOnlyStyledTextModel {
          }
 
          /** */
-         public class SParagraph implements StyledParagraph {
-             private final int index;
-    
+         public class SParagraph extends StyledParagraph {
              public SParagraph(int index) {
-                 this.index = index;
+                 super(index);
              }
     
              @Override
@@ -94,13 +92,8 @@ public class DemoStyledTextModel extends ReadOnlyStyledTextModel {
                  return NewAPI.getText(f);
              }
     
-             @Override
-             public int getIndex() {
-                 return index;
-             }
-    
              public int hashCode() {
-                 return System.identityHashCode(SList.this) ^ index;
+                 return System.identityHashCode(SList.this) ^ getIndex();
              }
              
              private SList list() {
@@ -113,7 +106,7 @@ public class DemoStyledTextModel extends ReadOnlyStyledTextModel {
                  } else if (x instanceof SParagraph p) {
                      return
                          (p.list() == list()) &&
-                         (p.index == index);
+                         (p.getIndex() == getIndex());
                  } else {
                      return false;
                  }
@@ -121,13 +114,14 @@ public class DemoStyledTextModel extends ReadOnlyStyledTextModel {
     
              @Override
              public TextCell createTextCell() {
-                 TextCell c = new TextCell(index);
-                 String s = String.valueOf(index);
+                 int ix = getIndex();
+                 TextCell c = new TextCell(ix);
+                 String s = String.valueOf(ix);
+                 String sz = String.valueOf(SList.this.size());
 
                  c.addSegment(s, monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:darkgreen;", null);
                  c.addSegment(" / ", monospaced ? "-fx-font-family:Monospaced;" : null, null);
-                 c.addSegment(String.valueOf(SList.this.size()),
-                     monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:black;", null);
+                 c.addSegment(sz, monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:black;", null);
                  if (monospaced) {
                      c.addSegment(" (monospaced)", monospaced ? "-fx-font-family:Monospaced;" : null, null);
                  }

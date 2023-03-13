@@ -27,23 +27,17 @@ package goryachev.rich.model;
 import javafx.scene.image.Image;
 import goryachev.rich.TextCell;
 
-public class SimpleStyledImageParagraph implements StyledParagraph {
-    private final int index; // TODO move to base class?
+public class SimpleStyledImageParagraph extends StyledParagraph {
     private final Image image;
     
     public SimpleStyledImageParagraph(int index, Image image) {
-        this.index = index;
+        super(index);
         this.image = image;
     }
     
     @Override
     public TextCell createTextCell() {
-        return new TextCell(index, new ImageCellPane(image));
-    }
-
-    @Override
-    public int getIndex() {
-        return index;
+        return new TextCell(getIndex(), new ImageCellPane(image));
     }
 
     @Override
