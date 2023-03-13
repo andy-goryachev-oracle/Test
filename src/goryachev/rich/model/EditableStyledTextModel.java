@@ -56,13 +56,13 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
     public StyledParagraph getParagraph(int index) {
         return new StyledParagraph(index) {
             @Override
-            public String getPlainText() {
-                return EditableStyledTextModel.this.getPlainText(index);
+            public String getText() {
+                return getPlainText(index);
             }
 
             @Override
             public TextCell createTextCell() {
-                String text = getPlainText();
+                String text = getText();
                 TextCell c = new TextCell(index);
                 StyleRunGenerator g = new StyleRunGenerator(text, 0, text.length());
                 while(g.next()) {
