@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import goryachev.rich.Marker;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
-import goryachev.rich.model.StyleAttrs.Attr;
 
 /**
  * Editable styled text model.
@@ -46,13 +45,11 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
 
     public EditableStyledTextModel() {
         Marker m0 = newMarker(TextPos.ZERO);
-        Marker m1 = newMarker(new TextPos(0, 0)); // FIX trailing is needed here!
         StyleAttrs a = new StyleAttrs();
-        a.set(Attr.FONT_FAMILY, "System");
-        a.set(Attr.FONT_SIZE, 1.0);
+        a.set(StyleAttrs.Attr.FONT_FAMILY, "System");
+        a.set(StyleAttrs.Attr.FONT_SIZE, 1.0);
         
         runs.add(new StyledRun(m0, a));
-        runs.add(new StyledRun(m1, null));
     }
     
     @Override
@@ -80,6 +77,17 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
             }
         };
     }
+    
+    @Override
+    protected int insertTextSegment(int index, int offset, StyledSegment segment) {
+        // TODO
+        return super.insertTextSegment(index, offset, segment);
+    }
+    
+    @Override
+    protected void insertParagraph(int index, StyledSegment segment) {
+        // no-op
+    }
 
     @Override
     public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
@@ -89,6 +97,12 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
     @Override
     public void removeStyle(TextPos start, TextPos end, String direct, String[] css) {
         // TODO
+    }
+    
+    @Override
+    protected void exportSegments(int index, int start, int end, StyledOutput out) {
+        // TODO
+        super.exportSegments(index, start, end, out);
     }
     
     /** Represents a text run with a specific style */

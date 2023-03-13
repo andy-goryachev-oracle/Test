@@ -100,7 +100,7 @@ public class EditablePlainTextModel extends EditableStyledTextModelBase {
         }
     }
 
-    private static String insertText(String text, int index, String toInsert) {
+    protected static String insertText(String text, int index, String toInsert) {
         if (index >= text.length()) {
             return text + toInsert;
         } else {
