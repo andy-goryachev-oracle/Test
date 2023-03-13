@@ -27,8 +27,8 @@ package goryachev.rich.model;
 /**
  * Editable StyledTextModel base class.
  */
-public abstract class EditableStyledTextModel extends StyledTextModel {
-    public EditableStyledTextModel() {
+public abstract class EditableStyledTextModelBase extends StyledTextModel {
+    public EditableStyledTextModelBase() {
     }
 
     @Override
