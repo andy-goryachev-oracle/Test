@@ -71,9 +71,9 @@ public class NotebookModel2 extends SegmentStyledTextModel {
             b.setOnAction((ev) -> execute());
             return b;
         });
-        nl(1);
-        addSegment("Result:", null, GRAY);
         nl(2);
+        addSegment("Result:", null, GRAY);
+        nl();
         addParagraph(() -> new ResultParagraph(result));
         nl(2);
         addSegment("Source: Wikipedia");
