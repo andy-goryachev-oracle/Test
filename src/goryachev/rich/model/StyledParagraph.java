@@ -33,11 +33,12 @@ import goryachev.rich.TextCell;
  */
 public abstract class StyledParagraph {
     /**
-     * Returns plain text for the give paragraph.  This text should be the same as the result of 'copy'
-     * operation performed on the paragraph, and must not contain line separator.
+     * Returns plain text for the given paragraph.
+     * This text should be the same as the result of the 'copy'
+     * operation performed on the paragraph, and must not contain any line separators.
      * This method might return null if no text is associated with the paragraph.
      */
-    public abstract String getPlainText();
+    public abstract String getText();
 
     /**
      * Creates Nodes which provide visual representation of the paragraph.

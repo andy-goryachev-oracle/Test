@@ -131,7 +131,7 @@ public abstract class StyledTextModel {
      */
     public String getPlainText(int index) {
         StyledParagraph p = getParagraph(index);
-        return p.getPlainText();
+        return p.getText();
     }
     
     public void addChangeListener(ChangeListener listener) {

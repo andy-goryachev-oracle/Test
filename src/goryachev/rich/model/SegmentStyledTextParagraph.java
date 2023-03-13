@@ -60,7 +60,7 @@ public class SegmentStyledTextParagraph extends StyledParagraph {
     }
 
     @Override
-    public String getPlainText() {
+    public String getText() {
         if (segments == null) {
             return null;
         }

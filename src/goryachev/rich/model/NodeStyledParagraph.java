@@ -43,7 +43,7 @@ public class NodeStyledParagraph extends StyledParagraph {
     }
 
     @Override
-    public String getPlainText() {
+    public String getText() {
         return null;
     }
 }
