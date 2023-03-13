@@ -59,6 +59,7 @@ public class NodeCellPane extends Pane {
         } else {
             sc = 1.0;
         }
+        // FIX not applicable!  do not scale
         imageView.setScaleX(sc);
         imageView.setScaleY(sc);
 
