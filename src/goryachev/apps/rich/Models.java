@@ -31,7 +31,6 @@ import goryachev.rich.simple.SegmentStyledTextModel;
 public enum Models {
     DEMO("Demo"),
     EDITABLE_PLAIN("Editable Plaintext Model"),
-    EDITABLE_STYLED("Editable Styled Model"),
     NOTEBOOK("Notebook: Embedded Chart"),
     NOTEBOOK2("Notebook: SQL Queries"),
     MONOSPACED("Monospaced"),
