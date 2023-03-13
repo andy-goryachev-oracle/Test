@@ -22,13 +22,12 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.apps.rich;
+package goryachev.rich.model;
 
 import java.util.ArrayList;
 import goryachev.rich.Marker;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
-import goryachev.rich.model.StyledParagraph;
 
 /**
  * Editable styled text model.
@@ -45,7 +44,6 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
     private final ArrayList<StyledRun> runs = new ArrayList<>();
 
     public EditableStyledTextModel() {
-
     }
     
     @Override
