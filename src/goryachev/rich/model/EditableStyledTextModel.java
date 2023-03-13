@@ -54,15 +54,10 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
     
     @Override
     public StyledParagraph getParagraph(int index) {
-        return new StyledParagraph() {
+        return new StyledParagraph(index) {
             @Override
             public String getPlainText() {
                 return EditableStyledTextModel.this.getPlainText(index);
-            }
-
-            @Override
-            public int getIndex() {
-                return index;
             }
 
             @Override
