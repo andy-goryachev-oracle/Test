@@ -32,7 +32,8 @@ public enum Models {
     DEMO("Demo"),
     EDITABLE_PLAIN("Editable Plaintext Model"),
     EDITABLE_STYLED("Editable Styled Model"),
-    NOTEBOOK("Notebook"),
+    NOTEBOOK("Notebook: Embedded Chart"),
+    NOTEBOOK2("Notebook: SQL Queries"),
     MONOSPACED("Monospaced"),
     NULL("null"),
     TABS("Tabs"),
@@ -81,6 +82,8 @@ public enum Models {
             return new DemoStyledTextModel(2_000_000_000, true);
         case NOTEBOOK:
             return new NotebookModel();
+        case NOTEBOOK2:
+            return new NotebookModel2();
         case NULL:
             return null;
         case ONE_LINE:
