@@ -78,7 +78,7 @@ public class NotebookModel2 extends SegmentStyledTextModel {
         nl(2);
         addSegment("Source: Wikipedia");
         nl();
-        addSegment("https://en.wikipedia.org/wiki/Bifurcation_diagram", null, GREEN, UNDER);
+        addSegment("https://en.wikipedia.org/wiki/Select_(SQL)", null, GREEN, UNDER);
     }
     
     protected void execute() {
