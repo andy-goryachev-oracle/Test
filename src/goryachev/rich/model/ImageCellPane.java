@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich.simple;
+package goryachev.rich.model;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;

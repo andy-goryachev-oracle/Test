@@ -22,27 +22,23 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich.simple;
+package goryachev.rich.model;
 
-import java.util.function.Supplier;
-import javafx.scene.Node;
-import javafx.scene.layout.Region;
+import javafx.scene.image.Image;
 import goryachev.rich.TextCell;
-import goryachev.rich.model.StyledParagraph;
 
-public class NodeStyledParagraph implements StyledParagraph {
+public class SimpleStyledImageParagraph implements StyledParagraph {
     private final int index; // TODO move to base class?
-    private final Supplier<Region> generator;
+    private final Image image;
     
-    public NodeStyledParagraph(int index, Supplier<Region> generator) {
+    public SimpleStyledImageParagraph(int index, Image image) {
         this.index = index;
-        this.generator = generator;
+        this.image = image;
     }
     
     @Override
     public TextCell createTextCell() {
-        Region n = generator.get();
-        return new TextCell(index, new NodeCellPane(n));
+        return new TextCell(index, new ImageCellPane(image));
     }
 
     @Override

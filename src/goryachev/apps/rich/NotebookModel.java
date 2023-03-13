@@ -25,7 +25,7 @@
 package goryachev.apps.rich;
 
 import javafx.scene.Node;
-import goryachev.rich.simple.SegmentStyledTextModel;
+import goryachev.rich.model.SegmentStyledTextModel;
 
 public class NotebookModel extends SegmentStyledTextModel {
     public NotebookModel() {

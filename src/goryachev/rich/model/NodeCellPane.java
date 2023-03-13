@@ -22,33 +22,55 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich.simple;
+package goryachev.rich.model;
 
-import javafx.scene.image.Image;
-import goryachev.rich.TextCell;
-import goryachev.rich.model.StyledParagraph;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.VPos;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 
-public class SimpleStyledImageParagraph implements StyledParagraph {
-    private final int index; // TODO move to base class?
-    private final Image image;
-    
-    public SimpleStyledImageParagraph(int index, Image image) {
-        this.index = index;
-        this.image = image;
+/**
+ * Content pane for TextCell that shows a single region Node.
+ * The content gets resized if it cannot fit into available width.
+ */
+public class NodeCellPane extends Pane {
+    private final Region content;
+    private static final Insets PADDING = new Insets(1, 1, 1, 1);
+
+    public NodeCellPane(Region n) {
+        this.content = n;
+
+        getChildren().add(n);
+
+        setPadding(PADDING);
+        getStyleClass().add("node-cell-pane");
     }
-    
+
     @Override
-    public TextCell createTextCell() {
-        return new TextCell(index, new ImageCellPane(image));
+    protected void layoutChildren() {
+        double w = getWidth();
+        double h = content.prefHeight(w);
+        
+        double x0 = snappedLeftInset();
+        double y0 = snappedTopInset();
+        layoutInArea(
+            content,
+            x0,
+            y0,
+            w,
+            h,
+            0,
+            PADDING,
+            true,
+            false,
+            HPos.CENTER,
+            VPos.CENTER
+        );
     }
 
     @Override
-    public int getIndex() {
-        return index;
-    }
-
-    @Override
-    public String getPlainText() {
-        return null;
+    protected double computePrefHeight(double width) {
+        return content.prefHeight(width) + snappedTopInset() + snappedBottomInset();
     }
 }

@@ -22,55 +22,35 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich.simple;
+package goryachev.rich.model;
 
-import javafx.geometry.HPos;
-import javafx.geometry.Insets;
-import javafx.geometry.VPos;
-import javafx.scene.layout.Pane;
+import java.util.function.Supplier;
+import javafx.scene.Node;
 import javafx.scene.layout.Region;
+import goryachev.rich.TextCell;
 
-/**
- * Content pane for TextCell that shows a single region Node.
- * The content gets resized if it cannot fit into available width.
- */
-public class NodeCellPane extends Pane {
-    private final Region content;
-    private static final Insets PADDING = new Insets(1, 1, 1, 1);
-
-    public NodeCellPane(Region n) {
-        this.content = n;
-
-        getChildren().add(n);
-
-        setPadding(PADDING);
-        getStyleClass().add("node-cell-pane");
+public class NodeStyledParagraph implements StyledParagraph {
+    private final int index; // TODO move to base class?
+    private final Supplier<Region> generator;
+    
+    public NodeStyledParagraph(int index, Supplier<Region> generator) {
+        this.index = index;
+        this.generator = generator;
+    }
+    
+    @Override
+    public TextCell createTextCell() {
+        Region n = generator.get();
+        return new TextCell(index, new NodeCellPane(n));
     }
 
     @Override
-    protected void layoutChildren() {
-        double w = getWidth();
-        double h = content.prefHeight(w);
-        
-        double x0 = snappedLeftInset();
-        double y0 = snappedTopInset();
-        layoutInArea(
-            content,
-            x0,
-            y0,
-            w,
-            h,
-            0,
-            PADDING,
-            true,
-            false,
-            HPos.CENTER,
-            VPos.CENTER
-        );
+    public int getIndex() {
+        return index;
     }
 
     @Override
-    protected double computePrefHeight(double width) {
-        return content.prefHeight(width) + snappedTopInset() + snappedBottomInset();
+    public String getPlainText() {
+        return null;
     }
 }

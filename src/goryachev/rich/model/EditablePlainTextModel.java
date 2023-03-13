@@ -22,25 +22,22 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.apps.rich;
+package goryachev.rich.model;
 
 import java.util.ArrayList;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
-import goryachev.rich.model.EditableStyledTextModel;
-import goryachev.rich.model.PlainTextFormatHandler;
-import goryachev.rich.model.StringStyledSegment;
-import goryachev.rich.model.StyledOutput;
-import goryachev.rich.model.StyledParagraph;
-import goryachev.rich.model.StyledSegment;
 
-public class EditablePlaintextModel extends EditableStyledTextModel {
+/**
+ * Editable plain text model.
+ * 
+ * TODO should it be here or as a standard model?
+ */
+public class EditablePlainTextModel extends EditableStyledTextModel {
     private final ArrayList<String> paragraphs = new ArrayList();
     private static final String STYLE = "-fx-font-size:200%;";
 
-    public EditablePlaintextModel() {
+    public EditablePlainTextModel() {
         paragraphs.add("");
         registerDataFormatHandler(new PlainTextFormatHandler());
     }
@@ -50,7 +47,7 @@ public class EditablePlaintextModel extends EditableStyledTextModel {
         return new StyledParagraph() {
             @Override
             public String getPlainText() {
-                return EditablePlaintextModel.this.getPlainText(index);
+                return EditablePlainTextModel.this.getPlainText(index);
             }
 
             @Override
@@ -61,9 +58,9 @@ public class EditablePlaintextModel extends EditableStyledTextModel {
             @Override
             public TextCell createTextCell() {
                 String text = getPlainText();
-                TextFlow f = new TextFlow(new Text(text));
-                f.setStyle(STYLE);
-                return new TextCell(index, f);
+                TextCell c = new TextCell(index);
+                c.addSegment(text, STYLE, null);
+                return c;
             }
         };
     }

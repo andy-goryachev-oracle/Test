@@ -28,7 +28,7 @@ import java.util.Random;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import goryachev.rich.simple.SegmentStyledTextModel;
+import goryachev.rich.model.SegmentStyledTextModel;
 
 /**
  * RichTextArea demo model.
