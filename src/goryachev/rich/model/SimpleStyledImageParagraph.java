@@ -41,7 +41,7 @@ public class SimpleStyledImageParagraph extends StyledParagraph {
     }
 
     @Override
-    public String getPlainText() {
+    public String getText() {
         return null;
     }
 }

@@ -46,13 +46,13 @@ public class EditablePlainTextModel extends EditableStyledTextModelBase {
     public StyledParagraph getParagraph(int index) {
         return new StyledParagraph(index) {
             @Override
-            public String getPlainText() {
-                return EditablePlainTextModel.this.getPlainText(index);
+            public String getText() {
+                return getPlainText(index);
             }
 
             @Override
             public TextCell createTextCell() {
-                String text = getPlainText();
+                String text = getText();
                 TextCell c = new TextCell(index);
                 c.addSegment(text, STYLE, null);
                 return c;

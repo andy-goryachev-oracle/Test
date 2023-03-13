@@ -86,7 +86,7 @@ public class DemoStyledTextModel extends ReadOnlyStyledTextModel {
              }
     
              @Override
-             public String getPlainText() {
+             public String getText() {
                  TextCell c = createTextCell();
                  TextFlow f = ((TextFlow)c.getContent());
                  return NewAPI.getText(f);
