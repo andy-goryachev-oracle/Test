@@ -22,56 +22,44 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich.simple;
+package goryachev.rich.model;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 
 /**
- * Content pane for TextCell that shows a single image.
- * The image gets resized if it cannot fit into available width.
+ * Content pane for TextCell that shows a single region Node.
+ * The content gets resized if it cannot fit into available width.
  */
-public class ImageCellPane extends Pane {
-    private final Image image;
-    private final ImageView imageView;
+public class NodeCellPane extends Pane {
+    private final Region content;
     private static final Insets PADDING = new Insets(1, 1, 1, 1);
 
-    public ImageCellPane(Image image) {
-        this.image = image;
+    public NodeCellPane(Region n) {
+        this.content = n;
 
-        imageView = new ImageView(image);
-        imageView.setSmooth(true);
-        imageView.setPreserveRatio(true);
-        getChildren().add(imageView);
+        getChildren().add(n);
 
         setPadding(PADDING);
-        getStyleClass().add("image-cell-pane");
+        getStyleClass().add("node-cell-pane");
     }
 
     @Override
     protected void layoutChildren() {
-        double width = getWidth();
-        double sc;
-        if (width < image.getWidth()) {
-            sc = width / image.getWidth();
-        } else {
-            sc = 1.0;
-        }
-        imageView.setScaleX(sc);
-        imageView.setScaleY(sc);
-
+        double w = getWidth();
+        double h = content.prefHeight(w);
+        
         double x0 = snappedLeftInset();
         double y0 = snappedTopInset();
         layoutInArea(
-            imageView,
+            content,
             x0,
             y0,
-            image.getWidth() * sc,
-            image.getHeight() * sc,
+            w,
+            h,
             0,
             PADDING,
             true,
@@ -82,13 +70,7 @@ public class ImageCellPane extends Pane {
     }
 
     @Override
-    protected double computePrefHeight(double w) {
-        double pad = snappedTopInset() + snappedBottomInset();
-        if (w != -1) {
-            if (w < image.getWidth()) {
-                return pad + (image.getHeight() * w / image.getWidth());
-            }
-        }
-        return pad + (image.getHeight());
+    protected double computePrefHeight(double width) {
+        return content.prefHeight(width) + snappedTopInset() + snappedBottomInset();
     }
 }

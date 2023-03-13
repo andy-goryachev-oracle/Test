@@ -25,7 +25,7 @@
 package goryachev.apps.rich;
 
 import java.util.Random;
-import goryachev.rich.simple.SegmentStyledTextModel;
+import goryachev.rich.model.SegmentStyledTextModel;
 
 public class UnevenStyledTextModel extends SegmentStyledTextModel {
     private Random r = new Random();

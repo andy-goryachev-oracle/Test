@@ -24,14 +24,13 @@
  */
 // This code borrows heavily from the following project, with permission from the author:
 // https://github.com/andy-goryachev/FxEditor
-package goryachev.rich.simple;
+package goryachev.rich.model;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import javafx.scene.Node;
 import goryachev.rich.TextCell;
-import goryachev.rich.model.StyledParagraph;
 
 public class SegmentStyledTextParagraph implements StyledParagraph {
     private int index; // TODO move to base class?

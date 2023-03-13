@@ -25,8 +25,9 @@
 package goryachev.apps.rich;
 
 import goryachev.monkey.util.WritingSystemsDemo;
+import goryachev.rich.model.EditablePlainTextModel;
+import goryachev.rich.model.SegmentStyledTextModel;
 import goryachev.rich.model.StyledTextModel;
-import goryachev.rich.simple.SegmentStyledTextModel;
 
 public enum Models {
     DEMO("Demo"),

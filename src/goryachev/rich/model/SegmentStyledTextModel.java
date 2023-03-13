@@ -24,7 +24,7 @@
  */
 // This code borrows heavily from the following project, with permission from the author:
 // https://github.com/andy-goryachev/FxEditor
-package goryachev.rich.simple;
+package goryachev.rich.model;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,8 +35,6 @@ import java.util.function.Supplier;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
-import goryachev.rich.model.ReadOnlyStyledTextModel;
-import goryachev.rich.model.StyledParagraph;
 
 /**
  * A read-only styled text model that consists of styled text segments.
