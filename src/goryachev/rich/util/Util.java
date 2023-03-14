@@ -31,6 +31,7 @@ import javafx.css.CssMetaData;
 import javafx.css.Styleable;
 import javafx.geometry.Point2D;
 import javafx.scene.layout.Region;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.PathElement;
@@ -165,5 +166,35 @@ public class Util {
         }
 
         return text.substring(start, end);
+    }
+    
+    /** Converts Color to "#rrggbb" or "rgba(r,g,b,a)" string */ 
+    public static String toColorString(Color c) {
+        if(c.getOpacity() == 1.0) {
+            return String.format(
+                "#%02x%#02x%#02x", 
+                eightBit(c.getRed()),
+                eightBit(c.getGreen()),
+                eightBit(c.getBlue())
+            );
+        } else {
+            return String.format(
+                "rgba(%d,%d,%d,%d)", 
+                eightBit(c.getRed()),
+                eightBit(c.getGreen()),
+                eightBit(c.getBlue()),
+                c.getOpacity()
+            );
+        }
+    }
+
+    private static int eightBit(double val) {
+        int v = (int)Math.round(val * 255);
+        if (v < 0) {
+            return 0;
+        } else if (v > 255) {
+            return 255;
+        }
+        return 255;
     }
 }

@@ -26,7 +26,7 @@ package goryachev.rich.model;
 
 import java.util.HashMap;
 import javafx.scene.paint.Color;
-import goryachev.rich.util.NewAPI;
+import goryachev.rich.util.Util;
 
 /**
  * Map of style attributes.
@@ -116,7 +116,7 @@ public class StyleAttrs {
                 sb.append("-fx-strikethrough:true; ");
                 break;
             case TEXT_COLOR:
-                String color = NewAPI.toColorString((Color)v);
+                String color = Util.toColorString((Color)v);
                 sb.append("-fx-fill:").append(color).append("; ");
                 break;
             case UNDERLINE:

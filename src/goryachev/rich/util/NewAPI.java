@@ -33,7 +33,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Screen;
@@ -48,8 +47,8 @@ public class NewAPI {
      */
     public static String getText(TextFlow f) {
         StringBuilder sb = new StringBuilder();
-        for(Node n: f.getChildrenUnmodifiable()) {
-            if(n instanceof Text t) {
+        for (Node n : f.getChildrenUnmodifiable()) {
+            if (n instanceof Text t) {
                 sb.append(t.getText());
             }
         }
@@ -59,14 +58,14 @@ public class NewAPI {
     /** TextFlow.getTextLength() */
     public static int getTextLength(TextFlow f) {
         int len = 0;
-        for(Node n: f.getChildrenUnmodifiable()) {
-            if(n instanceof Text t) {
+        for (Node n : f.getChildrenUnmodifiable()) {
+            if (n instanceof Text t) {
                 len += t.getText().length();
             }
         }
         return len;
     }
-    
+
     /** adds a change listener via ListenerHelper which should be made public */
     public static void addChangeListener(Runnable onChange, boolean fireImmediately, ObservableValue<?>... props) {
         ChangeListener li = new ChangeListener() {
@@ -152,38 +151,8 @@ public class NewAPI {
     public static void provideErrorFeedback(Node originator) {
         beep();
     }
-    
+
     public static void beep() {
         // TODO not supported in FX
-    }
-    
-    /** Converts Color to "#rrggbb" or "rgba(r,g,b,a)" string */ 
-    public static String toColorString(Color c) {
-        if(c.getOpacity() == 1.0) {
-            return String.format(
-                "#%02x%#02x%#02x", 
-                eightBit(c.getRed()),
-                eightBit(c.getGreen()),
-                eightBit(c.getBlue())
-            );
-        } else {
-            return String.format(
-                "rgba(%d,%d,%d,%d)", 
-                eightBit(c.getRed()),
-                eightBit(c.getGreen()),
-                eightBit(c.getBlue()),
-                c.getOpacity()
-            );
-        }
-    }
-
-    private static int eightBit(double val) {
-        int v = (int)Math.round(val * 255);
-        if (v < 0) {
-            return 0;
-        } else if (v > 255) {
-            return 255;
-        }
-        return 255;
     }
 }

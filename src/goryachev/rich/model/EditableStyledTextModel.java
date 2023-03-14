@@ -131,7 +131,7 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
             if (runIndex >= runs.size()) {
                 return 0;
             }
-            // FIX markers might coalesce, so pick the next one that's different
+            // markers might coincide, so skip until text pos is different
             r1 = runs.get(runIndex);
             if (!r0.marker.getTextPos().equals(r1.marker.getTextPos())) {
                 break;
