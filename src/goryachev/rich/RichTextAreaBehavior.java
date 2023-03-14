@@ -143,6 +143,11 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             public void eventTextUpdated(TextPos start, TextPos end, int top, int ins, int btm) {
                 handleTextUpdated(start, end, top, ins, btm);
             }
+
+            @Override
+            public void eventStyleUpdated(TextPos start, TextPos end) {
+                handleStyleUpdated(start, end);
+            }
         };
 
         autoScrollTimer = new Timeline(new KeyFrame(autoScrollPeriod, (ev) -> {
@@ -824,6 +829,10 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
     protected void handleTextUpdated(TextPos start, TextPos end, int addedTop, int linesAdded, int addedBottom) {
         vflow().handleTextUpdated(start, end, addedTop, linesAdded, addedBottom);
+    }
+    
+    protected void handleStyleUpdated(TextPos start, TextPos end) {
+        vflow().handleStyleUpdated(start, end);
     }
 
     public void backspace() {

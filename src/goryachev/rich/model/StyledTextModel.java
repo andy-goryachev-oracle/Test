@@ -48,7 +48,7 @@ public abstract class StyledTextModel {
          * Indicates a change in the model text.
          * The listeners are updated *after* the corresponding changes have been made to the model.
          * 
-         * @param start start of the text block
+         * @param start start of the affected text block
          * @param end end of the affected text block
          * @param charsAddedTop number of characters inserted on the same line as start
          * @param linesAdded the number of paragraphs inserted between start and end
@@ -56,7 +56,12 @@ public abstract class StyledTextModel {
          */
         public void eventTextUpdated(TextPos start, TextPos end, int charsAddedTop, int linesAdded, int charsAddedBottom);
         
-        // TODO eventStyleUpdated (index1...index2)
+        /**
+         * Indicates a change in styles only, with no change in the model text.
+         * @param start start of the affected text block
+         * @param end end of the affected text block
+         */
+        public void eventStyleUpdated(TextPos start, TextPos end);
     }
     
     /**
@@ -108,8 +113,24 @@ public abstract class StyledTextModel {
      */
     protected abstract void exportSegments(int index, int startOffset, int endOffset, StyledOutput out);
     
+    /**
+     * Applies a style to the specified text range.
+     * 
+     * @param start start position
+     * @param end end position
+     * @param direct
+     * @param css
+     */
     public abstract void applyStyle(TextPos start, TextPos end, String direct, String[] css);
     
+    /**
+     * Removes a style from the specified text range.
+     * 
+     * @param start start position
+     * @param end end position
+     * @param direct
+     * @param css
+     */
     public abstract void removeStyle(TextPos start, TextPos end, String direct, String[] css);
     
     private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
