@@ -926,7 +926,16 @@ public class VFlow extends Pane {
         // also if wrap is off, might need a horizontal block scroll to keep caret in the same x position
     }
 
+    // TODO this implementation might be more advanced to reduce the amount of re-computation and re-flow
     public void handleTextUpdated(TextPos start, TextPos end, int addedTop, int linesAdded, int addedBottom) {
+        // TODO clear cache >= start, update layout
+        cache.clear();
+        // TODO rebuild from start.lineIndex()
+        recomputeLayout();
+    }
+
+    // TODO this implementation might be more advanced to reduce the amount of re-computation and re-flow
+    public void handleStyleUpdated(TextPos start, TextPos end) {
         // TODO clear cache >= start, update layout
         cache.clear();
         // TODO rebuild from start.lineIndex()
