@@ -46,6 +46,7 @@ import javafx.scene.AccessibleAttribute;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.Control;
 import javafx.util.Duration;
+import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.model.StyledTextModel;
 import goryachev.rich.util.Util;
 
@@ -527,5 +528,26 @@ public class RichTextArea extends Control {
      */
     public void selectEndOfNextWord() {
         execute(Cmd.SELECT_WORD_NEXT_END);
+    }
+    
+    public boolean hasSelection() {
+        TextPos ca = getCaretPosition();
+        if (ca != null) {
+            TextPos an = getAnchorPosition();
+            if (an != null) {
+                return !ca.isSameIndexAndOffset(an);
+            }
+        }
+        return false;
+    }
+
+    public void applyStyle(TextPos start, TextPos end, StyleAttrs attrs) {
+        // TODO canEdit()? control+model
+        if(isEditable()) {
+            StyledTextModel m = getModel();
+            if(m != null) {
+                m.applyStyle(start, end, attrs);
+            }
+        }
     }
 }

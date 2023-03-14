@@ -840,7 +840,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             return;
         }
 
-        if (hasSelection()) {
+        if (control.hasSelection()) {
             deleteSelection();
         } else {
             TextPos end = control.getCaretPosition();
@@ -862,7 +862,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             return;
         }
 
-        if (hasSelection()) {
+        if (control.hasSelection()) {
             deleteSelection();
         } else {
             TextPos start = control.getCaretPosition();
@@ -873,18 +873,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                 clearPhantomX();
             }
         }
-    }
-
-    // TODO move to control?
-    protected boolean hasSelection() {
-        TextPos ca = control.getCaretPosition();
-        if (ca != null) {
-            TextPos an = control.getAnchorPosition();
-            if (an != null) {
-                return !ca.isSameIndexAndOffset(an);
-            }
-        }
-        return false;
     }
 
     protected void deleteSelection() {
@@ -963,8 +951,9 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         ev.consume();
     }
 
+    // TODO this belongs to the control!
     protected void populateContextMenu() {
-        boolean sel = hasSelection();
+        boolean sel = control.hasSelection();
         boolean paste = (findFormatForPaste() != null);
         
         ObservableList<MenuItem> items = contextMenu.getItems();
@@ -1010,7 +999,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     public void paste() {
         DataFormat f = findFormatForPaste();
         if (f != null) {
-            if (hasSelection()) {
+            if (control.hasSelection()) {
                 deleteSelection();
             }
 
@@ -1044,7 +1033,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     protected void copy(boolean cut) {
-        if (hasSelection()) {
+        if (control.hasSelection()) {
             StyledTextModel m = control.getModel();
             DataFormat[] fs = m.getSupportedDataFormats();
             if (fs.length > 0) {

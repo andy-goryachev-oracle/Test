@@ -44,8 +44,8 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
     public EditableStyledTextModel() {
         Marker m0 = getMarker(TextPos.ZERO);
         StyleAttrs a = new StyleAttrs();
-        a.set(StyleAttrs.Attr.FONT_FAMILY, "System");
-        a.set(StyleAttrs.Attr.FONT_SIZE, 1.0);
+        a.set(StyleAttrs.FONT_FAMILY, "System");
+        a.set(StyleAttrs.FONT_SIZE, 100);
         
         runs.add(new StyledRun(m0, a));
     }
@@ -78,12 +78,12 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
     }
 
     @Override
-    public void applyStyle(TextPos start, TextPos end, String direct, String[] css) {
+    public void applyStyle(TextPos start, TextPos end, StyleAttrs attrs) {
         // TODO
     }
 
     @Override
-    public void removeStyle(TextPos start, TextPos end, String direct, String[] css) {
+    public void removeStyle(TextPos start, TextPos end, StyleAttrs attrs) {
         // TODO
     }
     

@@ -27,13 +27,7 @@ package goryachev.rich.model;
 /**
  * Style Attribute provides a way to specify style in the RichTextArea.
  */
-public interface StyleAttribute {
-    /**
-     * Returns the class corresponding to the attribute value.
-     * The value must be Serializable
-     */
-    public Class<?> getType();
-    
+public abstract class StyleAttribute {
     /**
      * Builds a direct style give this attribute.
      * This method must append a valid CSS style followed by a semicolon, for example:
@@ -43,5 +37,29 @@ public interface StyleAttribute {
      * @param sb StringBuilder to append the style to
      * @param value attribute value
      */
-    public void buildStyle(StringBuilder sb, Object value);
+    public abstract void buildStyle(StringBuilder sb, Object value);
+
+    private final String name;
+    private final Class<?> type;
+
+    public StyleAttribute(String name, Class<?> type) {
+        this.name = name;
+        this.type = type;
+    }
+
+    /**
+     * Returns the class corresponding to the attribute value.
+     * The value must be Serializable.
+     */
+    public final Class<?> getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String toString() {
+        return name;
+    }
 }

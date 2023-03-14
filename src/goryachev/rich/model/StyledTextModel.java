@@ -118,25 +118,23 @@ public abstract class StyledTextModel {
      * 
      * @param start start position
      * @param end end position
-     * @param direct
-     * @param css
+     * @param attrs attribute map
      */
-    public abstract void applyStyle(TextPos start, TextPos end, String direct, String[] css);
+    public abstract void applyStyle(TextPos start, TextPos end, StyleAttrs attrs);
     
     /**
      * Removes a style from the specified text range.
      * 
      * @param start start position
      * @param end end position
-     * @param direct
-     * @param css
+     * @param attrs attribute map
      */
-    public abstract void removeStyle(TextPos start, TextPos end, String direct, String[] css);
+    public abstract void removeStyle(TextPos start, TextPos end, StyleAttrs attrs);
     
     private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
     private final HashMap<DataFormat,DataFormatHandler> handlers = new HashMap<>(4);
     private final Markers markers = new Markers();
-    // TODO special BEGIN/END markers? especially END?
+    // TODO special BEGIN/END markers? especially END (would need a leading/trailing bias then)
 
     public StyledTextModel() {
     }

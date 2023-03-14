@@ -32,23 +32,59 @@ import goryachev.rich.util.Util;
  * Map of style attributes.
  */
 public class StyleAttrs {
-    // TODO change to an interface to allow for extension:
-    //   .getType()
-    //   .toStyle(StringBuilder, value)
-    public static enum Attr {
-        BOLD(Boolean.class),
-        FONT_FAMILY(String.class),
-        FONT_SIZE(Double.class),
-        ITALIC(Boolean.class),
-        STRIKE_THROUGH(Boolean.class),
-        TEXT_COLOR(Color.class),
-        UNDERLINE(Boolean.class),
-        ;
-        public final Class<?> type;
-        Attr(Class<?> type) { this.type = type; }
-    }
+    public static final StyleAttribute BOLD = new StyleAttribute("BOLD", Boolean.class) {
+        @Override
+        public void buildStyle(StringBuilder sb, Object value) {
+            sb.append("-fx-font-weight:bold; ");
+        }
+    };
     
-    private final HashMap<Attr,Object> attributes = new HashMap<>();
+    public static final StyleAttribute FONT_FAMILY = new StyleAttribute("FONT_FAMILY", String.class) {
+        @Override
+        public void buildStyle(StringBuilder sb, Object value) {
+            sb.append("-fx-font-family:").append(value).append("; ");
+        }
+    };
+    
+    /** Font size, in percent, relative to the base font size. */
+    public static final StyleAttribute FONT_SIZE = new StyleAttribute("FONT_SIZE", Integer.class) {
+        @Override
+        public void buildStyle(StringBuilder sb, Object value) {
+            int n = (Integer)value;
+            sb.append("-fx-font-size:").append(n).append("%; ");
+        }
+    };
+    
+    public static final StyleAttribute ITALIC = new StyleAttribute("ITALIC", Boolean.class) {
+        @Override
+        public void buildStyle(StringBuilder sb, Object value) {
+            sb.append("-fx-font-style:italic; ");
+        }
+    };
+    
+    public static final StyleAttribute STRIKE_THROUGH = new StyleAttribute("STRIKE_THROUGH", Boolean.class) {
+        @Override
+        public void buildStyle(StringBuilder sb, Object value) {
+            sb.append("-fx-strikethrough:true; ");
+        }
+    };
+    
+    public static final StyleAttribute TEXT_COLOR = new StyleAttribute("TEXT_COLOR", Color.class) {
+        @Override
+        public void buildStyle(StringBuilder sb, Object value) {
+            String color = Util.toColorString((Color)value);
+            sb.append("-fx-fill:").append(color).append("; ");
+        }
+    };
+    
+    public static final StyleAttribute UNDERLINE = new StyleAttribute("UNDERLINE", Boolean.class) {
+        @Override
+        public void buildStyle(StringBuilder sb, Object value) {
+            sb.append("-fx-underline:true; ");
+        }
+    };
+    
+    private final HashMap<StyleAttribute,Object> attributes = new HashMap<>();
     private transient String style;
     
     public StyleAttrs() {
@@ -68,17 +104,17 @@ public class StyleAttrs {
         return attributes.hashCode() + (31 * StyleAttrs.class.hashCode());
     }
 
-    public void set(Attr a, boolean value) {
+    public void set(StyleAttribute a, boolean value) {
         set(a, value ? Boolean.TRUE : null);
     }
 
-    public void set(Attr a, Object value) {
+    public void set(StyleAttribute a, Object value) {
         if (value == null) {
             attributes.remove(a);
-        } else if (value.getClass().isAssignableFrom(a.type)) {
+        } else if (value.getClass().isAssignableFrom(a.getType())) {
             attributes.put(a, value);
         } else {
-            throw new IllegalArgumentException(a + " requires value of type " + a.type);
+            throw new IllegalArgumentException(a + " requires value of type " + a.getType());
         }
         style = null;
     }
@@ -96,35 +132,9 @@ public class StyleAttrs {
         }
         
         StringBuilder sb = new StringBuilder(32);
-        for(Attr a: attributes.keySet()) {
+        for(StyleAttribute a: attributes.keySet()) {
             Object v = attributes.get(a);
-            switch(a) {
-            case BOLD:
-                sb.append("-fx-font-weight:bold; ");
-                break;
-            case FONT_FAMILY:
-                sb.append("-fx-font-family:").append(v).append("; ");
-                break;
-            case FONT_SIZE:
-                int n = (int)Math.round(100.0 * (Double)v);
-                sb.append("-fx-font-size:").append(n).append("%; ");
-                break;
-            case ITALIC:
-                sb.append("-fx-font-style:italic; ");
-                break;
-            case STRIKE_THROUGH:
-                sb.append("-fx-strikethrough:true; ");
-                break;
-            case TEXT_COLOR:
-                String color = Util.toColorString((Color)v);
-                sb.append("-fx-fill:").append(color).append("; ");
-                break;
-            case UNDERLINE:
-                sb.append("-fx-underline:true; ");
-                break;
-            default:
-                // silently ignore
-            }
+            a.buildStyle(sb, v);
         }
         return sb.toString();
     }

@@ -27,6 +27,7 @@ package goryachev.apps.rich;
 import java.nio.charset.Charset;
 import java.util.Base64;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -35,13 +36,19 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 import goryachev.rich.RichTextArea;
+import goryachev.rich.TextPos;
+import goryachev.rich.model.EditableStyledTextModel;
+import goryachev.rich.model.StyleAttribute;
+import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.model.StyledTextModel;
 
 /**
@@ -213,11 +220,71 @@ public class RichTextAreaDemoPane extends BorderPane {
     protected void setCustomPopup(boolean on) {
         if(on) {
             ContextMenu m = new ContextMenu();
-            m.getItems().add(new MenuItem("Custom Context Menu"));
+            m.getItems().add(new MenuItem("Dummy")); // otherwise no popup is shown
+            m.addEventFilter(Menu.ON_SHOWING, (ev) -> {
+                m.getItems().clear();
+                populatePopupMenu(m.getItems());
+            });
             control.setContextMenu(m);
         } else {
             control.setContextMenu(null);
         }
+    }
+    
+    protected void populatePopupMenu(ObservableList<MenuItem> items) {
+        boolean sel = control.hasSelection();
+        boolean paste = true; // would be easier with Actions (findFormatForPaste() != null);
+        boolean styled = (control.getModel() instanceof EditableStyledTextModel);
+
+        items.add(new MenuItem("★ Custom Context Menu"));
+        
+        items.add(new SeparatorMenuItem());
+        
+        MenuItem m;
+        items.add(m = new MenuItem("Undo"));
+        m.setOnAction((ev) -> control.undo());
+        m.setDisable(!control.isUndoable());
+
+        items.add(m = new MenuItem("Redo"));
+        m.setOnAction((ev) -> control.redo());
+        m.setDisable(!control.isRedoable());
+
+        items.add(new SeparatorMenuItem());
+
+        items.add(m = new MenuItem("Cut"));
+        m.setOnAction((ev) -> control.cut());
+        m.setDisable(!sel);
+
+        items.add(m = new MenuItem("Copy"));
+        m.setOnAction((ev) -> control.copy());
+        m.setDisable(!sel);
+
+        items.add(m = new MenuItem("Paste"));
+        m.setOnAction((ev) -> control.paste());
+        m.setDisable(!paste);
+
+        // TODO these menus could take into account the current state of their attributes and
+        // in order to actually toggle them on and off.  For the demo, simply turn them on.
+        if(styled) {
+            items.add(new SeparatorMenuItem());
+            
+            items.add(m = new MenuItem("Bold"));
+            m.setOnAction((ev) -> apply(StyleAttrs.BOLD, true));
+            m.setDisable(!sel);
+        }
+        
+        items.add(new SeparatorMenuItem());
+
+        items.add(m = new MenuItem("Select All"));
+        m.setOnAction((ev) -> control.selectAll());
+    }
+    
+    protected void apply(StyleAttribute a, Object val) {
+        TextPos ca = control.getCaretPosition();
+        TextPos an = control.getAnchorPosition();
+        StyleAttrs m = new StyleAttrs();
+        m.set(a, val);
+        control.applyStyle(ca, an, m);
     }
     
     //
