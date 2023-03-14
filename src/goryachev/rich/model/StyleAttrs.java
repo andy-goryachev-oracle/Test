@@ -26,6 +26,7 @@ package goryachev.rich.model;
 
 import java.util.HashMap;
 import javafx.scene.paint.Color;
+import goryachev.rich.util.NewAPI;
 
 /**
  * Map of style attributes.
@@ -37,7 +38,6 @@ public class StyleAttrs {
         FONT_SIZE(Double.class),
         ITALIC(Boolean.class),
         STRIKE_THROUGH(Boolean.class),
-        TEXT_BACKGROUND(Color.class),
         TEXT_COLOR(Color.class),
         UNDERLINE(Boolean.class),
         ;
@@ -52,7 +52,7 @@ public class StyleAttrs {
     }
     
     public void set(Attr a, boolean value) {
-        set(a, Boolean.valueOf(value));
+        set(a, value ? Boolean.TRUE : null);
     }
 
     public void set(Attr a, Object value) {
@@ -74,7 +74,41 @@ public class StyleAttrs {
     }
 
     private String createStyleString() {
-        // TODO
-        return null;
+        if (attributes.size() == 0) {
+            return null;
+        }
+        
+        StringBuilder sb = new StringBuilder(32);
+        for(Attr a: attributes.keySet()) {
+            Object v = attributes.get(a);
+            switch(a) {
+            case BOLD:
+                sb.append("-fx-font-weight:bold; ");
+                break;
+            case FONT_FAMILY:
+                sb.append("-fx-font-family:").append(v).append("; ");
+                break;
+            case FONT_SIZE:
+                int n = (int)Math.round(100.0 * (Double)v);
+                sb.append("-fx-font-size:").append(n).append("%; ");
+                break;
+            case ITALIC:
+                sb.append("-fx-font-style:italic; ");
+                break;
+            case STRIKE_THROUGH:
+                sb.append("-fx-strikethrough:true; ");
+                break;
+            case TEXT_COLOR:
+                String color = NewAPI.toColorString((Color)v);
+                sb.append("-fx-fill:").append(color).append("; ");
+                break;
+            case UNDERLINE:
+                sb.append("-fx-underline:true; ");
+                break;
+            default:
+                // silently ignore
+            }
+        }
+        return sb.toString();
     }
 }

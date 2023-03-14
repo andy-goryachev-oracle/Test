@@ -35,8 +35,6 @@ import goryachev.rich.TextPos;
  * Extends the plain text editable model, adding styled runs, using an ordered
  * list of markers and a limited set of supported attributes.
  * 
- * TODO style segments or plain text + style runs?
- * TODO use styles (direct + css) or attributes (bold, italic, font size, text color)?
  * TODO RTF format handler
  * TODO native format handler
  */
@@ -117,12 +115,35 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
         private int offset;
         private final int end;
         private String segment;
-        private StyledRun run;
+        private StyledRun currentRun;
+        private int runIndex;
         
         public StyleRunGenerator(String text, int start, int end) {
             this.text = text;
             this.offset = start;
             this.end = end;
+            runIndex = binarySearch(start);
+        }
+        
+        private int binarySearch(int offset) {
+            // TODO
+            return 0;
+        }
+        
+        /** returns remaining length in the currentRun or -1 if the next run is beyond this paragraph */
+        private int remainingLength() {
+            // assumes runIndex and currentRun are already set
+            int ix = runIndex + 1;
+            if(ix < runs.size()) {
+                StyledRun r = runs.get(ix);
+                TextPos p0 = currentRun.marker.getTextPos();
+                TextPos p1 = r.marker.getTextPos();
+                if(p1.index() == p0.index()) {
+                    int len = p1.offset() - offset;
+                    return len;
+                }
+            }
+            return -1;
         }
         
         /**
@@ -132,12 +153,15 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
         public boolean next() {
             if(offset < end) {
                 int start = offset;
-                
-                // TODO set segment, style
-                segment = text;
-                offset += text.length();
-                run = runs.get(0);
-                
+                currentRun = runs.get(runIndex);
+                int len = remainingLength();
+                if(len < 0) {
+                    segment = text.substring(offset);
+                    offset += segment.length();
+                } else {
+                    segment = text.substring(offset, offset + len);
+                    offset += len;
+                }
                 return true;
             } else {
                 return false;
@@ -149,7 +173,7 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
         }
         
         public String style() {
-            return run.attributes.getStyle();
+            return currentRun.attributes.getStyle();
         }
     }
 }

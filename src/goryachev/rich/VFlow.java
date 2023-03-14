@@ -50,6 +50,7 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
 import goryachev.rich.impl.CellCache;
@@ -653,6 +654,18 @@ public class VFlow extends Pane {
         if (cell == null) {
             StyledParagraph p = control.getModel().getParagraph(modelIndex);
             cell = p.createTextCell();
+
+            // a bit of a hack: avoid TextCells with an empty TextFlow,
+            // as it makes the caret collapse to a single point
+            {
+                Region r = cell.getContent();
+                if(r instanceof TextFlow f) {
+                    if(f.getChildren().size() == 0) {
+                        f.getChildren().add(new Text(""));
+                    }
+                }
+            }
+
             cache.add(cell);
         }
         return cell;
