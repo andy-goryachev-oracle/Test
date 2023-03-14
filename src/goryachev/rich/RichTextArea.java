@@ -375,7 +375,7 @@ public class RichTextArea extends Control {
     public void select(TextPos pos) {
         StyledTextModel model = getModel();
         if (model != null) {
-            Marker m = model.newMarker(pos);
+            Marker m = model.getMarker(pos);
             selectionModel.setSelection(m, m);
         }
     }
@@ -384,8 +384,8 @@ public class RichTextArea extends Control {
     public void select(TextPos anchor, TextPos caret) {
         StyledTextModel model = getModel();
         if (model != null) {
-            Marker ma = model.newMarker(anchor);
-            Marker mc = model.newMarker(caret);
+            Marker ma = model.getMarker(anchor);
+            Marker mc = model.getMarker(caret);
             selectionModel.setSelection(ma, mc);
         }
     }
@@ -394,7 +394,7 @@ public class RichTextArea extends Control {
     public void extendSelection(TextPos pos) {
         StyledTextModel model = getModel();
         if (model != null) {
-            Marker m = model.newMarker(pos);
+            Marker m = model.getMarker(pos);
             selectionModel.extendSelection(m);
         }
     }

@@ -288,9 +288,9 @@ public abstract class StyledTextModel {
         }
     }
 
-    public Marker newMarker(TextPos pos) {
+    public Marker getMarker(TextPos pos) {
         TextPos p = clamp(pos);
-        return markers.newMarker(p);
+        return markers.getMarker(p);
     }
 
     private TextPos clamp(TextPos p) {

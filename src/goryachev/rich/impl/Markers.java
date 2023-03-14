@@ -45,7 +45,7 @@ public class Markers {
         markers = new HashMap<>();
     }
 
-    public Marker newMarker(TextPos pos) {
+    public Marker getMarker(TextPos pos) {
         List<WeakReference<Marker>> refs = markers.get(pos);
         if (refs != null) {
             for (int i = refs.size() - 1; i >= 0; --i) {
