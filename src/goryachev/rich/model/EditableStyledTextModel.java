@@ -42,7 +42,7 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
     private final ArrayList<StyledRun> runs = new ArrayList<>();
 
     public EditableStyledTextModel() {
-        Marker m0 = newMarker(TextPos.ZERO);
+        Marker m0 = getMarker(TextPos.ZERO);
         StyleAttrs a = new StyleAttrs();
         a.set(StyleAttrs.Attr.FONT_FAMILY, "System");
         a.set(StyleAttrs.Attr.FONT_SIZE, 1.0);
