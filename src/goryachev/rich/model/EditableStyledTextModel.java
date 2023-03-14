@@ -61,12 +61,7 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
             @Override
             public TextCell createTextCell() {
                 String text = getText();
-                TextCell c = new TextCell(index);
-                StyleRunGenerator g = new StyleRunGenerator(text, 0, text.length());
-                while(g.next()) {
-                    c.addSegment(g.text(), g.style(), null);
-                }
-                return c;
+                return new StyledRunGenerator(index, text, 0, text.length()).generateTextCell();
             }
         };
     }
@@ -98,8 +93,66 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
         super.exportSegments(index, start, end, out);
     }
     
-    /** Represents a text run with a specific style */
-    public static class StyledRun {
+    /** returns the index of a styled run that contains the specified offset */
+    // TODO unit test!
+    private int binarySearch(int index, int offset) {
+        int low = 0;
+        int high = runs.size() - 1;
+        while (low <= high) {
+            int mid = (low + high) >>> 1;
+            int cmp = compare(mid, index, offset);
+            if (cmp < 0) {
+                low = mid + 1;
+            } else if (cmp > 0) {
+                high = mid - 1;
+            } else {
+                return mid;
+            }
+        }
+        return low;
+    }
+
+    // contains: (index,offset) is >= marker, and < next run's marker (or last run)
+    private int compare(int runIndex, int index, int offset) {
+        StyledRun r0 = runs.get(runIndex);
+        int ix = r0.getIndex();
+        if (ix < index) {
+            return -1;
+        } else if (ix == index) {
+            int off = r0.getOffset();
+            if (off < offset) {
+                return -1;
+            }
+        }
+
+        StyledRun r1;
+        for (;;) {
+            runIndex++;
+            if (runIndex >= runs.size()) {
+                return 0;
+            }
+            // FIX markers might coalesce, so pick the next one that's different
+            r1 = runs.get(runIndex);
+            if (!r0.marker.getTextPos().equals(r1.marker.getTextPos())) {
+                break;
+            }
+        }
+
+        ix = r1.getIndex();
+        if (index < ix) {
+            return 0;
+        } else if (index == ix) {
+            int off = r0.getOffset();
+            if (offset < off) {
+                return 0;
+            }
+        }
+
+        return 1;
+    }
+
+    /** Represents a text run having the same style attributes */
+    protected static class StyledRun {
         public final Marker marker;
         public final StyleAttrs attributes;
         
@@ -107,10 +160,19 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
             this.marker = marker;
             this.attributes = a;
         }
+        
+        public int getIndex() {
+            return marker.getIndex();
+        }
+        
+        public int getOffset() { 
+            return marker.getOffset();
+        }
     }
     
     /** generates styles */
-    protected class StyleRunGenerator {
+    protected class StyledRunGenerator {
+        private final int index;
         private final String text;
         private int offset;
         private final int end;
@@ -118,16 +180,20 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
         private StyledRun currentRun;
         private int runIndex;
         
-        public StyleRunGenerator(String text, int start, int end) {
+        public StyledRunGenerator(int index, String text, int start, int end) {
+            this.index = index;
             this.text = text;
             this.offset = start;
             this.end = end;
-            runIndex = binarySearch(start);
+            runIndex = binarySearch(index, start);
         }
         
-        private int binarySearch(int offset) {
-            // TODO
-            return 0;
+        public TextCell generateTextCell() {
+            TextCell c = new TextCell(index);
+            while(next()) {
+                c.addSegment(segment, style(), null);
+            }
+            return c;
         }
         
         /** returns remaining length in the currentRun or -1 if the next run is beyond this paragraph */
@@ -166,10 +232,6 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
             } else {
                 return false;
             }
-        }
-        
-        public String text() {
-            return segment;
         }
         
         public String style() {

@@ -32,6 +32,9 @@ import goryachev.rich.util.NewAPI;
  * Map of style attributes.
  */
 public class StyleAttrs {
+    // TODO change to an interface to allow for extension:
+    //   .getType()
+    //   .toStyle(StringBuilder, value)
     public static enum Attr {
         BOLD(Boolean.class),
         FONT_FAMILY(String.class),
@@ -46,11 +49,25 @@ public class StyleAttrs {
     }
     
     private final HashMap<Attr,Object> attributes = new HashMap<>();
-    private String style;
+    private transient String style;
     
     public StyleAttrs() {
     }
+
+    public boolean equals(Object x) {
+        if (x == this) {
+            return true;
+        } else if (x instanceof StyleAttrs s) {
+            return attributes.equals(s.attributes);
+        } else {
+            return false;
+        }
+    }
     
+    public int hashCode() {
+        return attributes.hashCode() + (31 * StyleAttrs.class.hashCode());
+    }
+
     public void set(Attr a, boolean value) {
         set(a, value ? Boolean.TRUE : null);
     }
