@@ -27,6 +27,7 @@ package goryachev.monkey.pages;
 import goryachev.monkey.util.FX;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.TestPaneBase;
+import javafx.geometry.Pos;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
@@ -58,9 +59,12 @@ public class LabelPage extends TestPaneBase {
     
     private final ComboBox<Demo> label1Selector;
     private final ComboBox<Demo> label2Selector;
+    private final ComboBox<Pos> alignmentSelector;
     private final Image im;
     
     public LabelPage() {
+        setId("LabelPage");
+        
         im = createImage();
         
         label1Selector = new ComboBox<>();
@@ -79,11 +83,21 @@ public class LabelPage extends TestPaneBase {
             updateControl();
         });
         
+        alignmentSelector = new ComboBox<>();
+        alignmentSelector.setId("alignmentSelector");
+        alignmentSelector.getItems().addAll(Pos.values());
+        alignmentSelector.setEditable(false);
+        alignmentSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+            updateControl();
+        });
+        
         OptionPane p = new OptionPane();
         p.label("Label 1:");
         p.option(label1Selector);
         p.label("Label 2:");
         p.option(label2Selector);
+        p.label("HBox Alignment:");
+        p.option(alignmentSelector);
         setOptions(p);
         
         FX.select(label1Selector, Demo.TEXT_ONLY);
@@ -98,6 +112,10 @@ public class LabelPage extends TestPaneBase {
         Label label2 = create(d2);
         
         HBox b = new HBox(label1, label2);
+        Pos a = FX.getSelectedItem(alignmentSelector);
+        if(a != null) {
+            b.setAlignment(a);
+        }
         setContent(b);
     }
     
