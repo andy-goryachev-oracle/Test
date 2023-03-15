@@ -76,10 +76,15 @@ public class SpinnerPage extends TestPaneBase {
         converterChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
             updateControl();
         });
-        
+
         editable = new CheckBox("editable");
         editable.setId("editable");
-        
+        editable.selectedProperty().addListener((s, p, c) -> {
+            if (control != null) {
+                control.setEditable(c);
+            }
+        });
+
         OptionPane p = new OptionPane();
         p.label("Mode:");
         p.option(modeChoice);
@@ -110,7 +115,7 @@ public class SpinnerPage extends TestPaneBase {
         Converter c = converterChoice.getSelectionModel().getSelectedItem();
         StringConverter<Number> conv = createConverter(c);
         control.getValueFactory().setConverter(conv);
-        editable.selectedProperty().bindBidirectional(control.editableProperty());
+        control.setEditable(editable.isSelected());
 
         setContent(control);
     }
