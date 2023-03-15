@@ -106,7 +106,8 @@ public class TextFlowPage extends TestPaneBase {
                 t("Inline Nodes:", f),
                 new Button("Left"),
                 t(" ", f),
-                new Button("Right")
+                new Button("Right"),
+                t("trailing", f)
             };
         } else {
             return new Node[] { t(text, f) };
