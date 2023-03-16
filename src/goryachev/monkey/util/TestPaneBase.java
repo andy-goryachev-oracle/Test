@@ -41,7 +41,7 @@ import javafx.stage.Window;
 /**
  * Base class for individual control test Pane.
  */
-public class TestPaneBase  extends BorderPane {
+public class TestPaneBase extends BorderPane {
     public static SimpleBooleanProperty usePreferredSize = new SimpleBooleanProperty();
     private final BorderPane contentPane;
     private final BooleanBinding inScrollBars;
@@ -63,11 +63,13 @@ public class TestPaneBase  extends BorderPane {
             contentPane.setStyle(null);
 
             SplitPane hsplit = new SplitPane(contentPane, pane());
+            hsplit.setId("hsplit");
             hsplit.setBorder(null);
             hsplit.setDividerPositions(0.9);
             hsplit.setOrientation(Orientation.HORIZONTAL);
             
             SplitPane vsplit = new SplitPane(hsplit, pane());
+            vsplit.setId("vsplit");
             vsplit.setBorder(null);
             vsplit.setDividerPositions(0.9);
             vsplit.setOrientation(Orientation.VERTICAL);
@@ -75,6 +77,7 @@ public class TestPaneBase  extends BorderPane {
             setCenter(vsplit);
         } else {
             Group g = new Group(contentPane);
+            g.setId("content-group");
             contentPane.setStyle("-fx-border-color:red; -fx-borderinsets:0; -fx-borderwidth:1;");
             setCenter(g);
         }

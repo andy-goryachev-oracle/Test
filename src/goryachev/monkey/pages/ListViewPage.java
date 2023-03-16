@@ -27,11 +27,14 @@ package goryachev.monkey.pages;
 import java.util.Random;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.TestPaneBase;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 
@@ -69,7 +72,7 @@ public class ListViewPage extends TestPaneBase {
     protected final ComboBox<Demo> demoSelector;
     protected final ComboBox<Selection> selectionSelector;
     protected final CheckBox nullFocusModel;
-    protected ListView<Object> list;
+    protected ListView<Object> control;
     
     public ListViewPage() {
         setId("ListViewPage");
@@ -99,15 +102,15 @@ public class ListViewPage extends TestPaneBase {
         
         Button addButton = new Button("Add Item");
         addButton.setOnAction((ev) -> {
-            list.getItems().add(newItem());
+            control.getItems().add(newItem(""));
         });
         
         Button clearButton = new Button("Clear Items");
         clearButton.setOnAction((ev) -> {
-            list.getItems().clear();
+            control.getItems().clear();
         });
         
-        Button jumpButton = new Button("Jump");
+        Button jumpButton = new Button("Jump w/VirtualFlow");
         jumpButton.setOnAction((ev) -> {
             jump();
         });
@@ -182,13 +185,13 @@ public class ListViewPage extends TestPaneBase {
             }
         }
 
-        list = new ListView<>();
-        list.getSelectionModel().setSelectionMode(selectionMode);
+        control = new ListView<>();
+        control.getSelectionModel().setSelectionMode(selectionMode);
         if(nullSelectionModel) {
-            list.setSelectionModel(null);
+            control.setSelectionModel(null);
         }
         if(nullFocusModel.isSelected()) {
-            list.setFocusModel(null);
+            control.setFocusModel(null);
         }
         
         for (int i = 0; i < spec.length;) {
@@ -199,7 +202,7 @@ public class ListViewPage extends TestPaneBase {
                     {
                         int n = (int)(spec[i++]);
                         for (int j = 0; j < n; j++) {
-                            list.getItems().add(newItem());
+                            control.getItems().add(newItem(i));
                         }
                     }
                     break;
@@ -207,7 +210,7 @@ public class ListViewPage extends TestPaneBase {
                     {
                         int n = (int)(spec[i++]);
                         for (int j = 0; j < n; j++) {
-                            list.getItems().add(newVariableItem());
+                            control.getItems().add(newVariableItem(j));
                         }
                     }
                     break;
@@ -220,15 +223,15 @@ public class ListViewPage extends TestPaneBase {
         }
 
         BorderPane bp = new BorderPane();
-        bp.setCenter(list);
+        bp.setCenter(control);
         return bp;
     }
 
-    protected String newItem() {
-        return System.currentTimeMillis() + "." + System.nanoTime();
+    protected String newItem(Object n) {
+        return n + "." + System.currentTimeMillis() + "." + System.nanoTime();
     }
     
-    protected String newVariableItem() {
+    protected String newVariableItem(Object n) {
         int rows = 1 << new Random().nextInt(5);
         StringBuilder sb = new StringBuilder();
         for(int i=0; i<rows; i++) {
@@ -237,13 +240,32 @@ public class ListViewPage extends TestPaneBase {
             }
             sb.append(i);
         }
-        return System.currentTimeMillis() + "." + System.nanoTime() + "." + sb;
+        return n + "." + System.currentTimeMillis() + "." + System.nanoTime() + "." + sb;
     }
     
     protected void jump() {
-        int sz = list.getItems().size();
+        int sz = control.getItems().size();
         int ix = sz / 2;
-        list.getSelectionModel().select(ix);
-        list.scrollTo(ix);
+        
+        control.getSelectionModel().select(ix);
+        VirtualFlow f = findVirtualFlow(control);
+        f.scrollTo(ix);
+        f.scrollPixels(-1.0);
+    }
+    
+    private VirtualFlow findVirtualFlow(Parent parent) {
+        for (Node node : parent.getChildrenUnmodifiable()) {
+            if (node instanceof VirtualFlow f) {
+                return f;
+            }
+
+            if (node instanceof Parent p) {
+                VirtualFlow f = findVirtualFlow(p);
+                if (f != null) {
+                    return f;
+                }
+            }
+        }
+        return null;
     }
 }
