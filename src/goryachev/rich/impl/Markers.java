@@ -107,14 +107,14 @@ public class Markers {
         for (TextPos pos : markers.keySet()) {
             List<WeakReference<Marker>> refs = markers.get(pos);
             TextPos p;
-            if (pos.compareTo(start) < 0) {
+            if (pos.compareTo(start) <= 0) {
                 // unchanged
                 p = pos;
-                System.out.println("  unchanged " + pos); // FIX
+                //System.out.println("  unchanged " + pos); // FIX
             } else if (pos.compareTo(end) < 0) {
                 // section removed, move marker to start
                 p = start;
-                System.out.println("  move to start " + pos + " -> " + p); // FIX
+                //System.out.println("  move to start " + pos + " -> " + p); // FIX
             } else {
                 // shift
                 int ix = pos.index();
@@ -134,7 +134,7 @@ public class Markers {
                 ix += linesAdded - (end.index() - start.index());
 
                 p = new TextPos(ix, off);
-                System.out.println("  shift from " + pos + " -> " + p); // FIX
+                //System.out.println("  shift from " + pos + " -> " + p); // FIX
             }
 
             // update markers with the new position, removing gc'ed

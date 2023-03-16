@@ -36,7 +36,7 @@ import goryachev.rich.TextPos;
  * list of markers and a limited set of supported attributes.
  * 
  * TODO RTF format handler
- * TODO native format handler
+ * TODO private format handler
  */
 public class EditableStyledTextModel extends EditablePlainTextModel {
     private final ArrayList<StyledRun> runs = new ArrayList<>();
@@ -67,25 +67,68 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
     }
     
     @Override
-    protected int insertTextSegment(int index, int offset, StyledSegment segment) {
+    protected int insertTextSegment(int index, int offset, StyledSegment seg) {
         // TODO
-        return super.insertTextSegment(index, offset, segment);
+        return super.insertTextSegment(index, offset, seg);
     }
     
     @Override
-    protected void insertParagraph(int index, StyledSegment segment) {
-        // no-op
+    protected void insertParagraph(int index, StyledSegment seg) {
+        // TODO check if paragraph segment, insert newline with a style?
     }
 
+    // TODO unit test!
     @Override
     public void applyStyle(TextPos start, TextPos end, StyleAttrs attrs) {
-        // TODO
+        if (start.compareTo(end) > 0) {
+            TextPos p = start;
+            start = end;
+            end = p;
+        }
+
+        int ix = binarySearch(start.index(), start.offset());
+        boolean first = true;
+        for(;;) {
+            StyledRun r = getRun(ix);
+            if(r == null) {
+                break;
+            }
+            
+            if(first) {
+                // split the segment?
+                if(!r.getTextPos().equals(start)) {
+                    // partial segment
+                    StyleAttrs a = r.getAttributes();
+                    StyleAttrs a2 = a.apply(attrs);
+                    if(a.equals(a2)) {
+                        // no change
+                    } else {
+                        // insert run
+                        Marker m = getMarker(start);
+                        StyledRun r2 = new StyledRun(m, a2);
+                        insertRun(ix, r2);
+                        ix++;
+                    }
+                }
+                first = false;
+            }
+            
+
+            // reached the end of specified range?
+            if(r.getTextPos().compareTo(end) > 0) {
+                break;
+            }
+        }
+        
+        fireStyleChangeEvent(start, end);
     }
 
     @Override
     public void removeStyle(TextPos start, TextPos end, StyleAttrs attrs) {
         // TODO
     }
+    
+    // TODO StyleAttrs getStyleAt(TextPos pos);
     
     @Override
     protected void exportSegments(int index, int start, int end, StyledOutput out) {
@@ -133,7 +176,7 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
             }
             // markers might coincide, so skip until text pos is different
             r1 = runs.get(runIndex);
-            if (!r0.marker.getTextPos().equals(r1.marker.getTextPos())) {
+            if (!r0.getTextPos().equals(r1.getTextPos())) {
                 break;
             }
         }
@@ -151,25 +194,21 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
         return 1;
     }
 
-    /** Represents a text run having the same style attributes */
-    protected static class StyledRun {
-        public final Marker marker;
-        public final StyleAttrs attributes;
-        
-        public StyledRun(Marker marker, StyleAttrs a) {
-            this.marker = marker;
-            this.attributes = a;
-        }
-        
-        public int getIndex() {
-            return marker.getIndex();
-        }
-        
-        public int getOffset() { 
-            return marker.getOffset();
+    protected void insertRun(int ix, StyledRun r) {
+        if (ix >= runs.size()) {
+            runs.add(r);
+        } else {
+            runs.add(ix, r);
         }
     }
-    
+
+    protected StyledRun getRun(int ix) {
+        if ((ix >= 0) || (ix < runs.size())) {
+            return runs.get(ix);
+        }
+        return null;
+    }
+
     /** generates styles */
     protected class StyledRunGenerator {
         private final int index;
@@ -202,8 +241,8 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
             int ix = runIndex + 1;
             if(ix < runs.size()) {
                 StyledRun r = runs.get(ix);
-                TextPos p0 = currentRun.marker.getTextPos();
-                TextPos p1 = r.marker.getTextPos();
+                TextPos p0 = currentRun.getTextPos();
+                TextPos p1 = r.getTextPos();
                 if(p1.index() == p0.index()) {
                     int len = p1.offset() - offset;
                     return len;
@@ -235,7 +274,7 @@ public class EditableStyledTextModel extends EditablePlainTextModel {
         }
         
         public String style() {
-            return currentRun.attributes.getStyle();
+            return currentRun.getAttributes().getStyle();
         }
     }
 }

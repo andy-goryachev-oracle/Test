@@ -25,6 +25,7 @@
 package goryachev.rich.model;
 
 import java.util.HashMap;
+import java.util.Set;
 import javafx.scene.paint.Color;
 import goryachev.rich.util.Util;
 
@@ -84,10 +85,15 @@ public class StyleAttrs {
         }
     };
     
-    private final HashMap<StyleAttribute,Object> attributes = new HashMap<>();
+    private final HashMap<StyleAttribute,Object> attributes;
     private transient String style;
     
     public StyleAttrs() {
+        this.attributes = new HashMap<>();
+    }
+    
+    public StyleAttrs(StyleAttrs a) {
+        this.attributes = new HashMap<>(a.attributes);
     }
 
     public boolean equals(Object x) {
@@ -118,6 +124,14 @@ public class StyleAttrs {
         }
         style = null;
     }
+    
+    public Object get(StyleAttribute a) {
+        return attributes.get(a);
+    }
+    
+    public Set<StyleAttribute> attributeSet() {
+        return attributes.keySet();
+    }
 
     public String getStyle() {
         if (style == null) {
@@ -137,5 +151,18 @@ public class StyleAttrs {
             a.buildStyle(sb, v);
         }
         return sb.toString();
+    }
+
+    /** 
+     * Creates a new StyleAttrs instance by adding the specified attributes.
+     * The new attributes override any existing ones.
+     */
+    public StyleAttrs apply(StyleAttrs attrs) {
+        StyleAttrs rv = new StyleAttrs(this);
+        for(StyleAttribute a: attrs.attributeSet()) {
+            Object v = attrs.get(a);
+            rv.set(a, v);
+        }
+        return null;
     }
 }

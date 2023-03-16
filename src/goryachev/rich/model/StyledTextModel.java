@@ -117,7 +117,7 @@ public abstract class StyledTextModel {
      * Applies a style to the specified text range.
      * 
      * @param start start position
-     * @param end end position
+     * @param end end position (may or may not be after the start position)
      * @param attrs attribute map
      */
     public abstract void applyStyle(TextPos start, TextPos end, StyleAttrs attrs);
@@ -126,7 +126,7 @@ public abstract class StyledTextModel {
      * Removes a style from the specified text range.
      * 
      * @param start start position
-     * @param end end position
+     * @param end end position (may or may not be after the start position)
      * @param attrs attribute map
      */
     public abstract void removeStyle(TextPos start, TextPos end, StyleAttrs attrs);
@@ -249,19 +249,30 @@ public abstract class StyledTextModel {
             }
 
             int lines = index - start.index();
+            if (lines == 0) {
+                btm = 0;
+            }
+
             fireChangeEvent(start, end, top, lines, btm);
-            
+
             return new TextPos(index, offset);
         }
         return null;
     }
     
     protected void fireChangeEvent(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
-        //System.out.println("fireChangeEvent start=" + start + " end=" + end + " top=" + charsTop + " lines=" + linesAdded + " btm=" + charsBottom); // FIX
+        System.out.println("fireChangeEvent start=" + start + " end=" + end + " top=" + charsTop + " lines=" + linesAdded + " btm=" + charsBottom); // FIX
         markers.update(start, end, charsTop, linesAdded, charsBottom);
 
         for (ChangeListener li : listeners) {
             li.eventTextUpdated(start, end, charsTop, linesAdded, charsBottom);
+        }
+    }
+    
+    protected void fireStyleChangeEvent(TextPos start, TextPos end) {
+        //System.out.println("fireChangeEvent start=" + start + " end=" + end); // FIX
+        for (ChangeListener li : listeners) {
+            li.eventStyleUpdated(start, end);
         }
     }
 
