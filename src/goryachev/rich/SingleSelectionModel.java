@@ -41,10 +41,13 @@ public class SingleSelectionModel implements SelectionModel {
     private final ChangeListener<TextPos> listener;
 
     public SingleSelectionModel() {
+        // TODO somehow we are missing marker changes here... why?
         this.listener = (src, old, val) -> {
             if (isAnchor(src)) {
+                //System.out.println("SelectionModel.listener anchor=" + val); // FIX
                 anchorPosition.set(val);
             } else {
+                //System.out.println("SelectionModel.listener caret=" + val); // FIX
                 caretPosition.set(val);
             }
         };

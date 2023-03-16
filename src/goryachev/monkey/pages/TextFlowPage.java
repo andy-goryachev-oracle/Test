@@ -25,16 +25,16 @@
 package goryachev.monkey.pages;
 
 import java.util.Locale;
-import goryachev.monkey.util.FX;
 import goryachev.monkey.util.FontSelector;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.ShowCharacterRuns;
 import goryachev.monkey.util.TestPaneBase;
 import goryachev.monkey.util.TextSelector;
-import goryachev.monkey.util.WritingSystemsDemo;
+import goryachev.monkey.util.Utils;
 import javafx.scene.Group;
+import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -48,6 +48,7 @@ public class TextFlowPage extends TestPaneBase {
     private final CheckBox showChars;
     private final TextFlow control;
     private Locale defaultLocale;
+    private static final String INLINE = "$INLINE";
 
     public TextFlowPage() {
         setId("TextFlowPage");
@@ -56,16 +57,19 @@ public class TextFlowPage extends TestPaneBase {
         
         textSelector = TextSelector.fromPairs(
             "textSelector", 
-            (t) -> updateTextFlow(),
-            Templates.multiLineTextPairs()
+            (t) -> updateControl(),
+            Utils.combine(
+                Templates.multiLineTextPairs(),
+                "Inline Nodes", INLINE
+            )
         );
         
-        fontSelector = new FontSelector("font", (f) -> updateTextFlow());
+        fontSelector = new FontSelector("font", (f) -> updateControl());
         
         showChars = new CheckBox("show characters");
         showChars.setId("showChars");
         showChars.selectedProperty().addListener((p) -> {
-            updateTextFlow();
+            updateControl();
         });
 
         OptionPane p = new OptionPane();
@@ -83,19 +87,36 @@ public class TextFlowPage extends TestPaneBase {
         fontSelector.selectSystemFont();
         textSelector.selectFirst();
     }
-    
-    protected void updateTextFlow() {
-        
+
+    protected void updateControl() {
         Font f = fontSelector.getFont();
         String text = textSelector.getSelectedText();
-        Text t = new Text(text);
-        t.setFont(f);
-        Text[] ts = new Text[] { t };
-        
+        Node[] ts = createTextArray(text, f);
         control.getChildren().setAll(ts);
-        if(showChars.isSelected()) {
+
+        if (showChars.isSelected()) {
             Group g = ShowCharacterRuns.createFor(control);
             control.getChildren().add(g);
         }
+    }
+
+    protected Node[] createTextArray(String text, Font f) {
+        if (INLINE.equals(text)) {
+            return new Node[] {
+                t("Inline Nodes:", f),
+                new Button("Left"),
+                t(" ", f),
+                new Button("Right"),
+                t("trailing", f)
+            };
+        } else {
+            return new Node[] { t(text, f) };
+        }
+    }
+    
+    protected static Text t(String text, Font f) {
+        Text t = new Text(text);
+        t.setFont(f);
+        return t;
     }
 }

@@ -36,7 +36,7 @@ public class NotebookModel extends SegmentStyledTextModel {
         String UNDER = "underline";
         String GRAY = "gray";
         String LARGE = "large";
-        String EQ = "eq";
+        String EQ = "equation";
         String SUB = "sub";
         
         addSegment("Bifurcation Diagram", "-fx-font-size:200%;", UNDER);

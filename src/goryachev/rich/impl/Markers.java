@@ -48,12 +48,10 @@ public class Markers {
     public Marker getMarker(TextPos pos) {
         List<WeakReference<Marker>> refs = markers.get(pos);
         if (refs != null) {
-            for (int i = refs.size() - 1; i >= 0; --i) {
+            for (int i = 0; i < refs.size(); i++) {
                 WeakReference<Marker> ref = refs.get(i);
                 Marker m = ref.get();
-                if (m == null) {
-                    refs.remove(i);
-                } else {
+                if (m != null) {
                     return m;
                 }
             }
@@ -108,15 +106,15 @@ public class Markers {
             List<WeakReference<Marker>> refs = markers.get(pos);
             TextPos p;
             if (pos.compareTo(start) <= 0) {
-                // unchanged
+                // position before the change: keep unchanged
                 p = pos;
                 //System.out.println("  unchanged " + pos); // FIX
             } else if (pos.compareTo(end) < 0) {
-                // section removed, move marker to start
+                // position inside the change: section removed, move marker to start
                 p = start;
                 //System.out.println("  move to start " + pos + " -> " + p); // FIX
             } else {
-                // shift
+                // position after the change: shift
                 int ix = pos.index();
                 int off;
                 if (ix == end.index()) {
@@ -131,10 +129,13 @@ public class Markers {
                     off = pos.offset();
                 }
 
-                ix += linesAdded - (end.index() - start.index());
+                ix += (linesAdded - end.index() + start.index());
 
                 p = new TextPos(ix, off);
                 //System.out.println("  shift from " + pos + " -> " + p); // FIX
+//                if(pos.index()==1 && pos.offset()==0) {
+//                    System.out.println("");
+//                }
             }
 
             // update markers with the new position, removing gc'ed
