@@ -46,7 +46,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Window;
 import goryachev.rich.RichTextArea;
 import goryachev.rich.TextPos;
-import goryachev.rich.model.EditableStyledTextModel;
+import goryachev.rich.model.EditableRichTextModel;
 import goryachev.rich.model.StyleAttribute;
 import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.model.StyledTextModel;
@@ -234,7 +234,7 @@ public class RichTextAreaDemoPane extends BorderPane {
     protected void populatePopupMenu(ObservableList<MenuItem> items) {
         boolean sel = control.hasSelection();
         boolean paste = true; // would be easier with Actions (findFormatForPaste() != null);
-        boolean styled = (control.getModel() instanceof EditableStyledTextModel);
+        boolean styled = (control.getModel() instanceof EditableRichTextModel);
 
         items.add(new MenuItem("★ Custom Context Menu"));
         

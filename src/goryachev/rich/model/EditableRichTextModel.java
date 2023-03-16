@@ -38,10 +38,10 @@ import goryachev.rich.TextPos;
  * TODO RTF format handler
  * TODO private format handler
  */
-public class EditableStyledTextModel extends EditablePlainTextModel {
+public class EditableRichTextModel extends EditablePlainTextModel {
     private final ArrayList<StyledRun> runs = new ArrayList<>();
 
-    public EditableStyledTextModel() {
+    public EditableRichTextModel() {
         Marker m0 = getMarker(TextPos.ZERO);
         StyleAttrs a = new StyleAttrs();
         a.set(StyleAttrs.FONT_FAMILY, "System");
