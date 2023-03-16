@@ -46,7 +46,7 @@ public class NotebookModel2 extends SegmentStyledTextModel {
         String UNDER = "underline";
         String GRAY = "gray";
         String LARGE = "large";
-        String EQ = "eq";
+        String EQ = "equation";
         String SUB = "sub";
         
         addSegment("SQL Select", "-fx-font-size:200%;", UNDER);

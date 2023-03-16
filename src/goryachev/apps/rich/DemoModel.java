@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,10 +25,10 @@
 package goryachev.apps.rich;
 import java.util.Arrays;
 import java.util.Random;
+import goryachev.rich.model.SegmentStyledTextModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import goryachev.rich.model.SegmentStyledTextModel;
 
 /**
  * RichTextArea demo model.
@@ -44,10 +44,12 @@ public class DemoModel extends SegmentStyledTextModel {
         String UNDER = "underline";
         String GRAY = "gray";
         String LARGE = "large";
+        String ITALIC = "italic";
 
         addSegment("RichTextArea Control", "-fx-font-size:200%;", UNDER);
-        //nl();
+        nl();
         addImage(DemoModel.class.getResourceAsStream("panel-of-the-horses.jpg"));
+        addSegment("  Fig. 1 Embedded image.", null, GRAY, ITALIC);
         nl(2);
         addSegment("/**", null, RED, CODE);
         nl();
@@ -59,6 +61,15 @@ public class DemoModel extends SegmentStyledTextModel {
         addSegment("RichTextAreaDemo ", null, CODE);
         addSegment("extends ", null, GREEN, CODE);
         addSegment("Application {", null, CODE);
+        nl();
+        addSegment("\tpublic static void", null, GREEN, CODE);
+        addSegment(" main(String[] args) {", null, CODE);
+        nl();
+        addSegment("\t\tApplication.launch(RichTextAreaDemoApp.", null, CODE);
+        addSegment("class", null, CODE, GREEN);
+        addSegment(", args);", null, CODE);
+        nl();
+        addSegment("\t}", null, CODE);
         nl();
         addSegment("}", null, CODE);
         nl(2);
@@ -75,9 +86,10 @@ public class DemoModel extends SegmentStyledTextModel {
         addSegment(" "); // FIX cannot navigate over this segment
         nl(2);
         addSegment("A regular Arabic verb, كَتَبَ‎ kataba (to write).", null, ARABIC).nl();
-        addSegment("Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ", null, LARGE).nl();
-        addSegment("Double diacritics: a\u0360b a\u0361b a\u0362b a\u035cb").nl();
-        addSegment("Emojis: [🇺🇦❤️🏁🇺🇸🔥🦋😀😃😄😁😆😅🤣😂🙂🙃😉😊😇]", null, LARGE).nl();
+        //addSegment("Tibetan ཨོཾ་མ་ཎི་པདྨེ་ཧཱུྃ", null, LARGE).nl();
+        //addSegment("Double diacritics: a\u0360b a\u0361b a\u0362b a\u035cb").nl();
+        //addSegment("Emojis: [🇺🇦❤️🏁🇺🇸🔥🦋😀😃😄😁😆😅🤣😂🙂🙃😉😊😇]", null, LARGE).nl();
+        addSegment("Emojis: [🔥🦋😀😃😄😁😆😅🤣😂🙂🙃😉😊😇]", null, LARGE).nl();
         nl();
         addSegment("Halfwidth and FullWidth Forms", null, UNDER).nl();
         addSegment("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯ", "-fx-font-family:monospaced;").nl();

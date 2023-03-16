@@ -37,9 +37,14 @@ import goryachev.rich.impl.Markers;
  */
 public class Marker implements Comparable<Marker> {
     private final ReadOnlyObjectWrapper<TextPos> pos;
+    @Deprecated // FIX debugging, remove later
+    private static int sequence;
+    @Deprecated // FIX debugging, remove later
+    private int seq;
     
     private Marker(TextPos pos) {
         this.pos = new ReadOnlyObjectWrapper<>(pos);
+        this.seq = sequence++;
     }
     
     public static Marker create(Markers owner, TextPos pos) {
@@ -82,8 +87,9 @@ public class Marker implements Comparable<Marker> {
         return getTextPos().offset();
     }
 
-    // TODO should not be public, can only be called from Markers.update()
+    // TODO should not be public, must be called only from Markers.update()
     public void set(TextPos p) {
+        //System.out.println("Marker.set seq=" + seq + " pos=" + p);
         pos.set(p);
     }
 }
