@@ -50,8 +50,12 @@ public class StyledRun {
     public TextPos getTextPos() {
         return marker.getTextPos();
     }
-    
+
     public StyleAttrs getAttributes() {
         return attributes;
+    }
+
+    public void setAttributes(StyleAttrs a) {
+        attributes.setAll(a);
     }
 }

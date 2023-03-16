@@ -85,44 +85,98 @@ public class EditableRichTextModel extends EditablePlainTextModel {
             start = end;
             end = p;
         }
-
+        
+        applyStylePrivate(start, end, attrs);
+        fireStyleChangeEvent(start, end);
+    }
+    
+    private void applyStylePrivate(TextPos start, TextPos end, StyleAttrs attrs) {
         int ix = binarySearch(start.index(), start.offset());
-        boolean first = true;
-        for(;;) {
-            StyledRun r = getRun(ix);
-            if(r == null) {
-                break;
-            }
-            
-            if(first) {
-                // split the segment?
-                if(!r.getTextPos().equals(start)) {
-                    // partial segment
-                    StyleAttrs a = r.getAttributes();
-                    StyleAttrs a2 = a.apply(attrs);
-                    if(a.equals(a2)) {
-                        // no change
-                    } else {
-                        // insert run
-                        Marker m = getMarker(start);
-                        StyledRun r2 = new StyledRun(m, a2);
-                        insertRun(ix, r2);
-                        ix++;
-                    }
+        StyledRun r = getRun(ix);
+        // split the segment?
+        if(!r.getTextPos().equals(start)) { // FIX and if pos==start?
+            // partial segment
+            StyleAttrs a = r.getAttributes();
+            StyleAttrs a2 = a.apply(attrs);
+            if(a.equals(a2)) {
+                // no change
+            } else {
+                if(isSameRun(ix, end)) {
+                    ix++;
+                    // split into 3 segments and we are done
+                    Marker m = getMarker(start);
+                    StyledRun r2 = new StyledRun(m, a2);
+                    insertRun(ix, r2);
+                    ix++;
+                    // last
+                    getMarker(end);
+                    StyledRun r3 = new StyledRun(m, a);
+                    insertRun(ix, r3);
+                    return;
+                } else {
+                    ix++;
+                    // insert run
+                    Marker m = getMarker(start);
+                    StyledRun r2 = new StyledRun(m, a2);
+                    insertRun(ix, r2);
+                    ix++;
                 }
-                first = false;
-            }
-            
-
-            // reached the end of specified range?
-            if(r.getTextPos().compareTo(end) > 0) {
-                break;
             }
         }
         
-        fireStyleChangeEvent(start, end);
+        for(;;) {
+            r = getRun(ix);
+            if(r == null) {
+                return;
+            }
+            
+            if(isSameRun(ix, end)) {
+                // split last
+                if(r.getTextPos().equals(end)) {
+                    return;
+                }
+                
+                StyleAttrs a = r.getAttributes();
+                StyleAttrs a2 = a.apply(attrs);
+                StyleAttrs aprev = runs.get(ix - 1).getAttributes();
+                if(a2.equals(aprev)) {
+                    // same style, delete
+                    runs.remove(ix);
+                } else {
+                    // apply
+                    r.setAttributes(a2);
+                    ix++;
+                }
+                // insert segment
+                Marker m = getMarker(end);
+                StyledRun r2 = new StyledRun(m, a);
+                insertRun(ix, r2);
+                return;
+            } else {
+                // apply or delete
+                StyleAttrs a = r.getAttributes();
+                StyleAttrs a2 = a.apply(attrs);
+                StyleAttrs aprev = runs.get(ix - 1).getAttributes();
+                if(a2.equals(aprev)) {
+                    // same style, delete
+                    runs.remove(ix);
+                    continue;
+                } else {
+                    // apply
+                    r.setAttributes(a2);
+                }
+            }
+        }
     }
-
+    
+    protected boolean isSameRun(int ix, TextPos p) {
+        StyledRun next = getRun(ix + 1);
+        if(next == null) {
+            return true;
+        }
+        return p.compareTo(next.getTextPos()) < 0;
+    }
+    
     @Override
     public void removeStyle(TextPos start, TextPos end, StyleAttrs attrs) {
         // TODO
@@ -139,8 +193,11 @@ public class EditableRichTextModel extends EditablePlainTextModel {
     /** returns the index of a styled run that contains the specified offset */
     // TODO unit test!
     private int binarySearch(int index, int offset) {
-        int low = 0;
         int high = runs.size() - 1;
+        if(high < 1) {
+            return 0;
+        }
+        int low = 0;
         while (low <= high) {
             int mid = (low + high) >>> 1;
             int cmp = compare(mid, index, offset);
@@ -203,7 +260,7 @@ public class EditableRichTextModel extends EditablePlainTextModel {
     }
 
     protected StyledRun getRun(int ix) {
-        if ((ix >= 0) || (ix < runs.size())) {
+        if ((ix >= 0) && (ix < runs.size())) {
             return runs.get(ix);
         }
         return null;
@@ -250,29 +307,33 @@ public class EditableRichTextModel extends EditablePlainTextModel {
             }
             return -1;
         }
-        
+
         /**
          * prepares the next segment by setting text and style fields and returning true.
          * returns false when the end of text is reached. 
          */
         public boolean next() {
-            if(offset < end) {
-                int start = offset;
-                currentRun = runs.get(runIndex);
-                int len = remainingLength();
-                if(len < 0) {
-                    segment = text.substring(offset);
-                    offset += segment.length();
-                } else {
-                    segment = text.substring(offset, offset + len);
-                    offset += len;
+            if (offset < end) {
+                for(;;) {
+                    currentRun = runs.get(runIndex);
+                    int len = remainingLength();
+                    if (len < 0) {
+                        segment = text.substring(offset);
+                        offset += segment.length();
+                        return true;
+                    } else if (len > 0) {
+                        segment = text.substring(offset, offset + len);
+                        offset += len;
+                        return true;
+                    } else {
+                        runIndex++;
+                        continue;
+                    }
                 }
-                return true;
-            } else {
-                return false;
             }
+            return false;
         }
-        
+
         public String style() {
             return currentRun.getAttributes().getStyle();
         }

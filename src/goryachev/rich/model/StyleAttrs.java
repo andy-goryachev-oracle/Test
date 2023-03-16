@@ -156,6 +156,7 @@ public class StyleAttrs {
     /** 
      * Creates a new StyleAttrs instance by adding the specified attributes.
      * The new attributes override any existing ones.
+     * This instance remains unchanged.
      */
     public StyleAttrs apply(StyleAttrs attrs) {
         StyleAttrs rv = new StyleAttrs(this);
@@ -163,6 +164,12 @@ public class StyleAttrs {
             Object v = attrs.get(a);
             rv.set(a, v);
         }
-        return null;
+        return rv;
+    }
+
+    public void setAll(StyleAttrs a) {
+        attributes.clear();
+        attributes.putAll(a.attributes);
+        style = null;
     }
 }

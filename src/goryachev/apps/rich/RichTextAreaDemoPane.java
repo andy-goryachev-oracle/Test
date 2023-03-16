@@ -271,6 +271,10 @@ public class RichTextAreaDemoPane extends BorderPane {
             items.add(m = new MenuItem("Bold"));
             m.setOnAction((ev) -> apply(StyleAttrs.BOLD, true));
             m.setDisable(!sel);
+            
+            items.add(m = new MenuItem("Underline"));
+            m.setOnAction((ev) -> apply(StyleAttrs.UNDERLINE, true));
+            m.setDisable(!sel);
         }
         
         items.add(new SeparatorMenuItem());
