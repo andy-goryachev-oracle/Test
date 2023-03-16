@@ -251,8 +251,12 @@ public abstract class StyledTextModel {
             }
 
             int lines = index - start.index();
+            if (lines == 0) {
+                btm = 0;
+            }
+
             fireChangeEvent(start, end, top, lines, btm);
-            
+
             return new TextPos(index, offset);
         }
         return null;
