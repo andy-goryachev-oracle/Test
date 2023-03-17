@@ -41,6 +41,7 @@ public class Pages {
             new DemoPage("ChoiceBox", ChoiceBoxPage::new),
             new DemoPage("ComboBox", ComboBoxPage::new),
             // ColorPicker
+            new DemoPage("HBox", HBoxPage::new),
             new DemoPage("HtmlEditor", HtmlEditorPage::new),
             // TODO Hyperlink
             // TODO InputField: DoubleField, IntegerField, WebColorField
@@ -68,6 +69,7 @@ public class Pages {
             // TODO in tables: Cell, DateCell, IndexedCell* ?
             new DemoPage("TreeTableView", TreeTableViewPage::new),
             new DemoPage("TreeView", TreeViewPage::new),
+            // TODO VBox
             // bugs
             new DemoPage("⚑ Dual Focus JDK-8292933", DualFocusPage::new),
             new DemoPage("⚑ DatePicker in Alert", DatePickerPage::new),
