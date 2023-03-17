@@ -29,7 +29,9 @@ import java.util.Collection;
 import java.util.RandomAccess;
 import javafx.scene.text.TextFlow;
 import goryachev.rich.TextCell;
+import goryachev.rich.TextPos;
 import goryachev.rich.model.ReadOnlyStyledTextModel;
+import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.model.StyledParagraph;
 import goryachev.rich.util.NewAPI;
 
@@ -52,6 +54,12 @@ public class DemoStyledTextModel extends ReadOnlyStyledTextModel {
     @Override
     public StyledParagraph getParagraph(int index) {
         return paragraphs.get(index);
+    }
+    
+    @Override
+    public StyleAttrs getStyledAttrs(TextPos pos) {
+        // TODO use segments
+        return new StyleAttrs();
     }
 
     /** */

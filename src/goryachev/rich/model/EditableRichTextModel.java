@@ -266,6 +266,19 @@ public class EditableRichTextModel extends EditablePlainTextModel {
         return null;
     }
 
+    @Override
+    public StyleAttrs getStyledAttrs(TextPos pos) {
+        int ix = binarySearch(pos.index(), pos.offset());
+        StyledRun r = getRun(ix);
+        if (r == null) {
+            if (runs.size() == 0) {
+                return new StyleAttrs();
+            }
+            r = runs.get(runs.size() - 1);
+        }
+        return r.getAttributes().copy();
+    }
+
     /** generates styles */
     protected class StyledRunGenerator {
         private final int index;

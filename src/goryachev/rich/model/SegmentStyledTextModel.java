@@ -35,6 +35,7 @@ import java.util.function.Supplier;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
+import goryachev.rich.TextPos;
 
 /**
  * A read-only styled text model that consists of styled text segments.
@@ -141,5 +142,11 @@ public class SegmentStyledTextModel extends ReadOnlyStyledTextModel {
             paragraphs.add(new SegmentStyledTextParagraph(ix));
         }
         return this;
+    }
+    
+    @Override
+    public StyleAttrs getStyledAttrs(TextPos pos) {
+        // TODO use segments
+        return new StyleAttrs();
     }
 }

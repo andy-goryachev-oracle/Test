@@ -159,4 +159,9 @@ public class EditablePlainTextModel extends EditableStyledTextModelBase {
     public void removeStyle(TextPos start, TextPos end, StyleAttrs attrs) {
         throw new UnsupportedOperationException();
     }
+    
+    @Override
+    public StyleAttrs getStyledAttrs(TextPos pos) {
+        return new StyleAttrs();
+    }
 }

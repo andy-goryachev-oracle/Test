@@ -130,6 +130,14 @@ public abstract class StyledTextModel {
      * @param attrs attribute map
      */
     public abstract void removeStyle(TextPos start, TextPos end, StyleAttrs attrs);
+
+    /**
+     * Returns the styled attributes of the first character at the specified position.
+     * When at the end of the document, returns the attributes of the last character.
+     *
+     * @return non-null {@link StyleAttrs}
+     */
+    public abstract StyleAttrs getStyledAttrs(TextPos pos);
     
     private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
     private final HashMap<DataFormat,DataFormatHandler> handlers = new HashMap<>(4);

@@ -166,10 +166,19 @@ public class StyleAttrs {
         }
         return rv;
     }
+    
+    public StyleAttrs copy() { 
+        return new StyleAttrs(this);
+    }
 
+    // TODO this should not be public.  needed for applying style - TODO replace the StyledRun instance instead.
     public void setAll(StyleAttrs a) {
         attributes.clear();
         attributes.putAll(a.attributes);
         style = null;
+    }
+    
+    public boolean contains(StyleAttribute a) {
+        return attributes.containsKey(a);
     }
 }
