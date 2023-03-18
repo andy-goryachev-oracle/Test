@@ -340,7 +340,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     protected void handleMousePressed(MouseEvent ev) {
-        if (ev.isPopupTrigger()) {
+        if (ev.isPopupTrigger() || (ev.getButton() != MouseButton.PRIMARY)) {
             return;
         }
 
