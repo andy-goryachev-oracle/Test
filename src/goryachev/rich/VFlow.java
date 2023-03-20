@@ -162,7 +162,6 @@ public class VFlow extends Pane {
             this::recomputeLayout,
             true,
             origin
-            // TODO lineCount?
         );
         
         vscroll.addEventFilter(MouseEvent.ANY, this::handleVScrollMouseEvent);
@@ -879,6 +878,20 @@ public class VFlow extends Pane {
         if (p != null) {
             setOrigin(p);
         }
+    }
+
+    public void hscroll(double delta) {
+        double off = getOffsetX() + delta * getWidth();
+        if (off < 0.0) {
+            off = 0.0;
+        } else if (off + getWidth() > rightEdge()) {
+            off = Math.max(0.0, rightEdge() - getWidth());
+        }
+        setOffsetX(off);
+        layout.setOffsetX(-off);
+        // no need to recompute the flow
+        layoutNodes();
+        updateCaretAndSelection();
     }
 
     /** scrolls to visible area, using vflow coordinates */
