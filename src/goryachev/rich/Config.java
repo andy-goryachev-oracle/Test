@@ -67,4 +67,7 @@ public class Config {
     
     /** maximum tab size */
     public static final int maxTabSize = 256;
+    
+    /** small space between the end of last character and the right edge */
+    public static final double horizontalGuard = 5;
 }

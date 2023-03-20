@@ -611,7 +611,7 @@ public class VFlow extends Pane {
                 return; // is this needed?
             }
             
-            double max = rightEdge();
+            double max = rightEdge() + Config.horizontalGuard;
             double visible = getWidth();
             double val = hscroll.getValue();
             double off = fromScrollBarValue(val, visible, max);
@@ -930,7 +930,7 @@ public class VFlow extends Pane {
             if (x < 0.0) {
                 off = Math.max(getOffsetX() + x - 20.0, 0.0);
             } else if (x > getWidth()) {
-                off = getOffsetX() + x - getWidth() + 20.0;
+                off = getOffsetX() + x - getWidth() + Config.horizontalGuard;
             } else {
                 return;
             }
