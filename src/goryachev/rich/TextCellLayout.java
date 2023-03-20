@@ -55,8 +55,6 @@ public class TextCellLayout {
     private double unwrappedWidth;
     private double topHeight;
     private double bottomHeight;
-    // TODO remove from here
-    private double xoffset;
     
     public TextCellLayout(VFlow f) {
         this.flowWidth = f.getWidth();
@@ -101,14 +99,6 @@ public class TextCellLayout {
         return unwrappedWidth;
     }
     
-    public void setOffsetX(double x) {
-        xoffset = x;
-    }
-    
-    public double getOffsetX() {
-        return xoffset;
-    }
-
     public int getVisibleCellCount() {
         return visible;
     }
@@ -118,7 +108,7 @@ public class TextCellLayout {
     }
 
     /** finds text position inside the sliding window */
-    public TextPos getTextPos(double localX, double localY) {
+    public TextPos getTextPos(double xoffset, double localX, double localY) {
         if (lineCount == 0) {
             return TextPos.ZERO;
         }
@@ -137,7 +127,7 @@ public class TextCellLayout {
             } else if (y < cell.getComputedHeight()) {
                 // TODO move this to TextCell?
                 if (r instanceof TextFlow t) {
-                    double x = localX - xoffset - pad.getLeft();
+                    double x = localX + xoffset - pad.getLeft();
                     HitInfo h = t.hitTest(new Point2D(x, y));
                     if (h != null) {
                         return new TextPos(cell.getLineIndex(), h.getInsertionIndex());
@@ -190,7 +180,7 @@ public class TextCellLayout {
         return null;
     }
 
-    public CaretInfo getCaretInfo(TextPos p) {
+    public CaretInfo getCaretInfo(double xoffset, TextPos p) {
         if (p != null) {
             int ix = p.index();
             TextCell cell = getCell(ix);
@@ -198,19 +188,19 @@ public class TextCellLayout {
                 int charIndex = p.offset();
                 boolean leading = true; // TODO verify
                 PathElement[] pe = cell.getCaretShape(charIndex, leading);
-                return translateCaretInfo(cell, pe);
+                return translateCaretInfo(xoffset, cell, pe);
             }
         }
         return null;
     }
 
     // TODO combine with previous method?
-    private CaretInfo translateCaretInfo(TextCell cell, PathElement[] elements) {
+    private CaretInfo translateCaretInfo(double xoffset, TextCell cell, PathElement[] elements) {
         double x = 0.0;
         double y0 = 0.0;
         double y1 = 0.0;
 
-        double dx = xoffset;
+        double dx = -xoffset;
         double dy = cell.getY();
 
         int sz = elements.length;

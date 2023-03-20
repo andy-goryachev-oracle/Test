@@ -405,11 +405,11 @@ public class VFlow extends Pane {
         if (layout == null) {
             return null;
         }
-        return layout.getTextPos(localX, localY);
+        return layout.getTextPos(getOffsetX(), localX, localY);
     }
 
     protected CaretInfo getCaretInfo(TextPos p) {
-        return layout.getCaretInfo(p);
+        return layout.getCaretInfo(getOffsetX(), p);
     }
 
     /** returns caret sizing info, or null */
@@ -617,11 +617,8 @@ public class VFlow extends Pane {
             double off = fromScrollBarValue(val, visible, max);
 
             setOffsetX(off);
-            layout.setOffsetX(-off);
-
             // no need to recompute the flow
             layoutNodes();
-
             updateCaretAndSelection();
         }
     }
@@ -697,7 +694,6 @@ public class VFlow extends Pane {
         double forWidth = (wrap ? width : -1);
         int paragraphCount = lineCount();
 
-        layout.setOffsetX(0.0 - getOffsetX()); // TODO content padding
         double y = -getOffsetY(); // TODO content padding
         double unwrappedWidth = 0;
         double margin = Config.slidingWindowMargin * height;
@@ -830,7 +826,7 @@ public class VFlow extends Pane {
     private void layoutNodes() {
         boolean wrap = control.isWrapText();
         double w = wrap ? getWidth() : (rightEdge() * 2);
-        double x = layout.getOffsetX();
+        double x = -getOffsetX();
 
         int sz = layout.getVisibleCellCount();
         for (int i=0; i < sz; i++) {
@@ -881,7 +877,6 @@ public class VFlow extends Pane {
             off = Math.max(0.0, rightEdge() - getWidth());
         }
         setOffsetX(off);
-        layout.setOffsetX(-off);
         // no need to recompute the flow
         layoutNodes();
         updateCaretAndSelection();
@@ -937,7 +932,6 @@ public class VFlow extends Pane {
             }
 
             setOffsetX(off);
-            layout.setOffsetX(-off);
             layoutNodes();
             updateCaretAndSelection();
         }
