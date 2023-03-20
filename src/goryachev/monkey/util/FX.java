@@ -107,6 +107,10 @@ public class FX {
     public static <T> void select(ComboBox<T> cb, T value) {
         cb.getSelectionModel().select(value);
     }
+    
+    public static <T> void selectFirst(ComboBox<T> cb) {
+        cb.getSelectionModel().selectFirst();
+    }
 
     public static <T> T getSelectedItem(ComboBox<T> cb) {
         return cb.getSelectionModel().getSelectedItem();

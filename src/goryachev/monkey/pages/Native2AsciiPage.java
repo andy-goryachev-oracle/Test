@@ -109,7 +109,7 @@ public class Native2AsciiPage extends TestPaneBase {
         return sb.toString();
     }
 
-    private String native2ascii(String text) {
+    public static String native2ascii(String text) {
         if (text == null) {
             return null;
         }
@@ -128,11 +128,18 @@ public class Native2AsciiPage extends TestPaneBase {
                     sb.append(c);
                 } else {
                     sb.append("\\u");
-                    sb.append(Integer.toString(c, 16));
+                    sb.append(hex(c >> 12));
+                    sb.append(hex(c >> 8));
+                    sb.append(hex(c >> 4));
+                    sb.append(hex(c));
                 }
             }
         }
         return sb.toString();
+    }
+    
+    private static char hex(int n) {
+        return "0123456789abcdef".charAt(n & 0x0f);
     }
 
     private int toUnicode(String text, int ix) {
