@@ -175,15 +175,9 @@ public class VFlow extends Pane {
     public void updateModel() {
         control.clearSelection();
         setRightEdge(0.0);
-
-        // TODO fixing change model bug
-        // TODO duplicate call, there is one in recomputeLayout()
-        //invalidateLayout();
-        
         setOrigin(Origin.ZERO);
         setOffsetX(0.0);
         cache.clear();
-
         recomputeLayout();
     }
     
@@ -194,15 +188,14 @@ public class VFlow extends Pane {
     
     public void updateWrap() {
         if(control.isWrapText()) {
-            setOffsetX(0.0);
             double w = getWidth(); // TODO padding
             setRightEdge(w);
         } else {
             setRightEdge(0.0);
         }
+        setOffsetX(0.0);
         cache.clear();
-        invalidateLayout();
-        layoutChildren();
+        recomputeLayout();
     }
 
     public Origin getOrigin() {
