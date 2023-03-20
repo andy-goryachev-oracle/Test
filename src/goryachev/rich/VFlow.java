@@ -249,7 +249,7 @@ public class VFlow extends Pane {
     }
     
     public void setRightEdge(double w) {
-        System.err.println("setRightEdge " + w); // FIX
+        //System.err.println("setRightEdge " + w); // FIX
         rightEdge.set(w);
     }
 
@@ -830,7 +830,7 @@ public class VFlow extends Pane {
             setRightEdge(width);
         } else {
             if(rightEdge() < unwrappedWidth) {
-                setRightEdge(unwrappedWidth);
+                setRightEdge(Math.max(unwrappedWidth, width));
             }
         }
     }
