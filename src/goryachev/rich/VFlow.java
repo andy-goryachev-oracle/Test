@@ -714,7 +714,7 @@ public class VFlow extends Pane {
             // TODO skip computation if layout width is the same
             Region r = cell.getContent();
             getChildren().add(r);
-            r.setMaxWidth(wrap ? width : Double.MAX_VALUE);
+            r.setMaxWidth(wrap ? width : USE_COMPUTED_SIZE);
             r.setMaxHeight(USE_COMPUTED_SIZE);
             if(r instanceof TextFlow f) {
                 f.setTabSize(tabSize);
@@ -785,7 +785,7 @@ public class VFlow extends Pane {
             // TODO skip computation if layout width is the same
             Region r = cell.getContent();
             getChildren().add(r);
-            r.setMaxWidth(wrap ? width : Double.MAX_VALUE);
+            r.setMaxWidth(wrap ? width : USE_COMPUTED_SIZE);
             r.setMaxHeight(USE_COMPUTED_SIZE);
             if(r instanceof TextFlow f) {
                 f.setTabSize(tabSize);
@@ -829,7 +829,7 @@ public class VFlow extends Pane {
     
     private void layoutNodes() {
         boolean wrap = control.isWrapText();
-        double w = wrap ? getWidth() : Double.MAX_VALUE;
+        double w = wrap ? getWidth() : (rightEdge() * 2);
         double x = layout.getOffsetX();
 
         int sz = layout.getVisibleCellCount();

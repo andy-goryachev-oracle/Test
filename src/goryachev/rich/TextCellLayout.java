@@ -55,6 +55,7 @@ public class TextCellLayout {
     private double unwrappedWidth;
     private double topHeight;
     private double bottomHeight;
+    // TODO remove from here
     private double xoffset;
     
     public TextCellLayout(VFlow f) {
