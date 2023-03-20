@@ -55,6 +55,7 @@ public class TextCellLayout {
     private double unwrappedWidth;
     private double topHeight;
     private double bottomHeight;
+    private double xoffset;
     
     public TextCellLayout(VFlow f) {
         this.flowWidth = f.getWidth();
@@ -98,6 +99,14 @@ public class TextCellLayout {
         // TODO add line number section width + any other gutters widths
         return unwrappedWidth;
     }
+    
+    public void setOffsetX(double x) {
+        xoffset = x;
+    }
+    
+    public double getOffsetX() {
+        return xoffset;
+    }
 
     public int getVisibleCellCount() {
         return visible;
@@ -127,7 +136,7 @@ public class TextCellLayout {
             } else if (y < cell.getComputedHeight()) {
                 // TODO move this to TextCell?
                 if (r instanceof TextFlow t) {
-                    double x = localX - cell.getX() - pad.getLeft();
+                    double x = localX - xoffset - pad.getLeft();
                     HitInfo h = t.hitTest(new Point2D(x, y));
                     if (h != null) {
                         return new TextPos(cell.getLineIndex(), h.getInsertionIndex());
@@ -195,12 +204,12 @@ public class TextCellLayout {
     }
 
     // TODO combine with previous method?
-    private static CaretInfo translateCaretInfo(TextCell cell, PathElement[] elements) {
+    private CaretInfo translateCaretInfo(TextCell cell, PathElement[] elements) {
         double x = 0.0;
         double y0 = 0.0;
         double y1 = 0.0;
 
-        double dx = cell.getX();
+        double dx = xoffset;
         double dy = cell.getY();
 
         int sz = elements.length;
