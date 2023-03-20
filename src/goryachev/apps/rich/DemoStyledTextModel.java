@@ -116,7 +116,7 @@ public class DemoStyledTextModel extends ReadOnlyStyledTextModel {
              public TextCell createTextCell() {
                  int ix = getIndex();
                  TextCell c = new TextCell(ix);
-                 String s = String.valueOf(ix);
+                 String s = String.valueOf(ix + 1);
                  String sz = String.valueOf(SList.this.size());
 
                  c.addSegment(s, monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:darkgreen;", null);
