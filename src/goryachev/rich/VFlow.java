@@ -679,6 +679,7 @@ public class VFlow extends Pane {
     }
 
     protected void layoutCells() {
+        //System.err.println("layoutCells"); // FIX
         double width = getWidth();
         double height = getHeight();
         clip.setWidth(width);
@@ -692,6 +693,7 @@ public class VFlow extends Pane {
         int tabSize = control.getTabSize();
         boolean wrap = control.isWrapText();
         double forWidth = (wrap ? width : -1);
+        double maxWidth = (wrap ? width : 1_000_000_000); //Double.MAX_VALUE/2);
         int paragraphCount = lineCount();
 
         double y = -getOffsetY(); // TODO content padding
@@ -710,7 +712,7 @@ public class VFlow extends Pane {
             // TODO skip computation if layout width is the same
             Region r = cell.getContent();
             getChildren().add(r);
-            r.setMaxWidth(wrap ? width : USE_COMPUTED_SIZE);
+            r.setMaxWidth(maxWidth);
             r.setMaxHeight(USE_COMPUTED_SIZE);
             if(r instanceof TextFlow f) {
                 f.setTabSize(tabSize);
@@ -781,7 +783,7 @@ public class VFlow extends Pane {
             // TODO skip computation if layout width is the same
             Region r = cell.getContent();
             getChildren().add(r);
-            r.setMaxWidth(wrap ? width : USE_COMPUTED_SIZE);
+            r.setMaxWidth(maxWidth);
             r.setMaxHeight(USE_COMPUTED_SIZE);
             if(r instanceof TextFlow f) {
                 f.setTabSize(tabSize);
@@ -823,9 +825,11 @@ public class VFlow extends Pane {
         }
     }
     
-    private void layoutNodes() {
+    protected void layoutNodes() {
+        //System.err.println("layoutNodes"); // FIX
         boolean wrap = control.isWrapText();
-        double w = wrap ? getWidth() : (rightEdge() * 2);
+        // TODO not sure why, but neither Double.MAX_VALUE nor 1e20 work
+        double w = wrap ? getWidth() : 1_000_000_000.0;
         double x = -getOffsetX();
 
         int sz = layout.getVisibleCellCount();

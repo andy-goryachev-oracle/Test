@@ -43,7 +43,7 @@ public class TextCell {
     private final int index;
     private final Region content;
     private double height;
-    private double forWidth;
+    private double forWidth; // TODO not used right now, use to skip layout when possible
     private double y;
 
     public TextCell(int index, Region content) {

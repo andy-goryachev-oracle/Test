@@ -49,6 +49,8 @@ public class BifurcationDiagram {
 
         if ((w < 1) || (h < 1)) {
             return;
+        } else if(w > 600) {
+            w = 600;
         }
 
         Canvas c = new Canvas(w, h);
