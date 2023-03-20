@@ -11,7 +11,7 @@
 }
 
 .code {
-    -fx-font-family:"Monospace";
+    -fx-font-family:Monospace;
 }
 
 .underline {
@@ -19,12 +19,12 @@
 }
 
 .italic {
-	-fx-font-family:'serif';
+	-fx-font-family:serif;
 	-fx-font-style:italic;
 }
 
 .arabic {
-	-fx-font-family:"Tahoma";
+	-fx-font-family:Tahoma;
 	-fx-font-size:200%;
 }
 
@@ -32,8 +32,8 @@
 	-fx-font-size:200%;
 }
 
-.equation {
-	-fx-font-family:'serif';
+.equation{
+	-fx-font-family:serif;
 }
 
 .sub {
