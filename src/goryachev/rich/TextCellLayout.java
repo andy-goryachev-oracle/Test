@@ -128,7 +128,11 @@ public class TextCellLayout {
                 // TODO move this to TextCell?
                 if (r instanceof TextFlow t) {
                     double x = localX + xoffset - pad.getLeft();
-                    HitInfo h = t.hitTest(new Point2D(x, y));
+                    Point2D p = new Point2D(x, y);
+                    // FIX https://bugs.openjdk.org/browse/JDK-8302511
+                    // gives wrong value for emojis
+                    HitInfo h = t.hitTest(p);
+                    System.out.println(h); // FIX
                     if (h != null) {
                         return new TextPos(cell.getLineIndex(), h.getInsertionIndex());
                     }
