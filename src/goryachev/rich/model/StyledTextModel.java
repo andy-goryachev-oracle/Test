@@ -331,7 +331,7 @@ public abstract class StyledTextModel {
         return markers.getMarker(p);
     }
 
-    private TextPos clamp(TextPos p) {
+    protected TextPos clamp(TextPos p) {
         int ct = getParagraphCount();
         int ix = p.index();
         if (ix < 0) {
@@ -356,5 +356,17 @@ public abstract class StyledTextModel {
         text = Util.substring(text, startOffset, endOffset);
         StringStyledSegment seg = new StringStyledSegment(text, null, null);
         out.append(seg);
+    }
+
+    /** returns a TextPos corresponding to the end of the document */
+    public TextPos getEndTextPos() {
+        int ix = getParagraphCount() - 1;
+        if (ix < 0) {
+            return TextPos.ZERO;
+        } else {
+            String text = getPlainText(ix);
+            int off = text == null ? 0 : text.length();
+            return new TextPos(ix, off);
+        }
     }
 }

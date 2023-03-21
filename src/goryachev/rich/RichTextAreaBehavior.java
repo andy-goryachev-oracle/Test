@@ -195,12 +195,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         return (control.getEffectiveNodeOrientation() == NodeOrientation.RIGHT_TO_LEFT);
     }
 
-    /** returns text length.  the caller must ensure the index is valid. */
-    protected int getTextLength(int index) {
-        String text = getPlainText(index);
-        return text == null ? 0 : text.length();
-    }
-    
     protected String getPlainText(int modelIndex) {
         StyledTextModel m = control.getModel();
         return (m == null) ? null : m.getPlainText(modelIndex);
@@ -746,13 +740,9 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     public void selectAll() {
         StyledTextModel m = control.getModel();
         if(m != null) {
-            int ix = m.getParagraphCount() - 1;
-            if (ix >= 0) {
-                int off = getTextLength(ix);
-                TextPos end = new TextPos(ix, off);
-                control.select(TextPos.ZERO, end);
-                clearPhantomX();
-            }
+            TextPos end = m.getEndTextPos();
+            control.select(TextPos.ZERO, end);
+            clearPhantomX();
         }
     }
 

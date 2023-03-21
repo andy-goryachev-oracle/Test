@@ -89,83 +89,168 @@ public class EditableRichTextModel extends EditablePlainTextModel {
         applyStylePrivate(start, end, attrs);
         fireStyleChangeEvent(start, end);
     }
-    
-    private void applyStylePrivate(TextPos start, TextPos end, StyleAttrs attrs) {
-        int ix = binarySearch(start.index(), start.offset());
-        StyledRun r = getRun(ix);
-        // split the segment?
-        if(!r.getTextPos().equals(start)) { // FIX and if pos==start?
-            // partial segment
-            StyleAttrs a = r.getAttributes();
-            StyleAttrs a2 = a.apply(attrs);
-            if(a.equals(a2)) {
-                // no change
-            } else {
-                if(isSameRun(ix, end)) {
-                    ix++;
-                    // split into 3 segments and we are done
-                    Marker m = getMarker(start);
-                    StyledRun r2 = new StyledRun(m, a2);
-                    insertRun(ix, r2);
-                    ix++;
-                    // last
-                    getMarker(end);
-                    StyledRun r3 = new StyledRun(m, a);
-                    insertRun(ix, r3);
-                    return;
-                } else {
-                    ix++;
-                    // insert run
-                    Marker m = getMarker(start);
-                    StyledRun r2 = new StyledRun(m, a2);
-                    insertRun(ix, r2);
-                    ix++;
-                }
-            }
+
+    /**
+     * <pre>
+     * case#   initial conditions
+     *         |run 1       |run 2       |
+     * (fist)
+     * 0       |--|
+     * 1       |------------|
+     * 2       |---------------->
+     * 3             |--|
+     * 4             |------|
+     * 5             |---------->
+     * (!first)
+     * 6                >------------|
+     * 7                >----------------|
+     * 8                >-------------------->
+     * 
+     * Also, the real number of cases is greater once we take into account the fact that a run separator
+     * should be removed if the attributes are the same as in the previous run.
+     */
+    private int whichCase(int ix, boolean first, TextPos start, TextPos end) {
+        StyledRun r1 = getRun(ix);
+        TextPos p1 = r1.getTextPos();
+        StyledRun r2 = getRun(ix);
+        TextPos p2 = (r2 == null ? getEndTextPos() : r2.getTextPos());
+
+        int cmp1 = start.compareTo(p1);
+        if (cmp1 < 0) {
+        } else if (cmp1 > 0) {
+        } else {
+            
         }
         
+        
+        
+        
+        int cmp2 = p1.compareTo(end);
+        if (cmp1 < 0) {
+            
+            
+            
+            if (cmp2 < 0) {
+                
+            } else if (cmp2 > 0) {
+
+            } else {
+
+            }
+        } else if (cmp1 > 0) {
+            if (cmp2 < 0) {
+
+            } else if (cmp2 > 0) {
+
+            } else {
+
+            }
+        } else {
+            if (cmp2 < 0) {
+
+            } else if (cmp2 > 0) {
+
+            } else {
+
+            }
+        }
+
+        return 0; // TODO
+    }
+
+    /**
+     * <pre>
+     * case#   initial conditions
+     *         |run 1       |run 2       |
+     * (fist)
+     * 0       |--|
+     * 1       |------------|
+     * 2       |---------------->
+     * 3             |--|
+     * 4             |------|
+     * 5             |---------->
+     * (!first)
+     * 6                >------------|
+     * 7                >----------------|
+     * 8                >-------------------->
+     * 
+     * Also, in each case we need to take into account whether attributes differ from the previous run,
+     * and combine two runs if that is the case.
+     */
+    private void applyStylePrivate(TextPos start, TextPos end, StyleAttrs attrs) {
+        int ix = binarySearch(start.index(), start.offset());
+        boolean first = true;
+        
         for(;;) {
-            r = getRun(ix);
-            if(r == null) {
+            StyledRun r1 = getRun(ix);
+            if(r1 == null) {
                 return;
+            }
+
+            StyleAttrs a = r1.getAttributes();
+            StyleAttrs a2 = a.apply(attrs);
+            boolean sameAttr = a.equals(a2);
+            
+            int caseNo = whichCase(ix, first, start, end);
+            first = false;
+            
+            switch(caseNo) {
+            case 0:
+                if(!sameAttr) {
+                    runs.remove(ix);
+                    if(!isSameAttrs(ix - 1, a2)) {
+                        insertRun(ix, start, a2);
+                    }
+                    insertRun(ix + 1, end, a);
+                }
+                return;
+            case 1:
+                runs.remove(ix);
+                if(!isSameAttrs(ix - 1, a2)) {
+                    insertRun(ix, start, a2);
+                }
+                return;
+            case 2:
+                runs.remove(ix);
+                if(!isSameAttrs(ix - 1, a2)) {
+                    insertRun(ix, start, a2);
+                }
+                break;
+            case 3:
+                if(!sameAttr) {
+                    insertRun(ix + 1, start, a2);
+                    insertRun(ix + 2, end, a);
+                }
+                return;
+            case 4:
+                if(!sameAttr) {
+                    insertRun(ix + 1, start, a2);
+                }
+                return;
+            case 5:
+                if(!sameAttr) {
+                    ix++;
+                    insertRun(ix, start, a2);
+                }
+                break;
+            case 6:
+                runs.remove(ix);
+                if(!sameAttr) {
+                    insertRun(ix, end, a);
+                }
+                return;
+            case 7:
+                runs.remove(ix);
+                return;
+            case 8:
+                runs.remove(ix);
+                break;
+            default:
+                // should never happen
+                throw new Error("case=" + caseNo + " ix=" + ix + " s=" + start + " e=" + end);
             }
             
-            if(isSameRun(ix, end)) {
-                // split last
-                if(r.getTextPos().equals(end)) {
-                    return;
-                }
-                
-                StyleAttrs a = r.getAttributes();
-                StyleAttrs a2 = a.apply(attrs);
-                StyleAttrs aprev = runs.get(ix - 1).getAttributes();
-                if(a2.equals(aprev)) {
-                    // same style, delete
-                    runs.remove(ix);
-                } else {
-                    // apply
-                    r.setAttributes(a2);
-                    ix++;
-                }
-                // insert segment
-                Marker m = getMarker(end);
-                StyledRun r2 = new StyledRun(m, a);
-                insertRun(ix, r2);
-                return;
-            } else {
-                // apply or delete
-                StyleAttrs a = r.getAttributes();
-                StyleAttrs a2 = a.apply(attrs);
-                StyleAttrs aprev = runs.get(ix - 1).getAttributes();
-                if(a2.equals(aprev)) {
-                    // same style, delete
-                    runs.remove(ix);
-                    continue;
-                } else {
-                    // apply
-                    r.setAttributes(a2);
-                }
-            }
+            ix++;
         }
     }
     
@@ -177,12 +262,18 @@ public class EditableRichTextModel extends EditablePlainTextModel {
         return p.compareTo(next.getTextPos()) < 0;
     }
     
+    protected boolean isSameAttrs(int ix, StyleAttrs a) {
+        StyledRun r = getRun(ix);
+        if(r == null) {
+            return false;
+        }
+        return r.getAttributes().equals(a);
+    }
+    
     @Override
     public void removeStyle(TextPos start, TextPos end, StyleAttrs attrs) {
         // TODO
     }
-    
-    // TODO StyleAttrs getStyleAt(TextPos pos);
     
     @Override
     protected void exportSegments(int index, int start, int end, StyledOutput out) {
@@ -251,14 +342,16 @@ public class EditableRichTextModel extends EditablePlainTextModel {
         return 1;
     }
 
-    protected void insertRun(int ix, StyledRun r) {
+    protected void insertRun(int ix, TextPos pos, StyleAttrs a) {
+        Marker m = getMarker(pos);
+        StyledRun r = new StyledRun(m, a);
         if (ix >= runs.size()) {
             runs.add(r);
         } else {
             runs.add(ix, r);
         }
     }
-
+    
     protected StyledRun getRun(int ix) {
         if ((ix >= 0) && (ix < runs.size())) {
             return runs.get(ix);
@@ -335,6 +428,7 @@ public class EditableRichTextModel extends EditablePlainTextModel {
                         offset += segment.length();
                         return true;
                     } else if (len > 0) {
+                        // FIX fails when len > text.length
                         segment = text.substring(offset, offset + len);
                         offset += len;
                         return true;

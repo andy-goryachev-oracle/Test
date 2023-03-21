@@ -24,60 +24,35 @@
  */
 package goryachev.rich.model;
 
-import java.util.function.Supplier;
-import javafx.scene.Node;
+import java.util.ArrayList;
 
-public class StringStyledSegment implements StyledSegment {
-    private final String text;
-    private final String direct;
-    private final String[] css;
-    
-    /**
-     * Important: text must not contain any characters < 0x20, except for TAB.
-     */
-    public StringStyledSegment(String text, String direct, String[] css) {
-        this.text = text;
-        this.direct = direct;
-        this.css = css;
+public class TStyledOutput implements StyledOutput {
+    private ArrayList<Object> items = new ArrayList<>();
+
+    public TStyledOutput() {
+    }
+
+    public Object[] getResult() {
+        return items.toArray();
     }
 
     @Override
-    public boolean isText() {
-        return true;
+    public void append(StyledSegment seg) {
+        if (seg.isLineBreak()) {
+            items.add("\n");
+        } else if (seg.isText()) {
+            String text = seg.getText();
+            // TODO a) depends on view, b) may or may not have direct attributes, c) attributes are mutable
+            StyleAttrs a = seg.getStyleAttrs();
+            items.add(text);
+            items.add(a);
+        } else {
+            throw new Error("not yet supported: " + seg);
+        }
     }
 
     @Override
-    public boolean isParagraph() {
-        return false;
-    }
-
-    @Override
-    public boolean isLineBreak() {
-        return false;
-    }
-
-    @Override
-    public String getText() {
-        return text;
-    }
-
-    @Override
-    public String getDirectStyle() {
-        return direct;
-    }
-
-    @Override
-    public String[] getStyles() {
-        return css;
-    }
-
-    @Override
-    public Supplier<Node> getNodeGenerator() {
-        return null;
-    }
-
-    @Override
-    public StyleAttrs getStyleAttrs() {
-        return null;
+    public Object getOutput() {
+        return getResult();
     }
 }

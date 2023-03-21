@@ -85,9 +85,16 @@ public interface StyledSegment {
      * when {@link isText()} is true.
      */
     public Supplier<Node> getNodeGenerator();
+
+    /**
+     * This method must return StyleAttrs (or null) for this segment.
+     * Keep in mind that the actual attributes and values might depend on the view that generated the segment,
+     * unless the model itself maintains attributes independently of the view.
+     */
+    public StyleAttrs getStyleAttrs();
     
-    // TODO associated object encapsulating model-specific internal data (paste, dnd, etc.)
-    
+
+    /** A styled segment that represents a line break */
     public static final StyledSegment LINE_BREAK = new StringStyledSegment(null, null, null) {
         @Override
         public boolean isLineBreak() {
@@ -99,4 +106,54 @@ public interface StyledSegment {
             return false;
         }
     };
+
+    /** 
+     * Creates a StyleSegment from a non-null text and non-null attributes.
+     * Important: text must not contain any characters < 0x20, except for TAB.
+     */
+    public static StyledSegment of(String text, StyleAttrs attrs) {
+        String style = attrs.getStyle();
+
+        return new StyledSegment() {
+            @Override
+            public boolean isText() {
+                return true;
+            }
+            
+            @Override
+            public boolean isParagraph() {
+                return false;
+            }
+            
+            @Override
+            public boolean isLineBreak() {
+                return false;
+            }
+            
+            @Override
+            public String getText() {
+                return text;
+            }
+            
+            @Override
+            public String[] getStyles() {
+                return null;
+            }
+            
+            @Override
+            public Supplier<Node> getNodeGenerator() {
+                return null;
+            }
+            
+            @Override
+            public String getDirectStyle() {
+                return style;
+            }
+
+            @Override
+            public StyleAttrs getStyleAttrs() {
+                return attrs;
+            }
+        };
+    }
 }

@@ -24,60 +24,28 @@
  */
 package goryachev.rich.model;
 
-import java.util.function.Supplier;
-import javafx.scene.Node;
-
-public class StringStyledSegment implements StyledSegment {
-    private final String text;
-    private final String direct;
-    private final String[] css;
+/**
+ * Test Styled Input gets its data from string-style pairs.
+ */
+public class TStyledInput extends StyledInput {
+    private final Object[] items;
+    private int index;
     
-    /**
-     * Important: text must not contain any characters < 0x20, except for TAB.
-     */
-    public StringStyledSegment(String text, String direct, String[] css) {
-        this.text = text;
-        this.direct = direct;
-        this.css = css;
+    public TStyledInput(Object[] items) {
+        this.items = items;
     }
 
     @Override
-    public boolean isText() {
-        return true;
-    }
+    public StyledSegment nextSegment() {
+        if(index < items.length) {
+            String text = (String)items[index++];
+            if("\n".equals(text)) {
+                return StyledSegment.LINE_BREAK;
+            }
 
-    @Override
-    public boolean isParagraph() {
-        return false;
-    }
-
-    @Override
-    public boolean isLineBreak() {
-        return false;
-    }
-
-    @Override
-    public String getText() {
-        return text;
-    }
-
-    @Override
-    public String getDirectStyle() {
-        return direct;
-    }
-
-    @Override
-    public String[] getStyles() {
-        return css;
-    }
-
-    @Override
-    public Supplier<Node> getNodeGenerator() {
-        return null;
-    }
-
-    @Override
-    public StyleAttrs getStyleAttrs() {
+            StyleAttrs a = (StyleAttrs)items[index++];
+            return StyledSegment.of(text, a);
+        }
         return null;
     }
 }

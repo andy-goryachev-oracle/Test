@@ -133,6 +133,7 @@ public class StyleAttrs {
         return attributes.keySet();
     }
 
+    /** returns a direct style string or null */
     public String getStyle() {
         if (style == null) {
             style = createStyleString();
