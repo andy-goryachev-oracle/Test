@@ -46,6 +46,13 @@ public class BifurcationDiagram {
     protected static void update(Pane p) {
         double w = p.getWidth();
         double h = p.getHeight();
+
+        if ((w < 1) || (h < 1)) {
+            return;
+        } else if(w > 600) {
+            w = 600;
+        }
+
         Canvas c = new Canvas(w, h);
         GraphicsContext g = c.getGraphicsContext2D();
 

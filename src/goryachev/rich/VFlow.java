@@ -163,7 +163,6 @@ public class VFlow extends Pane {
             this::recomputeLayout,
             true,
             origin
-            // TODO lineCount?
         );
         
         vscroll.addEventFilter(MouseEvent.ANY, this::handleVScrollMouseEvent);
@@ -176,15 +175,10 @@ public class VFlow extends Pane {
     
     public void updateModel() {
         control.clearSelection();
-
-        // TODO fixing change model bug
-        // TODO duplicate call, there is one in recomputeLayout()
-        invalidateLayout();
-        
+        setRightEdge(0.0);
         setOrigin(Origin.ZERO);
         setOffsetX(0.0);
         cache.clear();
-
         recomputeLayout();
     }
     
@@ -195,13 +189,14 @@ public class VFlow extends Pane {
     
     public void updateWrap() {
         if(control.isWrapText()) {
-            setOffsetX(0.0);
             double w = getWidth(); // TODO padding
             setRightEdge(w);
+        } else {
+            setRightEdge(0.0);
         }
+        setOffsetX(0.0);
         cache.clear();
-        invalidateLayout();
-        layoutChildren();
+        recomputeLayout();
     }
 
     public Origin getOrigin() {
@@ -247,7 +242,7 @@ public class VFlow extends Pane {
     }
     
     public void setRightEdge(double w) {
-        //System.err.println("setRightEdge " + w);
+        //System.err.println("setRightEdge " + w); // FIX
         rightEdge.set(w);
     }
 
@@ -411,11 +406,11 @@ public class VFlow extends Pane {
         if (layout == null) {
             return null;
         }
-        return layout.getTextPos(localX, localY);
+        return layout.getTextPos(getOffsetX(), localX, localY);
     }
 
     protected CaretInfo getCaretInfo(TextPos p) {
-        return layout.getCaretInfo(p);
+        return layout.getCaretInfo(getOffsetX(), p);
     }
 
     /** returns caret sizing info, or null */
@@ -617,16 +612,14 @@ public class VFlow extends Pane {
                 return; // is this needed?
             }
             
-            double max = rightEdge();
+            double max = rightEdge() + Config.horizontalGuard;
             double visible = getWidth();
             double val = hscroll.getValue();
             double off = fromScrollBarValue(val, visible, max);
 
             setOffsetX(off);
-
             // no need to recompute the flow
             layoutNodes();
-
             updateCaretAndSelection();
         }
     }
@@ -699,6 +692,7 @@ public class VFlow extends Pane {
     }
 
     protected void layoutCells() {
+        //System.err.println("layoutCells"); // FIX
         double width = getWidth();
         double height = getHeight();
         clip.setWidth(width);
@@ -712,9 +706,9 @@ public class VFlow extends Pane {
         int tabSize = control.getTabSize();
         boolean wrap = control.isWrapText();
         double forWidth = (wrap ? width : -1);
+        double maxWidth = (wrap ? width : 1_000_000_000); //Double.MAX_VALUE/2);
         int paragraphCount = lineCount();
-        
-        double x = 0.0 - getOffsetX(); // TODO content padding
+
         double y = -getOffsetY(); // TODO content padding
         double unwrappedWidth = 0;
         double margin = Config.slidingWindowMargin * height;
@@ -731,7 +725,7 @@ public class VFlow extends Pane {
             // TODO skip computation if layout width is the same
             Region r = cell.getContent();
             getChildren().add(r);
-            r.setMaxWidth(wrap ? width : Double.MAX_VALUE);
+            r.setMaxWidth(maxWidth);
             r.setMaxHeight(USE_COMPUTED_SIZE);
             if(r instanceof TextFlow f) {
                 f.setTabSize(tabSize);
@@ -752,7 +746,7 @@ public class VFlow extends Pane {
                 h = 0;
             }
             cell.setComputedHeight(h, forWidth);
-            cell.setLocation(x, y);
+            cell.setLocationY(y);
 
             if (!wrap) {
                 if (visible) {
@@ -802,7 +796,7 @@ public class VFlow extends Pane {
             // TODO skip computation if layout width is the same
             Region r = cell.getContent();
             getChildren().add(r);
-            r.setMaxWidth(wrap ? width : Double.MAX_VALUE);
+            r.setMaxWidth(maxWidth);
             r.setMaxHeight(USE_COMPUTED_SIZE);
             if(r instanceof TextFlow f) {
                 f.setTabSize(tabSize);
@@ -819,7 +813,7 @@ public class VFlow extends Pane {
             count++;
 
             cell.setComputedHeight(h, forWidth);
-            cell.setLocation(x, y);
+            cell.setLocationY(y);
             
             getChildren().remove(r);
 
@@ -835,17 +829,21 @@ public class VFlow extends Pane {
         // lay out content nodes
         layoutNodes();
 
-        if (!wrap) {
+        if (wrap) {
+            setRightEdge(width);
+        } else {
             if(rightEdge() < unwrappedWidth) {
-                setRightEdge(unwrappedWidth);
+                setRightEdge(Math.max(unwrappedWidth, width));
             }
         }
     }
     
-    private void layoutNodes() {
+    protected void layoutNodes() {
+        //System.err.println("layoutNodes"); // FIX
         boolean wrap = control.isWrapText();
-        double hack = 20; // will this avoid wrapping when changing models? no, but helps when typing
-        double w = wrap ? getWidth() : (rightEdge() + hack); // TODO padding
+        // TODO not sure why, but neither Double.MAX_VALUE nor 1e20 work
+        double w = wrap ? getWidth() : 1_000_000_000.0;
+        double x = -getOffsetX();
 
         int sz = layout.getVisibleCellCount();
         for (int i=0; i < sz; i++) {
@@ -853,7 +851,6 @@ public class VFlow extends Pane {
             Region r = cell.getContent();
             
             double h = cell.getComputedHeight();
-            double x = cell.getX();
             double y = cell.getY();
             // FIX bug
             try {
@@ -889,6 +886,19 @@ public class VFlow extends Pane {
         }
     }
 
+    public void hscroll(double delta) {
+        double off = getOffsetX() + delta * getWidth();
+        if (off < 0.0) {
+            off = 0.0;
+        } else if (off + getWidth() > rightEdge()) {
+            off = Math.max(0.0, rightEdge() - getWidth());
+        }
+        setOffsetX(off);
+        // no need to recompute the flow
+        layoutNodes();
+        updateCaretAndSelection();
+    }
+
     /** scrolls to visible area, using vflow coordinates */
     public void scrollToVisible(double x, double y) {
         if (y < 0.0) {
@@ -898,8 +908,8 @@ public class VFlow extends Pane {
             // below viewport
             blockScroll(y - getViewHeight());
         }
-
-        // TODO forgot horizontal scrolling??
+        
+        scrollHorizontalToVisible(x);
     }
 
     public void scrollCaretToVisible() {
@@ -921,6 +931,26 @@ public class VFlow extends Pane {
             } else if (c.y1() > getViewHeight()) {
                 blockScroll(c.y1() - getViewHeight());
             }
+            
+            scrollHorizontalToVisible(c.x());
+        }
+    }
+
+    /** x - vflow coordinate */
+    private void scrollHorizontalToVisible(double x) {
+        if (!control.isWrapText()) {
+            double off;
+            if (x < 0.0) {
+                off = Math.max(getOffsetX() + x - 20.0, 0.0);
+            } else if (x > getWidth()) {
+                off = getOffsetX() + x - getWidth() + Config.horizontalGuard;
+            } else {
+                return;
+            }
+
+            setOffsetX(off);
+            layoutNodes();
+            updateCaretAndSelection();
         }
     }
 

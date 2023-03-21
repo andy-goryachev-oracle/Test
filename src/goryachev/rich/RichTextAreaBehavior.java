@@ -334,7 +334,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     protected void handleMousePressed(MouseEvent ev) {
-        if (ev.isPopupTrigger()) {
+        if (ev.isPopupTrigger() || (ev.getButton() != MouseButton.PRIMARY)) {
             return;
         }
 
@@ -391,7 +391,15 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
     protected void handleScrollEvent(ScrollEvent ev) {
         if (ev.isShiftDown()) {
-            // TODO horizontal scroll
+            if (!control.isWrapText()) {
+                // horizontal scroll
+                double f = Config.scrollWheelBlockSizeHorizontal;
+                if (ev.getDeltaX() >= 0) {
+                    f = -f;
+                }
+                vflow().hscroll(f);
+                ev.consume();
+            }
         } else if (ev.isShortcutDown()) {
             // page up / page down
             if (ev.getDeltaY() >= 0) {
@@ -399,13 +407,15 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             } else {
                 vflow().pageDown();
             }
+            ev.consume();
         } else {
             // block scroll
-            double f = Config.scrollWheelBlockSize;
+            double f = Config.scrollWheelBlockSizeVertical;
             if (ev.getDeltaY() >= 0) {
                 f = -f;
             }
             vflow().scroll(f);
+            ev.consume();
         }
     }
 

@@ -29,15 +29,11 @@ import goryachev.rich.model.SegmentStyledTextModel;
 
 public class NotebookModel extends SegmentStyledTextModel {
     public NotebookModel() {
-        String ARABIC = "arabic";
-        String CODE = "code";
-        String RED = "red";
         String GREEN = "green";
-        String UNDER = "underline";
         String GRAY = "gray";
-        String LARGE = "large";
         String EQ = "equation";
         String SUB = "sub";
+        String UNDER = "underline";
         
         addSegment("Bifurcation Diagram", "-fx-font-size:200%;", UNDER);
         nl(2);

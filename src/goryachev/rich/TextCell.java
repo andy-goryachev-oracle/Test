@@ -43,8 +43,7 @@ public class TextCell {
     private final int index;
     private final Region content;
     private double height;
-    private double forWidth;
-    private double x;
+    private double forWidth; // TODO not used right now, use to skip layout when possible
     private double y;
 
     public TextCell(int index, Region content) {
@@ -92,14 +91,9 @@ public class TextCell {
         return height;
     }
 
-    /** sets location of this cell in VFlow coordinates */
-    public void setLocation(double x, double y) {
-        this.x = x;
+    /** sets location along the y axis of this cell in VFlow coordinates */
+    public void setLocationY(double y) {
         this.y = y;
-    }
-
-    public double getX() {
-        return x;
     }
     
     public double getY() {

@@ -32,9 +32,9 @@ import goryachev.rich.model.StyledTextModel;
 
 public enum Models {
     DEMO("Demo"),
-    EDITABLE_PLAIN("Editable Plain Text Model"),
+    BILLION_LINES("1,000,000,000 Lines"),
+    EDITABLE_PLAIN("Editable Plaintext Model"),
     EDITABLE_STYLED("❤ Editable Rich Text Model"),
-    BILLION_LINES("1,000,000 Lines"),
     NOTEBOOK("Notebook: Embedded Chart"),
     NOTEBOOK2("Notebook: SQL Queries"),
     NULL("null"),

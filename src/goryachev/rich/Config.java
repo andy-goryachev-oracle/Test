@@ -53,8 +53,11 @@ public class Config {
      */
     public static final float slidingWindowMargin = 3.0f;
     
-    /** block scroll size as a fraction of window height */
-    public static final double scrollWheelBlockSize = 0.1;
+    /** horizontal block scroll size as a fraction of window width */
+    public static final double scrollWheelBlockSizeHorizontal = 0.1;
+    
+    /** vertical block scroll size as a fraction of window height */
+    public static final double scrollWheelBlockSizeVertical = 0.1;
     
     /** 
      * Determines the distance between the caret and the top or bottom edge, in fraction of view height,
@@ -64,4 +67,7 @@ public class Config {
     
     /** maximum tab size */
     public static final int maxTabSize = 256;
+    
+    /** small space between the end of last character and the right edge */
+    public static final double horizontalGuard = 5;
 }
