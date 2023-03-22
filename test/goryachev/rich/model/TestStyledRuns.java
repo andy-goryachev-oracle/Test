@@ -31,15 +31,21 @@ import goryachev.rich.TextPos;
 public class TestStyledRuns {
     private final StyleAttrs PLAIN = mk();
     private final StyleAttrs BOLD = mk(StyleAttrs.BOLD);
-    private final Object[] SEG1 = { "--------", PLAIN };
-    private final Object[] SEG2 = { "--------", PLAIN, "--------", BOLD };
-    private final Object[] SEG3 = { "--------", PLAIN, "--------", BOLD, "--------", PLAIN };
+    private final Object[] SEG1 = { "abcdefgh", PLAIN };
+    private final Object[] SEG2 = { "abcdefgh", PLAIN, "ijklmnop", BOLD };
+    private final Object[] SEG3 = { "abcdefgh", PLAIN, "ijklmnop", BOLD, "qrstuvwx", PLAIN };
     
     @Test
     public void testApplyStyle() {
-        t(SEG1, 0, 2, 0, 5, BOLD, new Object[] {
-            0, PLAIN, 2, BOLD, 5, PLAIN
-        });
+        t(
+            SEG1,
+            0, 2, 0, 4, BOLD,
+            new Object[] {
+                "ab", PLAIN,
+                "cd", BOLD,
+                "efgh", PLAIN
+            }
+        );
     }
     
     private static StyleAttrs mk(Object... spec) {
@@ -63,25 +69,32 @@ public class TestStyledRuns {
         }
         return rv;
     }
-    
-    private void append(EditableRichTextModel m, Object[] items) {
-        TStyledInput in = new TStyledInput(items);
-        TextPos end = m.getEndTextPos();
-        m.replace(TextPos.ZERO, end, in);
-    }
 
     // FIX does not work (yet)
     private void t(Object[] initial, int ix1, int off1, int ix2, int off2, StyleAttrs a, Object[] expected) {
         EditableRichTextModel m = new EditableRichTextModel();
-        append(m, initial);
+        TStyledInput in = new TStyledInput(initial);
+        TextPos fin = m.getEndTextPos();
+        m.replace(TextPos.ZERO, fin, in);
+        
+        {
+            fin = m.getEndTextPos();
+            StringBuilderStyledOutput out = new StringBuilderStyledOutput();
+            m.exportText(TextPos.ZERO, fin, out);
+            Object chk = out.getOutput();
+            System.out.println(chk);
+        }
+        
         TextPos start = new TextPos(ix1, off1);
         TextPos end = new TextPos(ix2, off2);
         m.applyStyle(start, end, a);
         
-        TStyledOutput out = new TStyledOutput();
-        TextPos last = m.getEndTextPos();
-        m.exportText(TextPos.ZERO, last, out);
-        Object[] result = out.getResult();
-        Assert.assertArrayEquals(expected, result);
+        {
+            TStyledOutput out = new TStyledOutput();
+            TextPos last = m.getEndTextPos();
+            m.exportText(TextPos.ZERO, last, out);
+            Object[] result = out.getResult();
+            Assert.assertArrayEquals(expected, result);
+        }
     }
 }

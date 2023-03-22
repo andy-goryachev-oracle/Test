@@ -68,8 +68,17 @@ public class EditableRichTextModel extends EditablePlainTextModel {
     
     @Override
     protected int insertTextSegment(int index, int offset, StyledSegment seg) {
-        // TODO
-        return super.insertTextSegment(index, offset, seg);
+        int ix = binarySearch(index, offset);
+        StyledRun r = getRun(ix);
+        StyleAttrs prev = (r == null) ? null : r.getAttributes();
+
+        int rv = super.insertTextSegment(index, offset, seg);
+
+        StyleAttrs a = seg.getStyleAttrs();
+        if (!a.equals(prev)) {
+            insertRun(ix, new TextPos(index, offset), a);
+        }
+        return rv;
     }
     
     @Override

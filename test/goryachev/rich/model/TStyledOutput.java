@@ -38,6 +38,7 @@ public class TStyledOutput implements StyledOutput {
 
     @Override
     public void append(StyledSegment seg) {
+        System.out.println("TStyledOutput.append " + seg); // FIX
         if (seg.isLineBreak()) {
             items.add("\n");
         } else if (seg.isText()) {
