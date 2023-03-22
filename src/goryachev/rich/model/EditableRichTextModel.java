@@ -35,6 +35,9 @@ import goryachev.rich.TextPos;
  * Extends the plain text editable model, adding styled runs, using an ordered
  * list of markers and a limited set of supported attributes.
  * 
+ * Turns out, this idea produces a large amount of complicated code.
+ * See EditableRichTextModel2.
+ * 
  * TODO RTF format handler
  * TODO private format handler
  */
@@ -67,15 +70,26 @@ public class EditableRichTextModel extends EditablePlainTextModel {
     }
     
     @Override
+    protected void removeRegion(TextPos start, TextPos end) {
+        // TODO runs
+        super.removeRegion(start, end);
+    }
+    
+    @Override
     protected int insertTextSegment(int index, int offset, StyledSegment seg) {
         int ix = binarySearch(index, offset);
-        StyledRun r = getRun(ix);
+        StyledRun r = getRun(ix - 1);
         StyleAttrs prev = (r == null) ? null : r.getAttributes();
 
         int rv = super.insertTextSegment(index, offset, seg);
 
         StyleAttrs a = seg.getStyleAttrs();
         if (!a.equals(prev)) {
+            r = getRun(ix);
+            // TODO cases!
+            if((r.getIndex() == index) && (r.getOffset() == offset)) {
+                
+            }
             insertRun(ix, new TextPos(index, offset), a);
         }
         return rv;

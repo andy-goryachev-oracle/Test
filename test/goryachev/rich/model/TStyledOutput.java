@@ -39,14 +39,14 @@ public class TStyledOutput implements StyledOutput {
     @Override
     public void append(StyledSegment seg) {
         System.out.println("TStyledOutput.append " + seg); // FIX
-        if (seg.isLineBreak()) {
-            items.add("\n");
-        } else if (seg.isText()) {
+        if (seg.isText()) {
             String text = seg.getText();
             // TODO a) depends on view, b) may or may not have direct attributes, c) attributes are mutable
             StyleAttrs a = seg.getStyleAttrs();
             items.add(text);
             items.add(a);
+        } else if (seg.isLineBreak()) {
+            items.add("\n");
         } else {
             throw new Error("not yet supported: " + seg);
         }

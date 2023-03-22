@@ -34,8 +34,20 @@ public class TestStyledRuns {
     private final Object[] SEG1 = { "abcdefgh", PLAIN };
     private final Object[] SEG2 = { "abcdefgh", PLAIN, "ijklmnop", BOLD };
     private final Object[] SEG3 = { "abcdefgh", PLAIN, "ijklmnop", BOLD, "qrstuvwx", PLAIN };
+    private final Object[] INSERT = { "01", BOLD };
     
     @Test
+    public void testReplace() {
+        replace(
+            new Object[] { },
+            INSERT,
+            new Object[] {
+                
+            }
+        );
+    }
+
+    // TODO @Test
     public void testApplyStyle() {
         t(
             SEG1,
@@ -96,5 +108,18 @@ public class TestStyledRuns {
             Object[] result = out.getResult();
             Assert.assertArrayEquals(expected, result);
         }
+    }
+    
+    private void replace(Object[] initial, Object[] text, Object[] expected) {
+        EditableRichTextModel m = new EditableRichTextModel();
+        TStyledInput in = new TStyledInput(initial);
+        TextPos fin = m.getEndTextPos();
+        m.replace(TextPos.ZERO, fin, in);
+        
+        TStyledOutput out = new TStyledOutput();
+        TextPos last = m.getEndTextPos();
+        m.exportText(TextPos.ZERO, last, out);
+        Object[] result = out.getResult();
+        Assert.assertArrayEquals(expected, result);
     }
 }
