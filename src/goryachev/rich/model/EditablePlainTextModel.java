@@ -34,7 +34,7 @@ import goryachev.rich.TextPos;
  * TODO should it be here or as a standard model?
  */
 public class EditablePlainTextModel extends EditableStyledTextModelBase {
-    private final ArrayList<String> paragraphs = new ArrayList();
+    private final ArrayList<String> paragraphs = new ArrayList<>();
     private static final String STYLE = "-fx-font-size:200%;";
 
     public EditablePlainTextModel() {
@@ -79,6 +79,14 @@ public class EditablePlainTextModel extends EditableStyledTextModelBase {
         paragraphs.set(index, s2);
         return text.length();
     }
+
+    protected static String insertText(String text, int offset, String toInsert) {
+        if (offset >= text.length()) {
+            return text + toInsert;
+        } else {
+            return text.substring(0, offset) + toInsert + text.substring(offset);
+        }
+    }
     
     @Override
     protected void insertLineBreak(int index, int offset) {
@@ -92,14 +100,6 @@ public class EditablePlainTextModel extends EditableStyledTextModelBase {
                 paragraphs.set(index, s.substring(0, offset));
                 paragraphs.add(index + 1, s.substring(offset));
             }
-        }
-    }
-
-    protected static String insertText(String text, int index, String toInsert) {
-        if (index >= text.length()) {
-            return text + toInsert;
-        } else {
-            return text.substring(0, index) + toInsert + text.substring(index);
         }
     }
 
