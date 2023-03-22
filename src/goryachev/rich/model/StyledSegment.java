@@ -45,65 +45,67 @@ import javafx.scene.Node;
  * This might require a StyleSheet + supported subset of -fx- properties.
  * 
  * TODO in addition to is*(), add getType() returning an enum { TEXT, PARAGRAPH, INLINE_NODE, LINE_BREAK }
+ * TODO perhaps add guarded/unguarded factory methods (of(), ofGuarded()) that check for <0x20, or specify that
+ * text must not include those characters.
  */
-public interface StyledSegment {
+public abstract class StyledSegment {
     /**
      * Returns true if this segment is a text segment.
      */
-    public boolean isText();
+    public boolean isText() { return false; }
     
     /**
      * Returns true if this segment is a paragraph which contains a single Node.
      */
-    public boolean isParagraph();
+    public boolean isParagraph() { return false; }
     
     /**
      * Returns true if this segment is a line break.
      */
-    public boolean isLineBreak();
+    public boolean isLineBreak() { return false; }
     
     /**
      * Returns the text associated with this segment.
      * Must be one character for inline nodes, must be null for node paragraphs.
      */
-    public String getText();
+    public String getText() { return null; }
 
     /**
      * Specifies a direct style string that will be set on a node that represents this segment.
      * The style can be null.
      */
-    public String getDirectStyle();
+    public String getDirectStyle() { return null; }
     
     /**
      * Specifies the CSS style names that will be set on a node that represents this segment.
      * The array can be null.
      */
-    public String[] getStyles();
+    public String[] getStyles() { return null; }
     
     /**
      * This method must return a non-null instance when {@link isText()} is false, or null 
      * when {@link isText()} is true.
      */
-    public Supplier<Node> getNodeGenerator();
+    public Supplier<Node> getNodeGenerator() { return null; }
 
     /**
      * This method must return StyleAttrs (or null) for this segment.
      * Keep in mind that the actual attributes and values might depend on the view that generated the segment,
      * unless the model itself maintains attributes independently of the view.
      */
-    public StyleAttrs getStyleAttrs();
+    public StyleAttrs getStyleAttrs() { return null; }
     
 
     /** A styled segment that represents a line break */
-    public static final StyledSegment LINE_BREAK = new StringStyledSegment(null, null, null) {
+    public static final StyledSegment LINE_BREAK = new StyledSegment() {
         @Override
         public boolean isLineBreak() {
             return true;
         }
 
         @Override
-        public boolean isText() {
-            return false;
+        public String toString() {
+            return "LINE_BREAK";
         }
     };
 
@@ -111,23 +113,14 @@ public interface StyledSegment {
      * Creates a StyleSegment from a non-null text and non-null attributes.
      * Important: text must not contain any characters < 0x20, except for TAB.
      */
+    // TODO attrs must be R/O
     public static StyledSegment of(String text, StyleAttrs attrs) {
-        String style = attrs.getStyle();
-
         return new StyledSegment() {
+            private String style; 
+
             @Override
             public boolean isText() {
                 return true;
-            }
-            
-            @Override
-            public boolean isParagraph() {
-                return false;
-            }
-            
-            @Override
-            public boolean isLineBreak() {
-                return false;
             }
             
             @Override
@@ -136,23 +129,96 @@ public interface StyledSegment {
             }
             
             @Override
-            public String[] getStyles() {
-                return null;
-            }
-            
-            @Override
-            public Supplier<Node> getNodeGenerator() {
-                return null;
-            }
-            
-            @Override
             public String getDirectStyle() {
+                if(style == null) {
+                    style = attrs.getStyle();
+                }
                 return style;
             }
 
             @Override
             public StyleAttrs getStyleAttrs() {
                 return attrs;
+            }
+            
+            @Override
+            public String toString() {
+                return "StyledSegment{text=" + getText() + ", attrs=" + attrs + "}";
+            }
+        };
+    }
+    
+    /** 
+     * Creates a StyleSegment from a non-null plain text.
+     * Important: text must not contain any characters < 0x20, except for TAB.
+     */
+    public static StyledSegment of(String text) {
+        return new StyledSegment() {
+            private String style; 
+
+            @Override
+            public boolean isText() {
+                return true;
+            }
+            
+            @Override
+            public String getText() {
+                return text;
+            }
+            
+            @Override
+            public String toString() {
+                return "StyledSegment{text=" + getText() + "}";
+            }
+        };
+    }
+    
+    /** 
+     * Creates a StyleSegment from a non-null text with direct and stylesheet styles.
+     * Important: text must not contain any characters < 0x20, except for TAB.
+     */
+    public static StyledSegment of(String text, String direct, String[] css) {
+        return new StyledSegment() {
+            @Override
+            public boolean isText() {
+                return true;
+            }
+
+            @Override
+            public String getText() {
+                return text;
+            }
+
+            @Override
+            public String getDirectStyle() {
+                return direct;
+            }
+
+            @Override
+            public String[] getStyles() {
+                return css;
+            }
+
+            @Override
+            public String toString() {
+                StringBuilder sb = new StringBuilder(32);
+                sb.append("StyledSegment{text=").append(text);
+                sb.append(", direct=").append(direct);
+                if (css != null) {
+                    sb.append(", css=[");
+                    boolean sep = false;
+                    for (String s : css) {
+                        if (sep) {
+                            sb.append(',');
+                        } else {
+                            sep = true;
+                        }
+                        sb.append(s);
+                    }
+                    sb.append("]");
+                }
+                sb.append("}");
+                return sb.toString();
             }
         };
     }

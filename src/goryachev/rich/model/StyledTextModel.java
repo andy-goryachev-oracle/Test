@@ -354,7 +354,7 @@ public abstract class StyledTextModel {
     protected void exportPlaintextSegments(int index, int startOffset, int endOffset, StyledOutput out) {
         String text = getPlainText(index);
         text = Util.substring(text, startOffset, endOffset);
-        StringStyledSegment seg = new StringStyledSegment(text, null, null);
+        StyledSegment seg = StyledSegment.of(text);
         out.append(seg);
     }
 

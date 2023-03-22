@@ -146,7 +146,7 @@ public class EditablePlainTextModel extends EditableStyledTextModelBase {
             text = text.substring(startOffset, endOffset);
         }
 
-        StringStyledSegment seg = new StringStyledSegment(text, null, null);
+        StyledSegment seg = StyledSegment.of(text);
         out.append(seg);
     }
 

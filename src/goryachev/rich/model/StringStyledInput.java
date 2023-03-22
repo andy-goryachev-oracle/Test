@@ -60,11 +60,11 @@ public class StringStyledInput extends StyledInput {
             if (ix < 0) {
                 String s = text.substring(offset);
                 offset = text.length();
-                return new StringStyledSegment(s, direct, css);
+                return StyledSegment.of(s, direct, css);
             } else {
                 String s = text.substring(offset, ix);
                 offset = ix;
-                return new StringStyledSegment(s, direct, css);
+                return StyledSegment.of(s, direct, css);
             }
         }
         return null;
