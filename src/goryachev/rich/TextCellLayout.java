@@ -27,6 +27,9 @@
 package goryachev.rich;
 
 import java.util.ArrayList;
+import goryachev.rich.util.Bugs;
+import goryachev.rich.util.NewAPI;
+import goryachev.rich.util.Util;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
@@ -37,8 +40,6 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.PathElement;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.TextFlow;
-import goryachev.rich.util.NewAPI;
-import goryachev.rich.util.Util;
 
 /**
  * Manages TextCells in the visible area, surrounded by a number of cells before and after the visible area,
@@ -129,10 +130,12 @@ public class TextCellLayout {
                 if (r instanceof TextFlow t) {
                     double x = localX + xoffset - pad.getLeft();
                     Point2D p = new Point2D(x, y);
+                    
                     // FIX https://bugs.openjdk.org/browse/JDK-8302511
                     // gives wrong value for emojis
-                    HitInfo h = t.hitTest(p);
-                    System.out.println(h); // FIX
+                    //HitInfo h = t.hitTest(p);
+                    
+                    HitInfo h = Bugs.hitTest(t, p);
                     if (h != null) {
                         return new TextPos(cell.getLineIndex(), h.getInsertionIndex());
                     }
