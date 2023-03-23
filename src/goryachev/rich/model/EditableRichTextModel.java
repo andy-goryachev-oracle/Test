@@ -88,7 +88,7 @@ public class EditableRichTextModel extends EditablePlainTextModel {
             r = getRun(ix);
             // TODO cases!
             if((r.getIndex() == index) && (r.getOffset() == offset)) {
-                
+                // FIX
             }
             insertRun(ix, new TextPos(index, offset), a);
         }

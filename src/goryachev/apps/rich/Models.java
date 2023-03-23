@@ -26,7 +26,7 @@ package goryachev.apps.rich;
 
 import goryachev.monkey.util.WritingSystemsDemo;
 import goryachev.rich.model.EditablePlainTextModel;
-import goryachev.rich.model.EditableRichTextModel;
+import goryachev.rich.model.EditableRichTextModel2;
 import goryachev.rich.model.SegmentStyledTextModel;
 import goryachev.rich.model.StyledTextModel;
 
@@ -77,7 +77,7 @@ public enum Models {
         case EDITABLE_PLAIN:
             return new EditablePlainTextModel();
         case EDITABLE_STYLED:
-            return new EditableRichTextModel();
+            return new EditableRichTextModel2();
         case TABS:
             return tabs();
         case MONOSPACED:

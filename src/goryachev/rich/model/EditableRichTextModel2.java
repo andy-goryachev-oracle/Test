@@ -101,7 +101,15 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
 
     @Override
     protected void insertLineBreak(int index, int offset) {
-        // TODO
+        if(index >= getParagraphCount()) {
+            paragraphs.add(new RParagraph());
+        } else {
+            RParagraph par = paragraphs.get(index);
+            RParagraph par2 = par.insertLineBreak(offset);
+            if(par != null) {
+                paragraphs.add(index + 1, par2);
+            }
+        }
     }
 
     @Override
@@ -134,7 +142,16 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
         // TODO
         return null;
     }
-    
+
+    /**
+     * Model rich text segment.
+     */
+    protected static record RSegment(String text, StyleAttrs attrs) {
+        public int length() {
+            return text.length();
+        }
+    }
+
     /**
      * Model paragraph is a list of RSegments.
      */
@@ -182,14 +199,44 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
             // insert at the end
             add(new RSegment(text, attrs));
         }
-    }
 
-    /**
-     * Model rich text segment.
-     */
-    protected static record RSegment(String text, StyleAttrs attrs) {
-        public int length() {
-            return text.length();
+        /** trims this paragraph and returns the remainder to be inserted next, or null */
+        public RParagraph insertLineBreak(int offset) {
+            int off = 0;
+            int ct = size();
+            RParagraph next = null;
+            int i;
+            for (i = 0; i < ct; i++) {
+                RSegment seg = get(i);
+                int len = seg.length();
+                if(offset < (off + len)) {
+                    if(offset != off) {
+                        // split segment
+                        StyleAttrs a = seg.attrs();
+                        String toSplit = seg.text();
+                        int ix = offset - off;
+                        String s1 = toSplit.substring(0, ix);
+                        String s2 = toSplit.substring(ix);
+                        set(i, new RSegment(s1, a));
+                        
+                        next = new RParagraph();
+                        next.add(new RSegment(s1, a));
+                    }
+                    break;
+                }
+                off += len;
+            }
+            
+            // move remaining segments to the next paragraph
+            while(i < size()) {
+                if(next == null) {
+                    next = new RParagraph();
+                }
+                RSegment seg = remove(i);
+                next.add(seg);
+            }
+            
+            return next;
         }
     }
 }
