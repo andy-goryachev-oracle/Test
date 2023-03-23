@@ -195,6 +195,10 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
                 }
             }
         }
+        
+        public void append(String s) {
+            text = text + s;
+        }
     }
 
     /**
@@ -213,15 +217,13 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
             return getPlainText().length();
         }
 
-        // for simplicity, this implementation does not coalesce segments which have the same style attributes
-        // FIX do it, creates too many segments
         public void insertText(int offset, String text, StyleAttrs attrs) {
             int off = 0;
             int ct = size();
             for (int i = 0; i < ct; i++) {
                 if (offset == off) {
                     // insert at the beginning
-                    add(i, new RSegment(text, attrs));
+                    insert(i, text, attrs);
                     return;
                 } else {
                     RSegment seg = get(i);
@@ -234,10 +236,12 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
 
                         String s1 = toSplit.substring(0, ix);
                         set(i++, new RSegment(s1, a));
-                        add(i++, new RSegment(text, attrs));
+                        if (insert(i, text, attrs)) {
+                            i++;
+                        }
                         if (ix < toSplit.length()) {
                             String s2 = toSplit.substring(ix);
-                            add(i++, new RSegment(s2, a));
+                            insert(i, s2, a);
                         }
                         return;
                     }
@@ -247,7 +251,30 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
             }
 
             // insert at the end
-            add(new RSegment(text, attrs));
+            insert(ct, text, attrs);
+        }
+
+        /**
+         * Inserts a new segment, or appends to the previous segment if style is the same.
+         * Returns true if a segment has been added.
+         */
+        private boolean insert(int ix, String text, StyleAttrs a) {
+            if (ix > 0) {
+                RSegment prev = get(ix - 1);
+                if (a.equals(prev.attrs())) {
+                    // combine
+                    prev.append(text);
+                    return false;
+                }
+            }
+
+            RSegment seg = new RSegment(text, a);
+            if (ix < size()) {
+                add(ix, seg);
+            } else {
+                add(seg);
+            }
+            return true;
         }
 
         /** trims this paragraph and returns the remainder to be inserted next */
@@ -269,7 +296,8 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
                         String s2 = toSplit.substring(ix);
                         set(i, new RSegment(s1, a));
 
-                        next.add(new RSegment(s1, a));
+                        next.add(new RSegment(s2, a));
+                        i++;
                     }
                     break;
                 }
