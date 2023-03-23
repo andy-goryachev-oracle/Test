@@ -103,7 +103,6 @@ public class EditablePlainTextModel extends EditableStyledTextModelBase {
         }
     }
 
-    // the caller must ensure 'start' <= 'end'
     @Override
     protected void removeRegion(TextPos start, TextPos end) {
         int ix = start.index();

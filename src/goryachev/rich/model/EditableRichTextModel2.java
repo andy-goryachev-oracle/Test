@@ -106,19 +106,34 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
         } else {
             RParagraph par = paragraphs.get(index);
             RParagraph par2 = par.insertLineBreak(offset);
-            if(par != null) {
-                paragraphs.add(index + 1, par2);
+            paragraphs.add(index + 1, par2);
+        }
+    }
+
+    @Override
+    protected void removeRegion(TextPos start, TextPos end) {
+        int ix = start.index();
+        RParagraph par = paragraphs.get(ix);
+
+        if (ix == end.index()) {
+            par.removeRegion(start.offset(), end.offset());
+        } else {
+            RParagraph last = paragraphs.get(end.index());
+            last.removeRegion(0, end.offset());
+            
+            par.removeRegion(start.offset(), -1);
+            par.append(last);
+
+            int ct = end.index() - ix;
+            ix++;
+            for (int i = 0; i < ct; i++) {
+                paragraphs.remove(ix);
             }
         }
     }
 
     @Override
     protected void insertParagraph(int index, StyledSegment segment) {
-        // TODO
-    }
-
-    @Override
-    protected void removeRegion(TextPos start, TextPos end) {
         // TODO
     }
 
@@ -146,9 +161,39 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
     /**
      * Model rich text segment.
      */
-    protected static record RSegment(String text, StyleAttrs attrs) {
+    protected static class RSegment {
+        private String text;
+        private final StyleAttrs attrs;
+        
+        public RSegment(String text, StyleAttrs attrs) {
+            this.text = text;
+            this.attrs = attrs;
+        }
+        
+        public String text() {
+            return text;
+        }
+        
+        public StyleAttrs attrs() {
+            return attrs;
+        }
+        
         public int length() {
             return text.length();
+        }
+
+        // TODO unit test
+        public void removeRegion(int start, int end) {
+            int len = text.length();
+            if (end < 0) {
+                text = text.substring(start);
+            } else {
+                if (start == 0) {
+                    text = text.substring(end);
+                } else {
+                    text = text.substring(0, start) + text.substring(end, len);
+                }
+            }
         }
     }
 
@@ -162,6 +207,10 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
                 sb.append(s.text());
             }
             return sb.toString();
+        }
+        
+        public int length() {
+            return getPlainText().length();
         }
 
         // for simplicity, this implementation does not coalesce segments which have the same style attributes
@@ -200,17 +249,17 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
             add(new RSegment(text, attrs));
         }
 
-        /** trims this paragraph and returns the remainder to be inserted next, or null */
+        /** trims this paragraph and returns the remainder to be inserted next */
         public RParagraph insertLineBreak(int offset) {
             int off = 0;
-            int ct = size();
-            RParagraph next = null;
+            RParagraph next = new RParagraph();
             int i;
+            int ct = size();
             for (i = 0; i < ct; i++) {
                 RSegment seg = get(i);
                 int len = seg.length();
-                if(offset < (off + len)) {
-                    if(offset != off) {
+                if (offset < (off + len)) {
+                    if (offset != off) {
                         // split segment
                         StyleAttrs a = seg.attrs();
                         String toSplit = seg.text();
@@ -218,25 +267,85 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
                         String s1 = toSplit.substring(0, ix);
                         String s2 = toSplit.substring(ix);
                         set(i, new RSegment(s1, a));
-                        
-                        next = new RParagraph();
+
                         next.add(new RSegment(s1, a));
                     }
                     break;
                 }
                 off += len;
             }
-            
+
             // move remaining segments to the next paragraph
-            while(i < size()) {
-                if(next == null) {
-                    next = new RParagraph();
-                }
+            while (i < size()) {
                 RSegment seg = remove(i);
                 next.add(seg);
             }
-            
+
             return next;
+        }
+
+        public void append(RParagraph p) {
+            addAll(p);
+        }
+
+        /** end = -1 means remove from start to the end of paragraph */
+        public void removeRegion(int start, int end) {
+            int ix0 = -1;
+            int off0 = 0;
+            int off = 0;
+            int ct = size();
+
+            // find start segment
+            int i = 0;
+            for (; i < ct; i++) {
+                RSegment seg = get(i);
+                int len = seg.length();
+                if (start < (off + len)) {
+                    ix0 = i;
+                    off0 = start - off;
+                    break;
+                }
+                off += len;
+            }
+
+            if (ix0 < 0) {
+                // start not found
+                throw new Error("start=" + start + " len=" + length());
+            }
+
+            // find end segment
+            int ix1 = ct;
+            int off1 = -1;
+            if (end >= 0) {
+                for (; i < ct; i++) {
+                    RSegment seg = get(i);
+                    int len = seg.length();
+                    if (end < (off + len)) {
+                        ix1 = i;
+                        off1 = end - off;
+                        break;
+                    }
+                }
+            }
+
+            if (ix0 == ix1) {
+                // same segment
+                RSegment seg = get(ix0);
+                seg.removeRegion(off0, off1);
+            } else {
+                // spans multiple segments
+                // first segment
+                if (off0 > 0) {
+                    RSegment seg = get(ix0);
+                    seg.removeRegion(off0, -1);
+                    ix0++;
+                }
+                // last segment
+                RSegment seg = get(ix1);
+                seg.removeRegion(0, off1);
+                // remove in-between segments
+                removeRange(ix0, ix1);
+            }
         }
     }
 }

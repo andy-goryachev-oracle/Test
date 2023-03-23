@@ -83,11 +83,11 @@ public abstract class StyledTextModel {
     public abstract StyledParagraph getParagraph(int index);
     
     /**
-     * This method gets called only by an editable model.
-     * start is guaranteed to precede end.
+     * This method gets called only if the model is editable.
+     * The caller guarantees that {@code start} precedes {@code end}.
      * 
-     * @param start
-     * @param end
+     * @param start start of the region to be removed
+     * @param end end of the region to be removed, guaranteed to be > start.
      */
     protected abstract void removeRegion(TextPos start, TextPos end);
 
