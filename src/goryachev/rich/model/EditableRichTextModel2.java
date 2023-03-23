@@ -214,6 +214,7 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
         }
 
         // for simplicity, this implementation does not coalesce segments which have the same style attributes
+        // FIX do it, creates too many segments
         public void insertText(int offset, String text, StyleAttrs attrs) {
             int off = 0;
             int ct = size();
@@ -314,7 +315,7 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
             }
 
             // find end segment
-            int ix1 = ct;
+            int ix1 = -1;
             int off1 = -1;
             if (end >= 0) {
                 for (; i < ct; i++) {
@@ -325,6 +326,7 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
                         off1 = end - off;
                         break;
                     }
+                    off += len;
                 }
             }
 
@@ -341,8 +343,12 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
                     ix0++;
                 }
                 // last segment
-                RSegment seg = get(ix1);
-                seg.removeRegion(0, off1);
+                if(ix1 < 0) {
+                    ix1 = ct;
+                } else {
+                    RSegment seg = get(ix1);
+                    seg.removeRegion(0, off1);
+                }
                 // remove in-between segments
                 removeRange(ix0, ix1);
             }
