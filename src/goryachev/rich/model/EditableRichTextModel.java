@@ -372,7 +372,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                 for (; i < ct; i++) {
                     RSegment seg = get(i);
                     int len = seg.length();
-                    if (end < (off + len)) {
+                    if (end <= (off + len)) {
                         ix1 = i;
                         off1 = end - off;
                         break;

@@ -189,7 +189,8 @@ public abstract class StyledTextModel {
 
     /**
      * Replaces the given range with the provided plain text.
-     * This is a convenience method that calls {@link #replace(TextPos,TextPos,StyledInput)}
+     * This is a convenience method that calls {@link #replace(TextPos,TextPos,StyledInput)}.
+     * The caller must ensure that the start position precedes the end.
      *
      * @param start
      * @param end
@@ -211,6 +212,8 @@ public abstract class StyledTextModel {
      * When inserting a plain text, the style is taken from preceding text segment, or, if the text is being
      * inserted into the beginning of the document, the style is taken from the following text segment.
      * 
+     * The caller must ensure that the start position precedes the end.
+     * 
      * After the model applies the requested changes, an event is sent to all the registered ChangeListeners.
      * 
      * @param start start position
@@ -221,13 +224,6 @@ public abstract class StyledTextModel {
     public TextPos replace(TextPos start, TextPos end, StyledInput input) {
         if (isEditable()) {
             int cmp = start.compareTo(end);
-            if (cmp > 0) {
-                // make sure start < end
-                TextPos p = start;
-                start = end;
-                end = p;
-            }
-            
             if(cmp != 0) {
                 removeRegion(start, end);
             }

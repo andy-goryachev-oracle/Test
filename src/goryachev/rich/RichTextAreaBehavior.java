@@ -279,27 +279,32 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         return false;
     }
 
-    protected void handleKeyTyped(String character) {
+    protected void handleKeyTyped(String typed) {
         if (!canEdit()) {
             return;
         }
 
         StyledTextModel m = control.getModel();
-        TextPos ca = control.getCaretPosition();
-        if(ca != null) {
-            TextPos an = control.getAnchorPosition();
-            if(an == null) {
-                an = ca;
+        TextPos start = control.getCaretPosition();
+        if (start != null) {
+            TextPos end = control.getAnchorPosition();
+            if (end == null) {
+                end = start;
+            } else if (start.compareTo(end) > 0) {
+                TextPos p = start;
+                start = end;
+                end = p;
             }
-            m.replace(an, ca, character);
 
-            TextPos p = TextPos.min(an, ca);
-            TextPos p2 = new TextPos(p.index(), p.offset() + character.length());
-            control.moveCaret(p2, false);
+            m.replace(start, end, typed);
+
+            TextPos p = new TextPos(start.index(), start.offset() + typed.length());
+            control.moveCaret(p, false);
+
             clearPhantomX();
         }
     }
-    
+
     public void insertTab() {
         handleKeyTyped("\t");
     }
