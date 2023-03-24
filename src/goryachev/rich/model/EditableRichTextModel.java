@@ -160,10 +160,13 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
             par = paragraphs.get(ix);
             par.applyStyle(0, end.offset(), a);
         }
+
+        fireStyleChangeEvent(start, end);
     }
 
     @Override
     public void removeStyle(TextPos start, TextPos end, StyleAttrs attrs) {
+        // TODO for boolean values, we'd need to use Boolean.FALSE instead of removing the key
         // TODO
     }
 

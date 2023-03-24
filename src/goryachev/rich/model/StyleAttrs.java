@@ -36,7 +36,9 @@ public class StyleAttrs {
     public static final StyleAttribute BOLD = new StyleAttribute("BOLD", Boolean.class) {
         @Override
         public void buildStyle(StringBuilder sb, Object value) {
-            sb.append("-fx-font-weight:bold; ");
+            if (Boolean.TRUE.equals(value)) {
+                sb.append("-fx-font-weight:bold; ");
+            }
         }
     };
     
@@ -59,14 +61,18 @@ public class StyleAttrs {
     public static final StyleAttribute ITALIC = new StyleAttribute("ITALIC", Boolean.class) {
         @Override
         public void buildStyle(StringBuilder sb, Object value) {
-            sb.append("-fx-font-style:italic; ");
+            if (Boolean.TRUE.equals(value)) {
+                sb.append("-fx-font-style:italic; ");
+            }
         }
     };
     
     public static final StyleAttribute STRIKE_THROUGH = new StyleAttribute("STRIKE_THROUGH", Boolean.class) {
         @Override
         public void buildStyle(StringBuilder sb, Object value) {
-            sb.append("-fx-strikethrough:true; ");
+            if (Boolean.TRUE.equals(value)) {
+                sb.append("-fx-strikethrough:true; ");
+            }
         }
     };
     
@@ -81,7 +87,9 @@ public class StyleAttrs {
     public static final StyleAttribute UNDERLINE = new StyleAttribute("UNDERLINE", Boolean.class) {
         @Override
         public void buildStyle(StringBuilder sb, Object value) {
-            sb.append("-fx-underline:true; ");
+            if (Boolean.TRUE.equals(value)) {
+                sb.append("-fx-underline:true; ");
+            }
         }
     };
     
@@ -111,7 +119,7 @@ public class StyleAttrs {
     }
 
     public void set(StyleAttribute a, boolean value) {
-        set(a, value ? Boolean.TRUE : null);
+        set(a, Boolean.valueOf(value));
     }
 
     public void set(StyleAttribute a, Object value) {
@@ -171,15 +179,9 @@ public class StyleAttrs {
     public StyleAttrs copy() { 
         return new StyleAttrs(this);
     }
-
-    // TODO this should not be public.  needed for applying style - TODO replace the StyledRun instance instead.
-    public void setAll(StyleAttrs a) {
-        attributes.clear();
-        attributes.putAll(a.attributes);
-        style = null;
-    }
     
-    public boolean contains(StyleAttribute a) {
-        return attributes.containsKey(a);
+    public boolean getBoolean(StyleAttribute a) {
+        Object v = attributes.get(a);
+        return Boolean.TRUE.equals(v);
     }
 }

@@ -263,19 +263,25 @@ public class RichTextAreaDemoPane extends BorderPane {
         m.setOnAction((ev) -> control.paste());
         m.setDisable(!paste);
 
-        // TODO these menus could take into account the current state of their attributes and
-        // in order to actually toggle them on and off.  For the demo, simply turn them on.
         if(styled) {
             StyleAttrs a = control.getActiveStyleAttrs();
             
             items.add(new SeparatorMenuItem());
             
             items.add(m = new MenuItem("Bold"));
-            m.setOnAction((ev) -> apply(StyleAttrs.BOLD, !a.contains(StyleAttrs.BOLD)));
+            m.setOnAction((ev) -> apply(StyleAttrs.BOLD, !a.getBoolean(StyleAttrs.BOLD)));
+            m.setDisable(!sel);
+            
+            items.add(m = new MenuItem("Italic"));
+            m.setOnAction((ev) -> apply(StyleAttrs.ITALIC, !a.getBoolean(StyleAttrs.ITALIC)));
+            m.setDisable(!sel);
+            
+            items.add(m = new MenuItem("Strike Through"));
+            m.setOnAction((ev) -> apply(StyleAttrs.STRIKE_THROUGH, !a.getBoolean(StyleAttrs.STRIKE_THROUGH)));
             m.setDisable(!sel);
             
             items.add(m = new MenuItem("Underline"));
-            m.setOnAction((ev) -> apply(StyleAttrs.UNDERLINE, !a.contains(StyleAttrs.UNDERLINE)));
+            m.setOnAction((ev) -> apply(StyleAttrs.UNDERLINE, !a.getBoolean(StyleAttrs.UNDERLINE)));
             m.setDisable(!sel);
         }
         
