@@ -269,7 +269,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     /** returns true if both control and model are editable */
-    protected boolean isEditable() {
+    protected boolean canEdit() {
         if (control.isEditable()) {
             StyledTextModel m = control.getModel();
             if (m != null) {
@@ -280,7 +280,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     protected void handleKeyTyped(String character) {
-        if (!isEditable()) {
+        if (!canEdit()) {
             return;
         }
 
@@ -305,7 +305,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     public void insertLineBreak() {
-        if (!isEditable()) {
+        if (!canEdit()) {
             return;
         }
 
@@ -836,7 +836,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     public void backspace() {
-        if (!isEditable()) {
+        if (!canEdit()) {
             return;
         }
 
@@ -858,7 +858,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     public void delete() {
-        if (!isEditable()) {
+        if (!canEdit()) {
             return;
         }
 
@@ -1018,7 +1018,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
      * returns a format that can be imported by a model, based on the clipboard content and model being editable.
      */
     protected DataFormat findFormatForPaste() {
-        if (isEditable()) {
+        if (canEdit()) {
             StyledTextModel m = control.getModel();
             DataFormat[] fs = m.getSupportedDataFormats();
             if (fs.length > 0) {
@@ -1059,7 +1059,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                     }
                     Clipboard.getSystemClipboard().setContent(c);
     
-                    if (isEditable() && cut) {
+                    if (canEdit() && cut) {
                         deleteSelection();
                     }
                 } catch(Exception | OutOfMemoryError e) {
