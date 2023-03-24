@@ -450,7 +450,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                         StyleAttrs a = seg.attrs();
                         StyleAttrs newAttrs = attrs.apply(attrs);
                         int ix = start - off;
-                        String s1 = seg.text().substring(0, end - off);
+                        String s1 = seg.text().substring(0, ix);
                         String s2 = seg.text().substring(ix);
                         remove(i);
                         if (insertSegment(i, s1, a)) {
@@ -565,7 +565,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                     return 9;
                 }
             } else if (start > off) {
-                if (end >= max) {
+                if (end > max) {
                     return 5;
                 } else if (end < max) {
                     return 7;
@@ -573,7 +573,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                     return 6;
                 }
             } else {
-                if (end >= max) {
+                if (end > max) {
                     return 2;
                 } else if (end < max) {
                     return 4;
