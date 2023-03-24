@@ -339,7 +339,7 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
 
             if (ix0 < 0) {
                 // start not found
-                throw new Error("start=" + start + " len=" + length());
+                return;
             }
 
             // find end segment
