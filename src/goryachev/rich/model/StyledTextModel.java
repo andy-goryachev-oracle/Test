@@ -105,6 +105,7 @@ public abstract class StyledTextModel {
     
     /**
      * Exports part of the paragraph as a sequence of styled segments.
+     * The caller must ensure that the start position precedes the end.
      * 
      * @param index paragraph's model index
      * @param startOffset start offset
@@ -115,18 +116,20 @@ public abstract class StyledTextModel {
     
     /**
      * Applies a style to the specified text range.
+     * The caller must ensure that the start position precedes the end.
      * 
      * @param start start position
-     * @param end end position (may or may not be after the start position)
-     * @param attrs attribute map
+     * @param end end position
+     * @param attrs non-null attribute map
      */
     public abstract void applyStyle(TextPos start, TextPos end, StyleAttrs attrs);
     
     /**
      * Removes a style from the specified text range.
+     * The caller must ensure that the start position precedes the end.
      * 
      * @param start start position
-     * @param end end position (may or may not be after the start position)
+     * @param end end position
      * @param attrs attribute map
      */
     public abstract void removeStyle(TextPos start, TextPos end, StyleAttrs attrs);

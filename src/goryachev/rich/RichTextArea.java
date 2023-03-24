@@ -542,14 +542,37 @@ public class RichTextArea extends Control {
     }
 
     public void applyStyle(TextPos start, TextPos end, StyleAttrs attrs) {
-        // TODO canEdit()? control+model
-        if(isEditable()) {
+        if (canEdit()) {
             StyledTextModel m = getModel();
-            if(m != null) {
-                // TODO ensure start < end and add a note to model javadoc
-                m.applyStyle(start, end, attrs);
+            if (start.compareTo(end) > 0) {
+                TextPos p = start;
+                start = end;
+                end = p;
+            }
+            m.applyStyle(start, end, attrs);
+        }
+    }
+    
+    public void removeStyle(TextPos start, TextPos end, StyleAttrs attrs) {
+        if (canEdit()) {
+            StyledTextModel m = getModel();
+            if (start.compareTo(end) > 0) {
+                TextPos p = start;
+                start = end;
+                end = p;
+            }
+            m.removeStyle(start, end, attrs);
+        }
+    }
+
+    private boolean canEdit() {
+        if (isEditable()) {
+            StyledTextModel m = getModel();
+            if (m != null) {
+                return m.isEditable();
             }
         }
+        return false;
     }
 
     /**

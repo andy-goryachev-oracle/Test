@@ -36,7 +36,7 @@ import goryachev.rich.TextPos;
  */
 public class EditableRichTextModel2 extends EditableStyledTextModelBase {
     private final ArrayList<RParagraph> paragraphs = new ArrayList<>();
-    // TODO reduce memory consumption, later
+    // TODO dedup styles, later
     private final HashSet<StyleAttrs> styles = new HashSet<>();
     
     public EditableRichTextModel2() {
@@ -144,12 +144,6 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
 
     @Override
     public void applyStyle(TextPos start, TextPos end, StyleAttrs a) {
-        if (start.compareTo(end) > 0) {
-            TextPos p = start;
-            start = end;
-            end = p;
-        }
-
         int ix = start.index();
         RParagraph par = paragraphs.get(ix);
 
