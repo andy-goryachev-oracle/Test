@@ -84,7 +84,7 @@ public class TestStyledRuns {
 
     // FIX does not work (yet)
     private void t(Object[] initial, int ix1, int off1, int ix2, int off2, StyleAttrs a, Object[] expected) {
-        EditableRichTextModel m = new EditableRichTextModel();
+        EditableRichTextModel2 m = new EditableRichTextModel2();
         TStyledInput in = new TStyledInput(initial);
         TextPos fin = m.getEndTextPos();
         m.replace(TextPos.ZERO, fin, in);
@@ -111,7 +111,7 @@ public class TestStyledRuns {
     }
     
     private void replace(Object[] initial, Object[] text, Object[] expected) {
-        EditableRichTextModel m = new EditableRichTextModel();
+        EditableRichTextModel2 m = new EditableRichTextModel2();
         TStyledInput in = new TStyledInput(initial);
         TextPos fin = m.getEndTextPos();
         m.replace(TextPos.ZERO, fin, in);
