@@ -546,6 +546,7 @@ public class RichTextArea extends Control {
         if(isEditable()) {
             StyledTextModel m = getModel();
             if(m != null) {
+                // TODO ensure start < end and add a note to model javadoc
                 m.applyStyle(start, end, attrs);
             }
         }

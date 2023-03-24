@@ -143,8 +143,29 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
     }
 
     @Override
-    public void applyStyle(TextPos start, TextPos end, StyleAttrs attrs) {
-        // TODO
+    public void applyStyle(TextPos start, TextPos end, StyleAttrs a) {
+        if (start.compareTo(end) > 0) {
+            TextPos p = start;
+            start = end;
+            end = p;
+        }
+
+        int ix = start.index();
+        RParagraph par = paragraphs.get(ix);
+
+        if (ix == end.index()) {
+            par.applyStyle(start.offset(), end.offset(), a);
+        } else {
+            par.applyStyle(start.offset(), -1, a);
+            ix++;
+            while (ix < end.index()) {
+                par = paragraphs.get(ix);
+                par.applyStyle(0, -1, a);
+                ix++;
+            }
+            par = paragraphs.get(ix);
+            par.applyStyle(0, end.offset(), a);
+        }
     }
 
     @Override
@@ -155,15 +176,16 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
     @Override
     public StyleAttrs getStyledAttrs(TextPos pos) {
         // TODO
-        return null;
+        return new StyleAttrs();
     }
 
     /**
      * Model rich text segment.
+     * TODO add paragraph segment
      */
     protected static class RSegment {
         private String text;
-        private final StyleAttrs attrs;
+        private StyleAttrs attrs;
         
         public RSegment(String text, StyleAttrs attrs) {
             this.text = text;
@@ -176,6 +198,10 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
         
         public StyleAttrs attrs() {
             return attrs;
+        }
+        
+        public void setAttrs(StyleAttrs a) {
+            attrs = a;
         }
         
         public int length() {
@@ -379,6 +405,184 @@ public class EditableRichTextModel2 extends EditableStyledTextModelBase {
                 }
                 // remove in-between segments
                 removeRange(ix0, ix1);
+            }
+        }
+
+        public void applyStyle(int start, int end, StyleAttrs attrs) {
+            int off = 0;
+            int i = 0;
+            for ( ; i < size(); i++) {
+                RSegment seg = get(i);
+                int len = seg.length();
+                int cs = whichCase(off, off + len, start, end);
+                switch (cs) {
+                case 0:
+                    break;
+                case 1:
+                case 2:
+                    if (applyStyle(i, seg, attrs)) {
+                        i--;
+                    }
+                    break;
+                case 3:
+                case 9:
+                    applyStyle(i, seg, attrs);
+                    return;
+                case 4:
+                case 8:
+                    // split
+                    {
+                        StyleAttrs a = seg.attrs();
+                        StyleAttrs newAttrs = attrs.apply(attrs);
+                        int ix = end - off;
+                        String s1 = seg.text().substring(0, ix);
+                        String s2 = seg.text().substring(ix);
+                        remove(i);
+                        if (insertSegment(i, s1, newAttrs)) {
+                            i--;
+                        }
+                        if (insertSegment(i + 1, s2, a)) {
+                            i--;
+                        }
+                    }
+                    return;
+                case 5:
+                case 6:
+                    // split
+                    {
+                        StyleAttrs a = seg.attrs();
+                        StyleAttrs newAttrs = attrs.apply(attrs);
+                        int ix = start - off;
+                        String s1 = seg.text().substring(0, end - off);
+                        String s2 = seg.text().substring(ix);
+                        remove(i);
+                        if (insertSegment(i, s1, a)) {
+                            i--;
+                        }
+                        if (insertSegment(i + 1, s2, newAttrs)) {
+                            i--;
+                        }
+                    }
+                    if (cs == 6) {
+                        return;
+                    }
+                    break;
+                case 7:
+                    {
+                        StyleAttrs a = seg.attrs();
+                        StyleAttrs newAttrs = attrs.apply(attrs);
+                        String text = seg.text();
+                        int ix0 = start - off;
+                        int ix1 = end - off;
+                        String s1 = text.substring(0, ix0);
+                        String s2 = text.substring(ix0, ix1);
+                        String s3 = text.substring(ix1);
+                        remove(i);
+                        if (insertSegment(i++, s1, a)) {
+                            i--;
+                        }
+                        if (insertSegment(i++, s2, newAttrs)) {
+                            i--;
+                        }
+                        if (insertSegment(i, s3, a)) {
+                            i--;
+                        }
+                    }
+                    return;
+                default:
+                    throw new Error("?" + cs);
+                }
+            }
+        }
+
+        /** 
+         * applies style to the segment.
+         * if the new style is the same as the previous segment, merges text with the previous segment.
+         * @return true if this segment has been merged with the previous segment
+         */
+        private boolean applyStyle(int ix, RSegment seg, StyleAttrs a) {
+            StyleAttrs newAttrs = seg.attrs().apply(a);
+            if (ix > 0) {
+                RSegment prev = get(ix - 1);
+                if (prev.attrs().equals(newAttrs)) {
+                    // merge
+                    prev.append(seg.text());
+                    remove(ix);
+                    return true;
+                }
+            }
+            // TODO dedup
+            seg.setAttrs(newAttrs);
+            return false;
+        }
+        
+        /** 
+         * inserts a new segment.
+         * if the new style is the same as the previous segment, merges text with the previous segment instead.
+         * @return true if the new segment has been merged with the previous segment
+         */
+        private boolean insertSegment(int ix, String text, StyleAttrs a) {
+            if (ix > 0) {
+                RSegment prev = get(ix - 1);
+                if (prev.attrs().equals(a)) {
+                    // merge
+                    prev.append(text);
+                    return true;
+                }
+            }
+            // TODO dedup
+            RSegment seg = new RSegment(text, a);
+            if (ix >= size()) {
+                add(seg);
+            } else {
+                add(ix, seg);
+            }
+            return false;
+        }
+
+        /**
+         * <pre>
+         * paragraph:    [=============]
+         * case:
+         *         0:                      |-
+         *         1:  -------------------->
+         *         2:    |----------------->
+         *         3:    |-------------|
+         *         4:    |--------|
+         *         5:        |------------->
+         *         6:        |---------|
+         *         7:        |----|
+         *         8:  -----------|
+         *         9:  ----------------|
+         */
+        private static int whichCase(int off, int max, int start, int end) {
+            // TODO unit test!
+            if (start >= max) {
+                return 0;
+            } else if (start < off) {
+                if (end > max) {
+                    return 1;
+                } else if (end < max) {
+                    return 8;
+                } else {
+                    return 9;
+                }
+            } else if (start > off) {
+                if (end >= max) {
+                    return 5;
+                } else if (end < max) {
+                    return 7;
+                } else {
+                    return 6;
+                }
+            } else {
+                if (end >= max) {
+                    return 2;
+                } else if (end < max) {
+                    return 4;
+                } else {
+                    return 3;
+                }
             }
         }
     }
