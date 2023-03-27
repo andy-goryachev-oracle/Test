@@ -121,7 +121,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
             RParagraph last = paragraphs.get(end.index());
             last.removeRegion(0, end.offset());
             
-            par.removeRegion(start.offset(), -1);
+            par.removeRegion(start.offset(), Integer.MAX_VALUE);
             par.append(last);
 
             int ct = end.index() - ix;
@@ -150,11 +150,11 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
         if (ix == end.index()) {
             par.applyStyle(start.offset(), end.offset(), a);
         } else {
-            par.applyStyle(start.offset(), -1, a);
+            par.applyStyle(start.offset(), Integer.MAX_VALUE, a);
             ix++;
             while (ix < end.index()) {
                 par = paragraphs.get(ix);
-                par.applyStyle(0, -1, a);
+                par.applyStyle(0, Integer.MAX_VALUE, a);
                 ix++;
             }
             par = paragraphs.get(ix);
@@ -208,17 +208,25 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
         // TODO unit test
         public void removeRegion(int start, int end) {
             int len = text.length();
-            if (end < 0) {
-                text = text.substring(start);
-            } else {
-                if (start == 0) {
+            if (end > len) {
+                end = len;
+            }
+
+            if (start == 0) {
+                if (end < len) {
                     text = text.substring(end);
                 } else {
+                    text = "";
+                }
+            } else {
+                if (end < len) {
                     text = text.substring(0, start) + text.substring(end, len);
+                } else {
+                    text = text.substring(0, start);
                 }
             }
         }
-        
+
         public void append(String s) {
             text = text + s;
         }
@@ -340,7 +348,6 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
             addAll(p);
         }
 
-        /** end = -1 means remove from start to the end of paragraph */
         public void removeRegion(int start, int end) {
             int ix0 = -1;
             int off0 = 0;
@@ -368,17 +375,15 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
             // find end segment
             int ix1 = -1;
             int off1 = -1;
-            if (end >= 0) {
-                for (; i < ct; i++) {
-                    RSegment seg = get(i);
-                    int len = seg.length();
-                    if (end <= (off + len)) {
-                        ix1 = i;
-                        off1 = end - off;
-                        break;
-                    }
-                    off += len;
+            for (; i < ct; i++) {
+                RSegment seg = get(i);
+                int len = seg.length();
+                if (end <= (off + len)) {
+                    ix1 = i;
+                    off1 = end - off;
+                    break;
                 }
+                off += len;
             }
 
             if (ix0 == ix1) {
@@ -390,7 +395,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                 // first segment
                 if (off0 > 0) {
                     RSegment seg = get(ix0);
-                    seg.removeRegion(off0, -1);
+                    seg.removeRegion(off0, Integer.MAX_VALUE);
                     ix0++;
                 }
                 // last segment
@@ -435,10 +440,10 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                         String s1 = seg.text().substring(0, ix);
                         String s2 = seg.text().substring(ix);
                         remove(i);
-                        if (insertSegment(i, s1, newAttrs)) {
+                        if (insertSegment(i++, s1, newAttrs)) {
                             i--;
                         }
-                        if (insertSegment(i + 1, s2, a)) {
+                        if (insertSegment(i, s2, a)) {
                             i--;
                         }
                     }
@@ -453,10 +458,10 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                         String s1 = seg.text().substring(0, ix);
                         String s2 = seg.text().substring(ix);
                         remove(i);
-                        if (insertSegment(i, s1, a)) {
+                        if (insertSegment(i++, s1, a)) {
                             i--;
                         }
-                        if (insertSegment(i + 1, s2, newAttrs)) {
+                        if (insertSegment(i++, s2, newAttrs)) {
                             i--;
                         }
                     }
@@ -489,6 +494,8 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                 default:
                     throw new Error("?" + cs);
                 }
+                
+                off += len;
             }
         }
 

@@ -39,13 +39,6 @@ public record TextPos(int index, int offset) implements Comparable<TextPos> {
         if (d == 0) {
             int off = offset();
             int poff = p.offset();
-            // handle -1 (end of paragraph) case
-            if (off < 0) {
-                off = Integer.MAX_VALUE;
-            }
-            if (poff < 0) {
-                poff = Integer.MAX_VALUE;
-            }
             if (off < poff) {
                 return -1;
             } else if (off > poff) {
