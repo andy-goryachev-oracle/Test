@@ -435,7 +435,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                     // split
                     {
                         StyleAttrs a = seg.attrs();
-                        StyleAttrs newAttrs = attrs.apply(attrs);
+                        StyleAttrs newAttrs = a.apply(attrs);
                         int ix = end - off;
                         String s1 = seg.text().substring(0, ix);
                         String s2 = seg.text().substring(ix);
@@ -453,7 +453,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                     // split
                     {
                         StyleAttrs a = seg.attrs();
-                        StyleAttrs newAttrs = attrs.apply(attrs);
+                        StyleAttrs newAttrs = a.apply(attrs);
                         int ix = start - off;
                         String s1 = seg.text().substring(0, ix);
                         String s2 = seg.text().substring(ix);
@@ -472,7 +472,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                 case 7:
                     {
                         StyleAttrs a = seg.attrs();
-                        StyleAttrs newAttrs = attrs.apply(attrs);
+                        StyleAttrs newAttrs = a.apply(attrs);
                         String text = seg.text();
                         int ix0 = start - off;
                         int ix1 = end - off;

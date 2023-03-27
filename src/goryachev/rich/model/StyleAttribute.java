@@ -59,7 +59,26 @@ public abstract class StyleAttribute {
         return name;
     }
 
+    @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public int hashCode() {
+        int h = StyleAttribute.class.hashCode();
+        h = 31 * h + name.hashCode();
+        h = 31 * h + type.hashCode();
+        return h;
+    }
+
+    @Override
+    public boolean equals(Object x) {
+        if (x == this) {
+            return true;
+        } else if (x instanceof StyleAttribute a) {
+            return (type == a.type) && (name.equals(a.name));
+        }
+        return false;
     }
 }
