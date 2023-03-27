@@ -38,15 +38,33 @@ public class Bugs {
      * https://bugs.openjdk.org/browse/JDK-8302511
      * TextFlow.hitTest() gives wrong value for emojis due to null text.
      */
-    public static HitInfo hitTest(TextFlow f, Point2D p) {
-        for(Node ch: f.getChildren()) {
+    // FIX still returns an incorrect value when multiple Text instances are added to TextFlow
+    public static int getInsertionIndex2(TextFlow flow, Point2D p) {
+        int off = 0;
+        for(Node ch: flow.getChildren()) {
             if(ch instanceof Text t) {
-                if(t.contains(p)) {
-                    return t.hitTest(p);
+                Point2D p2 = t.parentToLocal(p);
+                if(t.contains(p2)) {
+                    HitInfo h = t.hitTest(p2);
+                    try {
+                        return off + h.getInsertionIndex();
+                    } catch(Exception e) {
+                        h = t.hitTest(p2);
+                        h.getInsertionIndex();
+                    }
+                } else {
+                    String text = t.getText();
+                    off += text.length();
                 }
             }
         }
         // fallback
-        return f.hitTest(p);
+        return flow.hitTest(p).getInsertionIndex();
+    }
+    
+    public static int getInsertionIndex(TextFlow flow, Point2D p) {
+        // FIX does not work with emojis
+        // https://bugs.openjdk.org/browse/JDK-8302511
+        return flow.hitTest(p).getInsertionIndex();
     }
 }

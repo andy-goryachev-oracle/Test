@@ -134,11 +134,12 @@ public class TextCellLayout {
                     // FIX https://bugs.openjdk.org/browse/JDK-8302511
                     // gives wrong value for emojis
                     //HitInfo h = t.hitTest(p);
-                    
-                    HitInfo h = Bugs.hitTest(t, p);
-                    if (h != null) {
-                        return new TextPos(cell.getLineIndex(), h.getInsertionIndex());
-                    }
+                    //if (h != null) {
+                    //    return new TextPos(cell.getLineIndex(), h.getInsertionIndex());
+                    //}
+
+                    int ii = Bugs.getInsertionIndex(t, p);
+                    return new TextPos(cell.getLineIndex(), ii);
                 } else {
                     return new TextPos(cell.getLineIndex(), 0);
                 }
