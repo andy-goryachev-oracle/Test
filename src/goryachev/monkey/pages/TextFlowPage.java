@@ -24,18 +24,25 @@
  */
 package goryachev.monkey.pages;
 
-import java.util.Locale;
 import goryachev.monkey.util.FontSelector;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.ShowCharacterRuns;
 import goryachev.monkey.util.TestPaneBase;
 import goryachev.monkey.util.TextSelector;
 import goryachev.monkey.util.Utils;
+import javafx.geometry.Orientation;
+import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.PickResult;
 import javafx.scene.text.Font;
+import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
@@ -43,24 +50,35 @@ import javafx.scene.text.TextFlow;
  * TextFlow Page
  */
 public class TextFlowPage extends TestPaneBase {
-    private final TextSelector textSelector;
-    private final FontSelector fontSelector;
-    private final CheckBox showChars;
-    private final TextFlow control;
-    private Locale defaultLocale;
+    protected final TextSelector textSelector;
+    protected final FontSelector fontSelector;
+    protected final CheckBox showChars;
+    protected final TextFlow control;
+    protected final Label pickResult;
+    protected final Label hitInfo;
+    protected final Label hitInfo2;
     private static final String INLINE = "$INLINE";
+    private static final String RICH_TEXT = "$RICH";
 
     public TextFlowPage() {
         setId("TextFlowPage");
         
         control = new TextFlow();
+        control.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
+        
+        pickResult = new Label();
+        
+        hitInfo = new Label();
+        
+        hitInfo2 = new Label();
         
         textSelector = TextSelector.fromPairs(
             "textSelector", 
             (t) -> updateControl(),
             Utils.combine(
                 Templates.multiLineTextPairs(),
-                "Inline Nodes", INLINE
+                "Inline Nodes", INLINE,
+                "Rich Text", RICH_TEXT
             )
         );
         
@@ -80,6 +98,13 @@ public class TextFlowPage extends TestPaneBase {
         p.label("Font Size:");
         p.option(fontSelector.sizeNode());
         p.option(showChars);
+        p.option(new Separator(Orientation.HORIZONTAL));
+        p.label("Pick Result:");
+        p.option(pickResult);
+        p.label("Text.hitTest:");
+        p.option(hitInfo2);
+        p.label("TextFlow.hitTest:");
+        p.option(hitInfo);
         
         setContent(control);
         setOptions(p);
@@ -109,6 +134,14 @@ public class TextFlowPage extends TestPaneBase {
                 new Button("Right"),
                 t("trailing", f)
             };
+        } else if (RICH_TEXT.equals(text)) {
+            return new Node[] {
+                t("Rich Text: ", f),
+                t("BOLD ", f, "-fx-font-weight:bold;"),
+                t("italic ", f, "-fx-font-style:italic;"),
+                t("underline ", f, "-fx-underline:true;"),
+                t("😊😇", f)
+            };
         } else {
             return new Node[] { t(text, f) };
         }
@@ -118,5 +151,33 @@ public class TextFlowPage extends TestPaneBase {
         Text t = new Text(text);
         t.setFont(f);
         return t;
+    }
+    
+    protected static Text t(String text, Font f, String style) {
+        Text t = new Text(text);
+        t.setFont(f);
+        t.setStyle(style);
+        return t;
+    }
+
+    protected void handleMouseEvent(MouseEvent ev) {
+        PickResult pick = ev.getPickResult();
+        Node n = pick.getIntersectedNode();
+        hitInfo2.setText(null);
+        if (n == null) {
+            pickResult.setText("null");
+        } else {
+            pickResult.setText(n.getClass().getSimpleName() + "." + n.hashCode());
+            if (n instanceof Text t) {
+                Point3D p3 = pick.getIntersectedPoint();
+                Point2D p = new Point2D(p3.getX(), p3.getY());
+                HitInfo h = t.hitTest(p);
+                hitInfo2.setText(String.valueOf(h));
+            }
+        }
+
+        Point2D p = new Point2D(ev.getX(), ev.getY());
+        HitInfo h = control.hitTest(p);
+        hitInfo.setText(String.valueOf(h));
     }
 }
