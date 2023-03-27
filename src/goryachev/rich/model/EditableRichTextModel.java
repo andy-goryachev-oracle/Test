@@ -143,7 +143,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
     }
 
     @Override
-    public void applyStyle(TextPos start, TextPos end, StyleAttrs a) {
+    protected boolean applyStyleImpl(TextPos start, TextPos end, StyleAttrs a) {
         int ix = start.index();
         RParagraph par = paragraphs.get(ix);
 
@@ -160,14 +160,14 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
             par = paragraphs.get(ix);
             par.applyStyle(0, end.offset(), a);
         }
-
-        fireStyleChangeEvent(start, end);
+        return true;
     }
 
     @Override
-    public void removeStyle(TextPos start, TextPos end, StyleAttrs attrs) {
+    protected boolean removeStyleImpl(TextPos start, TextPos end, StyleAttrs attrs) {
         // TODO for boolean values, we'd need to use Boolean.FALSE instead of removing the key
         // TODO
+        return true;
     }
 
     @Override
@@ -525,6 +525,8 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
          * if the new style is the same as the previous segment, merges text with the previous segment instead.
          * @return true if the new segment has been merged with the previous segment
          */
+        // TODO should it also merge with the next segment if the styles are the same?
+        // in this case it's better to return an int which is the amount of segments added/removed
         private boolean insertSegment(int ix, String text, StyleAttrs a) {
             if (ix > 0) {
                 RSegment prev = get(ix - 1);

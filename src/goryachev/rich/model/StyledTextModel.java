@@ -115,24 +115,24 @@ public abstract class StyledTextModel {
     protected abstract void exportSegments(int index, int startOffset, int endOffset, StyledOutput out);
     
     /**
-     * Applies a style to the specified text range.
-     * The caller must ensure that the start position precedes the end.
+     * Applies a style to the specified text range, where {@code start} is guaranteed to precede {@code end}.
      * 
      * @param start start position
      * @param end end position
      * @param attrs non-null attribute map
+     * @return true if the model has changed as a result of this call
      */
-    public abstract void applyStyle(TextPos start, TextPos end, StyleAttrs attrs);
+    protected abstract boolean applyStyleImpl(TextPos start, TextPos end, StyleAttrs attrs);
     
     /**
-     * Removes a style from the specified text range.
-     * The caller must ensure that the start position precedes the end.
+     * Removes a style from the specified text range, where {@code start} is guaranteed to precede {@code end}.
      * 
      * @param start start position
      * @param end end position
      * @param attrs attribute map
+     * @return true if the model has changed as a result of this call
      */
-    public abstract void removeStyle(TextPos start, TextPos end, StyleAttrs attrs);
+    protected abstract boolean removeStyleImpl(TextPos start, TextPos end, StyleAttrs attrs);
 
     /**
      * Returns the styled attributes of the first character at the specified position.
@@ -268,7 +268,7 @@ public abstract class StyledTextModel {
     }
     
     protected void fireChangeEvent(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
-        System.out.println("fireChangeEvent start=" + start + " end=" + end + " top=" + charsTop + " lines=" + linesAdded + " btm=" + charsBottom); // FIX
+        //System.out.println("fireChangeEvent start=" + start + " end=" + end + " top=" + charsTop + " lines=" + linesAdded + " btm=" + charsBottom); // FIX
         markers.update(start, end, charsTop, linesAdded, charsBottom);
 
         for (ChangeListener li : listeners) {
@@ -366,6 +366,34 @@ public abstract class StyledTextModel {
             String text = getPlainText(ix);
             int off = text == null ? 0 : text.length();
             return new TextPos(ix, off);
+        }
+    }
+    
+    /**
+     * Applies a style to the specified text range.
+     * 
+     * @param start start position
+     * @param end end position
+     * @param attrs non-null attribute map
+     */
+    public final void applyStyle(TextPos start, TextPos end, StyleAttrs attrs) {
+        boolean changed = applyStyleImpl(start, end, attrs);
+        if (changed) {
+            fireStyleChangeEvent(start, end);
+        }
+    }
+
+    /**
+     * Removes a style from the specified text range.
+     * 
+     * @param start start position
+     * @param end end position
+     * @param attrs attribute map
+     */
+    public final void removeStyle(TextPos start, TextPos end, StyleAttrs attrs) {
+        boolean changed = removeStyleImpl(start, end, attrs);
+        if (changed) {
+            fireStyleChangeEvent(start, end);
         }
     }
 }

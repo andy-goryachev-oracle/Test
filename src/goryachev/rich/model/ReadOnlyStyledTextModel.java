@@ -60,12 +60,12 @@ public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
     }
 
     @Override
-    public void applyStyle(TextPos start, TextPos end, StyleAttrs attrs) {
+    protected boolean applyStyleImpl(TextPos start, TextPos end, StyleAttrs attrs) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void removeStyle(TextPos start, TextPos end, StyleAttrs attrs) {
+    protected boolean removeStyleImpl(TextPos start, TextPos end, StyleAttrs attrs) {
         throw new UnsupportedOperationException();
     }
     
