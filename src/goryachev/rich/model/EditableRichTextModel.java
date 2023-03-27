@@ -461,7 +461,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                         if (insertSegment(i++, s1, a)) {
                             i--;
                         }
-                        if (insertSegment(i++, s2, newAttrs)) {
+                        if (insertSegment(i, s2, newAttrs)) {
                             i--;
                         }
                     }
