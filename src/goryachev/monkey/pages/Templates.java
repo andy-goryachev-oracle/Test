@@ -32,6 +32,8 @@ import goryachev.monkey.util.WritingSystemsDemo;
  * Text Templates
  */
 public class Templates {
+    public static final String TWO_EMOJIS = "😊😇";
+    
     public static TextSelector promptChoice(String id, Consumer<String> client) {
         return TextSelector.fromPairs(
             id,
