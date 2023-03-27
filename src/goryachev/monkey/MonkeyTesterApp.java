@@ -37,6 +37,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.NodeOrientation;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -46,8 +47,8 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -148,6 +149,8 @@ public class MonkeyTesterApp extends Application {
         // Window
         FX.menu(b, "_Window");
         FX.item(b, orientation);
+        FX.separator(b);
+        FX.item(b, "Open Dialog", this::openDialog);
         // Menu
         FX.menu(b, "_Menu");
         ToggleGroup g = new ToggleGroup();
@@ -205,5 +208,21 @@ public class MonkeyTesterApp extends Application {
             }
         });
         return pages;
+    }
+    
+    protected void openDialog() {
+        Button b = new Button("Platform.exit()");
+        b.setOnAction((ev) -> Platform.exit());
+        
+        BorderPane p = new BorderPane();
+        p.setCenter(b);
+        
+        Stage d = new Stage();
+        d.setScene(new Scene(p));
+        d.initModality(Modality.APPLICATION_MODAL);
+        d.initOwner(stage);
+        d.setWidth(500);
+        d.setHeight(400);
+        d.show();
     }
 }
