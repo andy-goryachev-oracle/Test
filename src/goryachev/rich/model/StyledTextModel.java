@@ -357,7 +357,7 @@ public abstract class StyledTextModel {
         out.append(seg);
     }
 
-    /** returns a TextPos corresponding to the end of the document */
+    /** Returns a TextPos corresponding to the end of the document */
     public TextPos getEndTextPos() {
         int ix = getParagraphCount() - 1;
         if (ix < 0) {

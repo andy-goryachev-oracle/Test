@@ -600,4 +600,10 @@ public class RichTextArea extends Control {
         // TODO check for css and direct style attributes, and convert them to "normal", adding
         return a;
     }
+
+    /** Returns a TextPos corresponding to the end of the document */
+    public TextPos getEndTextPos() {
+        StyledTextModel m = getModel();
+        return (m == null) ? TextPos.ZERO : m.getEndTextPos();
+    }
 }

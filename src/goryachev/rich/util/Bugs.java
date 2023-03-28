@@ -35,7 +35,7 @@ import javafx.scene.text.TextFlow;
  */
 public class Bugs {
     /**
-     * https://bugs.openjdk.org/browse/JDK-8302511
+     * https://bugs.openjdk.org/browse/JDK-8304831
      * TextFlow.hitTest() gives wrong value for emojis due to null text.
      */
     // FIX still returns an incorrect value when multiple Text instances are added to TextFlow
@@ -64,7 +64,7 @@ public class Bugs {
     
     public static int getInsertionIndex(TextFlow flow, Point2D p) {
         // FIX does not work with emojis
-        // https://bugs.openjdk.org/browse/JDK-8302511
+        // https://bugs.openjdk.org/browse/JDK-8304831
         return flow.hitTest(p).getInsertionIndex();
     }
 }

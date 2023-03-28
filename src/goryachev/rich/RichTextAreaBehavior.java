@@ -520,22 +520,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
      * Moves the caret to after the last character of the text, also clearing the selection.
      */
     public void moveDocumentEnd() {
-        TextPos pos = getEndOfDocument();
-        if (pos != null) {
-            control.select(pos);
-        }
-    }
-
-    /** returns TextPos at the end of the document, or null if no document is present */
-    private TextPos getEndOfDocument() {
-        int line = control.getParagraphCount();
-        if (line > 0) {
-            --line;
-            String text = getPlainText(line);
-            int cix = (text == null) ? 0 : text.length();
-            return new TextPos(line, cix);
-        }
-        return null;
+        TextPos pos = control.getEndTextPos();
+        control.select(pos);
     }
 
     protected void moveLine(double deltaPixels, boolean extendSelection) {
@@ -768,10 +754,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
     /** selects from the anchor position to the document end */
     public void selectDocumentEnd() {
-        TextPos pos = getEndOfDocument();
-        if (pos != null) {
-            control.extendSelection(pos);
-        }
+        TextPos pos = control.getEndTextPos();
+        control.extendSelection(pos);
     }
     
     public void selectWord() {
