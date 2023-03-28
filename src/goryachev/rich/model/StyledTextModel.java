@@ -125,16 +125,6 @@ public abstract class StyledTextModel {
     protected abstract boolean applyStyleImpl(TextPos start, TextPos end, StyleAttrs attrs);
     
     /**
-     * Removes a style from the specified text range, where {@code start} is guaranteed to precede {@code end}.
-     * 
-     * @param start start position
-     * @param end end position
-     * @param attrs attribute map
-     * @return true if the model has changed as a result of this call
-     */
-    protected abstract boolean removeStyleImpl(TextPos start, TextPos end, StyleAttrs attrs);
-
-    /**
      * Returns the styled attributes of the first character at the specified position.
      * When at the end of the document, returns the attributes of the last character.
      *
@@ -378,20 +368,6 @@ public abstract class StyledTextModel {
      */
     public final void applyStyle(TextPos start, TextPos end, StyleAttrs attrs) {
         boolean changed = applyStyleImpl(start, end, attrs);
-        if (changed) {
-            fireStyleChangeEvent(start, end);
-        }
-    }
-
-    /**
-     * Removes a style from the specified text range.
-     * 
-     * @param start start position
-     * @param end end position
-     * @param attrs attribute map
-     */
-    public final void removeStyle(TextPos start, TextPos end, StyleAttrs attrs) {
-        boolean changed = removeStyleImpl(start, end, attrs);
         if (changed) {
             fireStyleChangeEvent(start, end);
         }

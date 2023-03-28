@@ -149,4 +149,10 @@ public class SegmentStyledTextModel extends ReadOnlyStyledTextModel {
         // TODO use segments
         return new StyleAttrs();
     }
+    
+    @Override
+    protected void exportSegments(int index, int start, int end, StyledOutput out) {
+        // TODO use segments
+        super.exportSegments(index, start, end, out);
+    }
 }

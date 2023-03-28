@@ -63,11 +63,6 @@ public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
     protected boolean applyStyleImpl(TextPos start, TextPos end, StyleAttrs attrs) {
         throw new UnsupportedOperationException();
     }
-
-    @Override
-    protected boolean removeStyleImpl(TextPos start, TextPos end, StyleAttrs attrs) {
-        throw new UnsupportedOperationException();
-    }
     
     @Override
     protected void exportSegments(int index, int start, int end, StyledOutput out) {

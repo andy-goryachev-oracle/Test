@@ -57,7 +57,6 @@ import goryachev.rich.util.Util;
  * TODO content padding property
  * TODO set size to content property
  * TODO highlight current line property
- * TODO tab size property
  * TODO line count r/o property
  * 
  * TODO add methods corresponding to the remaining Action tags
@@ -552,20 +551,8 @@ public class RichTextArea extends Control {
             m.applyStyle(start, end, attrs);
         }
     }
-    
-    public void removeStyle(TextPos start, TextPos end, StyleAttrs attrs) {
-        if (canEdit()) {
-            StyledTextModel m = getModel();
-            if (start.compareTo(end) > 0) {
-                TextPos p = start;
-                start = end;
-                end = p;
-            }
-            m.removeStyle(start, end, attrs);
-        }
-    }
 
-    private boolean canEdit() {
+    protected boolean canEdit() {
         if (isEditable()) {
             StyledTextModel m = getModel();
             if (m != null) {

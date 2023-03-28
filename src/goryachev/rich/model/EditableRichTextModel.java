@@ -164,13 +164,6 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
     }
 
     @Override
-    protected boolean removeStyleImpl(TextPos start, TextPos end, StyleAttrs attrs) {
-        // TODO for boolean values, we'd need to use Boolean.FALSE instead of removing the key
-        // TODO
-        return true;
-    }
-
-    @Override
     public StyleAttrs getStyledAttrs(TextPos pos) {
         StyleAttrs a = new StyleAttrs();
         int index = pos.index();

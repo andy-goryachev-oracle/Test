@@ -154,12 +154,6 @@ public class EditablePlainTextModel extends EditableStyledTextModelBase {
         // no-op
         return false;
     }
-
-    @Override
-    protected boolean removeStyleImpl(TextPos start, TextPos end, StyleAttrs attrs) {
-        // no-op
-        return false;
-    }
     
     @Override
     public StyleAttrs getStyledAttrs(TextPos pos) {
