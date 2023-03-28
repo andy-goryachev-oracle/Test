@@ -41,6 +41,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
 import javafx.scene.text.Font;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
@@ -53,10 +56,12 @@ public class TextFlowPage extends TestPaneBase {
     protected final TextSelector textSelector;
     protected final FontSelector fontSelector;
     protected final CheckBox showChars;
+    protected final CheckBox showCaretPath;
     protected final TextFlow control;
     protected final Label pickResult;
     protected final Label hitInfo;
     protected final Label hitInfo2;
+    protected final Path caretPath;
     private static final String INLINE = "$INLINE";
     private static final String RICH_TEXT = "$RICH";
 
@@ -71,6 +76,11 @@ public class TextFlowPage extends TestPaneBase {
         hitInfo = new Label();
         
         hitInfo2 = new Label();
+        
+        caretPath = new Path();
+        caretPath.setStrokeWidth(1);
+        caretPath.setStroke(Color.RED);
+        caretPath.setManaged(false);
         
         textSelector = TextSelector.fromPairs(
             "textSelector", 
@@ -89,6 +99,12 @@ public class TextFlowPage extends TestPaneBase {
         showChars.selectedProperty().addListener((p) -> {
             updateControl();
         });
+        
+        showCaretPath = new CheckBox("show caret path");
+        showCaretPath.setId("showCaretPath");
+        showCaretPath.selectedProperty().addListener((p) -> {
+            updateControl();
+        });
 
         OptionPane p = new OptionPane();
         p.label("Text:");
@@ -98,6 +114,7 @@ public class TextFlowPage extends TestPaneBase {
         p.label("Font Size:");
         p.option(fontSelector.sizeNode());
         p.option(showChars);
+        p.option(showCaretPath);
         p.option(new Separator(Orientation.HORIZONTAL));
         p.label("Pick Result:");
         p.option(pickResult);
@@ -123,6 +140,42 @@ public class TextFlowPage extends TestPaneBase {
             Group g = ShowCharacterRuns.createFor(control);
             control.getChildren().add(g);
         }
+
+        if (showCaretPath.isSelected()) {
+            caretPath.getElements().clear();
+            control.getChildren().add(caretPath);
+            
+            int len = computeTextLength(control);
+
+            /*
+            for (Node n: control.getChildren()) {
+                if (n instanceof Text t) {
+                    String s = t.getText();
+                    for (int i = 0; i < s.length(); i++) {
+                        // TODO need to translate to text flow (parent) coordinates
+                        PathElement[] es = t.caretShape(i, true);
+                        caretPath.getElements().addAll(es);
+                    }
+                }
+            }
+            */
+            for(int i=0; i<len; i++) {
+                PathElement[] es = control.caretShape(i, true);
+                caretPath.getElements().addAll(es);
+            }
+        }
+    }
+    
+    /** TextFlow.getTextLength() */
+    private static int computeTextLength(TextFlow f) {
+        int len = 0;
+        for(Node n: f.getChildrenUnmodifiable()) {
+            if(n instanceof Text t) {
+                len += t.getText().length();
+            }
+            // embedded nodes do not have an associated text
+        }
+        return len;
     }
 
     protected Node[] createTextArray(String text, Font f) {
@@ -140,7 +193,7 @@ public class TextFlowPage extends TestPaneBase {
                 t("BOLD ", f, "-fx-font-weight:bold;"),
                 t("italic ", f, "-fx-font-style:italic;"),
                 t("underline ", f, "-fx-underline:true;"),
-                t("😊😇", f)
+                t(Templates.TWO_EMOJIS, f)
             };
         } else {
             return new Node[] { t(text, f) };
