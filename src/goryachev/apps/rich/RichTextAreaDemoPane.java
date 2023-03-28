@@ -294,13 +294,29 @@ public class RichTextAreaDemoPane extends BorderPane {
             colorMenu(m2, sel, Color.DARKRED);
             colorMenu(m2, sel, Color.DARKBLUE);
             colorMenu(m2, sel, null);
-            //m2.getItems().add(m = new MenuItem(null, icon(
+
+            items.add(m2 = new Menu("Text Size"));
+            sizeMenu(m2, sel, 300);
+            sizeMenu(m2, sel, 200);
+            sizeMenu(m2, sel, 150);
+            sizeMenu(m2, sel, 125);
+            sizeMenu(m2, sel, 100);
+            sizeMenu(m2, sel, 75);
+            sizeMenu(m2, sel, 60);
+            sizeMenu(m2, sel, 50);
         }
         
         items.add(new SeparatorMenuItem());
 
         items.add(m = new MenuItem("Select All"));
         m.setOnAction((ev) -> control.selectAll());
+    }
+    
+    protected void sizeMenu(Menu menu, boolean selected, int percent) {
+        MenuItem m = new MenuItem(percent + "%");
+        m.setDisable(!selected);
+        m.setOnAction((ev) -> apply(StyleAttrs.FONT_SIZE, percent));
+        menu.getItems().add(m);
     }
     
     protected void colorMenu(Menu menu, boolean selected, Color color) {
