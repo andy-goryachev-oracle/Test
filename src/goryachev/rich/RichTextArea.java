@@ -577,25 +577,27 @@ public class RichTextArea extends Control {
 
     /**
      * When selection exists, returns the styled attributes of the first selected character.
-     * When no selection exists, returns the attributes of the first character after the caret.
-     * When the caret is at the end of the document, returns the attributes of the preceding character.
+     * When no selection exists, returns the attributes of a character immediately preceding the caret.
+     * When at the beginning of the document, returns the attributes of the first character.
      *
      * @return non-null {@link StyleAttrs}
      */
     public StyleAttrs getActiveStyleAttrs() {
         StyledTextModel m = getModel();
         TextPos pos = getCaretPosition();
-        if((m == null) || (pos == null)) {
+        if ((m == null) || (pos == null)) {
             return new StyleAttrs();
         }
 
-        if(hasSelection()) {
+        if (hasSelection()) {
             TextPos an = getAnchorPosition();
-            if(pos.compareTo(an) > 0) {
+            if (pos.compareTo(an) > 0) {
                 pos = an;
             }
+        } else if(!TextPos.ZERO.equals(pos)) {
+            pos = new TextPos(pos.index(), pos.offset() - 1);
         }
-        
+
         StyleAttrs a = m.getStyledAttrs(pos);
         // TODO check for css and direct style attributes, and convert them to "normal", adding
         return a;

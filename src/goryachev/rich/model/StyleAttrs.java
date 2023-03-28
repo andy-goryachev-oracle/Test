@@ -163,11 +163,11 @@ public class StyleAttrs {
     }
 
     /** 
-     * Creates a new StyleAttrs instance by adding the specified attributes.
+     * Creates a new StyleAttrs instance by combining the two attribute sets.
      * The new attributes override any existing ones.
      * This instance remains unchanged.
      */
-    public StyleAttrs apply(StyleAttrs attrs) {
+    public StyleAttrs combine(StyleAttrs attrs) {
         StyleAttrs rv = new StyleAttrs(this);
         for(StyleAttribute a: attrs.attributeSet()) {
             Object v = attrs.get(a);
@@ -176,12 +176,42 @@ public class StyleAttrs {
         return rv;
     }
     
-    public StyleAttrs copy() { 
-        return new StyleAttrs(this);
+    /** 
+     * Applies the specified attributes to this instance.
+     * The new attributes override any existing ones.
+     */
+    public void apply(StyleAttrs attrs) {
+        for(StyleAttribute a: attrs.attributeSet()) {
+            Object v = attrs.get(a);
+            set(a, v);
+        }
     }
     
+    public StyleAttrs copy() {
+        return new StyleAttrs(this);
+    }
+
     public boolean getBoolean(StyleAttribute a) {
         Object v = attributes.get(a);
         return Boolean.TRUE.equals(v);
+    }
+
+    public String toString() {
+        StringBuilder sb = new StringBuilder(32);
+        sb.append("[");
+        boolean sep = false;
+        for (StyleAttribute a : attributeSet()) {
+            if (sep) {
+                sb.append(",");
+            } else {
+                sep = true;
+            }
+            Object v = get(a);
+            sb.append(a);
+            sb.append('=');
+            sb.append(v);
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }

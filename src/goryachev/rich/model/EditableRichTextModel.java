@@ -172,8 +172,14 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
 
     @Override
     public StyleAttrs getStyledAttrs(TextPos pos) {
-        // TODO
-        return new StyleAttrs();
+        StyleAttrs a = new StyleAttrs();
+        int index = pos.index();
+        if(index < paragraphs.size()) {
+            int off = pos.offset();
+            RParagraph par = paragraphs.get(index);
+            par.collectAttributes(a, off);
+        }
+        return a;
     }
 
     /**
@@ -243,9 +249,24 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
             }
             return sb.toString();
         }
-        
+
         public int length() {
             return getPlainText().length();
+        }
+        
+        /** retrieves the style attributes from the previous character (or next, if at the beginning) */
+        public void collectAttributes(StyleAttrs a, int offset) {
+            int off = 0;
+            int ct = size();
+            for (int i = 0; i < ct; i++) {
+                RSegment seg = get(i);
+                int len = seg.length();
+                if(offset < (off + len) || (i == ct - 1)) {
+                    a.apply(seg.attrs());
+                    return;
+                }
+                off += len;
+            }
         }
 
         public void insertText(int offset, String text, StyleAttrs attrs) {
@@ -435,7 +456,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                     // split
                     {
                         StyleAttrs a = seg.attrs();
-                        StyleAttrs newAttrs = a.apply(attrs);
+                        StyleAttrs newAttrs = a.combine(attrs);
                         int ix = end - off;
                         String s1 = seg.text().substring(0, ix);
                         String s2 = seg.text().substring(ix);
@@ -453,7 +474,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                     // split
                     {
                         StyleAttrs a = seg.attrs();
-                        StyleAttrs newAttrs = a.apply(attrs);
+                        StyleAttrs newAttrs = a.combine(attrs);
                         int ix = start - off;
                         String s1 = seg.text().substring(0, ix);
                         String s2 = seg.text().substring(ix);
@@ -472,7 +493,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
                 case 7:
                     {
                         StyleAttrs a = seg.attrs();
-                        StyleAttrs newAttrs = a.apply(attrs);
+                        StyleAttrs newAttrs = a.combine(attrs);
                         String text = seg.text();
                         int ix0 = start - off;
                         int ix1 = end - off;
@@ -505,7 +526,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
          * @return true if this segment has been merged with the previous segment
          */
         private boolean applyStyle(int ix, RSegment seg, StyleAttrs a) {
-            StyleAttrs newAttrs = seg.attrs().apply(a);
+            StyleAttrs newAttrs = seg.attrs().combine(a);
             if (ix > 0) {
                 RSegment prev = get(ix - 1);
                 if (prev.attrs().equals(newAttrs)) {
