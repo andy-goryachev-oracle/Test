@@ -140,8 +140,9 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
     }
 
     @Override
-    protected void exportSegments(int index, int startOffset, int endOffset, StyledOutput out) {
-        // TODO
+    protected void exportParagraph(int index, int startOffset, int endOffset, StyledOutput out) {
+        RParagraph par = paragraphs.get(index);
+        par.export(startOffset, endOffset, out);
     }
 
     @Override
@@ -231,6 +232,15 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
         public void append(String s) {
             text = text + s;
         }
+
+        public StyledSegment createStyledSegment(int start, int end) {
+            if ((start == 0) && (end == text.length())) {
+                return StyledSegment.of(text);
+            }
+            
+            String s = text.substring(start, end);
+            return StyledSegment.of(s);
+        }
     }
 
     /**
@@ -248,7 +258,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
         public int length() {
             return getPlainText().length();
         }
-        
+
         /** retrieves the style attributes from the previous character (or next, if at the beginning) */
         public void collectAttributes(StyleAttrs a, int offset) {
             int off = 0;
@@ -256,9 +266,29 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
             for (int i = 0; i < ct; i++) {
                 RSegment seg = get(i);
                 int len = seg.length();
-                if(offset < (off + len) || (i == ct - 1)) {
+                if (offset < (off + len) || (i == ct - 1)) {
                     a.apply(seg.attrs());
                     return;
+                }
+                off += len;
+            }
+        }
+
+        public void export(int start, int end, StyledOutput out) {
+            int off = 0;
+            int ct = size();
+            for (int i = 0; i < ct; i++) {
+                if(off >= end) {
+                    return;
+                }
+                
+                RSegment seg = get(i);
+                int len = seg.length();
+                if(start <= off) {
+                    int ix0 = Math.max(0, start - off);
+                    int ix1 = Math.min(len, end - off);
+                    StyledSegment ss = seg.createStyledSegment(ix0, ix1);
+                    out.append(ss);
                 }
                 off += len;
             }

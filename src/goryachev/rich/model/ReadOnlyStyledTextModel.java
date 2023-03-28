@@ -67,7 +67,7 @@ public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
     }
     
     @Override
-    protected void exportSegments(int index, int start, int end, StyledOutput out) {
+    protected void exportParagraph(int index, int start, int end, StyledOutput out) {
         exportPlaintextSegments(index, start, end, out);
     }
 }

@@ -114,7 +114,7 @@ public abstract class StyledTextModel {
      * @param endOffset end offset (may exceed the paragraph text length)
      * @param out
      */
-    protected abstract void exportSegments(int index, int startOffset, int endOffset, StyledOutput out);
+    protected abstract void exportParagraph(int index, int startOffset, int endOffset, StyledOutput out);
     
     /**
      * Applies a style to the specified text range, where {@code start} is guaranteed to precede {@code end}.
@@ -289,7 +289,7 @@ public abstract class StyledTextModel {
         int ix1 = end.index();
         if (ix0 == ix1) {
             // part of one line
-            exportSegments(start.index(), start.offset(), end.offset(), out);
+            exportParagraph(start.index(), start.offset(), end.offset(), out);
         } else {
             // multi-line
             boolean lineBreak = false;
@@ -313,7 +313,7 @@ public abstract class StyledTextModel {
                     off1 = Integer.MAX_VALUE;
                 }
                 
-                exportSegments(ix, off0, off1, out);
+                exportParagraph(ix, off0, off1, out);
             }
         }
     }

@@ -137,7 +137,7 @@ public class EditablePlainTextModel extends EditableStyledTextModelBase {
     }
 
     @Override
-    protected void exportSegments(int index, int startOffset, int endOffset, StyledOutput out) {
+    protected void exportParagraph(int index, int startOffset, int endOffset, StyledOutput out) {
         String text = getPlainText(index);
         int len = text.length();
         if (endOffset > len) {

@@ -151,8 +151,8 @@ public class SegmentStyledTextModel extends ReadOnlyStyledTextModel {
     }
     
     @Override
-    protected void exportSegments(int index, int start, int end, StyledOutput out) {
+    protected void exportParagraph(int index, int start, int end, StyledOutput out) {
         // TODO use segments
-        super.exportSegments(index, start, end, out);
+        super.exportParagraph(index, start, end, out);
     }
 }
