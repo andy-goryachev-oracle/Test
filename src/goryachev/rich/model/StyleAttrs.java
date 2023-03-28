@@ -79,8 +79,10 @@ public class StyleAttrs {
     public static final StyleAttribute TEXT_COLOR = new StyleAttribute("TEXT_COLOR", Color.class) {
         @Override
         public void buildStyle(StringBuilder sb, Object value) {
-            String color = Util.toColorString((Color)value);
-            sb.append("-fx-fill:").append(color).append("; ");
+            if (value != null) {
+                String color = Util.toCssColor((Color)value);
+                sb.append("-fx-fill:").append(color).append("; ");
+            }
         }
     };
     
@@ -124,7 +126,7 @@ public class StyleAttrs {
 
     public void set(StyleAttribute a, Object value) {
         if (value == null) {
-            attributes.remove(a);
+            attributes.put(a, null);
         } else if (value.getClass().isAssignableFrom(a.getType())) {
             attributes.put(a, value);
         } else {

@@ -32,6 +32,8 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -40,9 +42,11 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Window;
 import goryachev.rich.RichTextArea;
 import goryachev.rich.TextPos;
@@ -283,12 +287,38 @@ public class RichTextAreaDemoPane extends BorderPane {
             items.add(m = new MenuItem("Underline"));
             m.setOnAction((ev) -> apply(StyleAttrs.UNDERLINE, !a.getBoolean(StyleAttrs.UNDERLINE)));
             m.setDisable(!sel);
+            
+            Menu m2;
+            items.add(m2 = new Menu("Text Color"));
+            colorMenu(m2, sel, Color.DARKGREEN);
+            colorMenu(m2, sel, Color.DARKRED);
+            colorMenu(m2, sel, Color.DARKBLUE);
+            colorMenu(m2, sel, null);
+            //m2.getItems().add(m = new MenuItem(null, icon(
         }
         
         items.add(new SeparatorMenuItem());
 
         items.add(m = new MenuItem("Select All"));
         m.setOnAction((ev) -> control.selectAll());
+    }
+    
+    protected void colorMenu(Menu menu, boolean selected, Color color) {
+        int w = 16;
+        int h = 16;
+        Canvas c = new Canvas(w, h);
+        GraphicsContext g = c.getGraphicsContext2D();
+        if(color != null) {
+            g.setFill(color);
+            g.fillRect(0, 0, w, h);
+        }
+        g.setStroke(Color.DARKGRAY);
+        g.strokeRect(0, 0, w, h);
+        
+        MenuItem m = new MenuItem(null, c);
+        m.setDisable(!selected);
+        m.setOnAction((ev) -> apply(StyleAttrs.TEXT_COLOR, color));
+        menu.getItems().add(m);
     }
     
     protected void apply(StyleAttribute a, Object val) {

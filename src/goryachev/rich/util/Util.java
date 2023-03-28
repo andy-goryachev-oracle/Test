@@ -169,10 +169,10 @@ public class Util {
     }
     
     /** Converts Color to "#rrggbb" or "rgba(r,g,b,a)" string */ 
-    public static String toColorString(Color c) {
+    public static String toCssColor(Color c) {
         if(c.getOpacity() == 1.0) {
             return String.format(
-                "#%02x%#02x%#02x", 
+                "#%02x%02x%02x", 
                 eightBit(c.getRed()),
                 eightBit(c.getGreen()),
                 eightBit(c.getBlue())
@@ -195,6 +195,6 @@ public class Util {
         } else if (v > 255) {
             return 255;
         }
-        return 255;
+        return v;
     }
 }
