@@ -32,6 +32,7 @@ import goryachev.rich.util.Util;
 /**
  * Map of style attributes.
  */
+// TODO it is probably a good idea to make this class immutable
 public class StyleAttrs {
     public static final StyleAttribute BOLD = new StyleAttribute("BOLD", Boolean.class) {
         @Override

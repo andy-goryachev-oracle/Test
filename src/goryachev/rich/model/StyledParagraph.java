@@ -47,6 +47,8 @@ public abstract class StyledParagraph {
      * The nodes are not reused, and might be created repeatedly,
      * so the model must not keep strong references to these nodes.
      */
+    // TODO alternative: paragraph would manage a list/array of StyledSegment.  Conversion to TextCell will be
+    // done by the view (VFlow) and TextCell can be made internal.
     public abstract TextCell createTextCell();
 
     private final int index;

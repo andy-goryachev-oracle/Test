@@ -25,6 +25,8 @@
 package goryachev.rich.model;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
+import javafx.scene.Node;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 
@@ -130,18 +132,19 @@ public class EditablePlainTextModel extends EditableStyledTextModelBase {
     }
 
     @Override
-    protected void insertParagraph(int index, StyledSegment segment) {
+    protected void insertParagraph(int index, Supplier<Node> generator) {
         // no-op
     }
 
     @Override
     protected void exportSegments(int index, int startOffset, int endOffset, StyledOutput out) {
         String text = getPlainText(index);
-        if (endOffset < 0) {
-            endOffset = text.length();
+        int len = text.length();
+        if (endOffset > len) {
+            endOffset = len;
         }
 
-        if ((startOffset != 0) || (endOffset != text.length())) {
+        if ((startOffset != 0) || (endOffset != len)) {
             text = text.substring(startOffset, endOffset);
         }
 

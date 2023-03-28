@@ -29,6 +29,8 @@ package goryachev.rich.model;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Supplier;
+import javafx.scene.Node;
 import javafx.scene.input.DataFormat;
 import goryachev.rich.Marker;
 import goryachev.rich.RichTextArea;
@@ -101,15 +103,15 @@ public abstract class StyledTextModel {
     protected abstract void insertLineBreak(int index, int offset);
     
     /** inserts a paragraph node */
-    protected abstract void insertParagraph(int index, StyledSegment segment);
+    protected abstract void insertParagraph(int index, Supplier<Node> generator);
     
     /**
      * Exports part of the paragraph as a sequence of styled segments.
-     * The caller must ensure that the start position precedes the end.
+     * The caller guarantees that the start position precedes the end.
      * 
      * @param index paragraph's model index
      * @param startOffset start offset
-     * @param endOffset end offset.  if -1 then export to the paragraph length
+     * @param endOffset end offset (may exceed the paragraph text length)
      * @param out
      */
     protected abstract void exportSegments(int index, int startOffset, int endOffset, StyledOutput out);
@@ -229,7 +231,8 @@ public abstract class StyledTextModel {
                     offset = 0;
                     btm = 0;
                     index++;
-                    insertParagraph(index, seg);
+                    Supplier<Node> gen = seg.getNodeGenerator();
+                    insertParagraph(index, gen);
                 } else if(seg.isText()) {
                     int len = insertTextSegment(index, offset, seg);
                     if(index == start.index()) {
@@ -301,13 +304,13 @@ public abstract class StyledTextModel {
                 int off1;
                 if(ix == ix0) {
                     off0 = start.offset();
-                    off1 = -1;
+                    off1 = Integer.MAX_VALUE;
                 } else if(ix == ix1) {
                     off0 = 0;
                     off1 = end.offset();
                 } else {
                     off0 = 0;
-                    off1 = -1;
+                    off1 = Integer.MAX_VALUE;
                 }
                 
                 exportSegments(ix, off0, off1, out);

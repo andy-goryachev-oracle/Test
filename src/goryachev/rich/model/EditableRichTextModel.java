@@ -26,6 +26,8 @@ package goryachev.rich.model;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.function.Supplier;
+import javafx.scene.Node;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 
@@ -133,7 +135,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
     }
 
     @Override
-    protected void insertParagraph(int index, StyledSegment segment) {
+    protected void insertParagraph(int index, Supplier<Node> generator) {
         // TODO
     }
 

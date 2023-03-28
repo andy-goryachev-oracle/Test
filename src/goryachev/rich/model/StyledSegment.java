@@ -64,9 +64,12 @@ public abstract class StyledSegment {
      */
     public boolean isLineBreak() { return false; }
     
+    // TODO isInlineNode?
+    
     /**
      * Returns the text associated with this segment.
      * Must be one character for inline nodes, must be null for node paragraphs.
+     * TODO can it be null for text segments?
      */
     public String getText() { return null; }
 
@@ -83,8 +86,9 @@ public abstract class StyledSegment {
     public String[] getStyles() { return null; }
     
     /**
-     * This method must return a non-null instance when {@link isText()} is false, or null 
-     * when {@link isText()} is true.
+     * This method must return a non-null value when {@link isParagraph()} is true, 
+     * or null in any other case.
+     * TODO inline node?
      */
     public Supplier<Node> getNodeGenerator() { return null; }
 
@@ -95,6 +99,8 @@ public abstract class StyledSegment {
      */
     public StyleAttrs getStyleAttrs() { return null; }
     
+    public StyledSegment() {
+    }
 
     /** A styled segment that represents a line break */
     public static final StyledSegment LINE_BREAK = new StyledSegment() {

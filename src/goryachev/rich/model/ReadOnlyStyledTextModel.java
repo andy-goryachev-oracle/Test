@@ -24,6 +24,8 @@
  */
 package goryachev.rich.model;
 
+import java.util.function.Supplier;
+import javafx.scene.Node;
 import goryachev.rich.TextPos;
 
 /**
@@ -55,7 +57,7 @@ public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
     }
 
     @Override
-    protected void insertParagraph(int index, StyledSegment segment) {
+    protected void insertParagraph(int index, Supplier<Node> generator) {
         throw new UnsupportedOperationException();
     }
 
