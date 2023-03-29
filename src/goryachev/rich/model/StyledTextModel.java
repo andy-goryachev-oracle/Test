@@ -26,6 +26,7 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich.model;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -113,8 +114,9 @@ public abstract class StyledTextModel {
      * @param startOffset start offset
      * @param endOffset end offset (may exceed the paragraph text length)
      * @param out
+     * @throws IOException 
      */
-    protected abstract void exportParagraph(int index, int startOffset, int endOffset, StyledOutput out);
+    protected abstract void exportParagraph(int index, int startOffset, int endOffset, StyledOutput out) throws IOException;
     
     /**
      * Applies a style to the specified text range, where {@code start} is guaranteed to precede {@code end}.
@@ -276,7 +278,7 @@ public abstract class StyledTextModel {
         }
     }
 
-    public void exportText(TextPos start, TextPos end, StyledOutput out) {
+    public void exportText(TextPos start, TextPos end, StyledOutput out) throws IOException {
         int cmp = start.compareTo(end);
         if (cmp > 0) {
             // make sure start < end
@@ -342,10 +344,13 @@ public abstract class StyledTextModel {
         }
     }
 
-    /** exports plain text segments only */
-    protected void exportPlaintextSegments(int index, int startOffset, int endOffset, StyledOutput out) {
+    /**
+     * exports plain text segments only 
+     * @throws IOException
+     */
+    protected void exportPlaintextSegments(int index, int start, int end, StyledOutput out) throws IOException {
         String text = getPlainText(index);
-        text = Util.substring(text, startOffset, endOffset);
+        text = Util.substring(text, start, end);
         StyledSegment seg = StyledSegment.of(text);
         out.append(seg);
     }

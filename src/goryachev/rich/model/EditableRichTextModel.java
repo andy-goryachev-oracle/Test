@@ -24,6 +24,7 @@
  */
 package goryachev.rich.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.function.Supplier;
@@ -140,9 +141,9 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
     }
 
     @Override
-    protected void exportParagraph(int index, int startOffset, int endOffset, StyledOutput out) {
+    protected void exportParagraph(int index, int start, int end, StyledOutput out) throws IOException {
         RParagraph par = paragraphs.get(index);
-        par.export(startOffset, endOffset, out);
+        par.export(start, end, out);
     }
 
     @Override
@@ -274,7 +275,7 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
             }
         }
 
-        public void export(int start, int end, StyledOutput out) {
+        public void export(int start, int end, StyledOutput out) throws IOException {
             int off = 0;
             int ct = size();
             for (int i = 0; i < ct; i++) {

@@ -51,9 +51,4 @@ public class TStyledOutput implements StyledOutput {
             throw new Error("not yet supported: " + seg);
         }
     }
-
-    @Override
-    public Object getOutput() {
-        return getResult();
-    }
 }

@@ -1038,10 +1038,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                     ClipboardContent c = new ClipboardContent();
                     for (DataFormat f : fs) {
                         DataFormatHandler h = m.getDataFormatHandler(f);
-                        // problem: styled output depends on the export options
-                        StyledOutput out = h.getStyledOutput(null);
-                        m.exportText(start, end, out);
-                        Object v = out.getOutput();
+                        Object v = h.copy(m, start, end);
                         if (v != null) {
                             c.put(f, v);
                         }

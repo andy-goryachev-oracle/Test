@@ -24,6 +24,7 @@
  */
 package goryachev.rich.model;
 
+import java.io.IOException;
 import java.util.function.Supplier;
 import javafx.scene.Node;
 import goryachev.rich.TextPos;
@@ -67,7 +68,7 @@ public abstract class ReadOnlyStyledTextModel extends StyledTextModel {
     }
     
     @Override
-    protected void exportParagraph(int index, int start, int end, StyledOutput out) {
+    protected void exportParagraph(int index, int start, int end, StyledOutput out) throws IOException {
         exportPlaintextSegments(index, start, end, out);
     }
 }

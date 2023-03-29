@@ -24,6 +24,7 @@
  */
 package goryachev.rich.model;
 
+import java.io.IOException;
 import org.junit.Assert;
 import org.junit.Test;
 import goryachev.rich.TextPos;
@@ -37,7 +38,7 @@ public class TestStyledRuns {
     private final Object[] INSERT = { "01", BOLD };
     
     @Test
-    public void testReplace() {
+    public void testReplace() throws IOException {
         replace(
             new Object[] { },
             INSERT,
@@ -48,7 +49,7 @@ public class TestStyledRuns {
     }
 
     // TODO @Test
-    public void testApplyStyle() {
+    public void testApplyStyle() throws IOException {
         t(
             SEG1,
             0, 2, 0, 4, BOLD,
@@ -83,7 +84,7 @@ public class TestStyledRuns {
     }
 
     // FIX does not work (yet)
-    private void t(Object[] initial, int ix1, int off1, int ix2, int off2, StyleAttrs a, Object[] expected) {
+    private void t(Object[] initial, int ix1, int off1, int ix2, int off2, StyleAttrs a, Object[] expected) throws IOException {
         EditableRichTextModel m = new EditableRichTextModel();
         TStyledInput in = new TStyledInput(initial);
         TextPos fin = m.getEndTextPos();
@@ -110,7 +111,7 @@ public class TestStyledRuns {
         }
     }
     
-    private void replace(Object[] initial, Object[] text, Object[] expected) {
+    private void replace(Object[] initial, Object[] text, Object[] expected) throws IOException {
         EditableRichTextModel m = new EditableRichTextModel();
         TStyledInput in = new TStyledInput(initial);
         TextPos fin = m.getEndTextPos();

@@ -24,23 +24,20 @@
  */
 package goryachev.rich.model;
 
+import java.io.IOException;
+
 /**
  * Class represents a consumer of styled text segments for the purposes of
  * exporting, copying, or saving to a file.
+ * 
+ * TODO change to Consumer<StyledSegment> maybe?
  */
 public interface StyledOutput {
     /**
      * Appends the next styled segment to the output.
      * 
      * @param segment
+     * @throws IOException 
      */
-    public void append(StyledSegment segment);
-
-    /**
-     * Returns accumulated data.  May return null if no accumulation has been performed or
-     * the implementation does not store data.
-     * 
-     * @return
-     */
-    public Object getOutput();
+    public void append(StyledSegment segment) throws IOException;
 }

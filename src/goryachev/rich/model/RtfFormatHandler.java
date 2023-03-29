@@ -30,42 +30,50 @@ import java.nio.charset.Charset;
 import javafx.scene.input.DataFormat;
 import goryachev.rich.TextPos;
 
-public class PlainTextFormatHandler extends DataFormatHandler {
-    public PlainTextFormatHandler() {
-        super(DataFormat.PLAIN_TEXT);
+public class RtfFormatHandler extends DataFormatHandler {
+    public RtfFormatHandler() {
+        super(DataFormat.RTF);
     }
 
     @Override
     public StyledInput getStyledInput(Object src) {
+        // TODO parse RTF
         String text = (src == null) ? "" : src.toString();
         return StyledInput.of(text, null, null);
     }
 
     @Override
     public Object copy(StyledTextModel m, TextPos start, TextPos end) throws IOException {
-        StringBuilderStyledOutput out = new StringBuilderStyledOutput();
-        m.exportText(start, end, out);
-        return out.getOutput();
+        StringBuilder sb = new StringBuilder(65536);
+        RtfStyledOutput r = new RtfStyledOutput() {
+            protected void write(String s) throws IOException {
+                sb.append(s);
+            }
+        };
+        m.exportText(start, end, r.getColorTableBuilder());
+        
+        r.writePrologue();
+        m.exportText(start, end, r);
+        r.writeEpilogue();
+        
+        return sb.toString();
     }
 
     @Override
     public void save(StyledTextModel m, TextPos start, TextPos end, OutputStream out) throws IOException {
-        Charset charset = Charset.forName("utf-8");
-        byte[] newline = System.getProperty("line.separator").getBytes(charset);
+        RtfStyledOutput r = new RtfStyledOutput() {
+            private static final Charset ascii = Charset.forName("ASCII");
 
-        StyledOutput so = new StyledOutput() {
-            @Override
-            public void append(StyledSegment seg) throws IOException {
-                if (seg.isLineBreak()) {
-                    out.write(newline);
-                } else if (seg.isText()) {
-                    String text = seg.getText();
-                    byte[] b = text.getBytes(charset);
-                    out.write(b);
-                }
+            protected void write(String s) throws IOException {
+                out.write(s.getBytes(ascii));
             }
         };
-        m.exportText(start, end, so);
+        m.exportText(start, end, r.getColorTableBuilder());
+        
+        r.writePrologue();
+        m.exportText(start, end, r);
+        r.writeEpilogue();
+        
         out.flush();
     }
 }

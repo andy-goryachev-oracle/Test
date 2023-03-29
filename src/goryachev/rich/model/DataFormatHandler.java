@@ -24,6 +24,8 @@
  */
 package goryachev.rich.model;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import javafx.scene.input.DataFormat;
 import goryachev.rich.TextPos;
 
@@ -47,7 +49,38 @@ public abstract class DataFormatHandler {
      * @param options
      * @return
      */
-    public abstract StyledOutput getStyledOutput(Object options);
+    public final void getStyledOutput(Object options) { } // FIX remove
+    
+    /**
+     * Creates an object to be put into Clipboard for the given text range.
+     * The caller guarantees that the {@code start} precedes the {@code end} position.
+     *
+     * - may throw an exception when out of memory, or detect the condition and bail out somehow
+     * 
+     * TODO explain
+     * 
+     * @param end 
+     * @param start 
+     * @param model 
+     * 
+     * @return
+     * @throws IOException 
+     */
+    public abstract Object copy(StyledTextModel model, TextPos start, TextPos end) throws IOException;
+    
+    /**
+     * Save the text range to the output stream (e.g. save to file).
+     * 
+     * TODO may need to specify additional options:
+     * - encoding (platform, utf-8)?
+     * - line separator
+     *
+     * TODO explain
+     * 
+     * @param outputFile
+     * @throws IOException 
+     */
+    public abstract void save(StyledTextModel model, TextPos start, TextPos end, OutputStream out) throws IOException;
     
     private final DataFormat format;
 

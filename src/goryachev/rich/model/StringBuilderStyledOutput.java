@@ -50,8 +50,7 @@ public class StringBuilderStyledOutput implements StyledOutput {
         }
     }
 
-    @Override
-    public Object getOutput() {
+    public String getOutput() {
         return sb.toString();
     }
 }

@@ -24,6 +24,7 @@
  */
 package goryachev.rich.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 import javafx.scene.Node;
@@ -137,7 +138,7 @@ public class EditablePlainTextModel extends EditableStyledTextModelBase {
     }
 
     @Override
-    protected void exportParagraph(int index, int startOffset, int endOffset, StyledOutput out) {
+    protected void exportParagraph(int index, int startOffset, int endOffset, StyledOutput out) throws IOException {
         String text = getPlainText(index);
         int len = text.length();
         if (endOffset > len) {
