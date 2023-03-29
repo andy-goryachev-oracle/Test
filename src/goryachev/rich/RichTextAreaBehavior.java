@@ -1050,6 +1050,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                     }
                 } catch(Exception | OutOfMemoryError e) {
                     // TODO log exception
+                    e.printStackTrace();
                     NewAPI.provideErrorFeedback(control);
                 }
             }

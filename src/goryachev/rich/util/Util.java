@@ -197,4 +197,22 @@ public class Util {
         }
         return v;
     }
+
+    /** null-tolerant !equals() */
+    public static boolean notEquals(Object a, Object b) {
+        return !equals(a, b);
+    }
+
+    /** null-tolerant equals() */
+    public static boolean equals(Object a, Object b) {
+        if (a == b) {
+            return true;
+        } else if (a == null) {
+            return (b == null);
+        } else if (b == null) {
+            return false;
+        } else {
+            return a.equals(b);
+        }
+    }
 }

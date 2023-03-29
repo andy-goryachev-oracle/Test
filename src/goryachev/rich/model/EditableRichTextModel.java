@@ -44,6 +44,8 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
     
     public EditableRichTextModel() {
         paragraphs.add(new RParagraph());
+
+        registerDataFormatHandler(new RtfFormatHandler());
         registerDataFormatHandler(new PlainTextFormatHandler());
     }
     
@@ -236,11 +238,11 @@ public class EditableRichTextModel extends EditableStyledTextModelBase {
 
         public StyledSegment createStyledSegment(int start, int end) {
             if ((start == 0) && (end == text.length())) {
-                return StyledSegment.of(text);
+                return StyledSegment.of(text, attrs);
             }
             
             String s = text.substring(start, end);
-            return StyledSegment.of(s);
+            return StyledSegment.of(s, attrs);
         }
     }
 

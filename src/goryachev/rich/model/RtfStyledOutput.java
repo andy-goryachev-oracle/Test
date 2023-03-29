@@ -27,28 +27,34 @@
 // with permission from the author.
 package goryachev.rich.model;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Supplier;
 import javafx.scene.paint.Color;
+import goryachev.rich.util.Util;
 
 /**
  * StyledOutput which generates RTF.
  * 
  * RTF 1.5 Spec:
- * www.biblioscape.com/rtf15_spec.htm
+ * https://www.biblioscape.com/rtf15_spec.htm
  */
 public abstract class RtfStyledOutput implements StyledOutput {
     /** outputs ASCII-encoded string */
     protected abstract void write(String s) throws IOException;
     
-    private String fontName = "Courier New";
-    private String fontSize = "18"; // double the actual size
     private final ColorTable colorTable = new ColorTable();
+    private String fontName = "Courier New";
+    private String fontSize = "18"; // font size in half points
+    private boolean startOfLine = true;
+    private StyleAttrs prevStyle;
+    private Color color;
+    private Color background;
+    private boolean bold;
+    private boolean italic;
+    private boolean under;
+    private boolean strike;
     
     public RtfStyledOutput() {
     }
@@ -59,42 +65,32 @@ public abstract class RtfStyledOutput implements StyledOutput {
             public void append(StyledSegment seg) throws IOException {
                 if (seg.isText()) {
                     StyleAttrs a = seg.getStyleAttrs();
-                    Object v = a.get(StyleAttrs.TEXT_COLOR);
-                    if(v instanceof Color c) {
-                        colorTable.add(c);
+                    if (a != null) {
+                        Color c = a.getTextColor();
+                        if (c != null) {
+                            colorTable.add(c);
+                        }
+
+                        // TODO background color
+                        //                    c = mixBackground(st.getBackgroundColor());
+                        //                    if (c != null) {
+                        //                        colorTable.add(c);
+                        //                    }
+                        
+                        // TODO font table
                     }
-                    
-                    // TODO background color
-//                    c = mixBackground(st.getBackgroundColor());
-//                    if (c != null) {
-//                        colorTable.add(c);
-//                    }
                 }
             }
         };
     }
-
-    @Override
-    public void append(StyledSegment seg) throws IOException {
-        // TODO
-        if (seg.isLineBreak()) {
-            writeNL();
-        } else if (seg.isText()) {
-            writeSegment(seg);
-        }
-    }
-
-    public void setFont(String fontName, int fontSize) {
-        this.fontName = fontName;
-        this.fontSize = String.valueOf(2 * fontSize);
-    }
     
     public void writePrologue() throws IOException {
         // preamble
+        // TODO create font table
         write("{\\rtf1\\ansi\\ansicpg1252\\uc1\\sl0\\sb0\\sa0\\deff0{\\fonttbl{\\f0\\fnil ");
         write(fontName);
         write(";}}\r\n");
-
+        
         // color table
         write("{\\colortbl ;");
         for (Color c : colorTable.getColors()) {
@@ -107,174 +103,244 @@ public abstract class RtfStyledOutput implements StyledOutput {
             write(";");
         }
         write("}\r\n");
-
-        write("{\\f0\\fs");
-        write(fontSize);
-        write(" \\fi0\\ql ");
+        
+        // TODO \deftab720 Default tab width in twips (the default is 720).  a twip is one-twentieth of a point
     }
-    
+
+    @Override
+    public void append(StyledSegment seg) throws IOException {
+        if (seg.isLineBreak()) {
+            writeEndOfLine();
+            writeNewLine();
+        } else if (seg.isText()) {
+            writeTextSegment(seg);
+        }
+    }
+
     public void writeEpilogue() throws IOException {
+        writeEndOfLine();
         write("\r\n}}\r\n");
     }
 
-    protected void writeSegment(StyledSegment seg) throws IOException {
-        /* TODO
-        // TODO checkCancelled();
+    public void setFont(String fontName, int fontSize) {
+        this.fontName = fontName;
+        this.fontSize = String.valueOf(2 * fontSize);
+    }
 
-        write("\\fi0\\ql ");
-
-        TextCellStyle prevStyle = null;
-        Color color = null;
-        Color background = null;
-        boolean bold = false;
-        boolean italic = false;
-        boolean under = false;
-        boolean strike = false;
-
-        String text = seg.getPlainText();
-        for (int i = startPos; i < endPos; i++) {
-            TextCellStyle st = t.getCellStyle(i);
-            if (prevStyle != st) {
-                Color col;
-                Color bg;
-                boolean bld;
-                boolean ita;
-                boolean und;
-                boolean str;
-
-                if (st == null) {
-                    col = null;
-                    bg = null;
-                    bld = false;
-                    ita = false;
-                    und = false;
-                    str = false;
-                } else {
-                    col = st.getTextColor();
-                    bg = mixBackground(st.getBackgroundColor());
-                    bld = st.isBold();
-                    ita = st.isItalic();
-                    und = st.isUnderscore();
-                    str = st.isStrikeThrough();
-                }
-
-                prevStyle = st;
-
-                // emit changes
-
-                if (CKit.notEquals(col, color)) {
-                    if (col == null) {
-                        write("\\cf0 ");
-                    } else {
-                        String s = colorTable.getIndexFor(col);
-                        if (s == null) {
-                            s = "0";
-                            //log.warn("no entry for " + col);
-                        }
-
-                        write("\\cf");
-                        write(s);
-                        write(" ");
-                    }
-
-                    color = col;
-                }
-
-                if (CKit.notEquals(bg, background)) {
-                    if (bg == null) {
-                        write("\\highlight0 ");
-                    } else {
-                        String s = colorTable.getIndexFor(bg);
-
-                        write("\\highlight");
-                        write(s);
-                        write(" ");
-                    }
-
-                    background = bg;
-                }
-
-                if (bld != bold) {
-                    write(bld ? "\\b " : "\\b0 ");
-                    bold = bld;
-                }
-
-                if (ita != italic) {
-                    write(ita ? "\\i " : "\\i0 ");
-                    italic = ita;
-                }
-
-                if (und != under) {
-                    write(und ? "\\ul " : "\\ul0 ");
-                    under = und;
-                }
-
-                if (str != strike) {
-                    write(str ? "\\strike " : "\\strike0 ");
-                    strike = str;
-                }
-            }
-
-            char ch = text.charAt(i);
-            if (ch < 0x20) {
-                switch (ch) {
-                case '\n':
-                case '\r':
-                    break;
-                case '\t':
-                    sb.append(ch);
-                    break;
-                }
-            } else if (ch < 0x80) {
-                switch (ch) {
-                case '\\':
-                    write("\\\\");
-                    break;
-                case '{':
-                    write("\\{");
-                    break;
-                case '}':
-                    write("\\}");
-                    break;
-                default:
-                    sb.append(ch);
-                    break;
-                }
-            } else {
-                write("\\u");
-                write(String.valueOf((short)ch));
-                write("?");
-            }
-        }
-
+    private void writeEndOfLine() throws IOException {
         if (color != null) {
             write("\\cf0 ");
+            color = null;
         }
 
         if (background != null) {
             write("\\highlight0 ");
+            background = null;
         }
 
         if (bold) {
             write("\\b0 ");
+            bold = false;
         }
 
         if (italic) {
             write("\\i0 ");
+            italic = false;
         }
 
         if (under) {
             write("\\ul0 ");
+            under = false;
         }
 
         if (strike) {
             write("\\strike0 ");
+            strike = false;
         }
-        */
     }
-    
-    private void writeNL() throws IOException {
+
+    private void writeNewLine() throws IOException {
         write("\\par\r\n");
+        startOfLine = true;
+    }
+
+    private void writeTextSegment(StyledSegment seg) throws IOException {
+        // TODO checkCancelled();
+
+        if (startOfLine) {
+            // TODO on each font size change
+            write("{\\f0\\fs");
+            write(fontSize);
+            
+            // first line indent 0, left aligned
+            write("\\fi0\\ql ");
+            startOfLine = false;
+        }
+
+        StyleAttrs st = seg.getStyleAttrs();
+        if (Util.notEquals(st, prevStyle)) {
+            Color col;
+            Color bg;
+            boolean bld;
+            boolean ita;
+            boolean und;
+            boolean str;
+
+            if (st == null) {
+                col = null;
+                bg = null;
+                bld = false;
+                ita = false;
+                und = false;
+                str = false;
+            } else {
+                col = st.getTextColor();
+                bg = null; // TODO mixBackground(st.getBackgroundColor());
+                bld = st.isBold();
+                ita = st.isItalic();
+                und = st.isUnderline();
+                str = st.isStrikeThrough();
+            }
+
+            prevStyle = st;
+
+            // emit changes
+
+            if (Util.notEquals(col, color)) {
+                if (col == null) {
+                    write("\\cf0 ");
+                } else {
+                    String s = colorTable.getIndexFor(col);
+                    if (s == null) {
+                        s = "0";
+                        //log.warn("no entry for " + col);
+                    }
+
+                    write("\\cf");
+                    write(s);
+                    write(" ");
+                }
+
+                color = col;
+            }
+
+            if (Util.notEquals(bg, background)) {
+                if (bg == null) {
+                    write("\\highlight0 ");
+                } else {
+                    String s = colorTable.getIndexFor(bg);
+
+                    write("\\highlight");
+                    write(s);
+                    write(" ");
+                }
+
+                background = bg;
+            }
+
+            if (bld != bold) {
+                write(bld ? "\\b " : "\\b0 ");
+                bold = bld;
+            }
+
+            if (ita != italic) {
+                write(ita ? "\\i " : "\\i0 ");
+                italic = ita;
+            }
+
+            if (und != under) {
+                write(und ? "\\ul " : "\\ul0 ");
+                under = und;
+            }
+
+            if (str != strike) {
+                write(str ? "\\strike " : "\\strike0 ");
+                strike = str;
+            }
+        }
+
+        String text = seg.getText();
+        String encoded = encode(text);
+        write(encoded);
+    }
+
+    // TODO unit test!
+    private String encode(String text) {
+        if (text == null) {
+            return "";
+        }
+
+        int ix = indexOfSpecialChar(text);
+        if (ix < 0) {
+            return text;
+        }
+
+        int len = text.length();
+        StringBuilder sb = new StringBuilder(len + 32);
+        sb.append(text, 0, ix);
+
+        for (int i = ix; i < len; i++) {
+            char c = text.charAt(i);
+            if (c < 0x20) {
+                switch (c) {
+                case '\n':
+                case '\r':
+                    break;
+                case '\t':
+                    sb.append(c);
+                    break;
+                }
+            } else if (c < 0x80) {
+                switch (c) {
+                case '\\':
+                    sb.append("\\\\");
+                    break;
+                case '{':
+                    sb.append("\\{");
+                    break;
+                case '}':
+                    sb.append("\\}");
+                    break;
+                default:
+                    sb.append(c);
+                    break;
+                }
+            } else {
+                sb.append("\\u");
+                sb.append(String.valueOf((short)c));
+                sb.append("?");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private int indexOfSpecialChar(String text) {
+        int len = text.length();
+        for (int i = 0; i < len; i++) {
+            char c = text.charAt(i);
+            if (c < 0x20) {
+                switch (c) {
+                case '\t':
+                    continue;
+                default:
+                    return i;
+                }
+            } else if (c < 0x80) {
+                switch (c) {
+                case '\\':
+                case '{':
+                case '}':
+                    return i;
+                default:
+                    continue;
+                }
+            }
+            else {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static String toInt255(double x) {
@@ -286,12 +352,14 @@ public abstract class RtfStyledOutput implements StyledOutput {
         }
         return String.valueOf(v);
     }
-    
+
+    /** RTF is unable to specify colors inline it seems, needs a color lookup table */
     protected static class ColorTable {
         private final ArrayList<Color> colors = new ArrayList();
         private final HashMap<Color, String> indexes = new HashMap();
 
         public ColorTable() {
+            add(Color.BLACK);
         }
 
         public void add(Color c) {

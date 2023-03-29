@@ -56,7 +56,9 @@ public class RtfFormatHandler extends DataFormatHandler {
         m.exportText(start, end, r);
         r.writeEpilogue();
         
-        return sb.toString();
+        String rtf = sb.toString();
+        System.out.println(rtf); // FIX
+        return rtf;
     }
 
     @Override

@@ -121,6 +121,8 @@ public abstract class StyledSegment {
      */
     // TODO attrs must be R/O
     public static StyledSegment of(String text, StyleAttrs attrs) {
+        StyleAttrs a = attrs.copy();
+        
         return new StyledSegment() {
             private String style; 
 
@@ -137,19 +139,19 @@ public abstract class StyledSegment {
             @Override
             public String getDirectStyle() {
                 if(style == null) {
-                    style = attrs.getStyle();
+                    style = a.getStyle();
                 }
                 return style;
             }
 
             @Override
             public StyleAttrs getStyleAttrs() {
-                return attrs;
+                return a;
             }
             
             @Override
             public String toString() {
-                return "StyledSegment{text=" + getText() + ", attrs=" + attrs + "}";
+                return "StyledSegment{text=" + getText() + ", attrs=" + a + "}";
             }
         };
     }

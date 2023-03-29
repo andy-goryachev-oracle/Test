@@ -217,4 +217,32 @@ public class StyleAttrs {
         sb.append("]");
         return sb.toString();
     }
+    
+    public Color getTextColor() {
+        return (Color)get(TEXT_COLOR);
+    }
+
+    public boolean isBold() {
+        return getBoolean(BOLD);
+    }
+
+    public boolean isItalic() {
+        return getBoolean(ITALIC);
+    }
+
+    public boolean isUnderline() {
+        return getBoolean(UNDERLINE);
+    }
+
+    public boolean isStrikeThrough() {
+        return getBoolean(STRIKE_THROUGH);
+    }
+    
+    public Integer getFontSize() {
+        return (Integer)get(FONT_SIZE);
+    }
+    
+    public String getFontFamily() {
+        return (String)get(FONT_FAMILY);
+    }
 }
