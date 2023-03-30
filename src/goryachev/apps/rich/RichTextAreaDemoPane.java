@@ -307,6 +307,10 @@ public class RichTextAreaDemoPane extends BorderPane {
             
             items.add(m2 = new Menu("Font Family"));
             fontMenu(m2, sel, "System");
+            fontMenu(m2, sel, "Serif");
+            fontMenu(m2, sel, "Sans-serif");
+            fontMenu(m2, sel, "Cursive");
+            fontMenu(m2, sel, "Fantasy");
             fontMenu(m2, sel, "Monospaced");
             fontMenu(m2, sel, "Zapf Dingbats");
             fontMenu(m2, sel, "null");

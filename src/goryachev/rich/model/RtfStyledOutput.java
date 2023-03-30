@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import goryachev.rich.util.Util;
 
 /**
@@ -45,7 +46,7 @@ public abstract class RtfStyledOutput implements StyledOutput {
     protected abstract void write(String s) throws IOException;
     
     private final LookupTable<Color> colorTable = new LookupTable<>(Color.BLACK);
-    private final LookupTable<String> fontTable = new LookupTable<>("Helvetica");
+    private final LookupTable<String> fontTable = new LookupTable<>("system");
     private boolean startOfLine = true;
     private StyleAttrs prevStyle;
     private Color color;
@@ -90,6 +91,33 @@ public abstract class RtfStyledOutput implements StyledOutput {
         };
     }
     
+    //    \fnil   Unknown or default fonts (the default)  
+    //    \froman Roman, proportionally spaced serif fonts    Times New Roman, Palatino
+    //    \fswiss Swiss, proportionally spaced sans serif fonts   Arial
+    //    \fmodern    Fixed-pitch serif and sans serif fonts  Courier New, Pica
+    //    \fscript    Script fonts    Cursive
+    //    \fdecor Decorative fonts    Old English, ITC Zapf Chancery
+    //    \ftech  Technical, symbol, and mathematical fonts   Symbol
+    //    \fbidi  Arabic, Hebrew, or other bidirectional font Miriam
+    private String lookupFontFamily(String name) {
+        try {
+            switch(name.toLowerCase()) {
+            case "monospaced":
+                return "\\fmodern Courier New";
+            case "system":
+            case "sans-serif":
+                return "\\fswiss Helvetica";
+            case "serif":
+                return "\\froman Times New Roman";
+            case "cursive":
+                return "\\fscript Brush Script";
+            case "fantasy":
+                return "\\fdecor ITC Zapf Chancery";
+            }
+        } catch(Exception e) { }
+        return null;
+    }
+    
     public void writePrologue() throws IOException {
         // preamble
         write("{\\rtf1\\ansi\\ansicpg1252\\uc1\\sl0\\sb0\\sa0\\deff0");
@@ -97,11 +125,18 @@ public abstract class RtfStyledOutput implements StyledOutput {
         // font table
         write("{\\fonttbl");
         int ix = 0;
-        for (String family: fontTable.getItems()) {
+        for (String name: fontTable.getItems()) {
+            String fam = lookupFontFamily(name);
+                
             write("\\f");
             write(String.valueOf(ix++));
-            write("\\fnil ");
-            write(family);
+            if(fam == null) {
+                write("\\fnil");
+                write(" ");
+                write(name);
+            } else {
+                write(fam);
+            }
             write(";");
         }
         write("}\r\n");
@@ -221,12 +256,9 @@ public abstract class RtfStyledOutput implements StyledOutput {
             // emit changes
             
             if (Util.notEquals(fontFamily, fam)) {
-                String s = fontTable.getIndexFor(fam);
-                if(s == null) {
-                    s = "0";
-                }
+                int ix = fontTable.getIndexFor(fam);
                 write("\\f");
-                write(s);
+                write(String.valueOf(ix));
 
                 fontFamily = fam;
             }
@@ -245,13 +277,13 @@ public abstract class RtfStyledOutput implements StyledOutput {
                 if (col == null) {
                     write("\\cf0 ");
                 } else {
-                    String s = colorTable.getIndexFor(col);
-                    if (s == null) {
-                        s = "0";
+                    int ix = colorTable.getIndexFor(col);
+                    if (ix > 0) {
+                        ix++;
                     }
 
                     write("\\cf");
-                    write(s);
+                    write(String.valueOf(ix));
                     write(" ");
                 }
 
@@ -262,10 +294,12 @@ public abstract class RtfStyledOutput implements StyledOutput {
                 if (bg == null) {
                     write("\\highlight0 ");
                 } else {
-                    String s = colorTable.getIndexFor(bg);
-
+                    int ix = colorTable.getIndexFor(bg);
+                    if(ix > 0) {
+                        ix++;
+                    }
                     write("\\highlight");
-                    write(s);
+                    write(String.valueOf(ix));
                     write(" ");
                 }
 
@@ -400,7 +434,7 @@ public abstract class RtfStyledOutput implements StyledOutput {
     /** RTF is unable to specify colors inline it seems, needs a color lookup table */
     protected static class LookupTable<T> {
         private final ArrayList<T> items = new ArrayList<>();
-        private final HashMap<T, String> indexes = new HashMap<>();
+        private final HashMap<T, Integer> indexes = new HashMap<>();
 
         public LookupTable(T initValue) {
             if(initValue != null) {
@@ -410,13 +444,19 @@ public abstract class RtfStyledOutput implements StyledOutput {
 
         public void add(T item) {
             if (!indexes.containsKey(item)) {
+                Integer ix = Integer.valueOf(items.size());
                 items.add(item);
-                indexes.put(item, String.valueOf(items.size()));
+                indexes.put(item, ix);
             }
         }
 
-        public String getIndexFor(T c) {
-            return indexes.get(c);
+        /** returns index or 0 if not found */
+        public int getIndexFor(T c) {
+            Integer ix = indexes.get(c);
+            if(ix == null) {
+                return 0;
+            }
+            return ix.intValue();
         }
 
         public List<T> getItems() {
