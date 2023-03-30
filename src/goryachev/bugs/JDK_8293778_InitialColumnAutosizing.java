@@ -1,4 +1,4 @@
-package goryachev.apps;
+package goryachev.bugs;
 
 import java.util.Map;
 import java.util.stream.Collectors;

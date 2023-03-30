@@ -1,4 +1,4 @@
-package goryachev.apps;
+package goryachev.bugs;
 
 import javafx.application.Application;
 import javafx.scene.Node;

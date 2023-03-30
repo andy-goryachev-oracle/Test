@@ -32,7 +32,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ConstrainedColumnResizeBase;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumnBase;
@@ -148,15 +150,32 @@ public class TableViewPage extends TestPaneBase {
             updatePane();
         });
         
-        Button addButton = new Button("Add Item");
+        Button addButton = new Button("Add Data Item");
         addButton.setOnAction((ev) -> {
             table.getItems().add(newItem());
         });
         
-        Button clearButton = new Button("Clear Items");
+        Button clearButton = new Button("Clear Data Items");
         clearButton.setOnAction((ev) -> {
             table.getItems().clear();
         });
+        
+        SplitMenuButton addColumnButton = new SplitMenuButton(
+            menuItem("at the beginning", () -> addColumn(0)),
+            menuItem("in the middle", () -> addColumn(1)),
+            menuItem("at the end", () -> addColumn(2))
+        );
+        addColumnButton.setText("Add Column");
+        
+        SplitMenuButton removeColumnButton = new SplitMenuButton(
+            menuItem("at the beginning", () -> addColumn(0)),
+            menuItem("in the middle", () -> addColumn(1)),
+            menuItem("at the end", () -> addColumn(2))
+        );
+        removeColumnButton.setText("Remove Column");
+        
+        // TODO make column visible
+        // TODO set fixed height
 
         // layout
 
@@ -165,6 +184,8 @@ public class TableViewPage extends TestPaneBase {
         p.option(demoSelector);
         p.option(addButton);
         p.option(clearButton);
+        p.option(addColumnButton);
+        p.option(removeColumnButton);
         p.label("Column Resize Policy:");
         p.option(policySelector);
         p.label("Selection Model:");
@@ -175,6 +196,59 @@ public class TableViewPage extends TestPaneBase {
         demoSelector.getSelectionModel().selectFirst();
         policySelector.getSelectionModel().selectFirst();
         selectionSelector.getSelectionModel().select(Selection.MULTIPLE_CELL);
+    }
+    
+    protected MenuItem menuItem(String text, Runnable r) {
+        MenuItem m = new MenuItem(text);
+        m.setOnAction((ev) -> r.run());
+        return m;
+    }
+
+    protected void addColumn(int where) {
+        TableColumn<String, String> c = new TableColumn<>();
+        c.setText("C" + System.currentTimeMillis());
+        c.setCellValueFactory((f) -> new SimpleStringProperty(describe(c)));
+
+        int ct = table.getColumns().size();
+        int ix;
+        switch (where) {
+        case 0:
+            ix = 0;
+            break;
+        case 1:
+            ix = ct / 2;
+            break;
+        case 2:
+        default:
+            ix = ct;
+            break;
+        }
+        if ((ct == 0) || (ix >= ct)) {
+            table.getColumns().add(c);
+        } else {
+            table.getColumns().add(ix, c);
+        }
+    }
+
+    protected void removeColumn(int where) {
+        int ct = table.getColumns().size();
+        int ix;
+        switch (where) {
+        case 0:
+            ix = 0;
+            break;
+        case 1:
+            ix = ct / 2;
+            break;
+        case 2:
+        default:
+            ix = ct - 1;
+            break;
+        }
+        
+        if ((ct >= 0) && (ix < ct)) {
+            table.getColumns().remove(ix);
+        }
     }
 
     protected Callback<ResizeFeatures,Boolean> wrap(Callback<ResizeFeatures,Boolean> policy) {

@@ -24,6 +24,7 @@
  */
 package goryachev.apps;
 
+import goryachev.bugs.*;
 import javafx.application.Application;
 
 /**
@@ -34,6 +35,6 @@ import javafx.application.Application;
  */
 public class AppTestLauncher {
     public static void main(String[] args) {
-        Application.launch(FlowHit.class, args);
+        Application.launch(Bug_8305248.class, args);
     }
 }

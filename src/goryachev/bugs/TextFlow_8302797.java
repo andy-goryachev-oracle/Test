@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.apps;
+package goryachev.bugs;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.SplitPane;
