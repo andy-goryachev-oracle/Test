@@ -114,6 +114,8 @@ public class TableViewPage extends TestPaneBase {
     protected final ComboBox<ResizePolicy> policySelector;
     protected final ComboBox<Selection> selectionSelector;
     protected final CheckBox nullFocusModel;
+    protected final CheckBox hideColumn;
+    protected final CheckBox fixedHeight;
     protected TableView<String> table;
     
     public TableViewPage() {
@@ -174,8 +176,17 @@ public class TableViewPage extends TestPaneBase {
         );
         removeColumnButton.setText("Remove Column");
         
-        // TODO make column visible
-        // TODO set fixed height
+        hideColumn = new CheckBox("hide middle column");
+        hideColumn.setId("hideColumn");
+        hideColumn.selectedProperty().addListener((s,p,c) -> {
+            hideMiddleColumn(c);
+        });
+        
+        fixedHeight = new CheckBox("fixed height");
+        fixedHeight.setId("fixedHeight");
+        fixedHeight.selectedProperty().addListener((s,p,c) -> {
+            updatePane();
+        });
 
         // layout
 
@@ -191,6 +202,8 @@ public class TableViewPage extends TestPaneBase {
         p.label("Selection Model:");
         p.option(selectionSelector);
         p.option(nullFocusModel);
+        p.option(hideColumn);
+        p.option(fixedHeight);
         setOptions(p);
 
         demoSelector.getSelectionModel().selectFirst();
@@ -572,14 +585,17 @@ public class TableViewPage extends TestPaneBase {
         table = new TableView<>();
         table.getSelectionModel().setCellSelectionEnabled(cellSelection);
         table.getSelectionModel().setSelectionMode(selectionMode);
-        if(nullSelectionModel) {
+        if (nullSelectionModel) {
             table.setSelectionModel(null);
         }
-        if(nullFocusModel.isSelected()) {
+        if (nullFocusModel.isSelected()) {
             table.setFocusModel(null);
         }
-        
-        Callback<ResizeFeatures,Boolean> p = createPolicy(policy);
+        if (fixedHeight.isSelected()) {
+            table.setFixedCellSize(20);
+        }
+
+        Callback<ResizeFeatures, Boolean> p = createPolicy(policy);
         table.setColumnResizePolicy(p);
 
         TableColumn<String,String> lastColumn = null;
@@ -657,10 +673,25 @@ public class TableViewPage extends TestPaneBase {
                 throw new Error("?" + x);
             }
         }
+        
+        hideMiddleColumn(hideColumn.isSelected());
 
         BorderPane bp = new BorderPane();
         bp.setCenter(table);
         return bp;
+    }
+    
+    protected void hideMiddleColumn(boolean on) {
+        if (on) {
+            int ct = table.getColumns().size();
+            if (ct > 0) {
+                table.getColumns().get(ct / 2).setVisible(false);
+            }
+        } else {
+            for (TableColumn c: table.getColumns()) {
+                c.setVisible(true);
+            }
+        }
     }
 
     protected String newItem() {
