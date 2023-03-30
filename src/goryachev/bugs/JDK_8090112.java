@@ -1,4 +1,4 @@
-package goryachev.apps;
+package goryachev.bugs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
