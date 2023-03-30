@@ -290,9 +290,9 @@ public class RichTextAreaDemoPane extends BorderPane {
             
             Menu m2;
             items.add(m2 = new Menu("Text Color"));
-            colorMenu(m2, sel, Color.DARKGREEN);
-            colorMenu(m2, sel, Color.DARKRED);
-            colorMenu(m2, sel, Color.DARKBLUE);
+            colorMenu(m2, sel, Color.GREEN);
+            colorMenu(m2, sel, Color.RED);
+            colorMenu(m2, sel, Color.BLUE);
             colorMenu(m2, sel, null);
 
             items.add(m2 = new Menu("Text Size"));

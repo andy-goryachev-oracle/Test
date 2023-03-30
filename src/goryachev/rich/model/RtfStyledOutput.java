@@ -175,11 +175,13 @@ public abstract class RtfStyledOutput implements StyledOutput {
     }
 
     private void writeTextSegment(StyledSegment seg) throws IOException {
-        // TODO checkCancelled();
+        checkCancelled();
 
         if (startOfLine) {
             // first line indent 0, left aligned
-            write("\\fi0\\ql ");
+            write("\\fi0\\ql ");            
+            prevStyle = null;
+            
             startOfLine = false;
         }
 
@@ -383,6 +385,16 @@ public abstract class RtfStyledOutput implements StyledOutput {
             v = 255;
         }
         return String.valueOf(v);
+    }
+    
+    private static void checkCancelled() throws IOException {
+        // check if interrupted
+        if(Thread.currentThread().isInterrupted()) {
+            // don't want to have it as a checked exception... may be throws Exception?
+            throw new IOException(new InterruptedException());
+        }
+        
+        // TODO check if nearly out of memory
     }
 
     /** RTF is unable to specify colors inline it seems, needs a color lookup table */
