@@ -170,9 +170,9 @@ public class TableViewPage extends TestPaneBase {
         addColumnButton.setText("Add Column");
         
         SplitMenuButton removeColumnButton = new SplitMenuButton(
-            menuItem("at the beginning", () -> addColumn(0)),
-            menuItem("in the middle", () -> addColumn(1)),
-            menuItem("at the end", () -> addColumn(2))
+            menuItem("at the beginning", () -> removeColumn(0)),
+            menuItem("in the middle", () -> removeColumn(1)),
+            menuItem("at the end", () -> removeColumn(2))
         );
         removeColumnButton.setText("Remove Column");
         
