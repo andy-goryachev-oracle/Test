@@ -95,14 +95,14 @@ public abstract class RtfStyledOutput implements StyledOutput {
         write("{\\rtf1\\ansi\\ansicpg1252\\uc1\\sl0\\sb0\\sa0\\deff0");
 
         // font table
-        write("{\\fonttbl{");
+        write("{\\fonttbl");
         int ix = 0;
         for (String family: fontTable.getItems()) {
             write("\\f");
             write(String.valueOf(ix++));
             write("\\fnil ");
             write(family);
-            write(";}");
+            write(";");
         }
         write("}\r\n");
         

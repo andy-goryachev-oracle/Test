@@ -304,6 +304,12 @@ public class RichTextAreaDemoPane extends BorderPane {
             sizeMenu(m2, sel, 75);
             sizeMenu(m2, sel, 60);
             sizeMenu(m2, sel, 50);
+            
+            items.add(m2 = new Menu("Font Family"));
+            fontMenu(m2, sel, "System");
+            fontMenu(m2, sel, "Monospaced");
+            fontMenu(m2, sel, "Zapf Dingbats");
+            fontMenu(m2, sel, "null");
         }
         
         items.add(new SeparatorMenuItem());
@@ -311,7 +317,14 @@ public class RichTextAreaDemoPane extends BorderPane {
         items.add(m = new MenuItem("Select All"));
         m.setOnAction((ev) -> control.selectAll());
     }
-    
+
+    protected void fontMenu(Menu menu, boolean selected, String family) {
+        MenuItem m = new MenuItem(family);
+        m.setDisable(!selected);
+        m.setOnAction((ev) -> apply(StyleAttrs.FONT_FAMILY, family));
+        menu.getItems().add(m);
+    }
+
     protected void sizeMenu(Menu menu, boolean selected, int percent) {
         MenuItem m = new MenuItem(percent + "%");
         m.setDisable(!selected);
