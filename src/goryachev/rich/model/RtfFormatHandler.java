@@ -50,7 +50,7 @@ public class RtfFormatHandler extends DataFormatHandler {
                 sb.append(s);
             }
         };
-        m.exportText(start, end, r.getColorTableBuilder());
+        m.exportText(start, end, r.firstPassBuilder());
         
         r.writePrologue();
         m.exportText(start, end, r);
@@ -70,7 +70,7 @@ public class RtfFormatHandler extends DataFormatHandler {
                 out.write(s.getBytes(ascii));
             }
         };
-        m.exportText(start, end, r.getColorTableBuilder());
+        m.exportText(start, end, r.firstPassBuilder());
         
         r.writePrologue();
         m.exportText(start, end, r);

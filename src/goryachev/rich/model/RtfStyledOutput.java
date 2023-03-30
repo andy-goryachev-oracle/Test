@@ -44,9 +44,8 @@ public abstract class RtfStyledOutput implements StyledOutput {
     /** outputs ASCII-encoded string */
     protected abstract void write(String s) throws IOException;
     
-    private final ColorTable colorTable = new ColorTable();
-    private String fontName = "Courier New";
-    private String fontSize = "18"; // font size in half points
+    private final LookupTable<Color> colorTable = new LookupTable<>(Color.BLACK);
+    private final LookupTable<String> fontTable = new LookupTable<>("Helvetica");
     private boolean startOfLine = true;
     private StyleAttrs prevStyle;
     private Color color;
@@ -55,17 +54,20 @@ public abstract class RtfStyledOutput implements StyledOutput {
     private boolean italic;
     private boolean under;
     private boolean strike;
+    private String fontFamily;
+    private Integer fontSize;
     
     public RtfStyledOutput() {
     }
 
-    public StyledOutput getColorTableBuilder() {
+    public StyledOutput firstPassBuilder() {
         return new StyledOutput() {
             @Override
             public void append(StyledSegment seg) throws IOException {
                 if (seg.isText()) {
                     StyleAttrs a = seg.getStyleAttrs();
                     if (a != null) {
+                        // colors
                         Color c = a.getTextColor();
                         if (c != null) {
                             colorTable.add(c);
@@ -78,6 +80,10 @@ public abstract class RtfStyledOutput implements StyledOutput {
                         //                    }
                         
                         // TODO font table
+                        String family = a.getFontFamily();
+                        if (family != null) {
+                            fontTable.add(family);
+                        }
                     }
                 }
             }
@@ -86,14 +92,23 @@ public abstract class RtfStyledOutput implements StyledOutput {
     
     public void writePrologue() throws IOException {
         // preamble
-        // TODO create font table
-        write("{\\rtf1\\ansi\\ansicpg1252\\uc1\\sl0\\sb0\\sa0\\deff0{\\fonttbl{\\f0\\fnil ");
-        write(fontName);
-        write(";}}\r\n");
+        write("{\\rtf1\\ansi\\ansicpg1252\\uc1\\sl0\\sb0\\sa0\\deff0");
+
+        // font table
+        write("{\\fonttbl{");
+        int ix = 0;
+        for (String family: fontTable.getItems()) {
+            write("\\f");
+            write(String.valueOf(ix++));
+            write("\\fnil ");
+            write(family);
+            write(";}");
+        }
+        write("}\r\n");
         
         // color table
         write("{\\colortbl ;");
-        for (Color c : colorTable.getColors()) {
+        for (Color c : colorTable.getItems()) {
             write("\\red");
             write(toInt255(c.getRed()));
             write("\\green");
@@ -119,12 +134,7 @@ public abstract class RtfStyledOutput implements StyledOutput {
 
     public void writeEpilogue() throws IOException {
         writeEndOfLine();
-        write("\r\n}}\r\n");
-    }
-
-    public void setFont(String fontName, int fontSize) {
-        this.fontName = fontName;
-        this.fontSize = String.valueOf(2 * fontSize);
+        write("\r\n}\r\n");
     }
 
     private void writeEndOfLine() throws IOException {
@@ -168,10 +178,6 @@ public abstract class RtfStyledOutput implements StyledOutput {
         // TODO checkCancelled();
 
         if (startOfLine) {
-            // TODO on each font size change
-            write("{\\f0\\fs");
-            write(fontSize);
-            
             // first line indent 0, left aligned
             write("\\fi0\\ql ");
             startOfLine = false;
@@ -185,6 +191,8 @@ public abstract class RtfStyledOutput implements StyledOutput {
             boolean ita;
             boolean und;
             boolean str;
+            String fam;
+            Integer fsize;
 
             if (st == null) {
                 col = null;
@@ -193,6 +201,8 @@ public abstract class RtfStyledOutput implements StyledOutput {
                 ita = false;
                 und = false;
                 str = false;
+                fam = null;
+                fsize = null;
             } else {
                 col = st.getTextColor();
                 bg = null; // TODO mixBackground(st.getBackgroundColor());
@@ -200,11 +210,34 @@ public abstract class RtfStyledOutput implements StyledOutput {
                 ita = st.isItalic();
                 und = st.isUnderline();
                 str = st.isStrikeThrough();
+                fam = st.getFontFamily();
+                fsize = st.getFontSize();
             }
 
             prevStyle = st;
 
             // emit changes
+            
+            if (Util.notEquals(fontFamily, fam)) {
+                String s = fontTable.getIndexFor(fam);
+                if(s == null) {
+                    s = "0";
+                }
+                write("\\f");
+                write(s);
+
+                fontFamily = fam;
+            }
+
+            if (Util.notEquals(fontSize, fsize)) {
+                write("\\fs");
+                double fs = 24.0; // twice the points
+                if (fsize != null) {
+                    fs = fs * (fsize / 100.0);
+                }
+                write(String.valueOf((int)Math.round(fs)));
+                fontSize = fsize;
+            }
 
             if (Util.notEquals(col, color)) {
                 if (col == null) {
@@ -213,7 +246,6 @@ public abstract class RtfStyledOutput implements StyledOutput {
                     String s = colorTable.getIndexFor(col);
                     if (s == null) {
                         s = "0";
-                        //log.warn("no entry for " + col);
                     }
 
                     write("\\cf");
@@ -354,27 +386,29 @@ public abstract class RtfStyledOutput implements StyledOutput {
     }
 
     /** RTF is unable to specify colors inline it seems, needs a color lookup table */
-    protected static class ColorTable {
-        private final ArrayList<Color> colors = new ArrayList();
-        private final HashMap<Color, String> indexes = new HashMap();
+    protected static class LookupTable<T> {
+        private final ArrayList<T> items = new ArrayList<>();
+        private final HashMap<T, String> indexes = new HashMap<>();
 
-        public ColorTable() {
-            add(Color.BLACK);
-        }
-
-        public void add(Color c) {
-            if (!indexes.containsKey(c)) {
-                colors.add(c);
-                indexes.put(c, String.valueOf(colors.size()));
+        public LookupTable(T initValue) {
+            if(initValue != null) {
+                add(initValue);
             }
         }
 
-        public String getIndexFor(Color c) {
+        public void add(T item) {
+            if (!indexes.containsKey(item)) {
+                items.add(item);
+                indexes.put(item, String.valueOf(items.size()));
+            }
+        }
+
+        public String getIndexFor(T c) {
             return indexes.get(c);
         }
 
-        public List<Color> getColors() {
-            return colors;
+        public List<T> getItems() {
+            return items;
         }
     }
 }
