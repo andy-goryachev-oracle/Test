@@ -50,6 +50,7 @@ import javafx.stage.Screen;
 import javafx.util.Duration;
 import goryachev.rich.RichTextArea.Cmd;
 import goryachev.rich.model.DataFormatHandler;
+import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.model.StyledInput;
 import goryachev.rich.model.StyledOutput;
 import goryachev.rich.model.StyledTextModel;
@@ -1038,7 +1039,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                     ClipboardContent c = new ClipboardContent();
                     for (DataFormat f : fs) {
                         DataFormatHandler h = m.getDataFormatHandler(f);
-                        Object v = h.copy(m, start, end);
+                        Object v = h.copy(m, resolver(), start, end);
                         if (v != null) {
                             c.put(f, v);
                         }
@@ -1226,5 +1227,14 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         }
 
         return new TextPos(index, textLength);
+    }
+    
+    protected StyleResolver resolver() {
+        return new StyleResolver() {
+            @Override
+            public StyleAttrs convert(String directStyle, String[] css) {
+                return skin.convert(directStyle, css);
+            }
+        };
     }
 }

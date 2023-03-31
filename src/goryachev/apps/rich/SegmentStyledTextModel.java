@@ -37,6 +37,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
 import goryachev.rich.TextPos;
 import goryachev.rich.model.NodeStyledParagraph;
+import goryachev.rich.model.RtfFormatHandler;
 import goryachev.rich.model.SimpleStyledImageParagraph;
 import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.model.StyledOutput;
@@ -50,6 +51,7 @@ public class SegmentStyledTextModel extends StyledTextModelReadOnlyBase {
     private final ArrayList<StyledParagraph> paragraphs = new ArrayList<>();
 
     public SegmentStyledTextModel() {
+        registerDataFormatHandler(new RtfFormatHandler());
     }
 
     public static SegmentStyledTextModel from(String text) {

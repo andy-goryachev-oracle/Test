@@ -33,7 +33,9 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SkinBase;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import goryachev.rich.RichTextArea.Cmd;
+import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.util.NewAPI;
 
 /**
@@ -51,6 +53,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     private final VFlow vflow;
     private final ScrollBar vscroll;
     private final ScrollBar hscroll;
+    private static final Text measurer = makeMeasurer();
 
     protected RichTextAreaSkin(RichTextArea control) {
         super(control);
@@ -155,5 +158,28 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         if(f != null) {
             f.run();
         }
+    }
+    
+    private static Text makeMeasurer() {
+        Text t = new Text("8");
+        t.setManaged(false);
+        return t;
+    }
+
+    public StyleAttrs convert(String directStyle, String[] css) {
+        StyleAttrs a = new StyleAttrs();
+        vflow.getChildren().add(measurer);
+        try {
+            measurer.setStyle(directStyle);
+            if (css == null) {
+                measurer.getStyleClass().clear();
+            } else {
+                measurer.getStyleClass().setAll(css);
+            }
+            measurer.applyCss();
+        } finally {
+            vflow.getChildren().remove(measurer);
+        }
+        return StyleAttrs.from(measurer);
     }
 }

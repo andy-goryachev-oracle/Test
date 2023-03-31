@@ -27,6 +27,7 @@ package goryachev.rich.model;
 import java.io.IOException;
 import java.io.OutputStream;
 import javafx.scene.input.DataFormat;
+import goryachev.rich.StyleResolver;
 import goryachev.rich.TextPos;
 
 /**
@@ -56,31 +57,33 @@ public abstract class DataFormatHandler {
      * The caller guarantees that the {@code start} precedes the {@code end} position.
      *
      * - may throw an exception when out of memory, or detect the condition and bail out somehow
-     * 
+     *
      * TODO explain
-     * 
-     * @param end 
-     * @param start 
+     *
      * @param model 
-     * 
+     * @param resolver TODO
+     * @param start 
+     * @param end 
      * @return
      * @throws IOException 
      */
-    public abstract Object copy(StyledTextModel model, TextPos start, TextPos end) throws IOException;
+    public abstract Object copy(StyledTextModel model, StyleResolver resolver, TextPos start, TextPos end) throws IOException;
     
     /**
      * Save the text range to the output stream (e.g. save to file).
-     * 
+     *
      * TODO may need to specify additional options:
      * - encoding (platform, utf-8)?
      * - line separator
      *
      * TODO explain
-     * 
+     *
+     * @param resolver TODO
      * @param outputFile
+     *
      * @throws IOException 
      */
-    public abstract void save(StyledTextModel model, TextPos start, TextPos end, OutputStream out) throws IOException;
+    public abstract void save(StyledTextModel model, StyleResolver resolver, TextPos start, TextPos end, OutputStream out) throws IOException;
     
     private final DataFormat format;
 

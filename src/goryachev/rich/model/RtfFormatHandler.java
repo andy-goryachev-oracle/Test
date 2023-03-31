@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import javafx.scene.input.DataFormat;
+import goryachev.rich.StyleResolver;
 import goryachev.rich.TextPos;
 
 public class RtfFormatHandler extends DataFormatHandler {
@@ -43,9 +44,9 @@ public class RtfFormatHandler extends DataFormatHandler {
     }
 
     @Override
-    public Object copy(StyledTextModel m, TextPos start, TextPos end) throws IOException {
+    public Object copy(StyledTextModel m, StyleResolver resolver, TextPos start, TextPos end) throws IOException {
         StringBuilder sb = new StringBuilder(65536);
-        RtfStyledOutput r = new RtfStyledOutput() {
+        RtfStyledOutput r = new RtfStyledOutput(resolver) {
             protected void write(String s) throws IOException {
                 sb.append(s);
             }
@@ -62,8 +63,8 @@ public class RtfFormatHandler extends DataFormatHandler {
     }
 
     @Override
-    public void save(StyledTextModel m, TextPos start, TextPos end, OutputStream out) throws IOException {
-        RtfStyledOutput r = new RtfStyledOutput() {
+    public void save(StyledTextModel m, StyleResolver resolver, TextPos start, TextPos end, OutputStream out) throws IOException {
+        RtfStyledOutput r = new RtfStyledOutput(resolver) {
             private static final Charset ascii = Charset.forName("ASCII");
 
             protected void write(String s) throws IOException {

@@ -28,7 +28,6 @@ import java.util.Random;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import goryachev.rich.model.RtfFormatHandler;
 
 /**
  * RichTextArea demo model.
@@ -37,8 +36,6 @@ public class DemoModel extends SegmentStyledTextModel {
     private final SimpleStringProperty textField = new SimpleStringProperty();
     
     public DemoModel() {
-        registerDataFormatHandler(new RtfFormatHandler());
-        
         String ARABIC = "arabic";
         String CODE = "code";
         String RED = "red";

@@ -32,7 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
+import goryachev.rich.StyleResolver;
+import goryachev.rich.util.CachingStyleResolver;
 import goryachev.rich.util.Util;
 
 /**
@@ -47,6 +48,7 @@ public abstract class RtfStyledOutput implements StyledOutput {
     
     private final LookupTable<Color> colorTable = new LookupTable<>(Color.BLACK);
     private final LookupTable<String> fontTable = new LookupTable<>("system");
+    private final StyleResolver resolver;
     private boolean startOfLine = true;
     private StyleAttrs prevStyle;
     private Color color;
@@ -58,7 +60,8 @@ public abstract class RtfStyledOutput implements StyledOutput {
     private String fontFamily;
     private Integer fontSize;
     
-    public RtfStyledOutput() {
+    public RtfStyledOutput(StyleResolver r) {
+        this.resolver = new CachingStyleResolver(r);
     }
 
     public StyledOutput firstPassBuilder() {
@@ -68,8 +71,13 @@ public abstract class RtfStyledOutput implements StyledOutput {
                 if (seg.isText()) {
                     StyleAttrs a = seg.getStyleAttrs();
                     if (a == null) {
-                        // TODO resolve attributes here
-                    } else {
+                        // convert styles to attributes
+                        String sty = seg.getDirectStyle();
+                        String[] css = seg.getStyles();
+                        a = resolver.convert(sty, css);
+                    }
+                    
+                    if(a != null) {
                         // colors
                         Color c = a.getTextColor();
                         if (c != null) {
@@ -222,8 +230,15 @@ public abstract class RtfStyledOutput implements StyledOutput {
             startOfLine = false;
         }
 
-        StyleAttrs st = seg.getStyleAttrs();
-        if (Util.notEquals(st, prevStyle)) {
+        StyleAttrs a = seg.getStyleAttrs();
+        if (a == null) {
+            // convert styles to attributes
+            String sty = seg.getDirectStyle();
+            String[] css = seg.getStyles();
+            a = resolver.convert(sty, css);
+        }
+
+        if (Util.notEquals(a, prevStyle)) {
             Color col;
             Color bg;
             boolean bld;
@@ -233,7 +248,7 @@ public abstract class RtfStyledOutput implements StyledOutput {
             String fam;
             Integer fsize;
 
-            if (st == null) {
+            if (a == null) {
                 col = null;
                 bg = null;
                 bld = false;
@@ -243,17 +258,17 @@ public abstract class RtfStyledOutput implements StyledOutput {
                 fam = null;
                 fsize = null;
             } else {
-                col = st.getTextColor();
+                col = a.getTextColor();
                 bg = null; // TODO mixBackground(st.getBackgroundColor());
-                bld = st.isBold();
-                ita = st.isItalic();
-                und = st.isUnderline();
-                str = st.isStrikeThrough();
-                fam = st.getFontFamily();
-                fsize = st.getFontSize();
+                bld = a.isBold();
+                ita = a.isItalic();
+                und = a.isUnderline();
+                str = a.isStrikeThrough();
+                fam = a.getFontFamily();
+                fsize = a.getFontSize();
             }
 
-            prevStyle = st;
+            prevStyle = a;
 
             // emit changes
             

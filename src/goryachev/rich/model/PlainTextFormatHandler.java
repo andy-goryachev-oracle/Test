@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import javafx.scene.input.DataFormat;
+import goryachev.rich.StyleResolver;
 import goryachev.rich.TextPos;
 
 public class PlainTextFormatHandler extends DataFormatHandler {
@@ -42,14 +43,14 @@ public class PlainTextFormatHandler extends DataFormatHandler {
     }
 
     @Override
-    public Object copy(StyledTextModel m, TextPos start, TextPos end) throws IOException {
+    public Object copy(StyledTextModel m, StyleResolver resolver, TextPos start, TextPos end) throws IOException {
         StringBuilderStyledOutput out = new StringBuilderStyledOutput();
         m.exportText(start, end, out);
         return out.getOutput();
     }
 
     @Override
-    public void save(StyledTextModel m, TextPos start, TextPos end, OutputStream out) throws IOException {
+    public void save(StyledTextModel m, StyleResolver resolver, TextPos start, TextPos end, OutputStream out) throws IOException {
         Charset charset = Charset.forName("utf-8");
         byte[] newline = System.getProperty("line.separator").getBytes(charset);
 

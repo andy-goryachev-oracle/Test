@@ -25,8 +25,12 @@
 package goryachev.rich.model;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Set;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import goryachev.rich.util.Util;
 
 /**
@@ -244,5 +248,48 @@ public class StyleAttrs {
     
     public String getFontFamily() {
         return (String)get(FONT_FAMILY);
+    }
+
+    /** retrieves style attributes from a Text node */
+    public static StyleAttrs from(Text t) {
+        StyleAttrs a = new StyleAttrs();
+        Font f = t.getFont();
+        String st = f.getStyle().toLowerCase(Locale.US);
+        boolean bold = st.contains("bold");
+        boolean italic = st.contains("italic"); // oblique? any other names?
+
+        if (bold) {
+            a.set(BOLD, true);
+        }
+
+        if (italic) {
+            a.set(ITALIC, true);
+        }
+
+        if (t.isStrikethrough()) {
+            a.set(STRIKE_THROUGH, true);
+        }
+
+        if (t.isUnderline()) {
+            a.set(UNDERLINE, true);
+        }
+
+        String family = f.getFamily();
+        a.set(FONT_FAMILY, family);
+
+        double sz = f.getSize();
+        // TODO we could use a default font in the rich text area
+        int size = (int)Math.round(sz / 0.12); // in percent relative to size 12
+        if (size != 100) {
+            a.set(FONT_SIZE, size);
+        }
+
+        Paint x = t.getFill();
+        if (x instanceof Color c) {
+            // we do not support gradients (although we could get the first color, for example)
+            a.set(TEXT_COLOR, c);
+        }
+
+        return a;
     }
 }
