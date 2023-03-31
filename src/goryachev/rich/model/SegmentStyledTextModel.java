@@ -152,7 +152,10 @@ public class SegmentStyledTextModel extends ReadOnlyStyledTextModel {
     
     @Override
     protected void exportParagraph(int index, int start, int end, StyledOutput out) throws IOException {
-        // TODO use segments
-        super.exportParagraph(index, start, end, out);
+        StyledParagraph par = paragraphs.get(index);
+        if (par instanceof SegmentStyledTextParagraph p) {
+            p.export(start, end, out);
+        }
+        // TODO image?
     }
 }

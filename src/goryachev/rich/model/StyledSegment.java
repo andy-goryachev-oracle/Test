@@ -32,17 +32,9 @@ import javafx.scene.Node;
  * 
  * Represents:
  * 1. a single text segment with direct style and/or style names
- * 2. an inline Node
- * 3. a paragraph containing a single Node
- *
- * TODO
- * The main issue with StyledText (or, specifically, its styles) is that a lookup is needed to
- * convert styles to text attributes for the purposes of export.  Similarly, it might be difficult to
- * import external styles and attributes into those supported by the model.
- * 
- * UNLESS, specific attributes are used (colors, fonts, font attributes, paragraph attributes), and a mapping
- * is provided between StyledText attributes and the (default) RichTextArea CSS.
- * This might require a StyleSheet + supported subset of -fx- properties.
+ * 2. a line break
+ * 3. an inline Node
+ * 4. a paragraph containing a single Node
  * 
  * TODO in addition to is*(), add getType() returning an enum { TEXT, PARAGRAPH, INLINE_NODE, LINE_BREAK }
  * TODO perhaps add guarded/unguarded factory methods (of(), ofGuarded()) that check for <0x20, or specify that
@@ -64,7 +56,11 @@ public abstract class StyledSegment {
      */
     public boolean isLineBreak() { return false; }
     
-    // TODO isInlineNode?
+    /**
+     * Returns true if this segment represents an inline Node.
+     * TODO not yet supported due to https://bugs.openjdk.org/browse/JDK-8305001
+     */
+    public boolean isInlineNode() { return false; }
     
     /**
      * Returns the text associated with this segment.
@@ -95,7 +91,7 @@ public abstract class StyledSegment {
     /**
      * This method must return StyleAttrs (or null) for this segment.
      * Keep in mind that the actual attributes and values might depend on the view that generated the segment,
-     * unless the model itself maintains attributes independently of the view.
+     * unless the model maintains the style attributes independently of the view.
      */
     public StyleAttrs getStyleAttrs() { return null; }
     
@@ -227,6 +223,28 @@ public abstract class StyledSegment {
                 }
                 sb.append("}");
                 return sb.toString();
+            }
+        };
+    }
+
+    /**
+     * Creates a StyledSegment which consists of a single inline Node.
+     */
+    public static StyledSegment inlineNode(Supplier<Node> generator) {
+        return new StyledSegment() {
+            @Override
+            public boolean isInlineNode() {
+                return true;
+            }
+
+            @Override
+            public String getText() {
+                return " ";
+            }
+
+            @Override
+            public Supplier<Node> getNodeGenerator() {
+                return generator;
             }
         };
     }

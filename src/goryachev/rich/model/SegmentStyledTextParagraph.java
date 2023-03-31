@@ -26,11 +26,13 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 import javafx.scene.Node;
 import goryachev.rich.TextCell;
+import goryachev.rich.model.EditableRichTextModel.RSegment;
 
 public class SegmentStyledTextParagraph extends StyledParagraph {
     private ArrayList<Segment> segments;
@@ -58,6 +60,31 @@ public class SegmentStyledTextParagraph extends StyledParagraph {
         }
         return b;
     }
+    
+    public void export(int start, int end, StyledOutput out) throws IOException {
+        if(segments == null) {
+            out.append(StyledSegment.of(""));
+        } else {
+            int off = 0;
+            int ct = size();
+            for (int i = 0; i < ct; i++) {
+                if (off >= end) {
+                    return;
+                }
+
+                Segment seg = segments.get(i);
+                String text = seg.getText();
+                int len = (text == null ? 0: text.length());
+                if (start <= off) {
+                    int ix0 = Math.max(0, start - off);
+                    int ix1 = Math.min(len, end - off);
+                    StyledSegment ss = seg.createStyledSegment(ix0, ix1);
+                    out.append(ss);
+                }
+                off += len;
+            }
+        }
+    }
 
     @Override
     public String getText() {
@@ -78,6 +105,10 @@ public class SegmentStyledTextParagraph extends StyledParagraph {
         }
         return segments;
     }
+    
+    protected int size() {
+        return segments == null ? 0 : segments.size();
+    }
 
     public void addSegment(String text, String style, String[] css) {
         // TODO check for newlines/formfeed chars
@@ -87,9 +118,12 @@ public class SegmentStyledTextParagraph extends StyledParagraph {
     public void addSegment(Supplier<Node> generator) {
         segments().add(new NodeSegment(generator));
     }
-    
+
+    /** base class */
     public static abstract class Segment {
-        public String getText() { return null; }
+        public abstract String getText();
+
+        protected abstract StyledSegment createStyledSegment(int start, int end);
     }
     
     /** text segment */
@@ -108,6 +142,19 @@ public class SegmentStyledTextParagraph extends StyledParagraph {
         public String getText() {
             return text;
         }
+
+        @Override
+        protected StyledSegment createStyledSegment(int start, int end) {
+            int len = text.length();
+            String s;
+            if ((start <= 0) && (end >= len)) {
+                s = text;
+            } else {
+                s = text.substring(Math.max(0, start), Math.min(end, len));
+            }
+
+            return StyledSegment.of(s, style, css);
+        }
     }
     
     /** inline node segment */
@@ -122,6 +169,11 @@ public class SegmentStyledTextParagraph extends StyledParagraph {
         public String getText() {
             // must be one character
             return " ";
+        }
+
+        @Override
+        protected StyledSegment createStyledSegment(int start, int end) {
+            return StyledSegment.inlineNode(generator);
         }
     }
 }

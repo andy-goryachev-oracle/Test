@@ -67,7 +67,9 @@ public abstract class RtfStyledOutput implements StyledOutput {
             public void append(StyledSegment seg) throws IOException {
                 if (seg.isText()) {
                     StyleAttrs a = seg.getStyleAttrs();
-                    if (a != null) {
+                    if (a == null) {
+                        // TODO resolve attributes here
+                    } else {
                         // colors
                         Color c = a.getTextColor();
                         if (c != null) {
