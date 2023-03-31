@@ -34,9 +34,11 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.NodeOrientation;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.ContextMenuEvent;
@@ -52,7 +54,6 @@ import goryachev.rich.RichTextArea.Cmd;
 import goryachev.rich.model.DataFormatHandler;
 import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.model.StyledInput;
-import goryachev.rich.model.StyledOutput;
 import goryachev.rich.model.StyledTextModel;
 import goryachev.rich.util.BehaviorBase2;
 import goryachev.rich.util.KCondition;
@@ -1234,6 +1235,11 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             @Override
             public StyleAttrs convert(String directStyle, String[] css) {
                 return skin.convert(directStyle, css);
+            }
+
+            @Override
+            public WritableImage snapshot(Node n) {
+                return skin.snapshot(n);
             }
         };
     }

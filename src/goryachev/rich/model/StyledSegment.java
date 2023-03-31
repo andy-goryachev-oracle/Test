@@ -248,4 +248,21 @@ public abstract class StyledSegment {
             }
         };
     }
+    
+    /**
+     * Creates a StyledSegment for a paragraph that contains a Node.
+     */
+    public static StyledSegment nodeParagraph(Supplier<Node> generator) {
+        return new StyledSegment() {
+            @Override
+            public boolean isParagraph() {
+                return true;
+            }
+
+            @Override
+            public Supplier<Node> getNodeGenerator() {
+                return generator;
+            }
+        };
+    }
 }

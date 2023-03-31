@@ -35,6 +35,7 @@ import java.util.function.Supplier;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
+import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 import goryachev.rich.model.NodeStyledParagraph;
 import goryachev.rich.model.RtfFormatHandler;
@@ -42,6 +43,7 @@ import goryachev.rich.model.SimpleStyledImageParagraph;
 import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.model.StyledOutput;
 import goryachev.rich.model.StyledParagraph;
+import goryachev.rich.model.StyledSegment;
 import goryachev.rich.model.StyledTextModelReadOnlyBase;
 
 /**
@@ -163,7 +165,12 @@ public class SegmentStyledTextModel extends StyledTextModelReadOnlyBase {
         StyledParagraph par = paragraphs.get(index);
         if (par instanceof SegmentStyledTextParagraph p) {
             p.export(start, end, out);
+        } else if(par instanceof SimpleStyledImageParagraph p) {
+            StyledSegment s = StyledSegment.nodeParagraph(() -> p.createTextCell().getContent());
+            out.append(s);
+        } else if(par instanceof NodeStyledParagraph p) {
+            StyledSegment s = StyledSegment.nodeParagraph(() -> p.createTextCell().getContent());
+            out.append(s);
         }
-        // TODO image?
     }
 }

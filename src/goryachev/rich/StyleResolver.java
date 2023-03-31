@@ -24,6 +24,9 @@
  */
 package goryachev.rich;
 
+import javafx.scene.Node;
+import javafx.scene.image.WritableImage;
+import goryachev.rich.model.StyleAttribute;
 import goryachev.rich.model.StyleAttrs;
 
 /**
@@ -40,4 +43,10 @@ public interface StyleResolver {
      */
     public StyleAttrs convert(String directStyle, String[] css);
 
+    /**
+     * Creates a snapshot of the specified Node.
+     * @param node
+     * @return snapshot
+     */
+    public WritableImage snapshot(Node node);
 }

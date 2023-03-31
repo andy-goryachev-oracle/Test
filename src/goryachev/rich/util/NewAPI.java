@@ -26,13 +26,18 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich.util;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javafx.application.ConditionalFeature;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Screen;
@@ -154,5 +159,12 @@ public class NewAPI {
 
     public static void beep() {
         // TODO not supported in FX
+    }
+    
+    public static byte[] writePNG(Image im) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(65536);
+        ImageIO.setUseCache(false);
+        ImageIO.write(SwingFXUtils.fromFXImage(im, null), "PNG", out);
+        return out.toByteArray();
     }
 }

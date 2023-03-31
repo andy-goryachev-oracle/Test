@@ -29,8 +29,10 @@ package goryachev.rich;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.control.SkinBase;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -181,5 +183,9 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
             vflow.getChildren().remove(measurer);
         }
         return StyleAttrs.from(measurer);
+    }
+    
+    public WritableImage snapshot(Node n) {
+        return vflow.snapshot(n);
     }
 }

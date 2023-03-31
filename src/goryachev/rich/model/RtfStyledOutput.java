@@ -31,9 +31,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import javafx.scene.Node;
+import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import goryachev.rich.StyleResolver;
 import goryachev.rich.util.CachingStyleResolver;
+import goryachev.rich.util.NewAPI;
 import goryachev.rich.util.Util;
 
 /**
@@ -174,6 +177,9 @@ public abstract class RtfStyledOutput implements StyledOutput {
             writeNewLine();
         } else if (seg.isText()) {
             writeTextSegment(seg);
+        } else if (seg.isParagraph()) {
+            Node n = seg.getNodeGenerator().get();
+            writeParagraph(n);
         }
     }
 
@@ -349,8 +355,46 @@ public abstract class RtfStyledOutput implements StyledOutput {
         write(encoded);
     }
 
+    // TODO does not seem to work on Mac
+    private void writeParagraph(Node n) throws IOException {
+        WritableImage im = resolver.snapshot(n);
+        byte[] bytes = NewAPI.writePNG(im);
+        int w = (int)im.getWidth();
+        int h = (int)im.getHeight();
+
+        write("{\\pict \\pngblip");
+        //write("\\picscalex100\\picscaley100\\piccropl10\\piccropr0\\piccropt0\\piccropb0");
+        write("\\picw");
+        write(String.valueOf(w));
+        write("\\pich");
+        write(String.valueOf(h));
+        write("\\picwgoal");
+        write(String.valueOf(w));
+        write("\\pichgoal");
+        write(String.valueOf(h));
+        write("\r\n");
+        // There is no set maximum line length for an RTF file.
+        StringBuilder sb = new StringBuilder(2);
+        for(int i=0; i<bytes.length; i++) {
+            byte b = bytes[i];
+            hex2(sb, b);
+            write(sb.toString());
+            if((i % 80) == 78) {
+                write("\r\n");
+            }
+        }
+        write("\r\n}\r\n");
+    }
+    
+    private static void hex2(StringBuilder sb, byte b) {
+        sb.setLength(0);
+        String hex = "0123456789abcdef";
+        sb.append(hex.charAt((b >> 4) & 0x0f));
+        sb.append(hex.charAt(b & 0x0f));
+    }
+
     // TODO unit test!
-    private String encode(String text) {
+    private static String encode(String text) {
         if (text == null) {
             return "";
         }
@@ -400,7 +444,7 @@ public abstract class RtfStyledOutput implements StyledOutput {
         return sb.toString();
     }
 
-    private int indexOfSpecialChar(String text) {
+    private static int indexOfSpecialChar(String text) {
         int len = text.length();
         for (int i = 0; i < len; i++) {
             char c = text.charAt(i);

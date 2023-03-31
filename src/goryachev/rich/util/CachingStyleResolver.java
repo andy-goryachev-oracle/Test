@@ -25,6 +25,8 @@
 package goryachev.rich.util;
 
 import java.util.HashMap;
+import javafx.scene.Node;
+import javafx.scene.image.WritableImage;
 import goryachev.rich.StyleResolver;
 import goryachev.rich.model.StyleAttrs;
 
@@ -48,6 +50,11 @@ public class CachingStyleResolver implements StyleResolver {
             attrs.put(k, a);
         }
         return a;
+    }
+    
+    @Override
+    public WritableImage snapshot(Node node) {
+        return resolver.snapshot(node);
     }
 
     /** composite key */

@@ -40,7 +40,10 @@ import javafx.event.EventType;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
+import javafx.scene.Node;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
@@ -983,5 +986,24 @@ public class VFlow extends Pane {
         cache.clear();
         // TODO rebuild from start.lineIndex()
         recomputeLayout();
+    }
+    
+    public WritableImage snapshot(Node n) {
+        n.setManaged(false);
+        getChildren().add(n);
+        try {
+            n.applyCss();
+            if(n instanceof Region r) {
+                // or layout?
+                double w = getWidth(); // TODO padding
+                double h = r.prefHeight(w);
+                layoutInArea(r, 0, -h, w, h, 0, HPos.CENTER, VPos.CENTER);
+            }
+            SnapshotParameters p = new SnapshotParameters();
+            // TODO parameters?
+            return n.snapshot(p, null);
+        } finally {
+            getChildren().remove(n);
+        }
     }
 }
