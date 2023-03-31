@@ -37,7 +37,7 @@ import goryachev.rich.TextPos;
  * 
  * This model is suitable for relatively small
  */
-public class EditableRichTextModel extends EditableStyledTextModelBase {
+public class EditableRichTextModel extends StyledTextModelEditableBase {
     private final ArrayList<RParagraph> paragraphs = new ArrayList<>();
     // TODO dedup styles, later
     private final HashSet<StyleAttrs> styles = new HashSet<>();

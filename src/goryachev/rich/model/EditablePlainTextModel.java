@@ -36,7 +36,7 @@ import goryachev.rich.TextPos;
  * 
  * TODO should it be here or as a standard model?
  */
-public class EditablePlainTextModel extends EditableStyledTextModelBase {
+public class EditablePlainTextModel extends StyledTextModelEditableBase {
     private final ArrayList<String> paragraphs = new ArrayList<>();
     private static final String STYLE = "-fx-font-size:200%;";
 

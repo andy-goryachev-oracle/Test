@@ -24,7 +24,7 @@
  */
 // This code borrows heavily from the following project, with permission from the author:
 // https://github.com/andy-goryachev/FxEditor
-package goryachev.rich.model;
+package goryachev.apps.rich;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,7 +32,9 @@ import java.util.List;
 import java.util.function.Supplier;
 import javafx.scene.Node;
 import goryachev.rich.TextCell;
-import goryachev.rich.model.EditableRichTextModel.RSegment;
+import goryachev.rich.model.StyledOutput;
+import goryachev.rich.model.StyledParagraph;
+import goryachev.rich.model.StyledSegment;
 
 public class SegmentStyledTextParagraph extends StyledParagraph {
     private ArrayList<Segment> segments;

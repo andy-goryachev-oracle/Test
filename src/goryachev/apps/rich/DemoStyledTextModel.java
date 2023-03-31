@@ -30,7 +30,7 @@ import java.util.RandomAccess;
 import javafx.scene.text.TextFlow;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
-import goryachev.rich.model.ReadOnlyStyledTextModel;
+import goryachev.rich.model.StyledTextModelReadOnlyBase;
 import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.model.StyledParagraph;
 import goryachev.rich.util.NewAPI;
@@ -39,7 +39,7 @@ import goryachev.rich.util.NewAPI;
  * Demo StyledTextModel.
  * Does not support editing events - populate the model first, then pass it to the control.
  */
-public class DemoStyledTextModel extends ReadOnlyStyledTextModel {
+public class DemoStyledTextModel extends StyledTextModelReadOnlyBase {
     private final SList paragraphs;
     
     public DemoStyledTextModel(int size, boolean monospaced) {

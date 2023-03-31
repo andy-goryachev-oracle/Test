@@ -29,7 +29,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import goryachev.rich.model.RtfFormatHandler;
-import goryachev.rich.model.SegmentStyledTextModel;
 
 /**
  * RichTextArea demo model.

@@ -25,7 +25,6 @@
 package goryachev.apps.rich;
 
 import java.util.Random;
-import goryachev.rich.model.SegmentStyledTextModel;
 
 public class LargeTextModel extends SegmentStyledTextModel {
     private final String STYLE = "-fx-font-size:500%";

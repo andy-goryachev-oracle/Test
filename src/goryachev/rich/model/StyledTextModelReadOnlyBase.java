@@ -24,15 +24,51 @@
  */
 package goryachev.rich.model;
 
+import java.io.IOException;
+import java.util.function.Supplier;
+import javafx.scene.Node;
+import goryachev.rich.TextPos;
+
 /**
- * Editable StyledTextModel base class.
+ * Read-only StyledTextModel base class.
  */
-public abstract class EditableStyledTextModelBase extends StyledTextModel {
-    public EditableStyledTextModelBase() {
+public abstract class StyledTextModelReadOnlyBase extends StyledTextModel {
+    public StyledTextModelReadOnlyBase() {
+        registerDataFormatHandler(new PlainTextFormatHandler());
     }
 
     @Override
     public boolean isEditable() {
-        return true;
+        return false;
+    }
+
+    @Override
+    protected void removeRegion(TextPos start, TextPos end) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected int insertTextSegment(int index, int offset, StyledSegment text) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    protected void insertLineBreak(int index, int offset) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected void insertParagraph(int index, Supplier<Node> generator) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    protected boolean applyStyleImpl(TextPos start, TextPos end, StyleAttrs attrs) {
+        throw new UnsupportedOperationException();
+    }
+    
+    @Override
+    protected void exportParagraph(int index, int start, int end, StyledOutput out) throws IOException {
+        exportPlaintextSegments(index, start, end, out);
     }
 }
