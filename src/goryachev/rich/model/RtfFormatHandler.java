@@ -40,6 +40,7 @@ public class RtfFormatHandler extends DataFormatHandler {
     public StyledInput getStyledInput(Object src) {
         // TODO parse RTF
         String text = (src == null) ? "" : src.toString();
+        System.err.println(text);
         return StyledInput.of(text, null, null);
     }
 

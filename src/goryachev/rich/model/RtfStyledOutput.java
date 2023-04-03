@@ -180,6 +180,7 @@ public abstract class RtfStyledOutput implements StyledOutput {
         } else if (seg.isParagraph()) {
             Node n = seg.getNodeGenerator().get();
             writeParagraph(n);
+            writeNewLine();
         }
     }
 
@@ -362,16 +363,19 @@ public abstract class RtfStyledOutput implements StyledOutput {
         int w = (int)im.getWidth();
         int h = (int)im.getHeight();
 
-        write("{\\pict \\pngblip");
-        //write("\\picscalex100\\picscaley100\\piccropl10\\piccropr0\\piccropt0\\piccropb0");
+        write("{\\*\\shppict {\\pict \\pngblip");
+        write("\\picscalex100\\picscaley100\\piccropl10\\piccropr0\\piccropt0\\piccropb0");
         write("\\picw");
         write(String.valueOf(w));
         write("\\pich");
         write(String.valueOf(h));
         write("\\picwgoal");
-        write(String.valueOf(w));
+        // let's try to default to 6".  72 * 6 * 2 = 864
+        int wgoal = 864;
+        write(String.valueOf(wgoal));
+        int hgoal = h * wgoal / w;
         write("\\pichgoal");
-        write(String.valueOf(h));
+        write(String.valueOf(hgoal));
         write("\r\n");
         // There is no set maximum line length for an RTF file.
         StringBuilder sb = new StringBuilder(2);
@@ -379,11 +383,11 @@ public abstract class RtfStyledOutput implements StyledOutput {
             byte b = bytes[i];
             hex2(sb, b);
             write(sb.toString());
-            if((i % 80) == 78) {
+            if((i % 80) == 79) {
                 write("\r\n");
             }
         }
-        write("\r\n}\r\n");
+        write("\r\n}}\r\n");
     }
     
     private static void hex2(StringBuilder sb, byte b) {
