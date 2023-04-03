@@ -445,9 +445,16 @@ public class RichTextArea extends Control {
         return tabSizeProperty;
     }
 
-    // TODO return the new caret position?
-    public void replaceText(TextPos start, TextPos end, String text) {
-        // TODO additional method for StyledStream?
+    /**
+     * Replaces selected text.
+     * @return new caret position if a change has been made, or null.
+     */
+    public TextPos replaceText(TextPos start, TextPos end, String text) {
+        if (canEdit()) {
+            StyledTextModel m = getModel();
+            return m.replace(start, end, text);
+        }
+        return null;
     }
     
     public void copy() {

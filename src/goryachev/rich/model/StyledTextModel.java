@@ -222,7 +222,7 @@ public abstract class StyledTextModel {
      */
     public TextPos replace(TextPos start, TextPos end, String text) {
         if (isEditable()) {
-            // TODO get style
+            // TODO either css or style attributes
             String direct = null;
             String[] css = null;
             return replace(start, end, StyledInput.of(text, direct, css));
