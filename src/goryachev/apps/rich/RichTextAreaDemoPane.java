@@ -42,7 +42,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
-import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -273,6 +272,7 @@ public class RichTextAreaDemoPane extends BorderPane {
 
         if (styled) {
             StyleAttrs a = control.getActiveStyleAttrs();
+            System.err.println(a); // FIX
 
             items.add(new SeparatorMenuItem());
 
@@ -316,7 +316,10 @@ public class RichTextAreaDemoPane extends BorderPane {
             fontMenu(m2, sel, "Cursive");
             fontMenu(m2, sel, "Fantasy");
             fontMenu(m2, sel, "Monospaced");
-            fontMenu(m2, sel, "Zapf Dingbats");
+            m2.getItems().add(new SeparatorMenuItem());
+            fontMenu(m2, sel, "Arial");
+            fontMenu(m2, sel, "Courier New");
+            fontMenu(m2, sel, "Times New Roman");
             fontMenu(m2, sel, "null");
         }
 
