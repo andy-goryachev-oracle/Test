@@ -974,6 +974,13 @@ public class VFlow extends Pane {
 
     // TODO this implementation might be more advanced to reduce the amount of re-computation and re-flow
     public void handleTextUpdated(TextPos start, TextPos end, int addedTop, int linesAdded, int addedBottom) {
+        // change origin if start position is before the top line
+        Origin origin = getOrigin();
+        if(start.index() < origin.index()) {
+            origin = new Origin(start.index(), 0);
+            setOrigin(origin);
+        }
+        
         // TODO clear cache >= start, update layout
         cache.clear();
         // TODO rebuild from start.lineIndex()
