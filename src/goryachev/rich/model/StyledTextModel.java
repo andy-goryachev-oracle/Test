@@ -27,8 +27,9 @@
 package goryachev.rich.model;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 import javafx.scene.Node;
@@ -136,10 +137,24 @@ public abstract class StyledTextModel {
      */
     public abstract StyleAttrs getStyledAttrs(TextPos pos);
     
+    /** stores the handler and its priority */
+    private static record FHPriority(DataFormatHandler handler, int priority) implements Comparable<FHPriority>{
+        @Override
+        public int compareTo(FHPriority x) {
+            int d = x.priority - priority;
+            if(d == 0) {
+                // compare formats to guard against someone adding two different formats under the same priority
+                String us = handler().getDataFormat().toString();
+                String them = x.handler().getDataFormat().toString();
+                d = them.compareTo(us);
+            }
+            return d;
+        }
+    }
+    
     private final CopyOnWriteArrayList<ChangeListener> listeners = new CopyOnWriteArrayList();
-    private final HashMap<DataFormat,DataFormatHandler> handlers = new HashMap<>(4);
+    private final HashMap<DataFormat,FHPriority> handlers = new HashMap<>(4);
     private final Markers markers = new Markers();
-    // TODO special BEGIN/END markers? especially END (would need a leading/trailing bias then)
 
     public StyledTextModel() {
     }
@@ -166,19 +181,33 @@ public abstract class StyledTextModel {
         listeners.remove(listener);
     }
 
-    public DataFormatHandler registerDataFormatHandler(DataFormatHandler h) {
-        return handlers.put(h.getDataFormat(), h);
+    /**
+     * Registers a format handler for input/output operation such as copy(), paste(), and save().
+     * Priority determines the format chosen for operations with the {@link javafx.scene.input.Clipboard}
+     * when input data is available in more than one supported format.
+     * 
+     * @param h data format handler
+     * @param priority from 0 (lowest, usually plain text) to {@code Integer.MAX_VALUE}, for a native model format.
+     */
+    public void registerDataFormatHandler(DataFormatHandler h, int priority) {
+        handlers.put(h.getDataFormat(), new FHPriority(h, priority));
     }
 
-    /** returns supported data formats */
+    /** returns supported data formats, in the order of priority - from high to low */
     public DataFormat[] getSupportedDataFormats() {
-        // TODO must come in specific order: from richer to simpler
-        Set<DataFormat> formats = handlers.keySet();
-        return formats.toArray(new DataFormat[formats.size()]);
+        ArrayList<FHPriority> fs = new ArrayList<>(handlers.values());
+        Collections.sort(fs);
+        int sz = fs.size();
+        DataFormat[] formats = new DataFormat[sz];
+        for(int i=0; i<sz; i++) {
+            formats[i] = fs.get(i).handler().getDataFormat();
+        }
+        return formats;
     }
 
     public DataFormatHandler getDataFormatHandler(DataFormat format) {
-        return handlers.get(format);
+        FHPriority p = handlers.get(format);
+        return p == null ? null : p.handler();
     }
 
     /**
@@ -263,7 +292,6 @@ public abstract class StyledTextModel {
     }
     
     protected void fireChangeEvent(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
-        //System.out.println("fireChangeEvent start=" + start + " end=" + end + " top=" + charsTop + " lines=" + linesAdded + " btm=" + charsBottom); // FIX
         markers.update(start, end, charsTop, linesAdded, charsBottom);
 
         for (ChangeListener li : listeners) {
@@ -272,7 +300,6 @@ public abstract class StyledTextModel {
     }
     
     protected void fireStyleChangeEvent(TextPos start, TextPos end) {
-        //System.out.println("fireChangeEvent start=" + start + " end=" + end); // FIX
         for (ChangeListener li : listeners) {
             li.eventStyleUpdated(start, end);
         }

@@ -42,7 +42,7 @@ public class EditablePlainTextModel extends StyledTextModelEditableBase {
 
     public EditablePlainTextModel() {
         paragraphs.add("");
-        registerDataFormatHandler(new PlainTextFormatHandler());
+        registerDataFormatHandler(new PlainTextFormatHandler(), 0);
     }
 
     @Override

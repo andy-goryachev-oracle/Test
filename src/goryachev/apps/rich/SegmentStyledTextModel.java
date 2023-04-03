@@ -53,7 +53,7 @@ public class SegmentStyledTextModel extends StyledTextModelReadOnlyBase {
     private final ArrayList<StyledParagraph> paragraphs = new ArrayList<>();
 
     public SegmentStyledTextModel() {
-        registerDataFormatHandler(new RtfFormatHandler());
+        registerDataFormatHandler(new RtfFormatHandler(), 100);
     }
 
     public static SegmentStyledTextModel from(String text) {

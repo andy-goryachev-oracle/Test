@@ -45,8 +45,8 @@ public class EditableRichTextModel extends StyledTextModelEditableBase {
     public EditableRichTextModel() {
         paragraphs.add(new RParagraph());
 
-        registerDataFormatHandler(new RtfFormatHandler());
-        registerDataFormatHandler(new PlainTextFormatHandler());
+        registerDataFormatHandler(new RtfFormatHandler(), 100);
+        registerDataFormatHandler(new PlainTextFormatHandler(), 0);
     }
     
     @Override

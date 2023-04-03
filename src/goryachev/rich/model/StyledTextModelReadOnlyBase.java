@@ -34,7 +34,7 @@ import goryachev.rich.TextPos;
  */
 public abstract class StyledTextModelReadOnlyBase extends StyledTextModel {
     public StyledTextModelReadOnlyBase() {
-        registerDataFormatHandler(new PlainTextFormatHandler());
+        registerDataFormatHandler(new PlainTextFormatHandler(), 0);
     }
 
     @Override
