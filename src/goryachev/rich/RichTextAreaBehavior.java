@@ -123,6 +123,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         map(Cmd.PAGE_DOWN, this::pageDown, KeyCode.PAGE_DOWN);
         map(Cmd.PAGE_UP, this::pageUp, KeyCode.PAGE_UP);
         map(Cmd.PASTE, this::paste, KeyCode.V, KCondition.SHORTCUT);
+        map(Cmd.PASTE_PLAIN_TEXT, this::pastePlainText);
         map(Cmd.SELECT_ALL, this::selectAll, KeyCode.A, KCondition.SHORTCUT);
         map(Cmd.SELECT_LEFT, this::selectLeft, KeyCode.LEFT, KCondition.SHIFT);
         map(Cmd.SELECT_RIGHT, this::selectRight, KeyCode.RIGHT, KCondition.SHIFT);
@@ -1002,6 +1003,27 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             StyledInput in = h.getStyledInput(src);
             TextPos p = m.replace(caret, anchor, in);
             control.moveCaret(p, false);
+        }
+    }
+
+    public void pastePlainText() {
+        if (canEdit()) {
+            Clipboard c = Clipboard.getSystemClipboard();
+            if (c.hasString()) {
+                if (control.hasSelection()) {
+                    deleteSelection();
+                }
+
+                StyledTextModel m = control.getModel();
+                DataFormatHandler h = m.getDataFormatHandler(DataFormat.PLAIN_TEXT);
+                String src = c.getString();
+                StyledInput in = h.getStyledInput(src);
+
+                TextPos caret = control.getCaretPosition();
+                TextPos anchor = control.getAnchorPosition();
+                TextPos p = m.replace(caret, anchor, in);
+                control.moveCaret(p, false);
+            }
         }
     }
 

@@ -84,6 +84,7 @@ public class RichTextArea extends Control {
         PAGE_DOWN,
         PAGE_UP,
         PASTE,
+        PASTE_PLAIN_TEXT,
         SELECT_ALL,
         SELECT_DOCUMENT_END,
         SELECT_DOCUMENT_START,
@@ -461,6 +462,10 @@ public class RichTextArea extends Control {
         execute(Cmd.PASTE);
     }
     
+    public void pastePlainText() {
+        execute(Cmd.PASTE_PLAIN_TEXT);
+    }
+
     public void undo() {
         // TODO
     }
