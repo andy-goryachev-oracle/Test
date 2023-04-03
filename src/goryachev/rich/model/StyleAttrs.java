@@ -50,7 +50,7 @@ public class StyleAttrs {
     public static final StyleAttribute FONT_FAMILY = new StyleAttribute("FONT_FAMILY", String.class) {
         @Override
         public void buildStyle(StringBuilder sb, Object value) {
-            sb.append("-fx-font-family:").append(value).append("; ");
+            sb.append("-fx-font-family:'").append(value).append("'; ");
         }
     };
     
