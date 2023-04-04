@@ -188,4 +188,8 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
     public WritableImage snapshot(Node n) {
         return vflow.snapshot(n);
     }
+    
+    public void invalidateLayout() {
+        vflow.invalidateLayout();
+    }
 }

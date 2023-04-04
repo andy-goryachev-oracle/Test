@@ -28,6 +28,7 @@ package goryachev.rich;
 
 import java.util.List;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyIntegerProperty;
 import javafx.beans.property.ReadOnlyIntegerWrapper;
@@ -40,7 +41,12 @@ import javafx.css.CssMetaData;
 import javafx.css.StyleConverter;
 import javafx.css.Styleable;
 import javafx.css.StyleableBooleanProperty;
+import javafx.css.StyleableDoubleProperty;
+import javafx.css.StyleableObjectProperty;
 import javafx.css.StyleableProperty;
+import javafx.css.converter.InsetsConverter;
+import javafx.css.converter.SizeConverter;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.AccessibleAttribute;
 import javafx.scene.AccessibleRole;
@@ -100,7 +106,8 @@ public class RichTextArea extends Control {
         SELECT_WORD_NEXT_END,
         SELECT_WORD_PREVIOUS,
      }
-    
+
+    private static final double DEFAULT_LINE_SPACING = 0.0;
     protected final ObjectProperty<StyledTextModel> model = new SimpleObjectProperty<>(this, "model");
     protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(this, "displayCaret", true);
     private SimpleBooleanProperty editableProperty;
@@ -108,6 +115,10 @@ public class RichTextArea extends Control {
     // TODO property, pluggable models, or boolean (selection enabled?), do we need to allow for multiple selection?
     protected final SelectionModel selectionModel = new SingleSelectionModel();
     private ReadOnlyIntegerWrapper tabSizeProperty;
+    private ObjectProperty<SideDecorator> leftDecorator;
+    private ObjectProperty<SideDecorator> rightDecorator;
+    private ObjectProperty<Insets> contentPadding;
+    private DoubleProperty lineSpacing;
 
     public RichTextArea() {
         setFocusTraversable(true);
@@ -234,6 +245,34 @@ public class RichTextArea extends Control {
     }
     
     private static class StyleableProperties {
+        private static final CssMetaData<RichTextArea, Insets> CONTENT_PADDING =
+            new CssMetaData<>("-fx-content-padding", InsetsConverter.getInstance(), Insets.EMPTY) {
+
+            @Override
+            public boolean isSettable(RichTextArea t) {
+                return t.contentPadding == null || !t.contentPadding.isBound();
+            }
+
+            @Override
+            public StyleableProperty<Insets> getStyleableProperty(RichTextArea t) {
+                return (StyleableProperty<Insets>)t.contentPaddingProperty();
+            }
+        };
+
+        private static final CssMetaData<RichTextArea, Number> LINE_SPACING =
+            new CssMetaData<>("-fx-line-spacing", SizeConverter.getInstance(), 0) {
+
+            @Override
+            public boolean isSettable(RichTextArea t) {
+                return t.lineSpacing == null || !t.lineSpacing.isBound();
+            }
+
+            @Override
+            public StyleableProperty<Number> getStyleableProperty(RichTextArea t) {
+                return (StyleableProperty<Number>)t.lineSpacingProperty();
+            }
+        };
+
         private static final CssMetaData<RichTextArea,Boolean> WRAP_TEXT =
             new CssMetaData<>("-fx-wrap-text", StyleConverter.getBooleanConverter(), false) {
 
@@ -246,10 +285,12 @@ public class RichTextArea extends Control {
             public StyleableProperty<Boolean> getStyleableProperty(RichTextArea t) {
                 return (StyleableProperty<Boolean>)t.wrapTextProperty();
             }
-        };
+            };
 
         private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES = Util.initStyleables(
             Control.getClassCssMetaData(),
+            CONTENT_PADDING,
+            LINE_SPACING,
             WRAP_TEXT
         );
     }
@@ -606,5 +647,123 @@ public class RichTextArea extends Control {
     public TextPos getEndTextPos() {
         StyledTextModel m = getModel();
         return (m == null) ? TextPos.ZERO : m.getEndTextPos();
+    }
+
+    public final ObjectProperty<SideDecorator> leftDecoratorProperty() {
+        if (leftDecorator == null) {
+            leftDecorator = new SimpleObjectProperty<>();
+        }
+        return leftDecorator;
+    }
+
+    public final SideDecorator getLeftDecorator() {
+        if (leftDecorator == null) {
+            return null;
+        }
+        return leftDecorator.get();
+    }
+    
+    public final void setLeftDecorator(SideDecorator d) {
+        leftDecoratorProperty().set(d);
+    }
+    
+    public final ObjectProperty<SideDecorator> rightDecoratorProperty() {
+        if (rightDecorator == null) {
+            rightDecorator = new SimpleObjectProperty<>();
+        }
+        return rightDecorator;
+    }
+
+    public final SideDecorator getRightDecorator() {
+        if (rightDecorator == null) {
+            return null;
+        }
+        return rightDecorator.get();
+    }
+    
+    public final void setRightDecorator(SideDecorator d) {
+        rightDecoratorProperty().set(d);
+    }
+
+    public final ObjectProperty<Insets> contentPaddingProperty() {
+        if (contentPadding == null) {
+            contentPadding = new StyleableObjectProperty<Insets>() {
+                @Override
+                public Object getBean() {
+                    return RichTextArea.this;
+                }
+
+                @Override
+                public String getName() {
+                    return "contentPadding";
+                }
+
+                @Override
+                public CssMetaData getCssMetaData() {
+                    return StyleableProperties.CONTENT_PADDING;
+                }
+                
+                @Override
+                public void invalidated() {
+                    RichTextAreaSkin skin = richTextAreaSkin();
+                    if (skin != null) {
+                        skin.invalidateLayout();
+                    }
+                }
+            };
+        }
+        return contentPadding;
+    }
+
+    public final void setContentPadding(Insets value) {
+        contentPaddingProperty().set(value);
+    }
+
+    public final Insets getContentPadding() {
+        if(contentPadding == null) {
+            return null;
+        }
+        return contentPadding.get();
+    }
+    
+    public final DoubleProperty lineSpacingProperty() {
+        if (lineSpacing == null) {
+            lineSpacing = new StyleableDoubleProperty(DEFAULT_LINE_SPACING) {
+                @Override
+                public Object getBean() {
+                    return RichTextArea.this;
+                }
+
+                @Override
+                public String getName() {
+                    return "lineSpacing";
+                }
+
+                @Override
+                public CssMetaData getCssMetaData() {
+                    return StyleableProperties.LINE_SPACING;
+                }
+
+                @Override
+                public void invalidated() {
+                    RichTextAreaSkin skin = richTextAreaSkin();
+                    if (skin != null) {
+                        skin.invalidateLayout();
+                    }
+                }
+            };
+        }
+        return lineSpacing;
+    }
+
+    public final void setLineSpacing(double spacing) {
+        lineSpacingProperty().set(spacing);
+    }
+
+    public final double getLineSpacing() {
+        if (lineSpacing == null) {
+            return DEFAULT_LINE_SPACING;
+        }
+        return lineSpacing.get();
     }
 }
