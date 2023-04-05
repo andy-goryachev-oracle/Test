@@ -50,7 +50,7 @@ import goryachev.rich.util.NewAPI;
  * <li>vertical scroll bar
  * </ul>
  */
-public class RichTextAreaSkin extends SkinBase<RichTextArea> {
+public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleResolver {
     private final RichTextAreaBehavior behavior;
     private final VFlow vflow;
     private final ScrollBar vscroll;
@@ -168,6 +168,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         return t;
     }
 
+    @Override
     public StyleAttrs convert(String directStyle, String[] css) {
         StyleAttrs a = new StyleAttrs();
         vflow.getChildren().add(measurer);
@@ -184,7 +185,8 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> {
         }
         return StyleAttrs.from(measurer);
     }
-    
+
+    @Override
     public WritableImage snapshot(Node n) {
         return vflow.snapshot(n);
     }

@@ -55,7 +55,7 @@ public class SegmentStyledTextParagraph extends StyledParagraph {
             for(Segment s: segments) {
                 // TODO Segment.createNode()
                 if(s instanceof TextSegment t) {
-                    b.addSegment(t.text, t.style, t.css);
+                    b.addSegment(t.text, t.direct, t.css);
                 } else if(s instanceof NodeSegment n) {
                     b.addInlineNode(n.generator.get());
                 }
@@ -132,13 +132,15 @@ public class SegmentStyledTextParagraph extends StyledParagraph {
     /** text segment */
     public static class TextSegment extends Segment {
         public final String text;
-        public final String style;
+        public final String direct;
         public final String[] css;
+        private final StyleInfo style;
 
-        public TextSegment(String text, String style, String[] css) {
+        public TextSegment(String text, String direct, String[] css) {
             this.text = text;
-            this.style = style;
+            this.direct = direct;
             this.css = css;
+            this.style = StyleInfo.of(direct, css);
         }
 
         @Override
@@ -156,7 +158,7 @@ public class SegmentStyledTextParagraph extends StyledParagraph {
                 s = text.substring(Math.max(0, start), Math.min(end, len));
             }
 
-            return StyledSegment.of(s, style, css);
+            return StyledSegment.of(s, style);
         }
     }
     

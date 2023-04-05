@@ -27,6 +27,15 @@
 package goryachev.rich;
 
 import java.text.BreakIterator;
+import goryachev.rich.RichTextArea.Cmd;
+import goryachev.rich.model.DataFormatHandler;
+import goryachev.rich.model.StyledInput;
+import goryachev.rich.model.StyledTextModel;
+import goryachev.rich.util.BehaviorBase2;
+import goryachev.rich.util.KCondition;
+import goryachev.rich.util.KeyBinding2;
+import goryachev.rich.util.NewAPI;
+import goryachev.rich.util.Util;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
@@ -34,11 +43,9 @@ import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.NodeOrientation;
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.ContextMenuEvent;
@@ -50,17 +57,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.stage.Screen;
 import javafx.util.Duration;
-import goryachev.rich.RichTextArea.Cmd;
-import goryachev.rich.model.DataFormatHandler;
-import goryachev.rich.model.StyleAttrs;
-import goryachev.rich.model.StyleInfo;
-import goryachev.rich.model.StyledInput;
-import goryachev.rich.model.StyledTextModel;
-import goryachev.rich.util.BehaviorBase2;
-import goryachev.rich.util.KCondition;
-import goryachev.rich.util.KeyBinding2;
-import goryachev.rich.util.NewAPI;
-import goryachev.rich.util.Util;
 
 /**
  * RichTextArea Behavior.
@@ -300,7 +296,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                 end = p;
             }
 
-            m.replace(start, end, typed);
+            m.replace(skin, start, end, typed);
 
             TextPos p = new TextPos(start.index(), start.offset() + typed.length());
             control.moveCaret(p, false);
@@ -323,7 +319,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         if(pos != null) {
             TextPos an = control.getAnchorPosition();
             // TODO check an<pos
-            TextPos p2 = m.replace(an, pos, StyledInput.of("\n"));
+            TextPos p2 = m.replace(skin, an, pos, StyledInput.of("\n"));
             control.moveCaret(p2, false);
             clearPhantomX();
         }
@@ -844,7 +840,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
             TextPos start = nextCharacterVisually(end, false);
             if (start != null) {
-                control.getModel().replace(start, end, StyledInput.EMPTY);
+                control.getModel().replace(skin, start, end, StyledInput.EMPTY);
                 control.moveCaret(start, false);
                 clearPhantomX();
             }
@@ -862,7 +858,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             TextPos start = control.getCaretPosition();
             TextPos end = nextCharacterVisually(start, true);
             if (end != null) {
-                control.getModel().replace(start, end, StyledInput.EMPTY);
+                // TODO ensure star<end
+                control.getModel().replace(skin, start, end, StyledInput.EMPTY);
                 control.moveCaret(start, false);
                 clearPhantomX();
             }
@@ -877,7 +874,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             start = end;
             end = p;
         }
-        control.getModel().replace(start, end, StyledInput.EMPTY);
+        control.getModel().replace(skin, start, end, StyledInput.EMPTY);
         control.moveCaret(start, false);
         clearPhantomX();
     }
@@ -1003,7 +1000,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             StyledTextModel m = control.getModel();
             DataFormatHandler h = m.getDataFormatHandler(f);
             StyledInput in = h.getStyledInput(src);
-            TextPos p = m.replace(caret, anchor, in);
+            // TODO ensure star<end
+            TextPos p = m.replace(skin, caret, anchor, in);
             control.moveCaret(p, false);
         }
     }
@@ -1023,7 +1021,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
                 TextPos caret = control.getCaretPosition();
                 TextPos anchor = control.getAnchorPosition();
-                TextPos p = m.replace(caret, anchor, in);
+                // TODO ensure star<end
+                TextPos p = m.replace(skin, caret, anchor, in);
                 control.moveCaret(p, false);
             }
         }
@@ -1064,7 +1063,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
                     ClipboardContent c = new ClipboardContent();
                     for (DataFormat f : fs) {
                         DataFormatHandler h = m.getDataFormatHandler(f);
-                        Object v = h.copy(m, resolver(), start, end);
+                        Object v = h.copy(m, skin, start, end);
                         if (v != null) {
                             c.put(f, v);
                         }
@@ -1252,19 +1251,5 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         }
 
         return new TextPos(index, textLength);
-    }
-    
-    protected StyleResolver resolver() {
-        return new StyleResolver() {
-            @Override
-            public StyleAttrs convert(String directStyle, String[] css) {
-                return skin.convert(directStyle, css);
-            }
-
-            @Override
-            public WritableImage snapshot(Node n) {
-                return skin.snapshot(n);
-            }
-        };
     }
 }

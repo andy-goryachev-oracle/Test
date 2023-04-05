@@ -494,7 +494,7 @@ public class RichTextArea extends Control {
     public TextPos replaceText(TextPos start, TextPos end, String text) {
         if (canEdit()) {
             StyledTextModel m = getModel();
-            return m.replace(start, end, text);
+            return m.replace(richTextAreaSkin(), start, end, text);
         }
         return null;
     }
@@ -640,6 +640,27 @@ public class RichTextArea extends Control {
         }
 
         return m.getStyleInfo(pos);
+    }
+    
+    /**
+     * When selection exists, returns the attributes (resolved for this instance of {@code RichTextArea}
+     * of the first selected character.
+     * When no selection exists, returns the attributes of a character immediately preceding the caret.
+     * When at the beginning of the document, returns the attributes of the first character.
+     *
+     * @return {@link StyleAttrs}, or null if no style is defined.
+     */
+    public StyleAttrs getActiveStyleAttrs() {
+        StyleInfo s = getActiveStyleInfo();
+        if (s.hasAttributes()) {
+            return s.getAttributes();
+        }
+
+        if (getSkin() instanceof StyleResolver r) {
+            return s.getStyleAttrs(r);
+        }
+
+        return null;
     }
 
     /** Returns a TextPos corresponding to the end of the document */

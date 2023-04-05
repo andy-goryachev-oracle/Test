@@ -85,10 +85,9 @@ public class EditableRichTextModel extends StyledTextModelEditableBase {
     }
 
     @Override
-    protected int insertTextSegment(int index, int offset, StyledSegment segment) {        
+    protected int insertTextSegment(StyleResolver resolver, int index, int offset, StyledSegment segment) {
         String text = segment.getText();
-        // TODO may need to resolve the styles
-        StyleAttrs a = getStyleAttrs(segment);
+        StyleAttrs a = getStyleAttrs(resolver, segment);
 
         RParagraph par = paragraphs.get(index);
         par.insertText(offset, text, a);
@@ -247,7 +246,7 @@ public class EditableRichTextModel extends StyledTextModelEditableBase {
             } else {
                 s = text.substring(start, end);
             }
-            return StyledSegment.of(s, attrs);
+            return StyledSegment.of(s, getStyleInfo());
         }
     }
 

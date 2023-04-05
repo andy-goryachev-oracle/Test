@@ -50,17 +50,12 @@ public abstract class StyleInfo {
 
     private StyleInfo() {
     }
-
-//    public StyleAttrs resolve(RichTextArea c) {
-//        if (hasAttributes()) {
-//            return getAttributes();
-//        }
-//        return new StyleAttrs(); // FIX use resolver
-//    }
     
     public StyleAttrs getStyleAttrs(StyleResolver resolver) {
         if (hasAttributes()) {
             return getAttributes();
+        } else if (resolver == null) {
+            return null;
         }
     
         // convert styles to attributes
@@ -71,7 +66,7 @@ public abstract class StyleInfo {
         }
         return resolver.convert(sty, css);
     }
-
+    
     public static StyleInfo of(String direct, String[] css) {
         return new StyleInfo() {
             @Override

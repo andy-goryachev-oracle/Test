@@ -32,13 +32,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
-import javafx.scene.Node;
-import javafx.scene.input.DataFormat;
 import goryachev.rich.Marker;
 import goryachev.rich.RichTextArea;
+import goryachev.rich.StyleResolver;
 import goryachev.rich.TextPos;
 import goryachev.rich.impl.Markers;
 import goryachev.rich.util.Util;
+import javafx.scene.Node;
+import javafx.scene.input.DataFormat;
 
 /**
  * Base class for a styled text model for use with {@link RichTextArea}.
@@ -97,9 +98,10 @@ public abstract class StyledTextModel {
 
     /**
      * This method is called to insert a single text segment at the given position.
+     * @param resolver TODO
      * @return the character count of the inserted text
      */
-    protected abstract int insertTextSegment(int index, int offset, StyledSegment text);
+    protected abstract int insertTextSegment(StyleResolver resolver, int index, int offset, StyledSegment text);
 
     /** inserts a line break */
     protected abstract void insertLineBreak(int index, int offset);
@@ -216,15 +218,16 @@ public abstract class StyledTextModel {
      * This is a convenience method that calls {@link #replace(TextPos,TextPos,StyledInput)}.
      * The caller must ensure that the start position precedes the end.
      *
+     * @param resolver
      * @param start
      * @param end
      * @param text
      * @return
      */
-    public TextPos replace(TextPos start, TextPos end, String text) {
+    public TextPos replace(StyleResolver resolver, TextPos start, TextPos end, String text) {
         if (isEditable()) {
             StyleInfo si = getStyleInfo(start);
-            return replace(start, end, StyledInput.of(text, si));
+            return replace(resolver, start, end, StyledInput.of(text, si));
         }
         return null;
     }
@@ -238,12 +241,13 @@ public abstract class StyledTextModel {
      * 
      * After the model applies the requested changes, an event is sent to all the registered ChangeListeners.
      * 
+     * @param resolver
      * @param start start position
      * @param end end position
      * @param input StyledInput
      * @return text position at the end of the inserted text, or null if the model is read only
      */
-    public TextPos replace(TextPos start, TextPos end, StyledInput input) {
+    public TextPos replace(StyleResolver resolver, TextPos start, TextPos end, StyledInput input) {
         if (isEditable()) {
             int cmp = start.compareTo(end);
             if(cmp != 0) {
@@ -264,7 +268,7 @@ public abstract class StyledTextModel {
                     Supplier<Node> gen = seg.getNodeGenerator();
                     insertParagraph(index, gen);
                 } else if(seg.isText()) {
-                    int len = insertTextSegment(index, offset, seg);
+                    int len = insertTextSegment(resolver, index, offset, seg);
                     if(index == start.index()) {
                         top += len;
                     }

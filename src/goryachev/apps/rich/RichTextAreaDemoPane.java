@@ -26,6 +26,12 @@ package goryachev.apps.rich;
 
 import java.nio.charset.Charset;
 import java.util.Base64;
+import goryachev.rich.RichTextArea;
+import goryachev.rich.TextPos;
+import goryachev.rich.model.EditableRichTextModel;
+import goryachev.rich.model.StyleAttribute;
+import goryachev.rich.model.StyleAttrs;
+import goryachev.rich.model.StyledTextModel;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.geometry.Orientation;
@@ -47,13 +53,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
-import goryachev.rich.RichTextArea;
-import goryachev.rich.TextPos;
-import goryachev.rich.model.EditableRichTextModel;
-import goryachev.rich.model.StyleAttribute;
-import goryachev.rich.model.StyleAttrs;
-import goryachev.rich.model.StyleInfo;
-import goryachev.rich.model.StyledTextModel;
 
 /**
  * Main Panel contains RichTextArea, split panes for quick size adjustment, and an option pane.
@@ -272,8 +271,7 @@ public class RichTextAreaDemoPane extends BorderPane {
         m.setDisable(!paste);
 
         if (styled) {
-            StyleInfo si = control.getActiveStyleInfo();
-            StyleAttrs a = si.getStyleAttrs(control);
+            StyleAttrs a = control.getActiveStyleAttrs();
             System.err.println(a); // FIX
 
             items.add(new SeparatorMenuItem());

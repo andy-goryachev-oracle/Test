@@ -27,9 +27,10 @@ package goryachev.rich.model;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.function.Supplier;
-import javafx.scene.Node;
+import goryachev.rich.StyleResolver;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
+import javafx.scene.Node;
 
 /**
  * Editable plain text model.
@@ -74,7 +75,7 @@ public class EditablePlainTextModel extends StyledTextModelEditableBase {
     }
 
     @Override
-    protected int insertTextSegment(int index, int offset, StyledSegment segment) {
+    protected int insertTextSegment(StyleResolver resolver, int index, int offset, StyledSegment segment) {
         String s = paragraphs.get(index);
         String text = segment.getText();
 

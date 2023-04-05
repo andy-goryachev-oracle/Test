@@ -26,8 +26,9 @@ package goryachev.rich.model;
 
 import java.io.IOException;
 import java.util.function.Supplier;
-import javafx.scene.Node;
+import goryachev.rich.StyleResolver;
 import goryachev.rich.TextPos;
+import javafx.scene.Node;
 
 /**
  * Read-only StyledTextModel base class.
@@ -48,7 +49,7 @@ public abstract class StyledTextModelReadOnlyBase extends StyledTextModel {
     }
 
     @Override
-    protected int insertTextSegment(int index, int offset, StyledSegment text) {
+    protected int insertTextSegment(StyleResolver resolver, int index, int offset, StyledSegment text) {
         throw new UnsupportedOperationException();
     }
     
