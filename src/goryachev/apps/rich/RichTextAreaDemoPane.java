@@ -26,14 +26,9 @@ package goryachev.apps.rich;
 
 import java.nio.charset.Charset;
 import java.util.Base64;
-import goryachev.rich.RichTextArea;
-import goryachev.rich.TextPos;
-import goryachev.rich.model.EditableRichTextModel;
-import goryachev.rich.model.StyleAttribute;
-import goryachev.rich.model.StyleAttrs;
-import goryachev.rich.model.StyledTextModel;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -53,11 +48,26 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
+import javafx.util.StringConverter;
+import goryachev.rich.RichTextArea;
+import goryachev.rich.SideDecorator;
+import goryachev.rich.TextPos;
+import goryachev.rich.model.EditableRichTextModel;
+import goryachev.rich.model.StyleAttribute;
+import goryachev.rich.model.StyleAttrs;
+import goryachev.rich.model.StyledTextModel;
+import goryachev.rich.util.LineNumberDecorator;
 
 /**
  * Main Panel contains RichTextArea, split panes for quick size adjustment, and an option pane.
  */
-public class RichTextAreaDemoPane extends BorderPane {    
+public class RichTextAreaDemoPane extends BorderPane { 
+    enum Decorator {
+        NULL,
+        LINE_NUMBERS,
+        COLORS
+    }
+
     private static StyledTextModel globalModel;
     public final ROptionPane op;
     public final RichTextArea control;
@@ -122,8 +132,57 @@ public class RichTextAreaDemoPane extends BorderPane {
             setCustomPopup(v);
         });
         
-        Button selectAllButton = new Button("Select All Action");
-        selectAllButton.setOnAction((ev) -> control.selectAll());
+        ComboBox<Insets> contentPadding = new ComboBox<>();
+        contentPadding.setConverter(new StringConverter<Insets>() {
+            @Override
+            public String toString(Insets x) {
+                if (x == null) {
+                    return "null";
+                }
+                return String.format(
+                    "T%d, B%d, L%d, R%d",
+                    (int)x.getTop(),
+                    (int)x.getBottom(),
+                    (int)x.getLeft(),
+                    (int)x.getRight()
+                );
+            }
+
+            @Override
+            public Insets fromString(String s) {
+                return null;
+            }
+        });
+        contentPadding.getItems().setAll(
+            null,
+            new Insets(10),
+            new Insets(5, 10, 15, 20)
+        );
+        contentPadding.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
+            control.setContentPadding(v);
+        });
+        
+        ComboBox<Double> lineSpacing = new ComboBox<>();
+        lineSpacing.getItems().setAll(
+            0.0,
+            5.0,
+            31.415
+        );
+        lineSpacing.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
+            control.setLineSpacing(v);
+        });
+        
+        ComboBox<Decorator> leftDecorator = new ComboBox<>();
+        leftDecorator.getItems().setAll(Decorator.values());
+        leftDecorator.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
+            control.setLeftDecorator(createDecorator(v));
+        });
+        
+        ComboBox<Decorator> rightDecorator = new ComboBox<>();
+        rightDecorator.getItems().setAll(Decorator.values());
+        rightDecorator.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
+            control.setRightDecorator(createDecorator(v));
+        });
         
         op = new ROptionPane();
         op.label("Model:");
@@ -136,13 +195,22 @@ public class RichTextAreaDemoPane extends BorderPane {
         op.label("Tab Size:");
         op.option(tabSize);
         op.option(customPopup);
-        //op.option(selectAllButton);
-        //op.label("Blink Rate: TODO"); // TODO
+        op.label("Content Padding:");
+        op.option(contentPadding);
+        op.label("Decorators:");
+        op.option(leftDecorator);
+        op.option(rightDecorator);
+        op.label("Line Spacing:");
+        op.option(lineSpacing);
         
         setCenter(vsplit);
         setRight(op);
 
         modelField.getSelectionModel().selectFirst();
+        contentPadding.getSelectionModel().selectFirst();
+        leftDecorator.getSelectionModel().selectFirst();
+        rightDecorator.getSelectionModel().selectFirst();
+        lineSpacing.getSelectionModel().selectFirst();
 
         Platform.runLater(() -> {
             // all this to make sure restore settings works correctly with second window loading the same model
@@ -159,6 +227,18 @@ public class RichTextAreaDemoPane extends BorderPane {
                 updateModel();
             });
         });
+    }
+
+    protected SideDecorator createDecorator(Decorator d) {
+        if(d != null) {
+            switch(d) {
+            case COLORS:
+                return new DemoColorSideDecorator();
+            case LINE_NUMBERS:
+                return new LineNumberDecorator();
+            }
+        }
+        return null;
     }
 
     protected void updateModel() {
