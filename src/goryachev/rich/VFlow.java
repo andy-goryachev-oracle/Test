@@ -681,7 +681,6 @@ public class VFlow extends Pane {
 
             layout = new TextCellLayout(this);
             layoutCells();
-            //System.err.println("layoutCells " + layout); // FIX
 
             checkForExcessiveWhitespaceAtTheEnd();
             updateCaretAndSelection();
@@ -695,7 +694,6 @@ public class VFlow extends Pane {
     }
 
     protected void layoutCells() {
-        //System.err.println("layoutCells"); // FIX
         double width = getWidth();
         double height = getHeight();
         clip.setWidth(width);

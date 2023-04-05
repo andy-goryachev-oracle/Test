@@ -35,12 +35,11 @@ import java.util.function.Supplier;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.layout.Region;
-import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 import goryachev.rich.model.NodeStyledParagraph;
 import goryachev.rich.model.RtfFormatHandler;
 import goryachev.rich.model.SimpleStyledImageParagraph;
-import goryachev.rich.model.StyleAttrs;
+import goryachev.rich.model.StyleInfo;
 import goryachev.rich.model.StyledOutput;
 import goryachev.rich.model.StyledParagraph;
 import goryachev.rich.model.StyledSegment;
@@ -155,9 +154,9 @@ public class SegmentStyledTextModel extends StyledTextModelReadOnlyBase {
     }
     
     @Override
-    public StyleAttrs getStyledAttrs(TextPos pos) {
+    public StyleInfo getStyleInfo(TextPos pos) {
         // TODO use segments
-        return new StyleAttrs();
+        return StyleInfo.NONE;
     }
     
     @Override

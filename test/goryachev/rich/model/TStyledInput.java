@@ -44,7 +44,7 @@ public class TStyledInput extends StyledInput {
             }
 
             StyleAttrs a = (StyleAttrs)items[index++];
-            return StyledSegment.of(text, a);
+            return StyledSegment.of(text, StyleInfo.of(a));
         }
         return null;
     }

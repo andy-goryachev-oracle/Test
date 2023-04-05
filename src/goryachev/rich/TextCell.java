@@ -33,6 +33,7 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.PathElement;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import goryachev.rich.model.StyleInfo;
 import goryachev.rich.util.FxPathBuilder;
 import goryachev.rich.util.NewAPI;
 
@@ -67,6 +68,11 @@ public class TextCell {
         if (css != null) {
             t.getStyleClass().addAll(css);
         }
+        flow().getChildren().add(t);
+    }
+    
+    public void addSegment(String text) {
+        Text t = new Text(text);
         flow().getChildren().add(t);
     }
     

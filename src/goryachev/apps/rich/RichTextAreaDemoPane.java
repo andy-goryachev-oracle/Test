@@ -52,6 +52,7 @@ import goryachev.rich.TextPos;
 import goryachev.rich.model.EditableRichTextModel;
 import goryachev.rich.model.StyleAttribute;
 import goryachev.rich.model.StyleAttrs;
+import goryachev.rich.model.StyleInfo;
 import goryachev.rich.model.StyledTextModel;
 
 /**
@@ -271,7 +272,8 @@ public class RichTextAreaDemoPane extends BorderPane {
         m.setDisable(!paste);
 
         if (styled) {
-            StyleAttrs a = control.getActiveStyleAttrs();
+            StyleInfo si = control.getActiveStyleInfo();
+            StyleAttrs a = si.getStyleAttrs(control);
             System.err.println(a); // FIX
 
             items.add(new SeparatorMenuItem());

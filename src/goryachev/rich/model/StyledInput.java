@@ -34,14 +34,24 @@ public abstract class StyledInput {
      */
     public abstract StyledSegment nextSegment();
     
+    public static final StyledInput EMPTY = new StyledInput() {
+        @Override
+        public StyledSegment nextSegment() {
+            return null;
+        }
+    };
+    
     /**
-     * Creates a plain text styled input.
-     * @param text
-     * @param css 
-     * @param direct 
-     * @return
+     * Creates a plain text styled input with the specified style.
      */
-    public static StyledInput of(String text, String direct, String[] css) {
-        return new StringStyledInput(text == null ? "" : text, direct, css);
+    public static StyledInput of(String text, StyleInfo s) {
+        return new StringStyledInput(text, s);
+    }
+    
+    /**
+     * Creates a plain text styled input with no set style.
+     */
+    public static StyledInput of(String text) {
+        return new StringStyledInput(text, StyleInfo.NONE);
     }
 }

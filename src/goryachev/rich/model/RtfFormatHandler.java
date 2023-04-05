@@ -39,13 +39,13 @@ public class RtfFormatHandler extends DataFormatHandler {
     @Override
     public StyledInput getStyledInput(Object src) {
         if (src == null) {
-            return StyledInput.of("", null, null);
+            return StyledInput.of("", StyleInfo.NONE);
         }
 
         // TODO parse RTF
         String text = src.toString();
         System.err.println(text);
-        return StyledInput.of(text, null, null);
+        return StyledInput.of(text);
     }
 
     @Override

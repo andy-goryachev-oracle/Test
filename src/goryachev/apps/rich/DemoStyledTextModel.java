@@ -28,11 +28,13 @@ import java.util.AbstractList;
 import java.util.Collection;
 import java.util.RandomAccess;
 import javafx.scene.text.TextFlow;
+import goryachev.apps.rich.DemoStyledTextModel.SList;
+import goryachev.apps.rich.DemoStyledTextModel.SList.SParagraph;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
-import goryachev.rich.model.StyledTextModelReadOnlyBase;
-import goryachev.rich.model.StyleAttrs;
+import goryachev.rich.model.StyleInfo;
 import goryachev.rich.model.StyledParagraph;
+import goryachev.rich.model.StyledTextModelReadOnlyBase;
 import goryachev.rich.util.NewAPI;
 
 /**
@@ -57,9 +59,9 @@ public class DemoStyledTextModel extends StyledTextModelReadOnlyBase {
     }
     
     @Override
-    public StyleAttrs getStyledAttrs(TextPos pos) {
+    public StyleInfo getStyleInfo(TextPos pos) {
         // TODO use segments
-        return new StyleAttrs();
+        return StyleInfo.NONE;
     }
 
     /** */
@@ -85,56 +87,54 @@ public class DemoStyledTextModel extends StyledTextModelReadOnlyBase {
         @Override
         public StyledParagraph get(int index) {
             return new SParagraph(index);
-         }
+        }
 
-         /** */
-         public class SParagraph extends StyledParagraph {
-             public SParagraph(int index) {
-                 super(index);
-             }
-    
-             @Override
-             public String getText() {
-                 TextCell c = createTextCell();
-                 TextFlow f = ((TextFlow)c.getContent());
-                 return NewAPI.getText(f);
-             }
-    
-             public int hashCode() {
-                 return System.identityHashCode(SList.this) ^ getIndex();
-             }
-             
-             private SList list() {
-                 return SList.this;
-             }
-    
-             public boolean equals(Object x) {
-                 if (x == this) {
-                     return true;
-                 } else if (x instanceof SParagraph p) {
-                     return
-                         (p.list() == list()) &&
-                         (p.getIndex() == getIndex());
-                 } else {
-                     return false;
-                 }
-             }
-    
-             @Override
-             public TextCell createTextCell() {
-                 int ix = getIndex();
-                 TextCell c = new TextCell(ix);
-                 String s = String.valueOf(ix + 1);
-                 String sz = String.valueOf(SList.this.size());
+        /** */
+        public class SParagraph extends StyledParagraph {
+            public SParagraph(int index) {
+                super(index);
+            }
 
-                 c.addSegment(s, monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:darkgreen;", null);
-                 c.addSegment(" / ", monospaced ? "-fx-font-family:Monospaced;" : null, null);
-                 c.addSegment(sz, monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:black;", null);
-                 if (monospaced) {
-                     c.addSegment(" (monospaced)", monospaced ? "-fx-font-family:Monospaced;" : null, null);
-                 }
-                 return c;
-             }
-         }
-     }
- }
+            @Override
+            public String getText() {
+                TextCell c = createTextCell();
+                TextFlow f = ((TextFlow)c.getContent());
+                return NewAPI.getText(f);
+            }
+
+            public int hashCode() {
+                return System.identityHashCode(SList.this) ^ getIndex();
+            }
+
+            private SList list() {
+                return SList.this;
+            }
+
+            public boolean equals(Object x) {
+                if (x == this) {
+                    return true;
+                } else if (x instanceof SParagraph p) {
+                    return (p.list() == list()) && (p.getIndex() == getIndex());
+                } else {
+                    return false;
+                }
+            }
+
+            @Override
+            public TextCell createTextCell() {
+                int ix = getIndex();
+                TextCell c = new TextCell(ix);
+                String s = String.valueOf(ix + 1);
+                String sz = String.valueOf(SList.this.size());
+
+                c.addSegment(s, monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:darkgreen;", null);
+                c.addSegment(" / ", monospaced ? "-fx-font-family:Monospaced;" : null, null);
+                c.addSegment(sz, monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:black;", null);
+                if (monospaced) {
+                    c.addSegment(" (monospaced)", monospaced ? "-fx-font-family:Monospaced;" : null, null);
+                }
+                return c;
+            }
+        }
+    }
+}

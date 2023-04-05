@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.function.Supplier;
 import javafx.scene.Node;
+import goryachev.rich.StyleResolver;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 
@@ -94,10 +95,10 @@ public class EditableRichTextModel extends StyledTextModelEditableBase {
         return text.length();
     }
     
-    protected StyleAttrs getStyleAttrs(StyledSegment segment) {
-        StyleAttrs a = segment.getStyleAttrs();
+    protected StyleAttrs getStyleAttrs(StyleResolver resolver, StyledSegment segment) {
+        StyleAttrs a = segment.getStyleAttrs(resolver);
         if(a == null) {
-            // TODO convert
+            // TODO immutable, instance
             a = new StyleAttrs();
         }
         // TODO pass through styles hash set to save on memory
@@ -170,15 +171,14 @@ public class EditableRichTextModel extends StyledTextModelEditableBase {
     }
 
     @Override
-    public StyleAttrs getStyledAttrs(TextPos pos) {
-        StyleAttrs a = new StyleAttrs();
+    public StyleInfo getStyleInfo(TextPos pos) {
         int index = pos.index();
         if(index < paragraphs.size()) {
             int off = pos.offset();
             RParagraph par = paragraphs.get(index);
-            par.collectAttributes(a, off);
+            return par.getStyleInfo(off);
         }
-        return a;
+        return StyleInfo.NONE;
     }
 
     /**
@@ -204,6 +204,10 @@ public class EditableRichTextModel extends StyledTextModelEditableBase {
         
         public void setAttrs(StyleAttrs a) {
             attrs = a;
+        }
+        
+        public StyleInfo getStyleInfo() {
+            return StyleInfo.of(attrs);
         }
         
         public int length() {
@@ -237,11 +241,12 @@ public class EditableRichTextModel extends StyledTextModelEditableBase {
         }
 
         public StyledSegment createStyledSegment(int start, int end) {
+            String s;
             if ((start == 0) && (end == text.length())) {
-                return StyledSegment.of(text, attrs);
+                s = text;
+            } else {
+                s = text.substring(start, end);
             }
-            
-            String s = text.substring(start, end);
             return StyledSegment.of(s, attrs);
         }
     }
@@ -262,19 +267,19 @@ public class EditableRichTextModel extends StyledTextModelEditableBase {
             return getPlainText().length();
         }
 
-        /** retrieves the style attributes from the previous character (or next, if at the beginning) */
-        public void collectAttributes(StyleAttrs a, int offset) {
+        /** retrieves the style info from the previous character (or next, if at the beginning) */
+        public StyleInfo getStyleInfo(int offset) {
             int off = 0;
             int ct = size();
             for (int i = 0; i < ct; i++) {
                 RSegment seg = get(i);
                 int len = seg.length();
                 if (offset < (off + len) || (i == ct - 1)) {
-                    a.apply(seg.attrs());
-                    return;
+                    return seg.getStyleInfo();
                 }
                 off += len;
             }
+            return StyleInfo.NONE;
         }
 
         public void export(int start, int end, StyledOutput out) throws IOException {

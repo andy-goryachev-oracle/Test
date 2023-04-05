@@ -160,7 +160,7 @@ public class EditablePlainTextModel extends StyledTextModelEditableBase {
     }
     
     @Override
-    public StyleAttrs getStyledAttrs(TextPos pos) {
-        return new StyleAttrs();
+    public StyleInfo getStyleInfo(TextPos pos) {
+        return StyleInfo.NONE;
     }
 }

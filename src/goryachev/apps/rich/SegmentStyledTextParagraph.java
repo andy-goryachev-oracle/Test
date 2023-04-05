@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.function.Supplier;
 import javafx.scene.Node;
 import goryachev.rich.TextCell;
+import goryachev.rich.model.StyleInfo;
 import goryachev.rich.model.StyledOutput;
 import goryachev.rich.model.StyledParagraph;
 import goryachev.rich.model.StyledSegment;
@@ -49,7 +50,7 @@ public class SegmentStyledTextParagraph extends StyledParagraph {
         TextCell b = new TextCell(ix);
         if(segments == null) {
             // avoid zero height
-            b.addSegment("", null, null);
+            b.addSegment("");
         } else {
             for(Segment s: segments) {
                 // TODO Segment.createNode()

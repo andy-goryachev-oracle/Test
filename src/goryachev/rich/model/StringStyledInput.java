@@ -26,15 +26,13 @@ package goryachev.rich.model;
 
 public class StringStyledInput extends StyledInput {
     private final String text;
-    private final String direct;
-    private final String[] css;
+    private final StyleInfo style;
     private int offset;
 
     // TODO check for illegal chars (<0x20 except for \r \n \t)
-    public StringStyledInput(String text, String direct, String[] css) {
-        this.text = text;
-        this.direct = direct;
-        this.css = css;
+    public StringStyledInput(String text, StyleInfo style) {
+        this.text = (text == null ? "" : text);
+        this.style = style;
     }
 
     @Override
@@ -60,11 +58,11 @@ public class StringStyledInput extends StyledInput {
             if (ix < 0) {
                 String s = text.substring(offset);
                 offset = text.length();
-                return StyledSegment.of(s, direct, css);
+                return StyledSegment.of(s, style);
             } else {
                 String s = text.substring(offset, ix);
                 offset = ix;
-                return StyledSegment.of(s, direct, css);
+                return StyledSegment.of(s, style);
             }
         }
         return null;

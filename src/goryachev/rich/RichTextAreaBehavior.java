@@ -53,6 +53,7 @@ import javafx.util.Duration;
 import goryachev.rich.RichTextArea.Cmd;
 import goryachev.rich.model.DataFormatHandler;
 import goryachev.rich.model.StyleAttrs;
+import goryachev.rich.model.StyleInfo;
 import goryachev.rich.model.StyledInput;
 import goryachev.rich.model.StyledTextModel;
 import goryachev.rich.util.BehaviorBase2;
@@ -321,7 +322,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         TextPos pos = control.getCaretPosition();
         if(pos != null) {
             TextPos an = control.getAnchorPosition();
-            TextPos p2 = m.replace(an, pos, StyledInput.of("\n", null, null));
+            // TODO check an<pos
+            TextPos p2 = m.replace(an, pos, StyledInput.of("\n"));
             control.moveCaret(p2, false);
             clearPhantomX();
         }
@@ -842,7 +844,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
             TextPos start = nextCharacterVisually(end, false);
             if (start != null) {
-                control.getModel().replace(start, end, "");
+                control.getModel().replace(start, end, StyledInput.EMPTY);
                 control.moveCaret(start, false);
                 clearPhantomX();
             }
@@ -860,7 +862,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             TextPos start = control.getCaretPosition();
             TextPos end = nextCharacterVisually(start, true);
             if (end != null) {
-                control.getModel().replace(start, end, "");
+                control.getModel().replace(start, end, StyledInput.EMPTY);
                 control.moveCaret(start, false);
                 clearPhantomX();
             }
@@ -875,7 +877,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             start = end;
             end = p;
         }
-        control.getModel().replace(start, end, "");
+        control.getModel().replace(start, end, StyledInput.EMPTY);
         control.moveCaret(start, false);
         clearPhantomX();
     }

@@ -72,14 +72,7 @@ public abstract class RtfStyledOutput implements StyledOutput {
             @Override
             public void append(StyledSegment seg) throws IOException {
                 if (seg.isText()) {
-                    StyleAttrs a = seg.getStyleAttrs();
-                    if (a == null) {
-                        // convert styles to attributes
-                        String sty = seg.getDirectStyle();
-                        String[] css = seg.getStyles();
-                        a = resolver.convert(sty, css);
-                    }
-                    
+                    StyleAttrs a = seg.getStyleAttrs(resolver);
                     if(a != null) {
                         // colors
                         Color c = a.getTextColor();
@@ -237,13 +230,7 @@ public abstract class RtfStyledOutput implements StyledOutput {
             startOfLine = false;
         }
 
-        StyleAttrs a = seg.getStyleAttrs();
-        if (a == null) {
-            // convert styles to attributes
-            String sty = seg.getDirectStyle();
-            String[] css = seg.getStyles();
-            a = resolver.convert(sty, css);
-        }
+        StyleAttrs a = seg.getStyleAttrs(resolver);
 
         if (Util.notEquals(a, prevStyle)) {
             Color col;

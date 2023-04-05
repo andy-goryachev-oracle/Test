@@ -43,6 +43,8 @@ public class StyleAttrs {
         public void buildStyle(StringBuilder sb, Object value) {
             if (Boolean.TRUE.equals(value)) {
                 sb.append("-fx-font-weight:bold; ");
+            } else {
+                sb.append("-fx-font-weight:normal; ");
             }
         }
     };
@@ -145,6 +147,7 @@ public class StyleAttrs {
     }
     
     public Set<StyleAttribute> attributeSet() {
+        // TODO return a copy
         return attributes.keySet();
     }
 

@@ -39,7 +39,7 @@ public class PlainTextFormatHandler extends DataFormatHandler {
     @Override
     public StyledInput getStyledInput(Object src) {
         String text = (src == null) ? "" : src.toString();
-        return StyledInput.of(text, null, null);
+        return StyledInput.of(text, StyleInfo.NONE);
     }
 
     @Override

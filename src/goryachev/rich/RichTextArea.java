@@ -53,6 +53,7 @@ import javafx.scene.AccessibleRole;
 import javafx.scene.control.Control;
 import javafx.util.Duration;
 import goryachev.rich.model.StyleAttrs;
+import goryachev.rich.model.StyleInfo;
 import goryachev.rich.model.StyledTextModel;
 import goryachev.rich.util.Util;
 
@@ -616,17 +617,17 @@ public class RichTextArea extends Control {
     }
 
     /**
-     * When selection exists, returns the styled attributes of the first selected character.
-     * When no selection exists, returns the attributes of a character immediately preceding the caret.
-     * When at the beginning of the document, returns the attributes of the first character.
+     * When selection exists, returns the style of the first selected character.
+     * When no selection exists, returns the style of a character immediately preceding the caret.
+     * When at the beginning of the document, returns the style of the first character.
      *
-     * @return non-null {@link StyleAttrs}
+     * @return non-null {@link StyleInfo}
      */
-    public StyleAttrs getActiveStyleAttrs() {
+    public StyleInfo getActiveStyleInfo() {
         StyledTextModel m = getModel();
         TextPos pos = getCaretPosition();
         if ((m == null) || (pos == null)) {
-            return new StyleAttrs();
+            return StyleInfo.NONE;
         }
 
         if (hasSelection()) {
@@ -638,9 +639,7 @@ public class RichTextArea extends Control {
             pos = new TextPos(pos.index(), pos.offset() - 1);
         }
 
-        StyleAttrs a = m.getStyledAttrs(pos);
-        // TODO check for css and direct style attributes, and convert them to "normal", adding
-        return a;
+        return m.getStyleInfo(pos);
     }
 
     /** Returns a TextPos corresponding to the end of the document */

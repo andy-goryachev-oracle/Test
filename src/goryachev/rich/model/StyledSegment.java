@@ -26,6 +26,7 @@ package goryachev.rich.model;
 
 import java.util.function.Supplier;
 import javafx.scene.Node;
+import goryachev.rich.StyleResolver;
 
 /**
  * Data structure used to modify the styled text model.
@@ -70,16 +71,9 @@ public abstract class StyledSegment {
     public String getText() { return null; }
 
     /**
-     * Specifies a direct style string that will be set on a node that represents this segment.
-     * The style can be null.
+     * Returns a non-null style associated with this segment.
      */
-    public String getDirectStyle() { return null; }
-    
-    /**
-     * Specifies the CSS style names that will be set on a node that represents this segment.
-     * The array can be null.
-     */
-    public String[] getStyles() { return null; }
+    public StyleInfo getStyleInfo() { return StyleInfo.NONE; }
     
     /**
      * This method must return a non-null value when {@link isParagraph()} is true, 
@@ -89,13 +83,22 @@ public abstract class StyledSegment {
     public Supplier<Node> getNodeGenerator() { return null; }
 
     /**
-     * This method must return StyleAttrs (or null) for this segment.
-     * Keep in mind that the actual attributes and values might depend on the view that generated the segment,
-     * unless the model maintains the style attributes independently of the view.
+     * This method must return actual StyleAttrs, or null if this segment is styled with CSS styles.
      */
     public StyleAttrs getStyleAttrs() { return null; }
     
     public StyledSegment() {
+    }
+    
+    /**
+     * This method must return StyleAttrs (or null) for this segment.
+     * Keep in mind that the actual attributes and values might depend on the view that generated the segment,
+     * necessitating the use of a resolver,
+     * unless the model maintains the style attributes independently of the view.
+     */
+    public final StyleAttrs getStyleAttrs(StyleResolver resolver) {
+        StyleInfo s = getStyleInfo();
+        return s.getStyleAttrs(resolver);
     }
 
     /** A styled segment that represents a line break */
@@ -115,10 +118,7 @@ public abstract class StyledSegment {
      * Creates a StyleSegment from a non-null text and non-null attributes.
      * Important: text must not contain any characters < 0x20, except for TAB.
      */
-    // TODO attrs must be R/O
-    public static StyledSegment of(String text, StyleAttrs attrs) {
-        StyleAttrs a = attrs.copy();
-        
+    public static StyledSegment of(String text, StyleInfo si) {
         return new StyledSegment() {
             private String style; 
 
@@ -131,23 +131,15 @@ public abstract class StyledSegment {
             public String getText() {
                 return text;
             }
-            
+
             @Override
-            public String getDirectStyle() {
-                if(style == null) {
-                    style = a.getStyle();
-                }
-                return style;
+            public StyleInfo getStyleInfo() {
+                return si;
             }
 
             @Override
-            public StyleAttrs getStyleAttrs() {
-                return a;
-            }
-            
-            @Override
             public String toString() {
-                return "StyledSegment{text=" + getText() + ", attrs=" + a + "}";
+                return "StyledSegment{text=" + getText() + ", style=" + si + "}";
             }
         };
     }
@@ -157,75 +149,61 @@ public abstract class StyledSegment {
      * Important: text must not contain any characters < 0x20, except for TAB.
      */
     public static StyledSegment of(String text) {
-        return new StyledSegment() {
-            private String style; 
-
-            @Override
-            public boolean isText() {
-                return true;
-            }
-            
-            @Override
-            public String getText() {
-                return text;
-            }
-            
-            @Override
-            public String toString() {
-                return "StyledSegment{text=" + getText() + "}";
-            }
-        };
+        return of(text, StyleInfo.NONE);
     }
     
+    // TODO
     /** 
      * Creates a StyleSegment from a non-null text with direct and stylesheet styles.
      * Important: text must not contain any characters < 0x20, except for TAB.
      */
-    public static StyledSegment of(String text, String direct, String[] css) {
-        return new StyledSegment() {
-            @Override
-            public boolean isText() {
-                return true;
-            }
-
-            @Override
-            public String getText() {
-                return text;
-            }
-
-            @Override
-            public String getDirectStyle() {
-                return direct;
-            }
-
-            @Override
-            public String[] getStyles() {
-                return css;
-            }
-
-            @Override
-            public String toString() {
-                StringBuilder sb = new StringBuilder(32);
-                sb.append("StyledSegment{text=").append(text);
-                sb.append(", direct=").append(direct);
-                if (css != null) {
-                    sb.append(", css=[");
-                    boolean sep = false;
-                    for (String s : css) {
-                        if (sep) {
-                            sb.append(',');
-                        } else {
-                            sep = true;
-                        }
-                        sb.append(s);
-                    }
-                    sb.append("]");
-                }
-                sb.append("}");
-                return sb.toString();
-            }
-        };
-    }
+//    public static StyledSegment of(String text, String direct, String[] css) {
+//        StyleInfo si
+//        return new StyledSegment() {
+//            @Override
+//            public boolean isText() {
+//                return true;
+//            }
+//
+//            @Override
+//            public String getText() {
+//                return text;
+//            }
+//
+//            @Override
+//            public String getDirectStyle() {
+//                return direct;
+//            }
+//
+//            @Override
+//            public String[] getStyles() {
+//                return css;
+//            }
+//
+//            @Override
+    // TODO move to StyleInfo
+//            public String toString() {
+//                StringBuilder sb = new StringBuilder(32);
+//                sb.append("StyledSegment{text=").append(text);
+//                sb.append(", direct=").append(direct);
+//                if (css != null) {
+//                    sb.append(", css=[");
+//                    boolean sep = false;
+//                    for (String s : css) {
+//                        if (sep) {
+//                            sb.append(',');
+//                        } else {
+//                            sep = true;
+//                        }
+//                        sb.append(s);
+//                    }
+//                    sb.append("]");
+//                }
+//                sb.append("}");
+//                return sb.toString();
+//            }
+//        };
+//    }
 
     /**
      * Creates a StyledSegment which consists of a single inline Node.
