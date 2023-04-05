@@ -93,7 +93,7 @@ public class WritingSystemsDemo {
         t(sb, "Thaana", "ދިވެހި");
         t(sb, "Thai", "ไทย");
         t(sb, "Tibetan", "བོད་");
-        t(sb, "Tulu", "ತುಳು, ത‍ുള‍ു");
+        t(sb, "Tulu", "ತುಳು");
         t(sb, "Turoyo", "ܛܘܪܝܐ");
         t(sb, "Ukrainian", "Українська");
         t(sb, "Urdu", "اردو");
