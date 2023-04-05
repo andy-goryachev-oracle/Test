@@ -120,6 +120,7 @@ public class RichTextArea extends Control {
     private ObjectProperty<SideDecorator> rightDecorator;
     private ObjectProperty<Insets> contentPadding;
     private DoubleProperty lineSpacing;
+    private BooleanProperty highlightCurrentLine;
 
     public RichTextArea() {
         setFocusTraversable(true);
@@ -180,6 +181,10 @@ public class RichTextArea extends Control {
         wrapText.setValue(value);
     }
 
+    public BooleanProperty displayCaretProperty() {
+        return displayCaretProperty;
+    }
+
     public void setDisplayCaret(boolean on) {
         displayCaretProperty.set(on);
     }
@@ -188,10 +193,13 @@ public class RichTextArea extends Control {
         return displayCaretProperty.get();
     }
 
-    public BooleanProperty displayCaretProperty() {
-        return displayCaretProperty;
+    public BooleanProperty editableProperty() {
+        if (editableProperty == null) {
+            editableProperty = new SimpleBooleanProperty(this, "editable", true);
+        }
+        return editableProperty;
     }
-
+    
     public boolean isEditable() {
         if (editableProperty == null) {
             return true;
@@ -203,18 +211,24 @@ public class RichTextArea extends Control {
         editableProperty().set(on);
     }
 
-    public BooleanProperty editableProperty() {
-        if (editableProperty == null) {
-            editableProperty = new SimpleBooleanProperty(this, "editable", true);
+    public BooleanProperty highlightCurrentLineProperty() {
+        if (highlightCurrentLine == null) {
+            highlightCurrentLine = new SimpleBooleanProperty(this, "highlightCurrentLine", true);
         }
-        return editableProperty;
+        return highlightCurrentLine;
     }
 
     public boolean isHighlightCurrentLine() {
-        // TODO
-        return true;
+        if (highlightCurrentLine == null) {
+            return true;
+        }
+        return highlightCurrentLine.get();
     }
     
+    public void setHighlightCurrentLine(boolean on) {
+        highlightCurrentLineProperty().set(on);
+    }
+
     @Override
     public Object queryAccessibleAttribute(AccessibleAttribute attribute, Object... parameters) {
         switch (attribute) {

@@ -103,19 +103,18 @@ public class VFlow extends Pane {
         getStyleClass().add("content"); // maybe
 
         cache = new CellCache(Config.cellCacheSize);
-        // TODO invalidate cache when cell indexes change
 
         clip = new Rectangle();
 
         caretPath = new Path();
         caretPath.getStyleClass().add("caret");
         caretPath.setManaged(false);
-        caretPath.setStroke(Color.BLACK); // FIX
-        caretPath.setStrokeWidth(1.0); // TODO ?
+        caretPath.setStroke(Color.BLACK);
+        caretPath.setStrokeWidth(1.0);
 
         caretLineHighlight = new Path();
         caretLineHighlight.getStyleClass().add("caret-line");
-        caretLineHighlight.setFill(Color.rgb(255, 0, 255, 0.02)); // FIX
+        caretLineHighlight.setFill(Color.rgb(255, 0, 255, 0.02));
         caretLineHighlight.setManaged(false);
 
         selectionHighlight = new Path();
@@ -128,7 +127,6 @@ public class VFlow extends Pane {
         caretAnimation = new Timeline();
         caretAnimation.setCycleCount(Animation.INDEFINITE);
 
-        // TODO should this be explicitly uninstalled?
         caretPath.visibleProperty().bind(new BooleanBinding() {
             {
                 bind(
@@ -174,6 +172,7 @@ public class VFlow extends Pane {
     public void dispose() {
         control.wrapTextProperty().removeListener(wrapLi);
         control.modelProperty().removeListener(modelLi);
+        caretPath.visibleProperty().unbind();
     }
     
     public void updateModel() {
@@ -245,7 +244,6 @@ public class VFlow extends Pane {
     }
     
     public void setRightEdge(double w) {
-        //System.err.println("setRightEdge " + w); // FIX
         rightEdge.set(w);
     }
 
@@ -311,6 +309,8 @@ public class VFlow extends Pane {
             FxPathBuilder caretLineBuilder = new FxPathBuilder();
             createCurrentLineHighlight(caretLineBuilder, caret);
             caretLineHighlight.getElements().setAll(caretLineBuilder.getPathElements());
+        } else {
+            caretLineHighlight.getElements().clear();
         }
 
         // selection and caret

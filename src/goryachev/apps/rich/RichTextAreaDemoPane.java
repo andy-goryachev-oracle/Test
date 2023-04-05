@@ -116,6 +116,12 @@ public class RichTextAreaDemoPane extends BorderPane {
             }
         });
         
+        CheckBox highlightCurrentLine = new CheckBox("highlight current line");
+        highlightCurrentLine.setId("highlightCurrentLine");
+        highlightCurrentLine.selectedProperty().addListener((s,p,on) -> {
+            control.setHighlightCurrentLine(on);
+        });
+        
         ComboBox<Integer> tabSize = new ComboBox<>();
         tabSize.setId("tabSize");
         tabSize.getItems().setAll(1, 2, 3, 4, 8, 16);
@@ -192,6 +198,7 @@ public class RichTextAreaDemoPane extends BorderPane {
         op.option(wrapText);
         op.option(displayCaret);
         op.option(fatCaret);
+        op.option(highlightCurrentLine);
         op.label("Tab Size:");
         op.option(tabSize);
         op.option(customPopup);
