@@ -34,14 +34,17 @@ public class LineNumberDecorator implements SideDecorator {
     private final DecimalFormat format = new DecimalFormat("#,##0");
 
     @Override
-    public double getMaxWidth(double viewWidth, int startIndex) {
-        // FIX need parent to add to to resolve CSS
-        return 100;
+    public double getPrefWidth(double viewWidth) {
+        return 0;
     }
 
     @Override
-    public Node getNode(int modelIndex) {
-        String s = format.format(modelIndex + 1);
+    public Node getNode(int ix) {
+        if (ix < 0) {
+            ix = 10 * (- ix);
+        }
+
+        String s = format.format(ix + 1);
 
         Label t = new Label();
         t.setText(s);

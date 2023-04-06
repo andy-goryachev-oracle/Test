@@ -39,7 +39,7 @@ public class DemoColorSideDecorator implements SideDecorator {
     }
     
     @Override
-    public double getMaxWidth(double viewWidth, int startIndex) {
+    public double getPrefWidth(double viewWidth) {
         return 50.0;
     }
 

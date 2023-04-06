@@ -32,14 +32,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
+import javafx.scene.Node;
+import javafx.scene.input.DataFormat;
 import goryachev.rich.Marker;
 import goryachev.rich.RichTextArea;
 import goryachev.rich.StyleResolver;
 import goryachev.rich.TextPos;
 import goryachev.rich.impl.Markers;
 import goryachev.rich.util.Util;
-import javafx.scene.Node;
-import javafx.scene.input.DataFormat;
 
 /**
  * Base class for a styled text model for use with {@link RichTextArea}.
@@ -98,7 +98,6 @@ public abstract class StyledTextModel {
 
     /**
      * This method is called to insert a single text segment at the given position.
-     * @param resolver TODO
      * @return the character count of the inserted text
      */
     protected abstract int insertTextSegment(StyleResolver resolver, int index, int offset, StyledSegment text);
@@ -137,7 +136,6 @@ public abstract class StyledTextModel {
      *
      * @return non-null {@link StyleInfo}
      */
-    // TODO pass style resolver?
     public abstract StyleInfo getStyleInfo(TextPos pos);
     
     /** stores the handler and its priority */

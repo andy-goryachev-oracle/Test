@@ -78,7 +78,7 @@ public class SegmentStyledTextParagraph extends StyledParagraph {
                 Segment seg = segments.get(i);
                 String text = seg.getText();
                 int len = (text == null ? 0: text.length());
-                if (start <= off) {
+                if (start <= (off + len)) {
                     int ix0 = Math.max(0, start - off);
                     int ix1 = Math.min(len, end - off);
                     StyledSegment ss = seg.createStyledSegment(ix0, ix1);

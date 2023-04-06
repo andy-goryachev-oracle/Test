@@ -27,11 +27,33 @@ package goryachev.rich;
 import javafx.scene.Node;
 
 /**
- * Provides a way to add side decorations (either left or right) to each paragraph
+ * Provides a way to add side decorations to each paragraph
  * in a {@link RichTextArea}.
+ * 
+ * The side decorations Nodes are added to either left or right side, of each paragraph.  Each side node will be
+ * resized to the height of the corresponding paragraph.  The width, in order to avoid complicated
+ * layout process, would be determined by the following process:
+ * <ul>
+ * <li>if {@link #getPrefWidth} method returns a positive value, that will be the width of all the side nodes.
+ * <li>otherwise, {@link #getNode()} method is called with a modelIndex that is a negative of the top line index
+ * to obtain a Node whose preferred width will be used to size all the other Nodes.
+ * </ul>
  */
 public interface SideDecorator {
-    public double getMaxWidth(double viewWidth, int startIndex);
-    
+    /**
+     * Returns the width for all the side Nodes, or 0 if a measurer Node needs to be obtained via
+     * {@link #getNode()}.
+     */
+    public double getPrefWidth(double viewWidth);
+
+    /**
+     * When {@code modelIndex} is >=0, this method creates a Node to be added to the layout to the right
+     * or to the left of the given paragraph.  When {@code modelIndex} is negative, this method must create
+     * a non-null measurer Node, whose preferred width will be used to size all the side Nodes.  The value of
+     * {@code modelIndex} in this case is negative of the model index of the top line.
+     *
+     * @param modelIndex model index if >= 0, or (-topLineIndex) if negative.
+     * @return new instance of the Node, or null
+     */
     public Node getNode(int modelIndex);
 }
