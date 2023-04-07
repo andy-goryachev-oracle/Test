@@ -182,19 +182,19 @@ public class TextCell {
         return 0;
     }
     
-    public Node getLeftNode() {
+    public Node getLeftSide() {
         return left;
     }
     
-    public void setLeftNode(Node n) {
+    public void setLeftSide(Node n) {
         left = n;
     }
     
-    public Node getRightNode() {
+    public Node getRightSide() {
         return right;
     }
     
-    public void setRightNode(Node n) {
+    public void setRightSide(Node n) {
         right = n;
     }
 }

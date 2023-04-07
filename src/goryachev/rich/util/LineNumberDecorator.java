@@ -28,10 +28,26 @@ import java.text.DecimalFormat;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
+import javafx.scene.paint.Color;
 import goryachev.rich.SideDecorator;
 
+/**
+ * Side decorator that shows model line numbers, 1-based.
+ */
 public class LineNumberDecorator implements SideDecorator {
-    private final DecimalFormat format = new DecimalFormat("#,##0");
+    private final DecimalFormat format;
+    private final Background background;
+
+    public LineNumberDecorator() {
+        this("#,##0");
+    }
+
+    public LineNumberDecorator(String spec) {
+        format = new DecimalFormat(spec);
+        background = new Background(new BackgroundFill(Color.gray(0.5, 0.5), null, null));
+    }
 
     @Override
     public double getPrefWidth(double viewWidth) {
@@ -42,17 +58,20 @@ public class LineNumberDecorator implements SideDecorator {
     public Node getNode(int ix) {
         if (ix < 0) {
             // for measurer node only: allow for extra digit(s) in the bottom rows
-            ix = 10 * (-ix);
+            ix = 10 * (1 - ix);
             if (ix < 100) {
-                ix = 100;
+                ix = 888;
             }
         }
 
         String s = format.format(ix + 1);
 
         Label t = new Label();
+        t.setMaxWidth(Double.MAX_VALUE);
+        t.setMaxHeight(Double.MAX_VALUE);
         t.setText(s);
-        t.setAlignment(Pos.CENTER_RIGHT);
+        t.setAlignment(Pos.TOP_RIGHT);
+        t.setBackground(background);
         return t;
     }
 }

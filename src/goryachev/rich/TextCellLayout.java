@@ -27,19 +27,19 @@
 package goryachev.rich;
 
 import java.util.ArrayList;
-import goryachev.rich.util.Bugs;
-import goryachev.rich.util.NewAPI;
-import goryachev.rich.util.Util;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.PathElement;
-import javafx.scene.text.HitInfo;
 import javafx.scene.text.TextFlow;
+import goryachev.rich.util.Bugs;
+import goryachev.rich.util.NewAPI;
+import goryachev.rich.util.Util;
 
 /**
  * Manages TextCells in the visible area, surrounded by a number of cells before and after the visible area,
@@ -231,8 +231,8 @@ public class TextCellLayout {
         }
     }
 
-    public void removeNodesFrom(VFlow f) {
-        ObservableList<Node> cs = f.getChildren();
+    public void removeNodesFrom(Pane p) {
+        ObservableList<Node> cs = p.getChildren();
         for (int i = getVisibleCellCount() - 1; i >= 0; --i) {
             TextCell cell = cells.get(i);
             cs.remove(cell.getContent());

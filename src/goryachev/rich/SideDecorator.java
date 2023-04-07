@@ -52,7 +52,7 @@ public interface SideDecorator {
      * a non-null measurer Node, whose preferred width will be used to size all the side Nodes.  The value of
      * {@code modelIndex} in this case is negative of the model index of the top line.
      *
-     * @param modelIndex model index if >= 0, or (-topLineIndex) if negative.
+     * @param modelIndex model index if >= 0, or (-topLineIndex-1) if negative.
      * @return new instance of the Node, or null
      */
     public Node getNode(int modelIndex);

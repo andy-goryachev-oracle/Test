@@ -22,34 +22,24 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.apps.rich;
+package goryachev.rich.impl;
 
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.Region;
-import javafx.scene.paint.Color;
-import goryachev.rich.SideDecorator;
+import javafx.scene.layout.Pane;
 
-public class DemoColorSideDecorator implements SideDecorator {
-    public DemoColorSideDecorator() {
-    }
-    
-    @Override
-    public double getPrefWidth(double viewWidth) {
-        return 50.0;
+/**
+ * Pane that allows for container/controller to lay out its children.
+ */
+public class RPane extends Pane {
+    public RPane(String cssName) {
+        setManaged(false);
+        getStyleClass().add(cssName);
     }
 
-    @Override
-    public Node getNode(int modelIndex) {
-        int num = 36;
-        double a = 360.0 * (modelIndex % num) / num;
-        Color c = Color.hsb(a, 0.5, 1.0);
-        
-        Region r = new Region();
-        r.setOpacity(1.0);
-        r.setBackground(new Background(new BackgroundFill(c, null, null)));
-        r.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
-        return r;
+    public void layoutInArea(Node n, double x, double y, double w, double h) {
+        layoutInArea(n, x, y, w, h, 0.0, Insets.EMPTY, HPos.CENTER, VPos.CENTER);
     }
 }
