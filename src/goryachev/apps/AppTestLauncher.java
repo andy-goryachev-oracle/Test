@@ -35,6 +35,6 @@ import javafx.application.Application;
  */
 public class AppTestLauncher {
     public static void main(String[] args) {
-        Application.launch(Bug_8305248.class, args);
+        Application.launch(X.class, args);
     }
 }

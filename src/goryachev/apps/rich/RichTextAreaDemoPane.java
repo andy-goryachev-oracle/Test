@@ -172,6 +172,7 @@ public class RichTextAreaDemoPane extends BorderPane {
         });
         
         ComboBox<Double> lineSpacing = new ComboBox<>();
+        lineSpacing.setId("lineSpacing");
         lineSpacing.getItems().setAll(
             0.0,
             5.0,
@@ -182,12 +183,14 @@ public class RichTextAreaDemoPane extends BorderPane {
         });
         
         ComboBox<Decorator> leftDecorator = new ComboBox<>();
+        leftDecorator.setId("leftDecorator");
         leftDecorator.getItems().setAll(Decorator.values());
         leftDecorator.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
             control.setLeftDecorator(createDecorator(v));
         });
         
         ComboBox<Decorator> rightDecorator = new ComboBox<>();
+        rightDecorator.setId("rightDecorator");
         rightDecorator.getItems().setAll(Decorator.values());
         rightDecorator.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
             control.setRightDecorator(createDecorator(v));

@@ -38,11 +38,11 @@ import javafx.beans.property.ReadOnlyProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.css.CssMetaData;
+import javafx.css.SimpleStyleableDoubleProperty;
+import javafx.css.SimpleStyleableObjectProperty;
 import javafx.css.StyleConverter;
 import javafx.css.Styleable;
 import javafx.css.StyleableBooleanProperty;
-import javafx.css.StyleableDoubleProperty;
-import javafx.css.StyleableObjectProperty;
 import javafx.css.StyleableProperty;
 import javafx.css.converter.InsetsConverter;
 import javafx.css.converter.SizeConverter;
@@ -721,30 +721,10 @@ public class RichTextArea extends Control {
 
     public final ObjectProperty<Insets> contentPaddingProperty() {
         if (contentPadding == null) {
-            contentPadding = new StyleableObjectProperty<Insets>() {
-                @Override
-                public Object getBean() {
-                    return RichTextArea.this;
-                }
-
-                @Override
-                public String getName() {
-                    return "contentPadding";
-                }
-
-                @Override
-                public CssMetaData getCssMetaData() {
-                    return StyleableProperties.CONTENT_PADDING;
-                }
-                
-                @Override
-                public void invalidated() {
-                    RichTextAreaSkin skin = richTextAreaSkin();
-                    if (skin != null) {
-                        skin.invalidateLayout();
-                    }
-                }
-            };
+            contentPadding = new SimpleStyleableObjectProperty<Insets>(
+                StyleableProperties.CONTENT_PADDING,
+                this,
+                "contentPadding");
         }
         return contentPadding;
     }
@@ -762,30 +742,12 @@ public class RichTextArea extends Control {
     
     public final DoubleProperty lineSpacingProperty() {
         if (lineSpacing == null) {
-            lineSpacing = new StyleableDoubleProperty(DEFAULT_LINE_SPACING) {
-                @Override
-                public Object getBean() {
-                    return RichTextArea.this;
-                }
-
-                @Override
-                public String getName() {
-                    return "lineSpacing";
-                }
-
-                @Override
-                public CssMetaData getCssMetaData() {
-                    return StyleableProperties.LINE_SPACING;
-                }
-
-                @Override
-                public void invalidated() {
-                    RichTextAreaSkin skin = richTextAreaSkin();
-                    if (skin != null) {
-                        skin.invalidateLayout();
-                    }
-                }
-            };
+            lineSpacing = new SimpleStyleableDoubleProperty(
+                StyleableProperties.LINE_SPACING,
+                this,
+                "lineSpacing",
+                DEFAULT_LINE_SPACING
+            );
         }
         return lineSpacing;
     }

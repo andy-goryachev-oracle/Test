@@ -34,22 +34,21 @@ import goryachev.rich.SideDecorator;
 public class DemoColorSideDecorator implements SideDecorator {
     public DemoColorSideDecorator() {
     }
-    
+
     @Override
     public double getPrefWidth(double viewWidth) {
         return 50.0;
     }
 
     @Override
-    public Node getNode(int modelIndex) {
+    public Node getNode(int modelIndex, boolean forMeasurement) {
         int num = 36;
         double a = 360.0 * (modelIndex % num) / num;
         Color c = Color.hsb(a, 0.5, 1.0);
-        
+
         Region r = new Region();
         r.setOpacity(1.0);
         r.setBackground(new Background(new BackgroundFill(c, null, null)));
-        r.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
         return r;
     }
 }

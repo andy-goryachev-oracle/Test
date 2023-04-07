@@ -52,7 +52,6 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
@@ -77,7 +76,6 @@ public class VFlow extends Pane {
     private final RichTextArea control;
     private final ScrollBar vscroll;
     private final ScrollBar hscroll;
-    private final Rectangle clip;
     private final RPane leftGutter;
     private final RPane rightGutter;
     private final RPane content;
@@ -112,15 +110,11 @@ public class VFlow extends Pane {
 
         cache = new CellCache(Config.cellCacheSize);
 
-        clip = new Rectangle();
-
         leftGutter = new RPane("left-gutter");
         
         rightGutter = new RPane("right-gutter");
         
         content = new RPane("content");
-        // TODO is this needed?
-        //content.setClip(clip);
         
         caretPath = new Path();
         caretPath.getStyleClass().add("caret");
@@ -164,8 +158,8 @@ public class VFlow extends Pane {
             }
         });
 
-        control.modelProperty().addListener(modelLi = (p) -> updateModel());
-        control.wrapTextProperty().addListener(wrapLi = (p) -> updateWrap());
+        control.modelProperty().addListener(modelLi = (p) -> handleModelChange());
+        control.wrapTextProperty().addListener(wrapLi = (p) -> handleWrapText());
         widthProperty().addListener((p) -> updateWidth());
         heightProperty().addListener((p) -> updateHeight());
         
@@ -193,7 +187,7 @@ public class VFlow extends Pane {
         caretPath.visibleProperty().unbind();
     }
     
-    public void updateModel() {
+    public void handleModelChange() {
         control.clearSelection();
         setContentWidth(0.0);
         setOrigin(Origin.ZERO);
@@ -213,7 +207,7 @@ public class VFlow extends Pane {
         return snapSpaceX(w);
     }
 
-    public void updateWrap() {
+    public void handleWrapText() {
         if (control.isWrapText()) {
             double w = wrappedWidth();
             setContentWidth(w);
@@ -223,9 +217,21 @@ public class VFlow extends Pane {
         setOffsetX(-leftPadding);
         cache.clear();
         recomputeLayout();
+        updateHorizontalScrollBar();
+        updateVerticalScrollBar();
     }
     
     public void handleDecoratorChange() {
+        leftGutter.getChildren().clear();
+        rightGutter.getChildren().clear();
+
+        recomputeLayout();
+        updateHorizontalScrollBar();
+        updateVerticalScrollBar();
+    }
+    
+    public void handleLineSpacing() {
+        // TODO extract into a separate method?
         recomputeLayout();
         updateHorizontalScrollBar();
         updateVerticalScrollBar();
@@ -702,18 +708,6 @@ public class VFlow extends Pane {
                 }
             }
 
-            SideDecorator d = control.getLeftDecorator();
-            if (d != null) {
-                Node n = d.getNode(modelIndex);
-                cell.setLeftSide(n);
-            }
-
-            d = control.getRightDecorator();
-            if (d != null) {
-                Node n = d.getNode(modelIndex);
-                cell.setRightSide(n);
-            }
-
             cache.add(cell);
         }
         return cell;
@@ -724,29 +718,29 @@ public class VFlow extends Pane {
             double w = d.getPrefWidth(getWidth());
             if (w <= 0.0) {
                 int top = topCellIndex();
-                Node n = d.getNode(-top - 1);
+                Node n = d.getNode(top, true);
+                n.setManaged(false);
 
                 content.getChildren().add(n);
                 try {
                     n.applyCss();
                     w = n.prefWidth(-1);
+                    // FIX label shows ellipses sometimes
+                    w += 2;
                 } finally {
                     content.getChildren().remove(n);
                 }
             }
-            return w;
+            return snapSizeX(w);
         }
         return 0.0;
     }
 
-    public void invalidateLayout() {
+    protected void invalidateLayout() {
         if (layout != null) {
             layout.removeNodesFrom(content);
             layout = null;
         }
-        
-        leftGutter.getChildren().clear();
-        rightGutter.getChildren().clear();
     }
 
     @Override
@@ -799,10 +793,6 @@ public class VFlow extends Pane {
         
         layoutInArea(content, leftSide, 0.0, width - leftSide - rightSide, height, 0.0, HPos.CENTER, VPos.CENTER);
 
-        // is this needed?
-//        clip.setWidth(width);
-//        clip.setHeight(height);
-        
         int paragraphCount = lineCount();
         int tabSize = control.getTabSize();
         lineSpacing = control.getLineSpacing();
@@ -944,7 +934,7 @@ public class VFlow extends Pane {
     protected void placeNodes() {
         boolean wrap = control.isWrapText();
         double w = wrap ? getContentWidth() : MAX_WIDTH_FOR_LAYOUT;
-        double x = leftPadding - getOffsetX();
+        double x = -getOffsetX();
         
         leftGutter.getChildren().clear();
         rightGutter.getChildren().clear();
@@ -956,18 +946,27 @@ public class VFlow extends Pane {
             double h = cell.getComputedHeight();
             double y = cell.getY();
             content.layoutInArea(r, x, y, w, h);
-            
+
             // place side nodes
-            Node n = cell.getLeftSide();
-            if (n != null) {
-                leftGutter.getChildren().add(n);
-                leftGutter.layoutInArea(n, 0.0, y, leftGutter.getWidth(), h);
+            // in theory, these can be cached
+            SideDecorator leftDecorator = control.getLeftDecorator();
+            if (leftDecorator != null) {
+                Node n = leftDecorator.getNode(cell.getLineIndex(), false);
+                if (n != null) {
+                    n.setManaged(false);
+                    leftGutter.getChildren().add(n);
+                    leftGutter.layoutInArea(n, 0.0, y, leftGutter.getWidth(), h + lineSpacing);
+                }
             }
 
-            n = cell.getRightSide();
-            if (n != null) {
-                rightGutter.getChildren().add(n);
-                rightGutter.layoutInArea(n, 0.0, y, rightGutter.getWidth(), h);
+            SideDecorator rightDecorator = control.getRightDecorator();
+            if (rightDecorator != null) {
+                Node n = rightDecorator.getNode(cell.getLineIndex(), false);
+                if (n != null) {
+                    n.setManaged(false);
+                    rightGutter.getChildren().add(n);
+                    rightGutter.layoutInArea(n, 0.0, y, rightGutter.getWidth(), h + lineSpacing);
+                }
             }
         }
     }

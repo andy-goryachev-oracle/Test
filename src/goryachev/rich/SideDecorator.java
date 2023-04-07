@@ -47,13 +47,18 @@ public interface SideDecorator {
     public double getPrefWidth(double viewWidth);
 
     /**
-     * When {@code modelIndex} is >=0, this method creates a Node to be added to the layout to the right
-     * or to the left of the given paragraph.  When {@code modelIndex} is negative, this method must create
-     * a non-null measurer Node, whose preferred width will be used to size all the side Nodes.  The value of
-     * {@code modelIndex} in this case is negative of the model index of the top line.
+     * Creates a Node to be added to the layout to the right or to the left of the given paragraph.
+     * <p>
+     * When {@code forMeasurement} is true, this method is expected to create a special non-null
+     * measurement Node, whose preferred width will be used to size all the side Nodes (and must, therefore,
+     * to be wider than any side node in the view).  The {@code modelIndex} is this case is the index of
+     * the first paragraph in the view.
+     * <p>
+     * The measurement node will not be displayed.
      *
-     * @param modelIndex model index if >= 0, or (-topLineIndex-1) if negative.
+     * @param modelIndex model index
+     * @param forMeasurement when true, specifies that a measurement Node must be created
      * @return new instance of the Node, or null
      */
-    public Node getNode(int modelIndex);
+    public Node getNode(int modelIndex, boolean forMeasurement);
 }

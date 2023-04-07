@@ -25,11 +25,13 @@
 package goryachev.rich.util;
 
 import java.text.DecimalFormat;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import goryachev.rich.SideDecorator;
 
@@ -55,23 +57,29 @@ public class LineNumberDecorator implements SideDecorator {
     }
 
     @Override
-    public Node getNode(int ix) {
-        if (ix < 0) {
+    public Node getNode(int ix, boolean forMeasurement) {
+        if (forMeasurement) {
             // for measurer node only: allow for extra digit(s) in the bottom rows
-            ix = 10 * (1 - ix);
-            if (ix < 100) {
-                ix = 888;
-            }
+            ix += 300;
         }
 
         String s = format.format(ix + 1);
+        if(forMeasurement) {
+            // account for some variability if propertional font is used
+            s += " ";
+        }
 
         Label t = new Label();
-        t.setMaxWidth(Double.MAX_VALUE);
-        t.setMaxHeight(Double.MAX_VALUE);
         t.setText(s);
         t.setAlignment(Pos.TOP_RIGHT);
-        t.setBackground(background);
-        return t;
+        t.setPadding(Insets.EMPTY);
+
+        // why do I need to wrap it into Pane?
+        //HBox p = new HBox(t);
+        //HBox.setHgrow(t, Priority.ALWAYS);
+        BorderPane p = new BorderPane(t);
+        p.setBackground(background);
+        p.setPadding(Insets.EMPTY);
+        return p;
     }
 }

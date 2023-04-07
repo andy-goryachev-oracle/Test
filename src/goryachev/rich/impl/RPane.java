@@ -29,14 +29,22 @@ import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 
 /**
  * Pane that allows for container/controller to lay out its children.
  */
 public class RPane extends Pane {
+    private final Rectangle clip;
+    
     public RPane(String cssName) {
         setManaged(false);
         getStyleClass().add(cssName);
+        
+        clip = new Rectangle();
+        clip.widthProperty().bind(widthProperty());
+        clip.heightProperty().bind(heightProperty());
+        setClip(clip);
     }
 
     public void layoutInArea(Node n, double x, double y, double w, double h) {

@@ -33,7 +33,6 @@ import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.PathElement;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import goryachev.rich.model.StyleInfo;
 import goryachev.rich.util.FxPathBuilder;
 import goryachev.rich.util.NewAPI;
 
@@ -46,8 +45,6 @@ public class TextCell {
     private double height;
     private double forWidth; // TODO not used right now, use to skip layout when possible
     private double y;
-    private Node left;
-    private Node right;
 
     public TextCell(int index, Region content) {
         this.index = index;
@@ -180,21 +177,5 @@ public class TextCell {
             return NewAPI.getTextLength(f);
         }
         return 0;
-    }
-    
-    public Node getLeftSide() {
-        return left;
-    }
-    
-    public void setLeftSide(Node n) {
-        left = n;
-    }
-    
-    public Node getRightSide() {
-        return right;
-    }
-    
-    public void setRightSide(Node n) {
-        right = n;
     }
 }

@@ -24,12 +24,11 @@
  */
 package goryachev.apps.rich;
 
+import java.text.DecimalFormat;
 import java.util.AbstractList;
 import java.util.Collection;
 import java.util.RandomAccess;
 import javafx.scene.text.TextFlow;
-import goryachev.apps.rich.DemoStyledTextModel.SList;
-import goryachev.apps.rich.DemoStyledTextModel.SList.SParagraph;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 import goryachev.rich.model.StyleInfo;
@@ -91,6 +90,9 @@ public class DemoStyledTextModel extends StyledTextModelReadOnlyBase {
 
         /** */
         public class SParagraph extends StyledParagraph {
+            private static String words;
+            private static final DecimalFormat format = new DecimalFormat("#,##0");
+            
             public SParagraph(int index) {
                 super(index);
             }
@@ -124,14 +126,26 @@ public class DemoStyledTextModel extends StyledTextModelReadOnlyBase {
             public TextCell createTextCell() {
                 int ix = getIndex();
                 TextCell c = new TextCell(ix);
-                String s = String.valueOf(ix + 1);
-                String sz = String.valueOf(SList.this.size());
+                String s = format.format(ix + 1);
+                String sz = format.format(SList.this.size());
+                String[] css = monospaced ? new String[] { "monospaced" } : null;
 
-                c.addSegment(s, monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:darkgreen;", null);
-                c.addSegment(" / ", monospaced ? "-fx-font-family:Monospaced;" : null, null);
-                c.addSegment(sz, monospaced ? "-fx-font-family:Monospaced;" : "-fx-fill:black;", null);
+                c.addSegment(s, "-fx-fill:darkgreen;", css);
+                c.addSegment(" / ", null, css);
+                c.addSegment(sz, "-fx-fill:black;", css);
                 if (monospaced) {
-                    c.addSegment(" (monospaced)", monospaced ? "-fx-font-family:Monospaced;" : null, null);
+                    c.addSegment(" (monospaced)", null, css);
+                }
+
+                if ((ix % 10) == 9) {
+                    if (words == null) {
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < 4; i++) {
+                            sb.append(" one two three four five six seven eight nine ten");
+                        }
+                        words = sb.toString();
+                    }
+                    c.addSegment(words, null, css);
                 }
                 return c;
             }

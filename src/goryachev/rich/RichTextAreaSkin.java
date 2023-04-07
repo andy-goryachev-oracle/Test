@@ -117,6 +117,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
         control.tabSizeProperty().addListener((s,p,c) -> vflow.updateTabSize());
         control.highlightCurrentLineProperty().addListener((s,p,c) -> vflow.updateCaretAndSelection());
         control.contentPaddingProperty().addListener((s,p,c) -> vflow.handleContentPadding());
+        control.lineSpacingProperty().addListener((s,p,c) -> vflow.handleLineSpacing());
         control.leftDecoratorProperty().addListener((s,p,c) -> vflow.handleDecoratorChange());
         control.rightDecoratorProperty().addListener((s,p,c) -> vflow.handleDecoratorChange());
         vscroll.valueProperty().addListener((ev) -> vflow.handleVerticalScroll());
@@ -194,9 +195,5 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
     @Override
     public WritableImage snapshot(Node n) {
         return vflow.snapshot(n);
-    }
-    
-    public void invalidateLayout() {
-        vflow.invalidateLayout();
     }
 }
