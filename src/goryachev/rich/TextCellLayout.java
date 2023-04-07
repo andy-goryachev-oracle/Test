@@ -62,6 +62,7 @@ public class TextCellLayout {
         this.flowHeight = f.getViewHeight();
         this.origin = f.getOrigin();
         this.lineCount = f.lineCount();
+        // TODO padding, sides
     }
 
     public String toString() {
@@ -285,16 +286,6 @@ public class TextCellLayout {
             // TODO might be a problem for 2B-rows models
             int mid = (low + high) >>> 1;
             TextCell cell = getCell(mid);
-            
-            // FIX
-//            if(cell == null) {
-//                System.err.println("    * * * ERR binarySearch null cell y=" + localY + " mid=" + mid + " topIx=" + topIndex() + " btmIx=" + bottomIndex());
-//                cell = getCell(mid);
-//            } else if(cell.getLineIndex() != mid) {
-//                System.err.println("    * * * ERR getCell wrong ix=" + mid + " cell.ix=" + cell.getLineIndex());
-//                cell = getCell(mid);
-//            }
-            
             int cmp = compare(cell, localY);
             if (cmp < 0) {
                 low = mid + 1;

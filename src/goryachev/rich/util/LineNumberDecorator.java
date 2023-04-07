@@ -41,7 +41,11 @@ public class LineNumberDecorator implements SideDecorator {
     @Override
     public Node getNode(int ix) {
         if (ix < 0) {
-            ix = 10 * (- ix);
+            // for measurer node only: allow for extra digit(s) in the bottom rows
+            ix = 10 * (-ix);
+            if (ix < 100) {
+                ix = 100;
+            }
         }
 
         String s = format.format(ix + 1);

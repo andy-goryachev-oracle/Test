@@ -115,6 +115,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
         NewAPI.addChangeListener(vflow::updateRateRestartBlink, true, control.caretBlinkPeriodProperty());
         control.tabSizeProperty().addListener((s,p,c) -> vflow.updateTabSize());
         control.highlightCurrentLineProperty().addListener((s,p,c) -> vflow.updateCaretAndSelection());
+        control.contentPaddingProperty().addListener((s,p,c) -> vflow.handleContentPadding());
         vscroll.valueProperty().addListener((ev) -> vflow.handleVerticalScroll());
         hscroll.valueProperty().addListener((ev) -> vflow.handleHorizontalScroll());
     }

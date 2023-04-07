@@ -161,7 +161,10 @@ public class RichTextAreaDemoPane extends BorderPane {
         });
         contentPadding.getItems().setAll(
             null,
+            new Insets(1),
+            new Insets(2),
             new Insets(10),
+            new Insets(50),
             new Insets(5, 10, 15, 20)
         );
         contentPadding.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {

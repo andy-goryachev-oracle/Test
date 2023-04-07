@@ -603,6 +603,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 //        }
     }
     
+    @Deprecated // FIX remove
     protected TextPos moveWord2(TextPos start, boolean moveRight) {
         if (isRTL()) {
             moveRight = !moveRight;
