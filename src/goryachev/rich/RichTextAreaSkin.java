@@ -86,6 +86,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
             protected void layoutChildren() {
                 double x0 = snappedLeftInset();
                 double y0 = snappedTopInset();
+                // is the snapping right?
                 double width = getWidth() - x0 - snappedRightInset();
                 double height = getHeight() - y0 - snappedBottomInset();
 

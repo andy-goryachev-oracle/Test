@@ -90,10 +90,13 @@ public class VFlow extends Pane {
     protected final CellCache cache;
     private boolean handleScrollEvents = true;
     private boolean vsbPressed;
+    private double topPadding;
+    private double bottomPadding;
     private double leftPadding;
     private double rightPadding;
     private double leftSide;
     private double rightSide;
+    private double lineSpacing;
     // TODO replace with ListenerHelper
     InvalidationListener modelLi;
     InvalidationListener wrapLi;
@@ -218,6 +221,8 @@ public class VFlow extends Pane {
             setOffsetX(-leftPadding);
         }
         recomputeLayout();
+        updateHorizontalScrollBar();
+        updateVerticalScrollBar();
     }
 
     public void updateContentPadding() {
@@ -642,7 +647,7 @@ public class VFlow extends Pane {
 
             setOffsetX(snapPositionX(off));
             // no need to recompute the flow
-            layoutNodes();
+            placeNodes();
             updateCaretAndSelection();
         }
     }
@@ -745,8 +750,14 @@ public class VFlow extends Pane {
             return;
         }
 
+        SideDecorator leftDecorator = control.getLeftDecorator();
+        SideDecorator rightDecorator = control.getRightDecorator();
+        leftSide = computeSideWidth(leftDecorator);
+        rightSide = computeSideWidth(rightDecorator);
+        
         int paragraphCount = lineCount();
         int tabSize = control.getTabSize();
+        lineSpacing = control.getLineSpacing();
         boolean wrap = control.isWrapText();
         double forWidth;
         double maxWidth;
@@ -758,7 +769,7 @@ public class VFlow extends Pane {
             maxWidth = MAX_WIDTH_FOR_LAYOUT;
         }
 
-        double y = -getOffsetY(); // TODO content padding
+        double y = snapPositionY(topPadding - getOffsetY());
         double unwrappedWidth = 0;
         double margin = Config.slidingWindowMargin * height;
         int topMarginCount = 0;
@@ -767,11 +778,6 @@ public class VFlow extends Pane {
         boolean visible = true;
         // TODO if topCount < marginCount, increase bottomCount correspondingly
         // also, update Origin if layout hit the beginning/end of the document
-        
-        SideDecorator leftDecorator = control.getLeftDecorator();
-        SideDecorator rightDecorator = control.getRightDecorator();
-        leftSide = computeSideWidth(leftDecorator);
-        rightSide = computeSideWidth(rightDecorator);
         
         // populating visible part of the sliding window + bottom margin
         for (int i = topCellIndex(); i < paragraphCount; i++) {
@@ -789,16 +795,8 @@ public class VFlow extends Pane {
 
             layout.addCell(cell);
 
-            // TODO actual box height might be different from h due to snapping?
-            // TODO account for side components
-            double h;
-            try {
-                h = r.prefHeight(forWidth);
-            } catch(Exception e) {
-                e.printStackTrace(); // FIX
-                System.err.println("i=" + i + " cell=" + control.getPlainText(cell.getLineIndex())); // FIX
-                h = 0;
-            }
+            double h = r.prefHeight(forWidth);
+            h = snapSizeY(h); // is this right?  or snap(y + h) - snap(y) ?
             cell.setComputedHeight(h, forWidth);
             cell.setLocationY(y);
 
@@ -811,7 +809,7 @@ public class VFlow extends Pane {
                 }
             }
 
-            y += h;
+            y = snapPositionY(y + h + lineSpacing);
             count++;
 
             // stop populating the bottom part of the sliding window
@@ -824,6 +822,7 @@ public class VFlow extends Pane {
                     visible = false;
                 }
             } else {
+                // remove invisible cell from layout after sizing
                 getChildren().remove(r);
 
                 if ((y > (height + margin)) && (count > bottomMarginCount)) {
@@ -841,7 +840,7 @@ public class VFlow extends Pane {
         layout.setBottomHeight(y);
         layout.setUnwrappedWidth(unwrappedWidth);
         count = 0;
-        y = -getOffsetY(); // TODO content padding
+        y = snapPositionY(topPadding - getOffsetY());
         
         // populate top margin, going backwards from topCellIndex
         // TODO populate more, if bottom ended prematurely
@@ -860,10 +859,9 @@ public class VFlow extends Pane {
             
             layout.addCell(cell);
             
-            // TODO actual box height might be different from h due to snapping?
-            // TODO account for side components
             double h = r.prefHeight(forWidth);
-            y -= h;
+            h = snapSizeY(h); // is this right?  or snap(y + h) - snap(y) ?
+            y = snapPositionY(y - h);
             count++;
 
             cell.setComputedHeight(h, forWidth);
@@ -881,7 +879,7 @@ public class VFlow extends Pane {
         layout.setTopHeight(-y);
 
         // lay out content nodes
-        layoutNodes();
+        placeNodes();
 
         if (wrap) {
             double w = wrappedWidth();
@@ -893,11 +891,11 @@ public class VFlow extends Pane {
         }
     }
 
-    protected void layoutNodes() {
-        //System.err.println("layoutNodes"); // FIX
+    protected void placeNodes() {
         boolean wrap = control.isWrapText();
-        double w = wrap ? getWidth() : MAX_WIDTH_FOR_LAYOUT;
-        double x = leftPadding - getOffsetX();
+        double w = wrap ? getContentWidth() : MAX_WIDTH_FOR_LAYOUT;
+        double x0 = leftPadding - getOffsetX();
+        double x1 = x0 + leftSide;
 
         int sz = layout.getVisibleCellCount();
         for (int i=0; i < sz; i++) {
@@ -905,7 +903,18 @@ public class VFlow extends Pane {
             Region r = cell.getContent();
             double h = cell.getComputedHeight();
             double y = cell.getY();
-            layoutInArea(r, x, y, w, h, 0, HPos.CENTER, VPos.CENTER);
+            layoutInArea(r, x1, y, w, h, 0, HPos.CENTER, VPos.CENTER);
+            
+            // TODO layout side nodes
+            Node n = cell.getLeftNode();
+            if (n != null) {
+                // TODO in a side gutter pane
+            }
+
+            n = cell.getRightNode();
+            if (n != null) {
+                // TODO in a side gutter pane
+            }
         }
     }
     
@@ -942,7 +951,7 @@ public class VFlow extends Pane {
         }
         setOffsetX(off - leftPadding);
         // no need to recompute the flow
-        layoutNodes();
+        placeNodes();
         updateCaretAndSelection();
     }
 
@@ -996,7 +1005,7 @@ public class VFlow extends Pane {
             }
 
             setOffsetX(off - leftPadding);
-            layoutNodes();
+            placeNodes();
             updateCaretAndSelection();
         }
     }

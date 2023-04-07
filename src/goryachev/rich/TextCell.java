@@ -46,6 +46,8 @@ public class TextCell {
     private double height;
     private double forWidth; // TODO not used right now, use to skip layout when possible
     private double y;
+    private Node left;
+    private Node right;
 
     public TextCell(int index, Region content) {
         this.index = index;
@@ -178,5 +180,21 @@ public class TextCell {
             return NewAPI.getTextLength(f);
         }
         return 0;
+    }
+    
+    public Node getLeftNode() {
+        return left;
+    }
+    
+    public void setLeftNode(Node n) {
+        left = n;
+    }
+    
+    public Node getRightNode() {
+        return right;
+    }
+    
+    public void setRightNode(Node n) {
+        right = n;
     }
 }
