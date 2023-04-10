@@ -450,12 +450,13 @@ public class VFlow extends Pane {
         }
 
         // generate shapes
+        double left = -leftPadding;
         double right = getContentWidth() + leftPadding + rightPadding;
         // TODO
         boolean topLTR = true;
         boolean bottomLTR = true;
 
-        new SelectionHelper(b, 0.0, right).generate(top, bottom, topLTR, bottomLTR);
+        new SelectionHelper(b, left, right).generate(top, bottom, topLTR, bottomLTR);
     }
 
     protected void createCurrentLineHighlight(FxPathBuilder b, TextPos caret) {
@@ -542,7 +543,7 @@ public class VFlow extends Pane {
         if (pe == null) {
             return null;
         } else {
-            return Util.translatePath(this, cell.getContent(), pe);
+            return Util.translatePath(-leftPadding, content, cell.getContent(), pe);
         }
     }
 

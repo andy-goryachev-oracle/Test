@@ -90,14 +90,14 @@ public class Util {
         return Math.round(coord + 0.5) - 0.5;
     }
 
-    public static PathElement[] translatePath(Region target, Region src, PathElement[] elements) {
+    public static PathElement[] translatePath(double xoffset, Region target, Region src, PathElement[] elements) {
         Point2D p = src.localToScreen(src.snappedLeftInset(), src.snappedTopInset());
         if (p == null) {
             return null;
         }
 
         p = target.screenToLocal(p);
-        double dx = p.getX();
+        double dx = p.getX() + xoffset;
         double dy = p.getY();
 
         for (int i = 0; i < elements.length; i++) {
