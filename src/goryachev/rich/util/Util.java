@@ -30,6 +30,7 @@ import java.util.List;
 import javafx.css.CssMetaData;
 import javafx.css.Styleable;
 import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
@@ -214,5 +215,11 @@ public class Util {
         } else {
             return a.equals(b);
         }
+    }
+
+    /** sets translation offsets */
+    public static void translate(Node n, double xoff, double yoff) {
+        n.setTranslateX(xoff);
+        n.setTranslateY(yoff);
     }
 }

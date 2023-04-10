@@ -27,15 +27,6 @@
 package goryachev.rich;
 
 import java.text.BreakIterator;
-import goryachev.rich.RichTextArea.Cmd;
-import goryachev.rich.model.DataFormatHandler;
-import goryachev.rich.model.StyledInput;
-import goryachev.rich.model.StyledTextModel;
-import goryachev.rich.util.BehaviorBase2;
-import goryachev.rich.util.KCondition;
-import goryachev.rich.util.KeyBinding2;
-import goryachev.rich.util.NewAPI;
-import goryachev.rich.util.Util;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
@@ -55,8 +46,18 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.util.Duration;
+import goryachev.rich.RichTextArea.Cmd;
+import goryachev.rich.model.DataFormatHandler;
+import goryachev.rich.model.StyledInput;
+import goryachev.rich.model.StyledTextModel;
+import goryachev.rich.util.BehaviorBase2;
+import goryachev.rich.util.KCondition;
+import goryachev.rich.util.KeyBinding2;
+import goryachev.rich.util.NewAPI;
+import goryachev.rich.util.Util;
 
 /**
  * RichTextArea Behavior.
@@ -157,12 +158,12 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     public void install() {
-        VFlow f = vflow();
-        f.addEventFilter(MouseEvent.MOUSE_CLICKED, this::handleMouseClicked);
-        f.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
-        f.addEventFilter(MouseEvent.MOUSE_RELEASED, this::handleMouseReleased);
-        f.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
-        f.addEventFilter(ScrollEvent.ANY, this::handleScrollEvent);
+        Pane c = vflow().getContentPane();
+        c.addEventFilter(MouseEvent.MOUSE_CLICKED, this::handleMouseClicked);
+        c.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
+        c.addEventFilter(MouseEvent.MOUSE_RELEASED, this::handleMouseReleased);
+        c.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
+        c.addEventFilter(ScrollEvent.ANY, this::handleScrollEvent);
 
         control.addEventHandler(KeyEvent.ANY, keyHandler);
         
@@ -198,11 +199,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     protected String getPlainText(int modelIndex) {
         StyledTextModel m = control.getModel();
         return (m == null) ? null : m.getPlainText(modelIndex);
-    }
-
-    /** accepting VFlow coordinates */
-    protected TextPos getTextPos(double localX, double localY) {
-        return vflow().getTextPos(localX, localY);
     }
 
     protected void handleModel(Object src, StyledTextModel old, StyledTextModel m) {
@@ -428,11 +424,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     protected TextPos getTextPosition(MouseEvent ev) {
         double x = ev.getScreenX();
         double y = ev.getScreenY();
-        return getTextPosition(x, y);
-    }
-
-    protected TextPos getTextPosition(double screenX, double screenY) {
-        return control.getTextPosition(screenX, screenY);
+        return control.getTextPosition(x, y);
     }
     
     protected void stopAutoScroll() {
@@ -462,7 +454,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
         vflow().scrollToVisible(x, y);
 
-        TextPos p = getTextPos(x, y);
+        TextPos p = vflow().getTextPosLocal(x, y);
         control.extendSelection(p);
     }
 
@@ -503,11 +495,11 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     }
 
     public void moveUp() {
-        moveLine(-1.0, false); // TODO line spacing
+        moveLine(-1.0 - control.getLineSpacing(), false);
     }
 
     public void moveDown() {
-        moveLine(1.0, false); // TODO line spacing
+        moveLine(1.0 + control.getLineSpacing(), false);
     }
     
     /**
@@ -536,7 +528,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             x = phantomX;
         }
 
-        TextPos p = getTextPos(x, y);
+        TextPos p = vflow().getTextPosLocal(x, y);
         if (p == null) {
             // TODO check
             return;

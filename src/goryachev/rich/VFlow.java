@@ -41,7 +41,6 @@ import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
@@ -177,16 +176,20 @@ public class VFlow extends Pane {
         );
         
         vscroll.addEventFilter(MouseEvent.ANY, this::handleVScrollMouseEvent);
-        
+
         updateContentPadding();
     }
-    
+
     public void dispose() {
         control.wrapTextProperty().removeListener(wrapLi);
         control.modelProperty().removeListener(modelLi);
         caretPath.visibleProperty().unbind();
     }
-    
+
+    public Pane getContentPane() {
+        return content;
+    }
+
     public void handleModelChange() {
         control.clearSelection();
         setContentWidth(0.0);
@@ -202,7 +205,7 @@ public class VFlow extends Pane {
     }
     
     protected double wrappedWidth() {
-        double w = getWidth() - leftPadding - rightPadding;
+        double w = content.getWidth() - leftPadding - rightPadding;
         w = Math.max(w, 0.0);
         return snapSpaceX(w);
     }
@@ -241,6 +244,8 @@ public class VFlow extends Pane {
         updateContentPadding();
         if (getOffsetX() < -leftPadding) {
             setOffsetX(-leftPadding);
+        } else if (getOffsetX() + content.getWidth() > (getContentWidth() + leftPadding + rightPadding)) {
+            setOffsetX(Math.max(0.0, getContentWidth() + leftPadding + rightPadding - content.getWidth()));
         }
         recomputeLayout();
         updateHorizontalScrollBar();
@@ -286,7 +291,8 @@ public class VFlow extends Pane {
     public void setOffsetX(double x) {
         offsetX.set(x);
     }
-    
+
+    /** horizontal scroll offset */
     public DoubleProperty offsetXProperty() {
         return offsetX;
     }
@@ -318,7 +324,7 @@ public class VFlow extends Pane {
             double w = wrappedWidth();
             setContentWidth(w);
         } else {
-            double w = getOffsetX() + getWidth();
+            double w = getOffsetX() + content.getWidth();
             if (layout != null) {
                 if (layout.getUnwrappedWidth() > w) {
                     w = layout.getUnwrappedWidth();
@@ -362,21 +368,28 @@ public class VFlow extends Pane {
         
         // current line highlight
         if (control.isHighlightCurrentLine()) {
-            FxPathBuilder caretLineBuilder = new FxPathBuilder();
-            createCurrentLineHighlight(caretLineBuilder, caret);
-            caretLineHighlight.getElements().setAll(caretLineBuilder.getPathElements());
+            FxPathBuilder b = new FxPathBuilder();
+            createCurrentLineHighlight(b, caret);
+            caretLineHighlight.getElements().setAll(b.getPathElements());
         } else {
             caretLineHighlight.getElements().clear();
         }
+        
+        // TODO offsets
+        double xoff = leftPadding; //-  + content.getLayoutX();
+        double yoff = 0.0; // TODO content.getLayoutY();
 
-        // selection and caret
-        FxPathBuilder selectionBuilder = new FxPathBuilder();
-        FxPathBuilder caretBuilder = new FxPathBuilder();
-        createSelectionHighlight(selectionBuilder, anchor, caret);
-        createCaretPath(caretBuilder, caret);
+        // selection
+        FxPathBuilder b = new FxPathBuilder();
+        createSelectionHighlight(b, anchor, caret);
+        selectionHighlight.getElements().setAll(b.getPathElements());
+        Util.translate(selectionHighlight, xoff, yoff);
 
-        selectionHighlight.getElements().setAll(selectionBuilder.getPathElements());
-        caretPath.getElements().setAll(caretBuilder.getPathElements());
+        // caret
+        b = new FxPathBuilder();
+        createCaretPath(b, caret);
+        caretPath.getElements().setAll(b.getPathElements());
+        Util.translate(caretPath, xoff, yoff);
     }
 
     protected void removeCaretAndSelection() {
@@ -459,25 +472,25 @@ public class VFlow extends Pane {
         }
     }
 
-    /** in vflow cooridinates */ 
-    public TextPos getTextPos(double localX, double localY) {
+    /** uses vflow.content cooridinates */ 
+    public TextPos getTextPosLocal(double localX, double localY) {
         if (layout == null) {
             return null;
         }
-        return layout.getTextPos(getOffsetX(), localX, localY);
+        return layout.getTextPos(getOffsetX(), localX - leftPadding, localY);
     }
 
+    /** uses vflow.content coordinates */
     protected CaretInfo getCaretInfo(TextPos p) {
         return layout.getCaretInfo(getOffsetX(), p);
     }
 
-    /** returns caret sizing info, or null */
+    /** returns caret sizing info using vflow.content coordinates, or null */
     public CaretInfo getCaretInfo() {
         TextPos p = control.getCaretPosition();
         if (p == null) {
             return null; // TODO check
         }
-
         return getCaretInfo(p);
     }
 
@@ -637,7 +650,7 @@ public class VFlow extends Pane {
         }
 
         double max = getContentWidth() + leftPadding + rightPadding;
-        double w = getWidth();
+        double w = content.getWidth();
         double off = getOffsetX();
         double vis = w / max;
         double val = toScrollBarValue(off, w, max);
@@ -662,7 +675,7 @@ public class VFlow extends Pane {
             }
             
             double max = getContentWidth() + Config.horizontalGuard + leftPadding + rightPadding;
-            double visible = getWidth();
+            double visible = content.getWidth();
             double val = hscroll.getValue();
             double off = fromScrollBarValue(val, visible, max);
 
@@ -725,12 +738,13 @@ public class VFlow extends Pane {
                 try {
                     n.applyCss();
                     w = n.prefWidth(-1);
-                    // FIX label shows ellipses sometimes
-                    w += 2;
                 } finally {
                     content.getChildren().remove(n);
                 }
             }
+            // introducing some granularity in order to avoid left boundary moving back and forth when scrolling
+            double granularity = 15;
+            w = (Math.round((w + 1.0) / granularity) + 1.0) * granularity;
             return snapSizeX(w);
         }
         return 0.0;
@@ -934,7 +948,7 @@ public class VFlow extends Pane {
     protected void placeNodes() {
         boolean wrap = control.isWrapText();
         double w = wrap ? getContentWidth() : MAX_WIDTH_FOR_LAYOUT;
-        double x = -getOffsetX();
+        double x = snapPositionX(leftPadding - getOffsetX());
         
         leftGutter.getChildren().clear();
         rightGutter.getChildren().clear();
@@ -996,11 +1010,12 @@ public class VFlow extends Pane {
     }
 
     public void hscroll(double delta) {
-        double off = getOffsetX() + delta * getWidth();
+        double cw = content.getWidth();
+        double off = getOffsetX() + delta * cw;
         if (off < 0.0) {
             off = 0.0;
-        } else if (off + getWidth() > (getContentWidth() + leftPadding)) {
-            off = Math.max(0.0, getContentWidth() + leftPadding - getWidth());
+        } else if (off + cw > (getContentWidth() + leftPadding)) {
+            off = Math.max(0.0, getContentWidth() + leftPadding - cw);
         }
         setOffsetX(off - leftPadding);
         // no need to recompute the flow
@@ -1008,7 +1023,7 @@ public class VFlow extends Pane {
         updateCaretAndSelection();
     }
 
-    /** scrolls to visible area, using vflow coordinates */
+    /** scrolls to visible area, using vflow.content coordinates */
     public void scrollToVisible(double x, double y) {
         if (y < 0.0) {
             // above viewport
@@ -1045,19 +1060,21 @@ public class VFlow extends Pane {
         }
     }
 
-    /** x - vflow coordinate */
+    /** x - vflow.content coordinate */
     private void scrollHorizontalToVisible(double x) {
         if (!control.isWrapText()) {
+            x += leftPadding;
+            double cw = content.getWidth();
             double off;
             if (x < 0.0) {
                 off = Math.max(getOffsetX() + x - 20.0, 0.0);
-            } else if (x > getWidth()) {
-                off = getOffsetX() + x - getWidth() + Config.horizontalGuard;
+            } else if (x > cw) {
+                off = getOffsetX() + x - cw + Config.horizontalGuard;
             } else {
                 return;
             }
 
-            setOffsetX(off - leftPadding);
+            setOffsetX(off);
             placeNodes();
             updateCaretAndSelection();
         }
@@ -1107,14 +1124,11 @@ public class VFlow extends Pane {
         try {
             n.applyCss();
             if(n instanceof Region r) {
-                // or layout?
-                double w = getWidth(); // TODO padding
+                double w = getContentWidth();
                 double h = r.prefHeight(w);
                 layoutInArea(r, 0, -h, w, h, 0, HPos.CENTER, VPos.CENTER);
             }
-            SnapshotParameters p = new SnapshotParameters();
-            // TODO parameters?
-            return n.snapshot(p, null);
+            return n.snapshot(null, null);
         } finally {
             getChildren().remove(n);
         }

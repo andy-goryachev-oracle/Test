@@ -37,7 +37,7 @@ public class DemoColorSideDecorator implements SideDecorator {
 
     @Override
     public double getPrefWidth(double viewWidth) {
-        return 50.0;
+        return 20.0;
     }
 
     @Override
