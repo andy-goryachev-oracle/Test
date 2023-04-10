@@ -109,9 +109,9 @@ public class TextCell {
         return index;
     }
 
-    public void addBoxOutline(FxPathBuilder b, double x, double w) {
+    public void addBoxOutline(FxPathBuilder b, double x, double w, double h) {
         double y0 = content.getLayoutY();
-        double y1 = y0 + content.getHeight();
+        double y1 = y0 + h;
         
         b.moveto(x, y0);
         b.lineto(w, y0);

@@ -26,11 +26,12 @@
 // https://github.com/andy-goryachev/FxEditor
 // Copyright © 2017-2023 Andy Goryachev <andy@goryachev.com>
 package goryachev.rich.impl;
+
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.PathElement;
 import goryachev.rich.util.FxPathBuilder;
-
+import goryachev.util.D;
 
 /**
  * Selection Helper encapsulates the logic required to generate selection shapes.
@@ -49,255 +50,224 @@ import goryachev.rich.util.FxPathBuilder;
  *	 xxxxxxxxxxxxxxxx
  *	 ####**----------
  *
- * TODO this class can be static because everything happens in FX app thread.
+ * TODO this class can be static because everything happens in the FX app thread.
  */
-public class SelectionHelper
-{
-	private final FxPathBuilder pathBuilder;
-	private final double left;
-	private final double right;
-	private double topUp = Double.POSITIVE_INFINITY;
-	private double topDn = Double.POSITIVE_INFINITY;
-	private double topLeft = Double.POSITIVE_INFINITY;
-	private double topRight = Double.NEGATIVE_INFINITY;
-	private double bottomUp = Double.NEGATIVE_INFINITY;
-	private double bottomDn = Double.NEGATIVE_INFINITY;
-	private double bottomLeft = Double.POSITIVE_INFINITY;
-	private double bottomRight = Double.NEGATIVE_INFINITY;
-	private static final double EPSILON = 0.001; // float point arithmetic is inexact
+public class SelectionHelper {
+    private final FxPathBuilder pathBuilder;
+    private final double left;
+    private final double right;
+    private double topUp = Double.POSITIVE_INFINITY;
+    private double topDn = Double.POSITIVE_INFINITY;
+    private double topLeft = Double.POSITIVE_INFINITY;
+    private double topRight = Double.NEGATIVE_INFINITY;
+    private double bottomUp = Double.NEGATIVE_INFINITY;
+    private double bottomDn = Double.NEGATIVE_INFINITY;
+    private double bottomLeft = Double.POSITIVE_INFINITY;
+    private double bottomRight = Double.NEGATIVE_INFINITY;
+    private static final double EPSILON = 0.001; // float point arithmetic is inexact
 
-	
-	public SelectionHelper(FxPathBuilder b, double left, double right)
-	{
-		this.pathBuilder = b;
-		this.left = left;
-		this.right = right;
-	}
-	
-	
-	public String toString()
-	{
-		return 
-			"topUp=" + topUp +
-			" topDn=" + topDn +
-			" botUp=" + bottomUp +
-			" botDn=" + bottomDn;
-	}
-	
-	
-	@FunctionalInterface
-	protected interface PathHandler
-	{
-		public void processPoint(double x, double y);
-	}
-	
-	
-	protected void process(PathElement[] elements, PathHandler h)
-	{
-		for(PathElement em: elements)
-		{
-			if(em instanceof LineTo)
-			{
-				LineTo m = (LineTo)em;
-				h.processPoint(m.getX(), m.getY());
-			}
-			else if(em instanceof MoveTo)
-			{
-				MoveTo m = (MoveTo)em;
-				h.processPoint(m.getX(), m.getY());
-			}
-			else
-			{
-				throw new Error("?" + em);
-			}
-		}
-	}
+    public SelectionHelper(FxPathBuilder b, double left, double right) {
+        this.pathBuilder = b;
+        this.left = left;
+        this.right = right;
+    }
 
+    public String toString() {
+        return "topUp=" + topUp + " topDn=" + topDn + " botUp=" + bottomUp + " botDn=" + bottomDn;
+    }
 
-	protected void generateMiddle(boolean topLTR, boolean bottomLTR)
-	{
-		if(Double.isNaN(topUp))
-		{
-			return;
-		}
-		
-		// only if the middle exists
-		if(bottomUp > topDn)
-		{
-			if(topLTR)
-			{
-				pathBuilder.moveto(topRight, topUp);
-				pathBuilder.lineto(right, topUp);
-				pathBuilder.lineto(right, topDn);
-				pathBuilder.lineto(topRight, topDn);
-				pathBuilder.lineto(topRight, topUp);
-			}
-			else
-			{
-				// TODO
-			}
-			
-			pathBuilder.moveto(left, topDn);
-			pathBuilder.lineto(right, topDn);
-			pathBuilder.lineto(right, bottomUp);
-			pathBuilder.lineto(left, bottomUp);
-			pathBuilder.lineto(left, topDn);
-			
-			// trailer
-			
-			if(bottomLTR)
-			{
-				pathBuilder.moveto(left, bottomUp);
-				pathBuilder.lineto(bottomLeft, bottomUp);
-				pathBuilder.lineto(bottomLeft, bottomDn);
-				pathBuilder.lineto(left, bottomDn);
-				pathBuilder.lineto(left, bottomUp);
-			}
-			else
-			{
-				// TODO
-			}
-		}
-	}
+    @FunctionalInterface
+    protected interface PathHandler {
+        public void processPoint(double x, double y);
+    }
 
+    private void process(PathElement[] elements, PathHandler h) {
+        for (PathElement em : elements) {
+            if (em instanceof LineTo p) {
+                h.processPoint(p.getX(), p.getY());
+            } else if (em instanceof MoveTo p) {
+                h.processPoint(p.getX(), p.getY());
+            } else {
+                throw new Error("?" + em);
+            }
+        }
+    }
 
-	@Deprecated // debugging
-	private static int r(double x)
-	{
-		return (int)Math.round(x);
-	}
-	
-	
-	@Deprecated // debugging
-	private static String dump(PathElement[] elements)
-	{
-		StringBuilder sb = new StringBuilder();
-		if(elements == null)
-		{
-			sb.append("null");
-		}
-		else
-		{
-			for(PathElement em: elements)
-			{
-				if(em instanceof MoveTo)
-				{
-					MoveTo m = (MoveTo)em;
-					sb.append("M");
-					sb.append(r(m.getX()));
-					sb.append(",");
-					sb.append(r(m.getY()));
-					sb.append(" ");
-				}
-				else if(em instanceof LineTo)
-				{
-					LineTo m = (LineTo)em;
-					sb.append("L");
-					sb.append(r(m.getX()));
-					sb.append(",");
-					sb.append(r(m.getY()));
-					sb.append(" ");
-				}
-			}
-		}
-		return sb.toString();
-	}
-	
-	
-	protected boolean isNear(double a, double b)
-	{
-		return Math.abs(a - b) < EPSILON;
-	}
-	
-	
-	protected void determineTopYLimits(double x, double y)
-	{
-		if(y < topUp)
-		{
-			topUp = y;
-		}
-	}
-	
-	
-	protected void determineTopXLimits(double x, double y)
-	{
-		if(isNear(y, topUp))
-		{			
-			if(x < topLeft)
-			{
-				topLeft = x;
-			}
-			
-			if(x > topRight)
-			{
-				topRight = x;
-			}
-		}
-		else
-		{
-			if(y < topDn)
-			{
-				topDn = y;
-			}	
-		}
-	}
-	
-	
-	protected void determineBottomYLimits(double x, double y)
-	{
-		if(y > bottomDn)
-		{
-			bottomDn = y;
-		}
-	}
-	
-	
-	protected void determineBottomXLimits(double x, double y)
-	{
-		if(isNear(y, bottomDn))
-		{
-			if(x < bottomLeft)
-			{
-				bottomLeft = x;
-			}
-			
-			if(x > bottomRight)
-			{
-				bottomRight = x;
-			}
-		}
-		else
-		{
-			if(y > bottomUp)
-			{
-				bottomUp = y;
-			}
-		}
-	}
+    private void generateMiddle(boolean topLTR, boolean bottomLTR, double lineSpacing) {
+        if (Double.isNaN(topUp)) {
+            return;
+        }
 
+        double td = topDn + lineSpacing;
+        double bd = bottomDn + lineSpacing;
 
-	public void generate(PathElement[] top, PathElement[] bottom, boolean topLTR, boolean bottomLTR)
-	{		
-		if(bottom == null)
-		{
-			// TODO special handling when outside of visible area
-			pathBuilder.addAll(top);
-		}
-		else
-		{
-			process(top, this::determineTopYLimits);
-			process(top, this::determineTopXLimits);
+        // only if the middle exists
+        if (bottomUp > topDn) {
+            if (topLTR) {
+                pathBuilder.moveto(topRight, topUp);
+                pathBuilder.lineto(right, topUp);
+                pathBuilder.lineto(right, td);
+                pathBuilder.lineto(topRight, td);
+                pathBuilder.lineto(topRight, topUp);
+            } else {
+                // TODO
+            }
 
-			process(bottom, this::determineBottomYLimits);
-			process(bottom, this::determineBottomXLimits);
-			
-//			D.print("top", dump(top), "bottom", dump(bottom)); // FIX
-//			D.print(" top: y=" + r(topUp) + ".." + r(topDn) + " x=" + r(topLeft) + ".." +  r(topRight));
-//			D.print(" bot: y=" + r(bottomUp) + ".." + r(bottomDn) + " x=" + r(bottomLeft) + ".." + r(bottomRight));
-			
-			pathBuilder.addAll(top);
-			generateMiddle(topLTR, bottomLTR);
-			pathBuilder.addAll(bottom);
-		}
-	}
+            pathBuilder.moveto(left, td);
+            pathBuilder.lineto(right, td);
+            pathBuilder.lineto(right, bottomUp);
+            pathBuilder.lineto(left, bottomUp);
+            pathBuilder.lineto(left, td);
+
+            // trailer
+
+            if (bottomLTR) {
+                pathBuilder.moveto(left, bottomUp);
+                pathBuilder.lineto(bottomLeft, bottomUp);
+                pathBuilder.lineto(bottomLeft, bd);
+                pathBuilder.lineto(left, bd);
+                pathBuilder.lineto(left, bottomUp);
+            } else {
+                // TODO
+            }
+        }
+    }
+
+    @Deprecated // debugging
+    private static int r(double x) {
+        return (int)Math.round(x);
+    }
+
+    @Deprecated // debugging
+    private static String dump(PathElement[] elements) {
+        StringBuilder sb = new StringBuilder();
+        if (elements == null) {
+            sb.append("null");
+        } else {
+            for (PathElement em : elements) {
+                if (em instanceof MoveTo p) {
+                    sb.append("M");
+                    sb.append(r(p.getX()));
+                    sb.append(",");
+                    sb.append(r(p.getY()));
+                    sb.append(" ");
+                } else if (em instanceof LineTo p) {
+                    sb.append("L");
+                    sb.append(r(p.getX()));
+                    sb.append(",");
+                    sb.append(r(p.getY()));
+                    sb.append(" ");
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    private boolean isNear(double a, double b) {
+        return Math.abs(a - b) < EPSILON;
+    }
+
+    private void determineTopYLimits(double x, double y) {
+        if (y < topUp) {
+            topUp = y;
+        }
+    }
+
+    private void determineTopXLimits(double x, double y) {
+        if (isNear(y, topUp)) {
+            if (x < topLeft) {
+                topLeft = x;
+            }
+
+            if (x > topRight) {
+                topRight = x;
+            }
+        } else {
+            if (y < topDn) {
+                topDn = y;
+            }
+        }
+    }
+
+    private void determineBottomYLimits(double x, double y) {
+        if (y > bottomDn) {
+            bottomDn = y;
+        }
+    }
+
+    private void determineBottomXLimits(double x, double y) {
+        if (isNear(y, bottomDn)) {
+            if (x < bottomLeft) {
+                bottomLeft = x;
+            }
+
+            if (x > bottomRight) {
+                bottomRight = x;
+            }
+        } else {
+            if (y > bottomUp) {
+                bottomUp = y;
+            }
+        }
+    }
+
+    /** adjusts for line spacing and left padding */
+    private void adjust(PathElement[] elements, double px, double py, double dx, double dy) {
+        for (PathElement em : elements) {
+            if (em instanceof LineTo p) {
+                double x = p.getX();
+                if (isNear(x, px)) {
+                    //p.setX(x - dx);
+                }
+
+                double y = p.getY();
+                if (isNear(y, py)) {
+                    p.setY(y + dy);
+                }
+            } else if (em instanceof MoveTo p) {
+                double x = p.getX();
+                if (isNear(x, px)) {
+                    //p.setX(x - dx);
+                }
+
+                double y = p.getY();
+                if (isNear(y, py)) {
+                    p.setY(y + dy);
+                }
+            }
+        }
+    }
+
+    public void generate(
+        PathElement[] top,
+        PathElement[] bottom,
+        boolean topLTR,
+        boolean bottomLTR,
+        double leftPadding,
+        double lineSpacing
+    ) {
+        process(top, this::determineTopYLimits);
+        process(top, this::determineTopXLimits);
+
+        if (bottom == null) {
+            // TODO special handling when outside of visible area
+
+            adjust(top, topLeft, topDn, leftPadding, lineSpacing);
+            pathBuilder.addAll(top);
+        } else {
+            process(bottom, this::determineBottomYLimits);
+            process(bottom, this::determineBottomXLimits);
+
+            adjust(top, topLeft, topDn, leftPadding, lineSpacing);
+            adjust(bottom, bottomLeft, bottomDn, leftPadding, lineSpacing);
+
+//            D.p("top", dump(top), "bottom", dump(btm)); // FIX
+//            D.p(" top: y=" + r(topUp) + ".." + r(topDn) + " x=" + r(topLeft) + ".." + r(topRight));
+//            D.p(" bot: y=" + r(bottomUp) + ".." + r(bottomDn) + " x=" + r(bottomLeft) + ".." + r(bottomRight));
+
+            pathBuilder.addAll(top);
+            generateMiddle(topLTR, bottomLTR, lineSpacing);
+            pathBuilder.addAll(bottom);
+        }
+    }
 }

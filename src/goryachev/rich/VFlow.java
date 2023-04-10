@@ -456,7 +456,7 @@ public class VFlow extends Pane {
         boolean topLTR = true;
         boolean bottomLTR = true;
 
-        new SelectionHelper(b, left, right).generate(top, bottom, topLTR, bottomLTR);
+        new SelectionHelper(b, left, right).generate(top, bottom, topLTR, bottomLTR, leftPadding, lineSpacing);
     }
 
     protected void createCurrentLineHighlight(FxPathBuilder b, TextPos caret) {
@@ -469,7 +469,7 @@ public class VFlow extends Pane {
             } else {
                 w = getContentWidth() + leftPadding + rightPadding;
             }
-            cell.addBoxOutline(b, 0.0, snapPositionX(w));
+            cell.addBoxOutline(b, 0.0, snapPositionX(w), cell.getComputedHeight());
         }
     }
 
@@ -539,6 +539,8 @@ public class VFlow extends Pane {
         } else {
             pe = cell.getRangeShape(startOffset, endOffset);
         }
+        
+        // FIX need to add lineSpacing at the bottom
 
         if (pe == null) {
             return null;
@@ -849,7 +851,7 @@ public class VFlow extends Pane {
 
             layout.addCell(cell);
 
-            double h = r.prefHeight(forWidth);
+            double h = r.prefHeight(forWidth) + lineSpacing;
             h = snapSizeY(h); // is this right?  or snap(y + h) - snap(y) ?
             cell.setComputedHeight(h, forWidth);
             cell.setLocationY(y);
@@ -863,7 +865,7 @@ public class VFlow extends Pane {
                 }
             }
 
-            y = snapPositionY(y + h + lineSpacing);
+            y = snapPositionY(y + h);
             count++;
 
             // stop populating the bottom part of the sliding window
@@ -914,7 +916,7 @@ public class VFlow extends Pane {
             
             layout.addCell(cell);
             
-            double h = r.prefHeight(forWidth);
+            double h = r.prefHeight(forWidth) + lineSpacing;
             h = snapSizeY(h); // is this right?  or snap(y + h) - snap(y) ?
             y = snapPositionY(y - h);
             count++;
@@ -970,7 +972,7 @@ public class VFlow extends Pane {
                 if (n != null) {
                     n.setManaged(false);
                     leftGutter.getChildren().add(n);
-                    leftGutter.layoutInArea(n, 0.0, y, leftGutter.getWidth(), h + lineSpacing);
+                    leftGutter.layoutInArea(n, 0.0, y, leftGutter.getWidth(), h);
                 }
             }
 
@@ -980,7 +982,7 @@ public class VFlow extends Pane {
                 if (n != null) {
                     n.setManaged(false);
                     rightGutter.getChildren().add(n);
-                    rightGutter.layoutInArea(n, 0.0, y, rightGutter.getWidth(), h + lineSpacing);
+                    rightGutter.layoutInArea(n, 0.0, y, rightGutter.getWidth(), h);
                 }
             }
         }
