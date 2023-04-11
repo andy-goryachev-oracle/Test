@@ -257,9 +257,13 @@ public class VFlow extends Pane {
         if (m == null) {
             leftPadding = 0.0;
             rightPadding = 0.0;
+            topPadding = 0.0;
+            bottomPadding = 0.0;
         } else {
             leftPadding = m.getLeft();
             rightPadding = m.getRight();
+            topPadding = m.getTop();
+            bottomPadding = m.getBottom();
         }
     }
     
@@ -301,10 +305,6 @@ public class VFlow extends Pane {
         return offsetX;
     }
     
-    public double getOffsetY() {
-        return getOrigin().offset();
-    }
-
     /** width of the area allocated for content (text cells) */
     public double getContentWidth() {
         return contentWidth.get();
@@ -582,22 +582,31 @@ public class VFlow extends Pane {
     public double lineSpacing() {
         return lineSpacing;
     }
-    
+
     public Insets contentPadding() {
         return control.getContentPadding();
+    }
+
+    private void handleVScrollMouseEvent(MouseEvent ev) {
+        EventType<? extends MouseEvent> t = ev.getEventType();
+        if (t == MouseEvent.MOUSE_PRESSED) {
+            vsbPressed = true;
+        } else if (t == MouseEvent.MOUSE_RELEASED) {
+            vsbPressed = false;
+            updateVerticalScrollBar();
+        }
     }
 
     /** updates VSB in response to change in height, layout, or offsetY */ 
     protected void updateVerticalScrollBar() {
         double visible;
         double val;
-
         if (layout == null || (lineCount() == 0)) {
             visible = 1.0;
             val = 0.0;
         } else {
             double av = layout.averageHeight();
-            double max = layout.estimatedMax();
+            double max = layout.estimatedMax(); // TODO? + topPadding + bottomPadding;
             double h = getHeight();
             val = toScrollBarValue((topCellIndex() - layout.topCount()) * av + layout.topHeight(), h, max);
             visible = h / max;
@@ -612,16 +621,6 @@ public class VFlow extends Pane {
 
         handleScrollEvents = true;
     }
-    
-    private void handleVScrollMouseEvent(MouseEvent ev) {
-        EventType<? extends MouseEvent> t = ev.getEventType();
-        if(t == MouseEvent.MOUSE_PRESSED) {
-            vsbPressed = true;
-        } else if(t == MouseEvent.MOUSE_RELEASED) {
-            vsbPressed = false;
-            updateVerticalScrollBar();
-        }
-    }
 
     /** handles user moving the vertical scroll bar */
     public void handleVerticalScroll() {
@@ -630,28 +629,12 @@ public class VFlow extends Pane {
                 return;
             }
 
+            double max = vscroll.getMax();
             double val = vscroll.getValue();
             double visible = vscroll.getVisibleAmount();
-            double max = vscroll.getMax();
             double pos = fromScrollBarValue(val, visible, max); // max is 1.0
 
-            // FIX remove
-            if(pos > 1.0) {
-                System.err.println("* * ERR pos>1 " + pos);
-                fromScrollBarValue(val, visible, max);
-            }
-
             Origin p = layout.fromAbsolutePosition(pos);
-            // FIX
-//            System.err.println(
-//                "handleVerticalScroll" +
-//                " val=" + vscroll.getValue() +
-//                " pos=" + pos +
-//                " visible=" + visible +
-//                " origin=" + p +
-//                " lineCount=" + lineCount()
-//            );
-
             setOrigin(p);
         }
     }
@@ -835,7 +818,8 @@ public class VFlow extends Pane {
             maxWidth = MAX_WIDTH_FOR_LAYOUT;
         }
 
-        double y = snapPositionY(topPadding - getOffsetY());
+        double ytop = snapPositionY((topCellIndex() == 0 ? topPadding : 0.0) - getOrigin().offset());
+        double y = ytop;
         double unwrappedWidth = 0;
         double margin = Config.slidingWindowMargin * height;
         int topMarginCount = 0;
@@ -907,7 +891,7 @@ public class VFlow extends Pane {
         layout.setBottomHeight(y);
         layout.setUnwrappedWidth(unwrappedWidth);
         count = 0;
-        y = snapPositionY(topPadding - getOffsetY());
+        y = ytop;
         
         // populate top margin, going backwards from topCellIndex
         // TODO populate more, if bottom ended prematurely
