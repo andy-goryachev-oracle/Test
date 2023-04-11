@@ -444,13 +444,8 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         }
         vflow().blockScroll(delta);
 
-        double x = 0.0;
-        double y;
-        if (autoScrollUp) {
-            y = 0.0;
-        } else {
-            y = vflow().getViewHeight();
-        }
+        double x = Math.max(0.0, phantomX + vflow().getOffsetX());
+        double y = autoScrollUp ? 0.0 : vflow().getViewHeight();
 
         vflow().scrollToVisible(x, y);
 

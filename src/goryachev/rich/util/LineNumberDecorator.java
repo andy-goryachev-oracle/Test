@@ -25,13 +25,11 @@
 package goryachev.rich.util;
 
 import java.text.DecimalFormat;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import goryachev.rich.SideDecorator;
 
@@ -53,6 +51,7 @@ public class LineNumberDecorator implements SideDecorator {
 
     @Override
     public double getPrefWidth(double viewWidth) {
+        // no set width, must request a measurer Node
         return 0;
     }
 
@@ -69,17 +68,14 @@ public class LineNumberDecorator implements SideDecorator {
             s += " ";
         }
 
-        Label t = new Label();
-        t.setText(s);
+        Label t = new Label(s);
+        // label needs to fill all available space
+        t.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        // numbers should be right aligned
         t.setAlignment(Pos.TOP_RIGHT);
-        t.setPadding(Insets.EMPTY);
-
-        // why do I need to wrap it into Pane?
-        //HBox p = new HBox(t);
-        //HBox.setHgrow(t, Priority.ALWAYS);
-        BorderPane p = new BorderPane(t);
-        p.setBackground(background);
-        p.setPadding(Insets.EMPTY);
-        return p;
+        // not required; one may style the left side pane instead
+        t.setBackground(background);
+        t.setOpacity(1.0);
+        return t;
     }
 }
