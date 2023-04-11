@@ -523,17 +523,19 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         double y = (deltaPixels < 0) ? c.y0() + deltaPixels : c.y1() + deltaPixels;
 
         if (phantomX < 0) {
-            phantomX = x;
+            // convert to offset from the left text edge
+            phantomX = x + vflow().getOffsetX();
         } else {
-            x = phantomX;
+            // convert back to vflow.content
+            x = phantomX - vflow().getOffsetX();
         }
 
+        // TODO local what? vflow.content?
         TextPos p = vflow().getTextPosLocal(x, y);
         if (p == null) {
             // TODO check
             return;
         }
-
         control.moveCaret(p, extendSelection);
     }
 
@@ -545,7 +547,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
         clearPhantomX();
 
-        if(!extendSelection) {
+        if (!extendSelection) {
             TextPos ca = control.getCaretPosition();
             TextPos an = control.getAnchorPosition();
             int d = ca.compareTo(an);
@@ -553,7 +555,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             if (d < 0) {
                 control.moveCaret(moveRight ? an : ca, extendSelection);
                 return;
-            } else if(d > 0) {
+            } else if (d > 0) {
                 control.moveCaret(moveRight ? ca : an, extendSelection);
                 return;
             }

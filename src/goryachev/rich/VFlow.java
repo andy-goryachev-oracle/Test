@@ -262,6 +262,10 @@ public class VFlow extends Pane {
             rightPadding = m.getRight();
         }
     }
+    
+    public double leftPadding() {
+        return leftPadding;
+    }
 
     public Origin getOrigin() {
         return origin.get();
@@ -478,7 +482,7 @@ public class VFlow extends Pane {
         if (layout == null) {
             return null;
         }
-        return layout.getTextPos(getOffsetX(), localX - leftPadding, localY);
+        return layout.getTextPos(getOffsetX(), localX /* - leftPadding*/, localY);
     }
 
     /** uses vflow.content coordinates */
@@ -497,7 +501,6 @@ public class VFlow extends Pane {
 
     protected PathElement[] getRangeTop() {
         double w = getWidth();
-
         return new PathElement[] {
             new MoveTo(0, -1),
             new LineTo(w, -1),
@@ -574,6 +577,14 @@ public class VFlow extends Pane {
         // TODO use control.lineCount property?
         StyledTextModel m = control.getModel();
         return (m == null) ? 0 : m.getParagraphCount();
+    }
+    
+    public double lineSpacing() {
+        return lineSpacing;
+    }
+    
+    public Insets contentPadding() {
+        return control.getContentPadding();
     }
 
     /** updates VSB in response to change in height, layout, or offsetY */ 

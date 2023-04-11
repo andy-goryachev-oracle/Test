@@ -330,7 +330,7 @@ public class RichTextArea extends Control {
 
     public TextPos getTextPosition(double screenX, double screenY) {
         Point2D local = vflow().getContentPane().screenToLocal(screenX, screenY);
-        return vflow().getTextPosLocal(local.getX(), local.getY());
+        return vflow().getTextPosLocal(local.getX() - vflow().leftPadding(), local.getY());
     }
     
     public ReadOnlyObjectProperty<Duration> caretBlinkPeriodProperty() {

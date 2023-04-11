@@ -49,7 +49,9 @@ public class TextCellLayout {
     private final ArrayList<TextCell> cells = new ArrayList<>(32);
     private final double flowWidth;
     private final double flowHeight;
+    private final double lineSpacing;
     private final int lineCount;
+    private final Insets contentPadding;
     private final Origin origin;
     private int visible;
     private int bottomCount;
@@ -61,8 +63,18 @@ public class TextCellLayout {
         this.flowWidth = f.getWidth();
         this.flowHeight = f.getViewHeight();
         this.origin = f.getOrigin();
+        this.lineSpacing = f.lineSpacing();
         this.lineCount = f.lineCount();
-        // TODO padding, sides
+        this.contentPadding = f.contentPadding();
+    }
+
+    public boolean isValid(VFlow f) {
+        return
+            (f.getWidth() == flowWidth) &&
+            (f.getHeight() == flowHeight) &&
+            (f.topCellIndex() == origin.index()) &&
+            (f.lineSpacing() == lineSpacing) &&
+            (Util.equals(f.contentPadding(), contentPadding));
     }
 
     public String toString() {
@@ -79,13 +91,6 @@ public class TextCellLayout {
             ", estMax=" + estimatedMax() +
             ", unwrapped=" + getUnwrappedWidth() +
             "}";
-    }
-
-    public boolean isValid(VFlow f) {
-        return
-            (f.getWidth() == flowWidth) &&
-            (f.getHeight() == flowHeight) &&
-            (f.topCellIndex() == origin.index());
     }
 
     public void addCell(TextCell box) {
