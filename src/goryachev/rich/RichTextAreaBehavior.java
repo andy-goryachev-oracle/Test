@@ -514,8 +514,9 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
     protected void moveLine(double deltaPixels, boolean extendSelection) {
         CaretInfo c = vflow().getCaretInfo();
+        double sp = control.getLineSpacing();
         double x = c.x();
-        double y = (deltaPixels < 0) ? c.y0() + deltaPixels : c.y1() + deltaPixels + control.getLineSpacing();
+        double y = (deltaPixels < 0) ? c.y0() + deltaPixels - sp - 0.5 : c.y1() + deltaPixels + sp;
 
         if (phantomX < 0) {
             // convert to offset from the left text edge
