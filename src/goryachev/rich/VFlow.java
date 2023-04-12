@@ -193,7 +193,7 @@ public class VFlow extends Pane {
     public void handleModelChange() {
         control.clearSelection();
         setContentWidth(0.0);
-        setOrigin(Origin.ZERO);
+        setOrigin(new Origin(0, -topPadding));
         setOffsetX(-leftPadding);
         cache.clear();
         recomputeLayout();
@@ -482,7 +482,7 @@ public class VFlow extends Pane {
         if (layout == null) {
             return null;
         }
-        return layout.getTextPos(getOffsetX(), localX /* - leftPadding*/, localY);
+        return layout.getTextPos(getOffsetX(), localX, localY);
     }
 
     /** uses vflow.content coordinates */
@@ -820,7 +820,7 @@ public class VFlow extends Pane {
             maxWidth = MAX_WIDTH_FOR_LAYOUT;
         }
 
-        double ytop = snapPositionY((topCellIndex() == 0 ? topPadding : 0.0) - getOrigin().offset());
+        double ytop = snapPositionY(-getOrigin().offset());
         double y = ytop;
         double unwrappedWidth = 0;
         double margin = Config.slidingWindowMargin * height;
