@@ -39,7 +39,7 @@ package goryachev.rich.util;
  * OPTION        OPTION      (ignored)
  * SHIFT         SHIFT       SHIFT
  * SHORTCUT      COMMAND     CTRL
- * WIN           (ignored)   META
+ * WINDOWS       (ignored)   META
  */
 public enum KCondition {
     // modifier keys
@@ -57,9 +57,9 @@ public enum KCondition {
     SHIFT,
     /** SHORTCUT modifier, mapped to COMMAND on Mac, CTRL on Windows/Linux */
     SHORTCUT,
-    /** WIN modifier, mapped to WIN on Windows only */
-    WIN,
-    
+    /** Windows key modifier (⊞), mapped to WINDOWS on Windows only */
+    WINDOWS,
+
     // event types
     /** a key press event */
     KEY_PRESS,
@@ -69,14 +69,14 @@ public enum KCondition {
     KEY_TYPED,
     /** any key event */
     KEY_ANY,
-    
+
     // platform specificity
     /** specifies Windows platform */
-    WINDOWS,
+    FOR_WIN,
     /** specifies non-Windows platform */
-    NOT_WINDOWS,
+    NOT_FOR_WIN,
     /** specifies Mac platform */
-    MAC,
+    FOR_MAC,
     /** specifies non-Mac platform */
-    NOT_MAC,
+    NOT_FOR_MAC,
 }

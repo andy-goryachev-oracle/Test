@@ -128,11 +128,11 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
         boolean win = Util.isWindows();
 
         if (mac) {
-            if (m.contains(KCondition.NOT_MAC)) {
+            if (m.contains(KCondition.NOT_FOR_MAC)) {
+                return null;
+            } else if (m.contains(KCondition.FOR_WIN)) {
                 return null;
             } else if (m.contains(KCondition.WINDOWS)) {
-                return null;
-            } else if (m.contains(KCondition.WIN)) {
                 return null;
             }
 
@@ -140,9 +140,9 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
             replace(m, KCondition.META, KCondition.COMMAND);
             replace(m, KCondition.SHORTCUT, KCondition.COMMAND);
         } else if (Util.isWindows()) {
-            if (m.contains(KCondition.NOT_WINDOWS)) {
+            if (m.contains(KCondition.NOT_FOR_WIN)) {
                 return null;
-            } else if (m.contains(KCondition.MAC)) {
+            } else if (m.contains(KCondition.FOR_MAC)) {
                 return null;
             }
 
@@ -156,14 +156,14 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
                 return null;
             }
 
-            replace(m, KCondition.WIN, KCondition.META);
+            replace(m, KCondition.WINDOWS, KCondition.META);
         }
 
         // remove platform 
-        m.remove(KCondition.MAC);
-        m.remove(KCondition.NOT_MAC);
-        m.remove(KCondition.WINDOWS);
-        m.remove(KCondition.NOT_WINDOWS);
+        m.remove(KCondition.FOR_MAC);
+        m.remove(KCondition.NOT_FOR_MAC);
+        m.remove(KCondition.FOR_WIN);
+        m.remove(KCondition.NOT_FOR_WIN);
 
         boolean pressed = m.contains(KCondition.KEY_PRESS);
         boolean released = m.contains(KCondition.KEY_PRESS);
