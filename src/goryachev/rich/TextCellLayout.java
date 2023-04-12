@@ -370,13 +370,20 @@ public class TextCellLayout {
         int ix = binarySearch(y, topIx, btmIx - 1);
         TextCell cell = getCell(ix);
         double off = y - cell.getY();
+        if(delta > 0) {
+            if(ix == 0) {
+                if(off < 0) {
+                    off = 0.0;
+                }
+            }
+        }
 //        if(ix == 0) {
 //            double topPadding = (contentPadding == null) ? 0.0 : contentPadding.getTop();
 //            if(-off > topPadding) {
 //                off = -topPadding;
 //            }
 //        }
-System.out.println("ix=" + ix + " off=" + off); // FIX
+System.out.println("delta=" + delta + " ix=" + ix + " off=" + off + " cell.y=" + cell.getY()); // FIX
         return new Origin(cell.getLineIndex(), off);
     }
 }

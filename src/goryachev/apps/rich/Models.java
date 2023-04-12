@@ -24,9 +24,14 @@
  */
 package goryachev.apps.rich;
 
+import javafx.scene.paint.Color;
 import goryachev.monkey.util.WritingSystemsDemo;
+import goryachev.rich.TextPos;
 import goryachev.rich.model.EditablePlainTextModel;
 import goryachev.rich.model.EditableRichTextModel;
+import goryachev.rich.model.StyleAttrs;
+import goryachev.rich.model.StyleInfo;
+import goryachev.rich.model.StyledInput;
 import goryachev.rich.model.StyledTextModel;
 
 public enum Models {
@@ -40,6 +45,7 @@ public enum Models {
     MONOSPACED("Monospaced"),
     TABS("Tabs"),
     WRITING_SYSTEMS("Writing Systems"),
+    WRITING_SYSTEMS_EDITABLE("Writing Systems (Editable)"),
     UNEVEN_SMALL("Uneven Small"),
     UNEVEN_LARGE("Uneven Large"),
     ZERO_LINES("0 Lines"),
@@ -77,30 +83,6 @@ public enum Models {
             return new EditablePlainTextModel();
         case EDITABLE_STYLED:
             return new EditableRichTextModel();
-        case TABS:
-            return tabs();
-        case MONOSPACED:
-            return new DemoStyledTextModel(2_000_000_000, true);
-        case NOTEBOOK:
-            return new NotebookModel();
-        case NOTEBOOK2:
-            return new NotebookModel2();
-        case NULL:
-            return null;
-        case ONE_LINE:
-            return new DemoStyledTextModel(1, false);
-        case TEN_LINES:
-            return new DemoStyledTextModel(10, false);
-        case THOUSAND_LINES:
-            return new DemoStyledTextModel(1_000, false);
-        case UNEVEN_SMALL:
-            return new UnevenStyledTextModel(20);
-        case UNEVEN_LARGE:
-            return new UnevenStyledTextModel(2000);
-        case WRITING_SYSTEMS:
-            return SegmentStyledTextModel.from(WritingSystemsDemo.getText());
-        case ZERO_LINES:
-            return new DemoStyledTextModel(0, false);
         case LARGE_TEXT:
             return new LargeTextModel(10);
         case LARGE_TEXT_LONG:
@@ -111,6 +93,32 @@ public enum Models {
             return new NoLastNewlineModel(5);
         case NO_LAST_NEWLINE_LONG:
             return new NoLastNewlineModel(300);
+        case MONOSPACED:
+            return new DemoStyledTextModel(2_000_000_000, true);
+        case NOTEBOOK:
+            return new NotebookModel();
+        case NOTEBOOK2:
+            return new NotebookModel2();
+        case NULL:
+            return null;
+        case ONE_LINE:
+            return new DemoStyledTextModel(1, false);
+        case TABS:
+            return tabs();
+        case TEN_LINES:
+            return new DemoStyledTextModel(10, false);
+        case THOUSAND_LINES:
+            return new DemoStyledTextModel(1_000, false);
+        case UNEVEN_SMALL:
+            return new UnevenStyledTextModel(20);
+        case UNEVEN_LARGE:
+            return new UnevenStyledTextModel(2000);
+        case WRITING_SYSTEMS:
+            return SegmentStyledTextModel.from(WritingSystemsDemo.getText());
+        case WRITING_SYSTEMS_EDITABLE:
+            return writingSystems();
+        case ZERO_LINES:
+            return new DemoStyledTextModel(0, false);
         default:
             throw new Error("?" + m);
         }
@@ -118,5 +126,35 @@ public enum Models {
 
     private static StyledTextModel tabs() {
         return SegmentStyledTextModel.from("0123456789012345678901234567890\n0\n\t1\n\t\t2\n\t\t\t3\n\t\t\t\t4\n0\n");
+    }
+    
+    private static StyledTextModel writingSystems() {
+        StyleAttrs a = new StyleAttrs();
+        a.set(StyleAttrs.FONT_SIZE, 200);
+        a.set(StyleAttrs.TEXT_COLOR, Color.gray(0.5));
+        StyleInfo name = StyleInfo.of(a);
+        
+        a = new StyleAttrs();
+        a.set(StyleAttrs.FONT_SIZE, 200);
+        StyleInfo value = StyleInfo.of(a);
+        
+        EditableRichTextModel m = new EditableRichTextModel();
+        String[] ss = WritingSystemsDemo.PAIRS;
+        for (int i = 0; i < ss.length;) {
+            String s = ss[i++] + ":  ";
+            append(m, s, name);
+            
+            s = ss[i++];
+            append(m, s, value);
+            
+            append(m, "\n", null);
+        }
+        return m;
+    }
+    
+    // TODO add to StyledModel
+    private static void append(StyledTextModel m, String text, StyleInfo style) {
+        TextPos p = m.getEndTextPos();
+        m.replace(null, p, p, StyledInput.of(text, style));
     }
 }
