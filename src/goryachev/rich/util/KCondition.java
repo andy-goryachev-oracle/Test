@@ -25,24 +25,58 @@
 package goryachev.rich.util;
 
 /**
- * Condition used to build input key mapping.
+ * Condition used to build input key mappings.
+ * <p>
+ * The KCondition values are used as keys in a hash table, so when the platform sends a key event with multiple
+ * modifiers, some modifiers are dropped in order to make the {@link KieBinding2} -> function possible.
+ * The mapping is as follows:
+ * <pre>
+ * KCondition    Mac         Windows/Linux
+ * ALT           OPTION      ALT
+ * COMMAND       COMMAND     (ignored)
+ * CTRL          CTRL        CTRL
+ * META          COMMAND     META
+ * OPTION        OPTION      (ignored)
+ * SHIFT         SHIFT       SHIFT
+ * SHORTCUT      COMMAND     CTRL
+ * WIN           (ignored)   META
  */
 public enum KCondition {
-    /** modifier keys */
+    // modifier keys
+    /** ALT modifier, mapped to OPTION on Mac, ALT on Windows/Linux */
     ALT,
+    /** COMMAND modifier, mapped to COMMAND on Mac only */
+    COMMAND,
+    /** CTRL modifier */
     CTRL,
+    /** META modifier, mapped to COMMAND on Mac, META on Windows/Linux */
     META,
+    /** OPTION modifier, mapped to OPTION on Mac only */
+    OPTION,
+    /** SHIFT modifier */
     SHIFT,
-    SHORTCUT, // ctrl on windows, command on mac
-    OPTION, // mapped to alt on mac
-    /** event type */
+    /** SHORTCUT modifier, mapped to COMMAND on Mac, CTRL on Windows/Linux */
+    SHORTCUT,
+    /** WIN modifier, mapped to WIN on Windows only */
+    WIN,
+    
+    // event types
+    /** a key press event */
     KEY_PRESS,
+    /** a key release event */
     KEY_RELEASE,
+    /** a key typed event */
     KEY_TYPED,
+    /** any key event */
     KEY_ANY,
-    /** platform specificity */
+    
+    // platform specificity
+    /** specifies Windows platform */
     WINDOWS,
+    /** specifies non-Windows platform */
     NOT_WINDOWS,
+    /** specifies Mac platform */
     MAC,
+    /** specifies non-Mac platform */
     NOT_MAC,
 }

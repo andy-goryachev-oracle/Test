@@ -31,6 +31,10 @@ import javafx.scene.input.KeyEvent;
 
 // this class might be internal to InputMap2
 public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
+    /** 
+     * Creates a KeyBinding from a KeyEvent.  This call drops multiple key modifiers, performing
+     * translation when necessary.  May return null.
+     */
     public static KeyBinding2 from(KeyEvent ev) {
         EnumSet<KCondition> m = EnumSet.noneOf(KCondition.class);
         EventType<KeyEvent> t = ev.getEventType();
@@ -45,34 +49,39 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
             return null;
         }
         
+        boolean alt = ev.isAltDown();
         boolean ctrl = ev.isControlDown();
         boolean meta = ev.isMetaDown();
         boolean shortcut = ev.isShortcutDown();
+        boolean option = false;
+        boolean command = false;
         
-        // TODO problem: shortcut on mac: shortcut + meta, on windows: control + meta; whereas of() would have
-        // only one - shortcut
-        
-        // why shortcut key logic is not public is unclear
-        if (Util.isMac()) {
+        boolean mac = Util.isMac();
+        boolean win = Util.isWindows();
+
+        // drop multiple modifiers, translating when necessary 
+
+        if (mac) {
+            if (alt) {
+                alt = false;
+                option = true;
+            }
             if (shortcut) {
                 meta = false;
+                command = true;
             }
-        } else if (Util.isWindows()) {
+        } else {
             if (ctrl) {
                 shortcut = false;
             }
         }
 
-        if (ev.isAltDown()) {
+        if (alt) {
             m.add(KCondition.ALT);
         }
 
-        if (ev.isShiftDown()) {
-            m.add(KCondition.SHIFT);
-        }
-
-        if (shortcut) {
-            m.add(KCondition.SHORTCUT);
+        if (command) {
+            m.add(KCondition.COMMAND);
         }
 
         if (ctrl) {
@@ -83,49 +92,83 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
             m.add(KCondition.META);
         }
 
+        if (option) {
+            m.add(KCondition.OPTION);
+        }
+
+        if (ev.isShiftDown()) {
+            m.add(KCondition.SHIFT);
+        }
+
         KeyCode code = ev.getCode();
         KeyBinding2 keyBinding = new KeyBinding2(code, m);
-        //System.err.println(ev + " kb=" + keyBinding); // FIX
+        System.err.println("kb=" + keyBinding + " ev=" + ev); // FIX
         return keyBinding;
     }
+    
+    private static void replace(EnumSet<KCondition> m, KCondition c, KCondition replaceWith) {
+        if (m.contains(c)) {
+            m.remove(c);
+            m.add(replaceWith);
+        }
+    }
 
-    /** creates a key binding.  might return null if the specified modifiers refer to a different platform */
+    /**
+     * Creates a key binding.
+     * Might return null if the specified modifiers specify a different platform.
+     */
     public static KeyBinding2 of(KeyCode code, KCondition... modifiers) {
         EnumSet<KCondition> m = EnumSet.noneOf(KCondition.class);
         for (KCondition modifier : modifiers) {
             m.add(modifier);
         }
 
-        // TODO mac-windows for now.  might rethink the logic to support more platforms
-        if (Util.isMac()) {
+        // mac-windows for now.  we might rethink the logic later if necessary.
+        boolean mac = Util.isMac();
+        boolean win = Util.isWindows();
+
+        if (mac) {
             if (m.contains(KCondition.NOT_MAC)) {
                 return null;
             } else if (m.contains(KCondition.WINDOWS)) {
                 return null;
+            } else if (m.contains(KCondition.WIN)) {
+                return null;
             }
 
-            if (m.contains(KCondition.OPTION)) {
-                m.remove(KCondition.OPTION);
-                m.add(KCondition.ALT);
-            }
+            replace(m, KCondition.ALT, KCondition.OPTION);
+            replace(m, KCondition.META, KCondition.COMMAND);
+            replace(m, KCondition.SHORTCUT, KCondition.COMMAND);
         } else if (Util.isWindows()) {
             if (m.contains(KCondition.NOT_WINDOWS)) {
                 return null;
             } else if (m.contains(KCondition.MAC)) {
                 return null;
+            }
+
+            replace(m, KCondition.SHORTCUT, KCondition.CTRL);
+        }
+
+        if (!mac) {
+            if (m.contains(KCondition.COMMAND)) {
+                return null;
             } else if (m.contains(KCondition.OPTION)) {
                 return null;
             }
+
+            replace(m, KCondition.WIN, KCondition.META);
         }
+
+        // remove platform 
         m.remove(KCondition.MAC);
         m.remove(KCondition.NOT_MAC);
         m.remove(KCondition.WINDOWS);
         m.remove(KCondition.NOT_WINDOWS);
-        
+
         boolean pressed = m.contains(KCondition.KEY_PRESS);
         boolean released = m.contains(KCondition.KEY_PRESS);
         boolean typed = m.contains(KCondition.KEY_TYPED);
-        
+
         int ct = 0;
         KCondition t = null;
         if (pressed) {
@@ -145,8 +188,8 @@ public record KeyBinding2(KeyCode code, EnumSet<KCondition> modifiers) {
         if (ct > 1) {
             throw new IllegalArgumentException("more than one key event type is specified");
         }
-        
-        if(t == null) {
+
+        if (t == null) {
             t = KCondition.KEY_PRESS;
         }
         m.add(t);
