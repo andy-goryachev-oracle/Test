@@ -830,7 +830,8 @@ public class VFlow extends Pane {
         // also, update Origin if layout hit the beginning/end of the document
         
         // populating visible part of the sliding window + bottom margin
-        for (int i = topCellIndex(); i < paragraphCount; i++) {
+        int i = topCellIndex();
+        for ( ; i < paragraphCount; i++) {
             TextCell cell = getCell(i);
             // TODO skip computation if layout width is the same
             Region r = cell.getContent();
@@ -886,6 +887,10 @@ public class VFlow extends Pane {
         if (visible) {
             layout.setVisibleCount(count);
         }
+        
+        if (i == paragraphCount) {
+            y += bottomPadding;
+        }
 
         layout.setBottomCount(count);
         layout.setBottomHeight(y);
@@ -895,7 +900,7 @@ public class VFlow extends Pane {
         
         // populate top margin, going backwards from topCellIndex
         // TODO populate more, if bottom ended prematurely
-        for (int i = topCellIndex() - 1; i >= 0; i--) {
+        for (i = topCellIndex() - 1; i >= 0; i--) {
             TextCell cell = getCell(i);
             // TODO maybe skip computation if layout width is the same
             Region r = cell.getContent();
