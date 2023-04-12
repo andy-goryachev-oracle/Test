@@ -46,7 +46,10 @@ public class Config {
 
     /** cell cache size */
     public static final int cellCacheSize = 512;
-
+    
+    /** scroll bars unit increment (considering that min value = 0.0 and max value = 1.0) */
+    public static final double scrollBarsUnitIncrement = 0.1;
+    
     /**
      * VFlow TextLayout sliding window margin before and after the visible area.
      * Must be > 1.0 for relative navigation to work.

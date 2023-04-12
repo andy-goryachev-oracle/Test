@@ -473,7 +473,7 @@ public class VFlow extends Pane {
             } else {
                 w = getContentWidth() + leftPadding + rightPadding;
             }
-            cell.addBoxOutline(b, 0.0, snapPositionX(w), cell.getComputedHeight());
+            cell.addBoxOutline(b, 0.0, snapPositionX(w), cell.getCellHeight());
         }
     }
 
@@ -616,6 +616,7 @@ public class VFlow extends Pane {
 
         vscroll.setMin(0.0);
         vscroll.setMax(1.0);
+        vscroll.setUnitIncrement(Config.scrollBarsUnitIncrement);
         vscroll.setVisibleAmount(visible);
         vscroll.setValue(val);
 
@@ -656,6 +657,7 @@ public class VFlow extends Pane {
 
         hscroll.setMin(0.0);
         hscroll.setMax(1.0);
+        hscroll.setUnitIncrement(Config.scrollBarsUnitIncrement);
         hscroll.setVisibleAmount(vis);
         hscroll.setValue(val);
 
@@ -849,7 +851,7 @@ public class VFlow extends Pane {
 
             double h = r.prefHeight(forWidth) + lineSpacing;
             h = snapSizeY(h); // is this right?  or snap(y + h) - snap(y) ?
-            cell.setComputedHeight(h, forWidth);
+            cell.setCellHeight(h, forWidth);
             cell.setLocationY(y);
 
             if (!wrap) {
@@ -921,7 +923,7 @@ public class VFlow extends Pane {
             y = snapPositionY(y - h);
             count++;
 
-            cell.setComputedHeight(h, forWidth);
+            cell.setCellHeight(h, forWidth);
             cell.setLocationY(y);
             
             content.getChildren().remove(r);
@@ -960,7 +962,7 @@ public class VFlow extends Pane {
         for (int i=0; i < sz; i++) {
             TextCell cell = layout.getCellAt(i);
             Region r = cell.getContent();
-            double h = cell.getComputedHeight();
+            double h = cell.getCellHeight();
             double y = cell.getY();
             content.layoutInArea(r, x, y, w, h);
 

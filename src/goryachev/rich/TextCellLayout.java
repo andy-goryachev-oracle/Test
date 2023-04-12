@@ -131,7 +131,7 @@ public class TextCellLayout {
             double y = localY - cell.getY() - pad.getTop();
             if (y < 0) {
                 return new TextPos(cell.getLineIndex(), 0);
-            } else if (y < cell.getComputedHeight()) {
+            } else if (y < cell.getCellHeight()) {
                 // TODO move this to TextCell?
                 if (r instanceof TextFlow t) {
                     double x = localX + xoffset - pad.getLeft();
@@ -307,7 +307,7 @@ public class TextCellLayout {
         double y = cell.getY();
         if(localY < y) {
             return 1;
-        } else if(localY >= y + cell.getComputedHeight()) {
+        } else if(localY >= y + cell.getCellHeight()) {
             if(cell.getLineIndex() == (lineCount - 1)) {
                 return 0;
             }
@@ -369,6 +369,14 @@ public class TextCellLayout {
 
         int ix = binarySearch(y, topIx, btmIx - 1);
         TextCell cell = getCell(ix);
-        return new Origin(cell.getLineIndex(), y - cell.getY());
+        double off = y - cell.getY();
+//        if(ix == 0) {
+//            double topPadding = (contentPadding == null) ? 0.0 : contentPadding.getTop();
+//            if(-off > topPadding) {
+//                off = -topPadding;
+//            }
+//        }
+System.out.println("ix=" + ix + " off=" + off); // FIX
+        return new Origin(cell.getLineIndex(), off);
     }
 }

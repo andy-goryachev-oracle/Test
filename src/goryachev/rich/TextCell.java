@@ -87,12 +87,12 @@ public class TextCell {
         }
     }
 
-    public void setComputedHeight(double height, double forWidth) {
+    public void setCellHeight(double height, double forWidth) {
         this.height = height;
         this.forWidth = forWidth;
     }
 
-    public double getComputedHeight() {
+    public double getCellHeight() {
         return height;
     }
 
