@@ -48,6 +48,6 @@ public class RPane extends Pane {
     }
 
     public void layoutInArea(Node n, double x, double y, double w, double h) {
-        layoutInArea(n, x, y, w, h, 0.0, Insets.EMPTY, HPos.CENTER, VPos.CENTER);
+        layoutInArea(n, x, y, w, h, 0.0, Insets.EMPTY, HPos.LEFT, VPos.TOP);
     }
 }

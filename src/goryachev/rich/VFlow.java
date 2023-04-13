@@ -242,11 +242,8 @@ public class VFlow extends Pane {
 
     public void handleContentPadding() {
         updateContentPadding();
-        if (getOffsetX() < -leftPadding) {
-            setOffsetX(-leftPadding);
-        } else if (getOffsetX() + content.getWidth() > (getContentWidth() + leftPadding + rightPadding)) {
-            setOffsetX(Math.max(0.0, getContentWidth() + leftPadding + rightPadding - content.getWidth()));
-        }
+        
+        setOffsetX(-leftPadding);
 
         if (getOrigin().index() == 0) {
             if (getOrigin().offset() < -topPadding) {
@@ -961,7 +958,7 @@ public class VFlow extends Pane {
         boolean wrap = control.isWrapText();
         double w = wrap ? getContentWidth() : MAX_WIDTH_FOR_LAYOUT;
         double x = snapPositionX(-getOffsetX());
-        
+
         leftGutter.getChildren().clear();
         rightGutter.getChildren().clear();
 
@@ -996,7 +993,7 @@ public class VFlow extends Pane {
             }
         }
     }
-    
+
     public double getViewHeight() {
         return content.getHeight(); // TODO padding
     }
