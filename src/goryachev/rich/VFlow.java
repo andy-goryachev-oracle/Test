@@ -109,9 +109,9 @@ public class VFlow extends Pane {
 
         cache = new CellCache(Config.cellCacheSize);
 
-        leftGutter = new RPane("left-gutter");
+        leftGutter = new RPane("left-side");
         
-        rightGutter = new RPane("right-gutter");
+        rightGutter = new RPane("right-side");
         
         content = new RPane("content");
         
@@ -247,6 +247,13 @@ public class VFlow extends Pane {
         } else if (getOffsetX() + content.getWidth() > (getContentWidth() + leftPadding + rightPadding)) {
             setOffsetX(Math.max(0.0, getContentWidth() + leftPadding + rightPadding - content.getWidth()));
         }
+
+        if (getOrigin().index() == 0) {
+            if (getOrigin().offset() < -topPadding) {
+                setOrigin(new Origin(0, -topPadding));
+            }
+        }
+
         recomputeLayout();
         updateHorizontalScrollBar();
         updateVerticalScrollBar();
@@ -260,13 +267,13 @@ public class VFlow extends Pane {
             topPadding = 0.0;
             bottomPadding = 0.0;
         } else {
-            leftPadding = m.getLeft();
-            rightPadding = m.getRight();
-            topPadding = m.getTop();
-            bottomPadding = m.getBottom();
+            leftPadding = snapPositionX(m.getLeft());
+            rightPadding = snapPositionX(m.getRight());
+            topPadding = snapPositionY(m.getTop());
+            bottomPadding = snapPositionY(m.getBottom());
         }
     }
-    
+
     public double leftPadding() {
         return leftPadding;
     }
@@ -487,7 +494,7 @@ public class VFlow extends Pane {
 
     /** uses vflow.content coordinates */
     protected CaretInfo getCaretInfo(TextPos p) {
-        return layout.getCaretInfo(getOffsetX(), p);
+        return layout.getCaretInfo(getOffsetX() + leftPadding, p);
     }
 
     /** returns caret sizing info using vflow.content coordinates, or null */
@@ -676,7 +683,7 @@ public class VFlow extends Pane {
             double max = getContentWidth() + Config.horizontalGuard + leftPadding + rightPadding;
             double visible = content.getWidth();
             double val = hscroll.getValue();
-            double off = fromScrollBarValue(val, visible, max);
+            double off = fromScrollBarValue(val, visible, max) - leftPadding;
 
             setOffsetX(snapPositionX(off));
             // no need to recompute the flow
@@ -953,7 +960,7 @@ public class VFlow extends Pane {
     protected void placeNodes() {
         boolean wrap = control.isWrapText();
         double w = wrap ? getContentWidth() : MAX_WIDTH_FOR_LAYOUT;
-        double x = snapPositionX(leftPadding - getOffsetX());
+        double x = snapPositionX(-getOffsetX());
         
         leftGutter.getChildren().clear();
         rightGutter.getChildren().clear();
