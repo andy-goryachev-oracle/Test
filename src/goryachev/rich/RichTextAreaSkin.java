@@ -38,6 +38,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import goryachev.rich.RichTextArea.Cmd;
 import goryachev.rich.model.StyleAttrs;
+import goryachev.rich.util.ListenerHelper;
 import goryachev.rich.util.NewAPI;
 
 /**
@@ -52,6 +53,7 @@ import goryachev.rich.util.NewAPI;
  */
 public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleResolver {
     private final Config config;
+    private final ListenerHelper listenerHelper;
     private final RichTextAreaBehavior behavior;
     private final VFlow vflow;
     private final ScrollBar vscroll;
@@ -62,6 +64,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
         super(control);
         
         this.config = cnf;
+        this.listenerHelper = new ListenerHelper();
         
         // TODO maybe create scroll bars in the control (as they might be custom) -
         // TODO alternatively, the scrollbars can come from Config
@@ -83,7 +86,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
         hscroll.addEventFilter(ScrollEvent.ANY, (ev) -> ev.consume());
         hscroll.visibleProperty().bind(control.wrapTextProperty().not());
 
-        vflow = new VFlow(this, config, vscroll, hscroll);
+        vflow = new VFlow(this, config, listenerHelper, vscroll, hscroll);
 
         // TODO corner? only when both scroll bars are visible
 
@@ -115,18 +118,20 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
         });
 
         behavior = createBehavior();
-        
-        // TODO protect with listener helper (it's internal, shoud be made public) to avoid memory leak when changing skins
-        NewAPI.addChangeListener(vflow::handleSelectionChange, false, control.selectionSegmentProperty());
-        NewAPI.addChangeListener(vflow::updateRateRestartBlink, true, control.caretBlinkPeriodProperty());
-        control.tabSizeProperty().addListener((s,p,c) -> vflow.updateTabSize());
-        control.highlightCurrentLineProperty().addListener((s,p,c) -> vflow.updateCaretAndSelection());
-        control.contentPaddingProperty().addListener((s,p,c) -> vflow.handleContentPadding());
-        control.lineSpacingProperty().addListener((s,p,c) -> vflow.handleLineSpacing());
-        control.leftDecoratorProperty().addListener((s,p,c) -> vflow.handleDecoratorChange());
-        control.rightDecoratorProperty().addListener((s,p,c) -> vflow.handleDecoratorChange());
-        vscroll.valueProperty().addListener((ev) -> vflow.handleVerticalScroll());
-        hscroll.valueProperty().addListener((ev) -> vflow.handleHorizontalScroll());
+
+        // TODO should this block be moved to VFlow?
+        listenerHelper.addChangeListener(vflow::handleSelectionChange, control.selectionSegmentProperty());
+        listenerHelper.addChangeListener(vflow::updateRateRestartBlink, true, control.caretBlinkPeriodProperty());
+        listenerHelper.addInvalidationListener(vflow::updateTabSize, control.tabSizeProperty());
+        listenerHelper.addInvalidationListener(vflow::updateCaretAndSelection, control.highlightCurrentLineProperty());
+        listenerHelper.addInvalidationListener(vflow::handleContentPadding, true, control.contentPaddingProperty());
+        listenerHelper.addInvalidationListener(vflow::handleLineSpacing, control.lineSpacingProperty());
+        listenerHelper.addInvalidationListener(vflow::handleDecoratorChange,
+            control.leftDecoratorProperty(),
+            control.rightDecoratorProperty()
+        );
+        listenerHelper.addInvalidationListener(vflow::handleVerticalScroll, vscroll.valueProperty());
+        listenerHelper.addInvalidationListener(vflow::handleHorizontalScroll, hscroll.valueProperty());
     }
 
     /** called from the constructor.  override to provide custom behavior */
@@ -153,12 +158,13 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
 
     @Override
     public void install() {
-        behavior.install();
+        behavior.install(listenerHelper);
     }
 
     @Override
     public void dispose() {
         if (getSkinnable() != null) {
+            listenerHelper.disconnect();
             behavior.dispose();
             vflow.dispose();
     

@@ -71,24 +71,6 @@ public class NewAPI {
         return len;
     }
 
-    /** adds a change listener via ListenerHelper which should be made public */
-    public static void addChangeListener(Runnable onChange, boolean fireImmediately, ObservableValue<?>... props) {
-        ChangeListener li = new ChangeListener() {
-            @Override
-            public void changed(ObservableValue prop, Object oldValue, Object newValue) {
-                onChange.run();
-            }
-        };
-
-        for (ObservableValue p : props) {
-            p.addListener(li);
-        }
-
-        if (fireImmediately) {
-            onChange.run();
-        }
-    }
-
     public static boolean isTouchSupported() {
         return Platform.isSupported(ConditionalFeature.INPUT_TOUCH);
     }

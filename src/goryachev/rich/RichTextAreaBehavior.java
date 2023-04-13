@@ -56,6 +56,7 @@ import goryachev.rich.model.StyledTextModel;
 import goryachev.rich.util.BehaviorBase2;
 import goryachev.rich.util.KCondition;
 import goryachev.rich.util.KeyBinding2;
+import goryachev.rich.util.ListenerHelper;
 import goryachev.rich.util.NewAPI;
 import goryachev.rich.util.Util;
 
@@ -78,8 +79,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     private final RichTextAreaSkin skin;
     private final Config config;
     private final RichTextArea control;
-    private final EventHandler<KeyEvent> keyHandler;
-    private final ChangeListener<StyledTextModel> modelListener;
     private final StyledTextModel.ChangeListener textChangeListener;
     private final Timeline autoScrollTimer;
     private boolean autoScrollUp;
@@ -92,8 +91,6 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         this.skin = skin;
         this.config = c;
         this.control = skin.getSkinnable();
-        this.keyHandler = this::handleKeyEvent;
-        this.modelListener = this::handleModel;
         
         autoScrollPeriod = Duration.millis(config.autoScrollPeriod);
 
@@ -161,7 +158,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         autoScrollTimer.setCycleCount(Timeline.INDEFINITE);
     }
 
-    public void install() {
+    public void install(ListenerHelper lh) {
         Pane c = vflow().getContentPane();
         c.addEventFilter(MouseEvent.MOUSE_CLICKED, this::handleMouseClicked);
         c.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleMousePressed);
@@ -169,26 +166,17 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         c.addEventFilter(MouseEvent.MOUSE_DRAGGED, this::handleMouseDragged);
         c.addEventFilter(ScrollEvent.ANY, this::handleScrollEvent);
 
-        control.addEventHandler(KeyEvent.ANY, keyHandler);
+        lh.addEventHandler(control, KeyEvent.ANY, this::handleKeyEvent);
         
-        // TODO there is no way to override the default behavior, such as clear selection or select word under cursor
-        control.addEventHandler(ContextMenuEvent.CONTEXT_MENU_REQUESTED, this::contextMenuRequested);
+        // TODO there is no way to override the default behavior, such as clear selection or select word under cursor,
+        // except for adding event filter
+        lh.addEventHandler(control, ContextMenuEvent.CONTEXT_MENU_REQUESTED, this::contextMenuRequested);
 
-        // TODO ListenerHelper with fireImmediately flag would work well here
-        control.modelProperty().addListener(modelListener);
-        if(control.getModel() != null) {
-            control.getModel().addChangeListener(textChangeListener);
-        }
+        lh.addChangeListener(control.modelProperty(), true, this::handleModel);
     }
 
     @Override
     public void dispose() {
-        if(control.getModel() != null) {
-            control.getModel().removeChangeListener(textChangeListener);
-        }
-        control.modelProperty().removeListener(modelListener);
-        control.removeEventHandler(KeyEvent.ANY, keyHandler);
-        
         super.dispose();
     }
 

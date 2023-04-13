@@ -60,6 +60,7 @@ import goryachev.rich.impl.SelectionHelper;
 import goryachev.rich.model.StyledParagraph;
 import goryachev.rich.model.StyledTextModel;
 import goryachev.rich.util.FxPathBuilder;
+import goryachev.rich.util.ListenerHelper;
 import goryachev.rich.util.NewAPI;
 import goryachev.rich.util.Util;
 
@@ -97,11 +98,8 @@ public class VFlow extends Pane {
     private double leftPadding;
     private double rightPadding;
     private double lineSpacing;
-    // TODO replace with ListenerHelper
-    InvalidationListener modelLi;
-    InvalidationListener wrapLi;
 
-    public VFlow(RichTextAreaSkin skin, Config c, ScrollBar vscroll, ScrollBar hscroll) {
+    public VFlow(RichTextAreaSkin skin, Config c, ListenerHelper lh, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = skin.getSkinnable();
         this.config = c;
         this.vscroll = vscroll;
@@ -159,32 +157,29 @@ public class VFlow extends Pane {
             }
         });
 
-        control.modelProperty().addListener(modelLi = (p) -> handleModelChange());
-        control.wrapTextProperty().addListener(wrapLi = (p) -> handleWrapText());
-        widthProperty().addListener((p) -> updateWidth());
-        heightProperty().addListener((p) -> updateHeight());
+        lh.addInvalidationListener(this::handleModelChange, control.modelProperty());
+        lh.addInvalidationListener(this::handleWrapText, control.wrapTextProperty());
         
-        NewAPI.addChangeListener(
+        lh.addChangeListener(
             this::updateHorizontalScrollBar,
             true,
             contentWidth,
             offsetX
         );
         
-        NewAPI.addChangeListener(
+        lh.addChangeListener(
             this::recomputeLayout,
             true,
             origin
         );
         
+        widthProperty().addListener((p) -> updateWidth());
+        heightProperty().addListener((p) -> updateHeight());
+        
         vscroll.addEventFilter(MouseEvent.ANY, this::handleVScrollMouseEvent);
-
-        updateContentPadding();
     }
 
     public void dispose() {
-        control.wrapTextProperty().removeListener(wrapLi);
-        control.modelProperty().removeListener(modelLi);
         caretPath.visibleProperty().unbind();
     }
 
