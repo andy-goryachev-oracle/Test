@@ -104,24 +104,72 @@ public class Config {
         private double scrollWheelBlockSizeHorizontal = 0.1;
         private double scrollWheelBlockSizeVertical = 0.1;
         private float slidingWindowMargin = 3.0f;
-        
+
+        private Builder() {
+        }
+
         public Config create() {
             return new Config(this);
         }
-        
+
         /** Sets autoscroll animation period, in milliseconds. */
         public void setAutoScrollPeriod(int x) {
             autoScrollPeriod = x;
         }
-        
+
         /** Sets "fast" autoscroll step, in pixels. */
         public void setAutoScrollStepFast(double x) {
             autoScrollStepFast = x;
         }
-        
+
         /** Sets "slow" autoscroll step, in pixels. */
         public void setAutoScrollStepSlow(double x) {
             autoScrollStepSlow = x;
+        }
+
+        /** Sets caret blink period, in milliseconds. */
+        public void setCaretBlinkPeriod(int x) {
+            caretBlinkPeriod = x;
+        }
+
+        /** Sets the size of the cell cache. */
+        public void setCellCacheSize(int x) {
+            cellCacheSize = x;
+        }
+
+        /** Sets threshold at which autoscroll switches to the fast mode, in pixels. */
+        public void setFastAutoScrollThreshold(double x) {
+            fastAutoScrollThreshold = x;
+        }
+
+        /** Sets horizontal guard, in pixels. */
+        public void setHorizontalGuard(double x) {
+            horizontalGuard = x;
+        }
+
+        /** Sets the maximum tab size. */
+        public void setMaxTabSize(int x) {
+            maxTabSize = x;
+        }
+
+        /** Sets horizontal and vertical scroll bar unit increment, as a fraction of view size. */
+        public void setScrollBarsUnitIncrement(double x) {
+            scrollBarsUnitIncrement = x;
+        }
+
+        /** Sets mouse scroll wheel horizontal block size increment, as a fraction of view width. */
+        public void setScrollWheelBlockSizeHorizontal(double x) {
+            scrollWheelBlockSizeHorizontal = x;
+        }
+
+        /** Sets mouse scroll wheel vertical block size increment, in a fraction of view width. */
+        public void setScrollWheelBlockSizeVertical(double x) {
+            scrollWheelBlockSizeVertical = x;
+        }
+
+        /** Sets sliding window margin size. */
+        public void setSlidingWindowMargin(float x) {
+            slidingWindowMargin = x;
         }
     }
 }
