@@ -51,14 +51,17 @@ import goryachev.rich.util.NewAPI;
  * </ul>
  */
 public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleResolver {
+    private final Config config;
     private final RichTextAreaBehavior behavior;
     private final VFlow vflow;
     private final ScrollBar vscroll;
     private final ScrollBar hscroll;
     private static final Text measurer = makeMeasurer();
 
-    protected RichTextAreaSkin(RichTextArea control) {
+    protected RichTextAreaSkin(RichTextArea control, Config cnf) {
         super(control);
+        
+        this.config = cnf;
         
         // TODO maybe create scroll bars in the control (as they might be custom) -
         // TODO alternatively, the scrollbars can come from Config
@@ -68,7 +71,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
         vscroll.setManaged(true);
         vscroll.setMin(0.0);
         vscroll.setMax(1.0);
-        vscroll.setUnitIncrement(Config.scrollBarsUnitIncrement);
+        vscroll.setUnitIncrement(config.scrollBarsUnitIncrement);
         vscroll.addEventFilter(ScrollEvent.ANY, (ev) -> ev.consume());
         
         hscroll = createVScrollBar();
@@ -76,11 +79,11 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
         hscroll.setManaged(true);
         hscroll.setMin(0.0);
         hscroll.setMax(1.0);
-        hscroll.setUnitIncrement(Config.scrollBarsUnitIncrement);
+        hscroll.setUnitIncrement(config.scrollBarsUnitIncrement);
         hscroll.addEventFilter(ScrollEvent.ANY, (ev) -> ev.consume());
         hscroll.visibleProperty().bind(control.wrapTextProperty().not());
 
-        vflow = new VFlow(this, vscroll, hscroll);
+        vflow = new VFlow(this, config, vscroll, hscroll);
 
         // TODO corner? only when both scroll bars are visible
 
@@ -129,7 +132,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
     /** called from the constructor.  override to provide custom behavior */
     // TODO variant: generator in Config
     protected RichTextAreaBehavior createBehavior() {
-        return new RichTextAreaBehavior(this);
+        return new RichTextAreaBehavior(this, config);
     }
     
     /** called from the constructor. override to provide a custom scroll bar */

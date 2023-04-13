@@ -109,10 +109,11 @@ public class RichTextArea extends Control {
      }
 
     private static final double DEFAULT_LINE_SPACING = 0.0;
+    private final Config config;
     protected final ObjectProperty<StyledTextModel> model = new SimpleObjectProperty<>(this, "model");
     protected final SimpleBooleanProperty displayCaretProperty = new SimpleBooleanProperty(this, "displayCaret", true);
     private SimpleBooleanProperty editableProperty;
-    protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(Config.caretBlinkPeriod));
+    protected final ReadOnlyObjectWrapper<Duration> caretBlinkPeriod;
     // TODO property, pluggable models, or boolean (selection enabled?), do we need to allow for multiple selection?
     protected final SelectionModel selectionModel = new SingleSelectionModel();
     private ReadOnlyIntegerWrapper tabSizeProperty;
@@ -123,6 +124,14 @@ public class RichTextArea extends Control {
     private BooleanProperty highlightCurrentLine;
 
     public RichTextArea() {
+        this(Config.defaultConfig());
+    }
+
+    public RichTextArea(Config c) {
+        this.config = c;
+        
+        caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(config.caretBlinkPeriod));
+
         setFocusTraversable(true);
         getStyleClass().add("rich-text-area");
         setAccessibleRole(AccessibleRole.TEXT_AREA);
@@ -134,7 +143,7 @@ public class RichTextArea extends Control {
 
     @Override
     protected RichTextAreaSkin createDefaultSkin() {
-        return new RichTextAreaSkin(this);
+        return new RichTextAreaSkin(this, config);
     }
 
     public void setModel(StyledTextModel m) {
@@ -473,8 +482,8 @@ public class RichTextArea extends Control {
     }
 
     public void setTabSize(int n) {
-        if ((n < 1) || (n > Config.maxTabSize)) {
-            throw new IllegalArgumentException("tab size out of range (1-" + Config.maxTabSize + ") " + n);
+        if ((n < 1) || (n > config.maxTabSize)) {
+            throw new IllegalArgumentException("tab size out of range (1-" + config.maxTabSize + ") " + n);
         }
         tabSizePropertyPrivate().set(n);
     }

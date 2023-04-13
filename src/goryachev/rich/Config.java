@@ -25,52 +25,103 @@
 package goryachev.rich;
 
 /**
- * Configuration settings for RichTextArea.
+ * Configuration parameters for RichTextArea.
  */
 public class Config {
-    /** autoscroll while selecting animation period, milliseconds */
-    public static final int autoScrollPeriod = 100;
+    /** autoscroll while selecting animation period, milliseconds (default 100 ms). */
+    public final int autoScrollPeriod;
 
-    /** autoscroll switches to fast mode when mouse is moved further out of the view, pixels */
-    public static final double fastAutoScrollThreshold  = 100;
-
-    /** "fast" autoscroll step, in pixels */
-    public static final double autoScrollStepFast  = 200;
+    /** "fast" autoscroll step, in pixels (default 200). */
+    public final double autoScrollStepFast;
     
-    /** "slow" autoscroll step, in pixels */
-    public static final double autoStopStepSlow  = 20;
+    /** "slow" autoscroll step, in pixels (default 20). */
+    public final double autoStopStepSlow;
 
+    /** caret blink period in milliseconds (default 500 ms). */
+    public final int caretBlinkPeriod;
 
-    /** caret blink period in milliseconds */
-    public static final int caretBlinkPeriod = 500;
-
-    /** cell cache size */
-    public static final int cellCacheSize = 512;
+    /** cell cache size (default 512). */
+    public final int cellCacheSize;
     
-    /** scroll bars unit increment (considering that min value = 0.0 and max value = 1.0) */
-    public static final double scrollBarsUnitIncrement = 0.1;
+    /** autoscroll switches to fast mode when mouse is moved further out of the view, pixels (default 200). */
+    public final double fastAutoScrollThreshold;
     
+    /** small space between the end of last character and the right edge when typing, in pixels (default 20). */
+    public final double horizontalGuard;
+    
+    /** maximum tab size (default 256). */
+    public final int maxTabSize;
+
+    /** scroll bars unit increment, fraction of view width/height (between 0.0 and 1.0, default 0.1). */
+    public final double scrollBarsUnitIncrement;
+
+    /** horizontal mouse wheel scroll block size as a fraction of window width (default 0.1). */
+    public final double scrollWheelBlockSizeHorizontal;
+    
+    /** vertical mouse wheel scroll block size as a fraction of window height (default 0.1). */
+    public final double scrollWheelBlockSizeVertical;
+
     /**
-     * VFlow TextLayout sliding window margin before and after the visible area.
-     * Must be > 1.0 for relative navigation to work.
+     * VFlow TextLayout sliding window margin before and after the visible area (default 3.0f).
+     * Must be > 1.0f for relative navigation to work.
      */
-    public static final float slidingWindowMargin = 3.0f;
+    public final float slidingWindowMargin;
     
-    /** horizontal block scroll size as a fraction of window width */
-    public static final double scrollWheelBlockSizeHorizontal = 0.1;
+    public static Builder builder() {
+        return new Builder();
+    }
     
-    /** vertical block scroll size as a fraction of window height */
-    public static final double scrollWheelBlockSizeVertical = 0.1;
+    public static Config defaultConfig() {
+        return Config.builder().create();
+    }
     
-    /** 
-     * Determines the distance between the caret and the top or bottom edge, in fraction of view height,
-     * for the scrollCaretToVisible operation.
-     */
-    public static final double scrollCaretToVisibleEdgeDistance = 0.25;
-    
-    /** maximum tab size */
-    public static final int maxTabSize = 256;
-    
-    /** small space between the end of last character and the right edge */
-    public static final double horizontalGuard = 5;
+    private Config(Builder b) {
+        autoScrollPeriod = b.autoScrollPeriod;
+        autoScrollStepFast = b.autoScrollStepFast;
+        autoStopStepSlow = b.autoScrollStepSlow;
+        caretBlinkPeriod = b.caretBlinkPeriod;
+        cellCacheSize = b.cellCacheSize;
+        fastAutoScrollThreshold = b.fastAutoScrollThreshold;
+        horizontalGuard = b.horizontalGuard;
+        maxTabSize = b.maxTabSize;
+        scrollBarsUnitIncrement = b.scrollBarsUnitIncrement;
+        scrollWheelBlockSizeHorizontal = b.scrollWheelBlockSizeHorizontal;
+        slidingWindowMargin = b.slidingWindowMargin;
+        scrollWheelBlockSizeVertical = b.scrollWheelBlockSizeVertical;
+    }
+
+    /** Config builder is necessary to make Config immutable */
+    private static class Builder {
+        private int autoScrollPeriod = 100;
+        private double autoScrollStepFast  = 200;
+        private double autoScrollStepSlow  = 20;
+        private int caretBlinkPeriod = 500;
+        private int cellCacheSize = 512;
+        private double fastAutoScrollThreshold  = 100;
+        private double horizontalGuard = 20;
+        private int maxTabSize = 256;
+        private double scrollBarsUnitIncrement = 0.1;
+        private double scrollWheelBlockSizeHorizontal = 0.1;
+        private double scrollWheelBlockSizeVertical = 0.1;
+        private float slidingWindowMargin = 3.0f;
+        
+        public Config create() {
+            return new Config(this);
+        }
+        
+        /** Sets autoscroll animation period, in milliseconds. */
+        public void setAutoScrollPeriod(int x) {
+            autoScrollPeriod = x;
+        }
+        
+        /** Sets "fast" autoscroll step, in pixels. */
+        public void setAutoScrollStepFast(double x) {
+            autoScrollStepFast = x;
+        }
+        
+        /** Sets "slow" autoscroll step, in pixels. */
+        public void setAutoScrollStepSlow(double x) {
+            autoScrollStepSlow = x;
+        }
+    }
 }

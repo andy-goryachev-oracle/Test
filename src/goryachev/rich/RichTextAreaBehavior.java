@@ -76,6 +76,7 @@ import goryachev.rich.util.Util;
  */
 public class RichTextAreaBehavior extends BehaviorBase2 {
     private final RichTextAreaSkin skin;
+    private final Config config;
     private final RichTextArea control;
     private final EventHandler<KeyEvent> keyHandler;
     private final ChangeListener<StyledTextModel> modelListener;
@@ -84,14 +85,17 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     private boolean autoScrollUp;
     private boolean fastAutoScroll;
     private double phantomX = -1.0;
-    private static final Duration autoScrollPeriod = Duration.millis(Config.autoScrollPeriod);
+    private final Duration autoScrollPeriod;
     private ContextMenu contextMenu = new ContextMenu();
 
-    public RichTextAreaBehavior(RichTextAreaSkin skin) {
+    public RichTextAreaBehavior(RichTextAreaSkin skin, Config c) {
         this.skin = skin;
+        this.config = c;
         this.control = skin.getSkinnable();
         this.keyHandler = this::handleKeyEvent;
         this.modelListener = this::handleModel;
+        
+        autoScrollPeriod = Duration.millis(config.autoScrollPeriod);
 
         map(Cmd.BACKSPACE, this::backspace, KeyCode.BACK_SPACE);
         map(Cmd.COPY, this::copy, KeyCode.C, KCondition.SHORTCUT);
@@ -395,7 +399,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         if (ev.isShiftDown()) {
             if (!control.isWrapText()) {
                 // horizontal scroll
-                double f = Config.scrollWheelBlockSizeHorizontal;
+                double f = config.scrollWheelBlockSizeHorizontal;
                 if (ev.getDeltaX() >= 0) {
                     f = -f;
                 }
@@ -412,7 +416,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             ev.consume();
         } else {
             // block scroll
-            double f = Config.scrollWheelBlockSizeVertical;
+            double f = config.scrollWheelBlockSizeVertical;
             if (ev.getDeltaY() >= 0) {
                 f = -f;
             }
@@ -433,12 +437,12 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
     
     protected void autoScroll(double delta) {
         autoScrollUp = (delta < 0.0);
-        fastAutoScroll = Math.abs(delta) > Config.fastAutoScrollThreshold;
+        fastAutoScroll = Math.abs(delta) > config.fastAutoScrollThreshold;
         autoScrollTimer.play();
     }
 
     protected void autoScroll() {
-        double delta = fastAutoScroll ? Config.autoScrollStepFast : Config.autoStopStepSlow;
+        double delta = fastAutoScroll ? config.autoScrollStepFast : config.autoStopStepSlow;
         if (autoScrollUp) {
             delta = -delta;
         }

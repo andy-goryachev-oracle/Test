@@ -73,6 +73,7 @@ public class VFlow extends Pane {
     /** maximum width for unwrapped TextFlow layout. Neither Double.MAX_VALUE nor 1e20 work */
     private static final double MAX_WIDTH_FOR_LAYOUT = 1_000_000_000.0;
     private final RichTextArea control;
+    private final Config config;
     private final ScrollBar vscroll;
     private final ScrollBar hscroll;
     private final RPane leftGutter;
@@ -100,14 +101,15 @@ public class VFlow extends Pane {
     InvalidationListener modelLi;
     InvalidationListener wrapLi;
 
-    public VFlow(RichTextAreaSkin skin, ScrollBar vscroll, ScrollBar hscroll) {
+    public VFlow(RichTextAreaSkin skin, Config c, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = skin.getSkinnable();
+        this.config = c;
         this.vscroll = vscroll;
         this.hscroll = hscroll;
         
         getStyleClass().add("flow");
 
-        cache = new CellCache(Config.cellCacheSize);
+        cache = new CellCache(config.cellCacheSize);
 
         leftGutter = new RPane("left-side");
         
@@ -620,7 +622,7 @@ public class VFlow extends Pane {
 
         vscroll.setMin(0.0);
         vscroll.setMax(1.0);
-        vscroll.setUnitIncrement(Config.scrollBarsUnitIncrement);
+        vscroll.setUnitIncrement(config.scrollBarsUnitIncrement);
         vscroll.setVisibleAmount(visible);
         vscroll.setValue(val);
 
@@ -661,7 +663,7 @@ public class VFlow extends Pane {
 
         hscroll.setMin(0.0);
         hscroll.setMax(1.0);
-        hscroll.setUnitIncrement(Config.scrollBarsUnitIncrement);
+        hscroll.setUnitIncrement(config.scrollBarsUnitIncrement);
         hscroll.setVisibleAmount(vis);
         hscroll.setValue(val);
 
@@ -677,7 +679,7 @@ public class VFlow extends Pane {
                 return;
             }
             
-            double max = getContentWidth() + Config.horizontalGuard + leftPadding + rightPadding;
+            double max = getContentWidth() + leftPadding + rightPadding;
             double visible = content.getWidth();
             double val = hscroll.getValue();
             double off = fromScrollBarValue(val, visible, max) - leftPadding;
@@ -827,7 +829,7 @@ public class VFlow extends Pane {
         double ytop = snapPositionY(-getOrigin().offset());
         double y = ytop;
         double unwrappedWidth = 0;
-        double margin = Config.slidingWindowMargin * height;
+        double margin = config.slidingWindowMargin * height;
         int topMarginCount = 0;
         int bottomMarginCount = 0;
         int count = 0;
@@ -874,7 +876,7 @@ public class VFlow extends Pane {
             // when exceeded both pixel and line count margins
             if (visible) {
                 if (y > height) {
-                    topMarginCount = (int)Math.ceil(count * Config.slidingWindowMargin);
+                    topMarginCount = (int)Math.ceil(count * config.slidingWindowMargin);
                     bottomMarginCount = count + topMarginCount;
                     layout.setVisibleCount(count);
                     visible = false;
@@ -1078,7 +1080,7 @@ public class VFlow extends Pane {
             if (x < 0.0) {
                 off = Math.max(getOffsetX() + x - 20.0, 0.0);
             } else if (x > cw) {
-                off = getOffsetX() + x - cw + Config.horizontalGuard;
+                off = getOffsetX() + x - cw + config.horizontalGuard;
             } else {
                 return;
             }
