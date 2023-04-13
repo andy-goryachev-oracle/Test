@@ -29,9 +29,7 @@ package goryachev.rich;
 import java.text.BreakIterator;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.NodeOrientation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.ContextMenu;
@@ -595,7 +593,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             if (cix > cell.getTextLength()) {
                 int line = cell.getLineIndex() + 1;
                 TextPos p;
-                if (line < vflow().lineCount()) {
+                if (line < control.getParagraphCount()) {
                     // next line
                     p = new TextPos(line, 0);
                 } else {
@@ -649,7 +647,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
             if (cix > cell.getTextLength()) {
                 int line = cell.getLineIndex() + 1;
                 TextPos p;
-                if (line < vflow().lineCount()) {
+                if (line < control.getParagraphCount()) {
                     // next line
                     p = new TextPos(line, 0);
                 } else {

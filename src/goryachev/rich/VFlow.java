@@ -29,7 +29,6 @@ package goryachev.rich;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.InvalidationListener;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -61,7 +60,6 @@ import goryachev.rich.model.StyledParagraph;
 import goryachev.rich.model.StyledTextModel;
 import goryachev.rich.util.FxPathBuilder;
 import goryachev.rich.util.ListenerHelper;
-import goryachev.rich.util.NewAPI;
 import goryachev.rich.util.Util;
 
 /**
@@ -276,8 +274,6 @@ public class VFlow extends Pane {
         return origin.get();
     }
 
-    // TODO rename moveOrigin
-    // TODO add logic stay within the document
     public void setOrigin(Origin p) {
         if (p == null) {
             throw new NullPointerException();
@@ -380,21 +376,17 @@ public class VFlow extends Pane {
             caretLineHighlight.getElements().clear();
         }
         
-        // TODO offsets
-        double xoff = leftPadding; //-  + content.getLayoutX();
-        double yoff = 0.0; // TODO content.getLayoutY();
-
         // selection
         FxPathBuilder b = new FxPathBuilder();
         createSelectionHighlight(b, anchor, caret);
         selectionHighlight.getElements().setAll(b.getPathElements());
-        Util.translate(selectionHighlight, xoff, yoff);
+        selectionHighlight.setTranslateX(leftPadding);
 
         // caret
         b = new FxPathBuilder();
         createCaretPath(b, caret);
         caretPath.getElements().setAll(b.getPathElements());
-        Util.translate(caretPath, xoff, yoff);
+        caretPath.setTranslateX(leftPadding);
     }
 
     protected void removeCaretAndSelection() {
@@ -544,8 +536,6 @@ public class VFlow extends Pane {
             pe = cell.getRangeShape(startOffset, endOffset);
         }
         
-        // FIX need to add lineSpacing at the bottom
-
         if (pe == null) {
             return null;
         } else {
@@ -574,10 +564,8 @@ public class VFlow extends Pane {
         caretAnimation.play();
     }
     
-    public int lineCount() {
-        // TODO use control.lineCount property?
-        StyledTextModel m = control.getModel();
-        return (m == null) ? 0 : m.getParagraphCount();
+    public int getParagraphCount() {
+        return control.getParagraphCount();
     }
     
     public double lineSpacing() {
@@ -602,7 +590,7 @@ public class VFlow extends Pane {
     protected void updateVerticalScrollBar() {
         double visible;
         double val;
-        if (layout == null || (lineCount() == 0)) {
+        if (layout == null || (getParagraphCount() == 0)) {
             visible = 1.0;
             val = 0.0;
         } else {
@@ -627,7 +615,7 @@ public class VFlow extends Pane {
     /** handles user moving the vertical scroll bar */
     public void handleVerticalScroll() {
         if (handleScrollEvents) {
-            if (lineCount() == 0) {
+            if (getParagraphCount() == 0) {
                 return;
             }
 
@@ -807,7 +795,7 @@ public class VFlow extends Pane {
         
         layoutInArea(content, leftSide, 0.0, width - leftSide - rightSide, height, 0.0, HPos.CENTER, VPos.CENTER);
 
-        int paragraphCount = lineCount();
+        int paragraphCount = getParagraphCount();
         int tabSize = control.getTabSize();
         lineSpacing = control.getLineSpacing();
         boolean wrap = control.isWrapText();

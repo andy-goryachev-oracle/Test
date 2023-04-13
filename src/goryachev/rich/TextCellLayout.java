@@ -64,7 +64,7 @@ public class TextCellLayout {
         this.flowHeight = f.getViewHeight();
         this.origin = f.getOrigin();
         this.lineSpacing = f.lineSpacing();
-        this.lineCount = f.lineCount();
+        this.lineCount = f.getParagraphCount();
         this.contentPadding = f.contentPadding();
     }
 
