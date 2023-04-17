@@ -36,25 +36,27 @@ import javafx.scene.control.TitledPane;
  */
 public class AccordionPage extends TestPaneBase {
     private final Accordion accordion;
-    
+
     public AccordionPage() {
+        setId("AccordionPage");
+
         accordion = new Accordion();
         addPane();
-        
+
         Button addButton = new Button("Add Pane");
         addButton.setOnAction((ev) -> addPane());
-        
+
         Button removeButton = new Button("Remove Pane");
         removeButton.setOnAction((ev) -> removePane());
-        
+
         OptionPane op = new OptionPane();
         op.add(addButton);
         op.add(removeButton);
-        
+
         setContent(accordion);
         setOptions(op);
     }
-    
+
     protected void addPane() {
         String name = "" + System.currentTimeMillis();
         Button b = new Button(name);
@@ -64,10 +66,10 @@ public class AccordionPage extends TestPaneBase {
         TitledPane p = new TitledPane(name, b);
         accordion.getPanes().add(p);
     }
-    
+
     protected void removePane() {
         int sz = accordion.getPanes().size();
-        if(sz > 0) {
+        if (sz > 0) {
             accordion.getPanes().remove(0);
         }
     }

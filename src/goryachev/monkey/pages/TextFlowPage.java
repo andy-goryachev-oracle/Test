@@ -146,19 +146,6 @@ public class TextFlowPage extends TestPaneBase {
             control.getChildren().add(caretPath);
             
             int len = computeTextLength(control);
-
-            /*
-            for (Node n: control.getChildren()) {
-                if (n instanceof Text t) {
-                    String s = t.getText();
-                    for (int i = 0; i < s.length(); i++) {
-                        // TODO need to translate to text flow (parent) coordinates
-                        PathElement[] es = t.caretShape(i, true);
-                        caretPath.getElements().addAll(es);
-                    }
-                }
-            }
-            */
             for(int i=0; i<len; i++) {
                 PathElement[] es = control.caretShape(i, true);
                 caretPath.getElements().addAll(es);

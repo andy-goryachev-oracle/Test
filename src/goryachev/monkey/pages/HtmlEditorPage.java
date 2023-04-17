@@ -32,6 +32,7 @@ import javafx.scene.web.HTMLEditor;
  */
 public class HtmlEditorPage extends TestPaneBase {
     public HtmlEditorPage() {
+        setId("HtmlEditorPage");
         HTMLEditor ed = new HTMLEditor();
         setContent(ed);
     }

@@ -24,12 +24,12 @@
  */
 package goryachev.monkey.pages;
 
+import goryachev.monkey.util.TestPaneBase;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import goryachev.monkey.util.TestPaneBase;
 
 /**
  * 
@@ -38,6 +38,8 @@ public class CanvasPage extends TestPaneBase {
     private Pane pane;
 
     public CanvasPage() {
+        setId("CanvasPage");
+
         pane = new Pane();
         setContent(pane);
 
@@ -46,25 +48,25 @@ public class CanvasPage extends TestPaneBase {
 
         updateCanvas();
     }
-    
+
     protected void updateCanvas() {
         double w = pane.getWidth();
         double h = pane.getHeight();
         String text = "width=" + w + " height=" + h;
         Font f = Font.font("System", 12);
         Canvas c = new Canvas(w, h);
-        
+
         GraphicsContext g = c.getGraphicsContext2D();
 
         g.setFont(f);
         g.setFill(Color.BLACK);
         g.fillText(text, 2, 14);
-        
+
         g.setLineWidth(0.5);
         g.setStroke(Color.RED);
         g.beginPath();
-        g.moveTo(0, h/2);
-        g.lineTo(w, h/2);
+        g.moveTo(0, h / 2);
+        g.lineTo(w, h / 2);
         g.stroke();
 
         pane.getChildren().setAll(c);

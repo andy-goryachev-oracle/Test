@@ -33,16 +33,16 @@ import javafx.scene.layout.Pane;
 public class DemoPage {
     private final String title;
     private final Supplier<Pane> generator;
-    
+
     public DemoPage(String title, Supplier<Pane> generator) {
         this.title = title;
         this.generator = generator;
     }
-    
+
     public Pane createPane() {
         return generator.get();
     }
-    
+
     public String toString() {
         return title;
     }

@@ -24,7 +24,6 @@
  */
 package goryachev.monkey.pages;
 
-import goryachev.monkey.util.TestPaneBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.BorderPane;
@@ -34,12 +33,12 @@ import javafx.scene.layout.Priority;
 /**
  *
  */
-public class Native2AsciiPage extends TestPaneBase {
+public class Native2AsciiPane extends BorderPane {
     private final TextArea nat;
     private final TextArea ascii;
     private boolean ignoreEvent;
     
-    public Native2AsciiPage() {
+    public Native2AsciiPane() {
         nat = new TextArea();
         nat.textProperty().addListener((x) -> convert(true));
         
@@ -60,7 +59,7 @@ public class Native2AsciiPage extends TestPaneBase {
         GridPane.setFillWidth(ascii, Boolean.TRUE);
         p.setHgrow(ascii, Priority.ALWAYS);
         p.setVgrow(ascii, Priority.ALWAYS);
-        setContent(new BorderPane(p));
+        setCenter(p);
     }
 
     protected void convert(boolean fromNative) {

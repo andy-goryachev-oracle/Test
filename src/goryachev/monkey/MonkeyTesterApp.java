@@ -27,6 +27,7 @@ package goryachev.monkey;
 import java.util.Arrays;
 import java.util.Comparator;
 import goryachev.monkey.pages.DemoPage;
+import goryachev.monkey.pages.Native2AsciiPane;
 import goryachev.monkey.util.FX;
 import goryachev.monkey.util.TestPaneBase;
 import goryachev.settings.FxSettings;
@@ -47,6 +48,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -55,23 +57,22 @@ import javafx.stage.Stage;
  * Monkey Tester Application
  */
 public class MonkeyTesterApp extends Application {
-    
     protected Stage stage;
     protected ObservableList<DemoPage> pages = FXCollections.observableArrayList();
     protected ListView<DemoPage> pageSelector;
     protected BorderPane contentPane;
     protected DemoPage currentPage;
     protected Label status;
-    
+
     public static void main(String[] args) {
         Application.launch(MonkeyTesterApp.class, args);
     }
-    
+
     @Override
     public void init() {
         FxSettings.useDirectory(".MonkeyTesterApp");
     }
-    
+
     @Override
     public void stop() throws Exception {
     }
@@ -79,14 +80,14 @@ public class MonkeyTesterApp extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         this.stage = stage;
-        
+
         status = new Label();
         status.setPadding(new Insets(2, 2, 2, 2));
-        
+
         Label spacer = new Label();
-        
+
         Label ver = new Label();
-        
+
         GridPane st = new GridPane();
         st.add(status, 0, 0);
         st.add(spacer, 1, 0);
@@ -94,24 +95,24 @@ public class MonkeyTesterApp extends Application {
         GridPane.setVgrow(status, Priority.ALWAYS);
         GridPane.setHgrow(spacer, Priority.ALWAYS);
         GridPane.setVgrow(ver, Priority.ALWAYS);
-        
+
         pages.setAll(createPages());
-        
+
         pageSelector = new ListView(pages);
         pageSelector.setId("pageSelector");
-        pageSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        pageSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updatePage(c);
         });
-        
+
         contentPane = new BorderPane();
         contentPane.setId("contentPane");
-        
+
         SplitPane split = new SplitPane(pageSelector, contentPane);
         split.setDividerPositions(0.15);
         SplitPane.setResizableWithParent(pageSelector, Boolean.FALSE);
         SplitPane.setResizableWithParent(contentPane, Boolean.TRUE);
-        
-        BorderPane bp = new BorderPane();        
+
+        BorderPane bp = new BorderPane();
         bp.setTop(createMenu());
         bp.setCenter(split);
         bp.setBottom(st);
@@ -119,7 +120,7 @@ public class MonkeyTesterApp extends Application {
         stage.setScene(new Scene(bp));
         stage.setWidth(1200);
         stage.setHeight(800);
-        
+
         stage.renderScaleXProperty().addListener((x) -> updateStatus());
         stage.renderScaleYProperty().addListener((x) -> updateStatus());
         updateTitle();
@@ -127,20 +128,21 @@ public class MonkeyTesterApp extends Application {
 
         stage.show();
     }
-    
+
     protected MenuBar createMenu() {
         CheckMenuItem orientation = new CheckMenuItem("Orientation: RTL");
         orientation.setOnAction((ev) -> {
-            NodeOrientation v = (orientation.isSelected()) ? NodeOrientation.RIGHT_TO_LEFT : NodeOrientation.LEFT_TO_RIGHT;
+            NodeOrientation v = (orientation.isSelected()) ? NodeOrientation.RIGHT_TO_LEFT
+                : NodeOrientation.LEFT_TO_RIGHT;
             stage.getScene().setNodeOrientation(v);
         });
-        
+
         CheckMenuItem usePreferred = new CheckMenuItem("Use Preferred Size");
         usePreferred.setOnAction((ev) -> {
             boolean on = usePreferred.isSelected();
             TestPaneBase.usePreferredSize.set(on);
         });
-        
+
         MenuBar b = new MenuBar();
         // File
         FX.menu(b, "_File");
@@ -150,17 +152,19 @@ public class MonkeyTesterApp extends Application {
         FX.item(b, "Reload Current Page", this::reloadCurrentPage);
         FX.separator(b);
         FX.item(b, usePreferred);
-        // Window
-        FX.menu(b, "_Window");
-        FX.item(b, orientation);
-        FX.separator(b);
-        FX.item(b, "Open Dialog", this::openDialog);
         // Menu
         FX.menu(b, "_Menu");
         ToggleGroup g = new ToggleGroup();
         FX.radio(b, "RadioMenuItem 1", KeyCombination.keyCombination("Shortcut+1"), g);
         FX.radio(b, "RadioMenuItem 2", KeyCombination.keyCombination("Shortcut+2"), g);
         FX.radio(b, "RadioMenuItem 3", KeyCombination.keyCombination("Shortcut+3"), g);
+        FX.menu(b, "_Tools");
+        FX.item(b, "Native-to-ascii", this::openNative2Ascii);
+        // Window
+        FX.menu(b, "_Window");
+        FX.item(b, orientation);
+        FX.separator(b);
+        FX.item(b, "Open Modal Window", this::openModalWindow);
         return b;
     }
 
@@ -171,27 +175,27 @@ public class MonkeyTesterApp extends Application {
         updateTitle();
         FxSettings.restore(contentPane);
     }
-    
+
     protected void reloadCurrentPage() {
         updatePage(currentPage);
     }
-    
+
     protected void updateTitle() {
         StringBuilder sb = new StringBuilder();
         sb.append("Monkey Tester");
-        if(currentPage != null) {
+        if (currentPage != null) {
             sb.append(" - ");
             sb.append(currentPage.toString());
         }
         stage.setTitle(sb.toString());
     }
-    
+
     protected void updateStatus() {
         StringBuilder sb = new StringBuilder();
         sb.append("   ");
         sb.append(System.getProperty("javafx.runtime.version"));
-        
-        if(stage.getRenderScaleX() == stage.getRenderScaleY()) {
+
+        if (stage.getRenderScaleX() == stage.getRenderScaleY()) {
             sb.append("  scale=");
             sb.append(stage.getRenderScaleX());
         } else {
@@ -202,7 +206,7 @@ public class MonkeyTesterApp extends Application {
         }
         status.setText(sb.toString());
     }
-    
+
     protected DemoPage[] createPages() {
         DemoPage[] pages = Pages.create();
         Arrays.sort(pages, new Comparator<DemoPage>() {
@@ -213,14 +217,18 @@ public class MonkeyTesterApp extends Application {
         });
         return pages;
     }
-    
-    protected void openDialog() {
+
+    protected void openModalWindow() {
         Button b = new Button("Platform.exit()");
         b.setOnAction((ev) -> Platform.exit());
-        
+
+        Button b2 = new Button("OK");
+
+        HBox bp = new HBox(b, b2);
+
         BorderPane p = new BorderPane();
-        p.setCenter(b);
-        
+        p.setBottom(bp);
+
         Stage d = new Stage();
         d.setScene(new Scene(p));
         d.initModality(Modality.APPLICATION_MODAL);
@@ -228,5 +236,14 @@ public class MonkeyTesterApp extends Application {
         d.setWidth(500);
         d.setHeight(400);
         d.show();
+
+        b2.setOnAction((ev) -> d.hide());
+    }
+
+    protected void openNative2Ascii() {
+        Stage s = new Stage();
+        s.setTitle("Native to ASCII");
+        s.setScene(new Scene(new Native2AsciiPane()));
+        s.show();
     }
 }

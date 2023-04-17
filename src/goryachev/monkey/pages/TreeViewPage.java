@@ -43,39 +43,43 @@ import goryachev.monkey.util.TestPaneBase;
 public class TreeViewPage extends TestPaneBase {
     private TreeView<String> tree;
     private int childNum;
-    
+
     public TreeViewPage() {
+        setId("TreeViewPage");
+
         CheckBox indeterminate = new CheckBox("Indeterminate");
-        
+        indeterminate.setId("indeterminate");
+
         CheckBox selected = new CheckBox("Selected");
+        selected.setId("selected");
 
         Button add = new Button("Add");
         add.setOnAction(e -> addChild(indeterminate.isSelected(), selected.isSelected()));
 
         Button remove = new Button("Remove");
         remove.setOnAction(e -> removeChild());
-        
+
         toolbar().addAll(
             add,
             remove,
             indeterminate,
             selected
         );
-        
+
         updatePane();
     }
-    
+
     protected void updatePane() {
         tree = new TreeView<>(new CheckBoxTreeItem<>("root"));
-        
+
         Button button = new Button("0");
         tree.getRoot().setGraphic(button);
         tree.getRoot().setExpanded(true);
         tree.getSelectionModel().select(tree.getRoot());
-        
+
         // add children for initial setup as needed
         addChild(true, true);
-        
+
         setContent(tree);
     }
 

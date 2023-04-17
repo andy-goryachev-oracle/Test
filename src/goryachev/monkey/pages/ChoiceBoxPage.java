@@ -40,15 +40,15 @@ public class ChoiceBoxPage extends TestPaneBase {
         LONG,
         RIGHT_TO_LEFT,
     }
-    
+
     private ChoiceBox<String> control;
     private Locale defaultLocale;
 
     public ChoiceBoxPage() {
         setId("ChoiceBoxPage");
-        
+
         control = new ChoiceBox();
-        
+
         ItemSelector<String[]> itemSelector = new ItemSelector<>(
             "itemSelector",
             (t) -> control.getItems().setAll(t),
@@ -57,22 +57,21 @@ public class ChoiceBoxPage extends TestPaneBase {
             "2", mk(2),
             "5", mk(5),
             "100", mk(100),
-            "1_000", mk(1_000)
-        );
-        
+            "1_000", mk(1_000));
+
         // TODO converter
-        
+
         OptionPane p = new OptionPane();
         p.label("Items:");
         p.option(itemSelector.node());
-        
+
         setContent(control);
         setOptions(p);
     }
-    
+
     private static String[] mk(int size) {
         String[] ss = new String[size];
-        for(int i=0; i<size; i++) {
+        for (int i = 0; i < size; i++) {
             ss[i] = ("Item " + i);
         }
         return ss;

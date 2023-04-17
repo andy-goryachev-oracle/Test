@@ -55,28 +55,31 @@ public class ChartPage extends TestPaneBase {
         STACKED_AREA,
         STACKED_BAR,
     }
-    
+
     private ComboBox<Mode> modeSelector;
-    private XYChart<?,Number> chart;
+    private XYChart<?, Number> chart;
     protected static Random rnd = new Random();
-    
+
     public ChartPage() {
+        setId("ChartPage");
+
         modeSelector = new ComboBox<>();
+        modeSelector.setId("modeSelector");
         modeSelector.getItems().addAll(Mode.values());
         modeSelector.setEditable(false);
-        modeSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        modeSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updateChart();
         });
-        
+
         Button addButton = new Button("Add Series");
         addButton.setOnAction((ev) -> addSeries());
-        
+
         Button removeButton = new Button("Remove Series");
         removeButton.setOnAction((ev) -> removeSeries());
-        
+
         Button addRemoveButton = new Button("Add/Remove Series");
         addRemoveButton.setOnAction((ev) -> addRemoveSeries());
-        
+
         OptionPane p = new OptionPane();
         p.label("Chart Type:");
         p.option(modeSelector);
@@ -87,15 +90,15 @@ public class ChartPage extends TestPaneBase {
 
         modeSelector.getSelectionModel().selectFirst();
     }
-    
+
     protected void updateChart() {
         Mode m = modeSelector.getSelectionModel().getSelectedItem();
         chart = createChart(m);
-        
+
         BorderPane bp = new BorderPane();
         bp.setCenter(chart);
         setContent(bp);
-        
+
         addSeries();
     }
 
@@ -116,12 +119,12 @@ public class ChartPage extends TestPaneBase {
 
     protected void removeSeries() {
         if (chart != null) {
-            if(chart.getData().size() > 0) {
+            if (chart.getData().size() > 0) {
                 chart.getData().remove(0);
             }
         }
     }
-    
+
     protected void addRemoveSeries() {
         if (chart != null) {
             if (chart.getData().size() > 0) {
@@ -131,7 +134,7 @@ public class ChartPage extends TestPaneBase {
         }
     }
 
-    private XYChart<?,Number> createChart(Mode m) {
+    private XYChart<?, Number> createChart(Mode m) {
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("X");
 
@@ -139,73 +142,66 @@ public class ChartPage extends TestPaneBase {
         yAxis.setLabel("Y");
 
         switch (m) {
-        case AREA:
-            {
-                AreaChart<Number, Number> chart = new AreaChart<>(xAxis, yAxis);
-                chart.setTitle("Area Chart");
-                return chart;
-            }
-        case BAR:
-            {
-                CategoryAxis x = new CategoryAxis();
-                BarChart<String,Number> chart = new BarChart<>(x, yAxis);
-                chart.setTitle("Bar Chart");
-                return chart;
-            }
-        case BUBBLE:
-            {
-                BubbleChart<Number, Number> chart = new BubbleChart<>(xAxis, yAxis);
-                chart.setTitle("Bubble Chart");
-                return chart;
-            }
-        case LINE:
-            {
-                LineChart<Number,Number> chart = new LineChart<>(xAxis, yAxis);
-                chart.setTitle("Line Chart");
-                return chart;
-            }
-        case SCATTER:
-            {
-                ScatterChart<Number,Number> chart = new ScatterChart<>(xAxis, yAxis);
-                chart.setTitle("Scatter Chart");
-                return chart;
-            }
-        case STACKED_AREA:
-            {
-                StackedAreaChart<Number,Number> chart = new StackedAreaChart<>(xAxis, yAxis);
-                chart.setTitle("Stacked Area Chart");
-                return chart;
-            }
-        case STACKED_BAR:
-            {
-                CategoryAxis x = new CategoryAxis();
-                StackedBarChart<String,Number> chart = new StackedBarChart<>(x, yAxis);
-                chart.setTitle("Stacked Bar Chart");
-                return chart;
-            }
+        case AREA: {
+            AreaChart<Number, Number> chart = new AreaChart<>(xAxis, yAxis);
+            chart.setTitle("Area Chart");
+            return chart;
+        }
+        case BAR: {
+            CategoryAxis x = new CategoryAxis();
+            BarChart<String, Number> chart = new BarChart<>(x, yAxis);
+            chart.setTitle("Bar Chart");
+            return chart;
+        }
+        case BUBBLE: {
+            BubbleChart<Number, Number> chart = new BubbleChart<>(xAxis, yAxis);
+            chart.setTitle("Bubble Chart");
+            return chart;
+        }
+        case LINE: {
+            LineChart<Number, Number> chart = new LineChart<>(xAxis, yAxis);
+            chart.setTitle("Line Chart");
+            return chart;
+        }
+        case SCATTER: {
+            ScatterChart<Number, Number> chart = new ScatterChart<>(xAxis, yAxis);
+            chart.setTitle("Scatter Chart");
+            return chart;
+        }
+        case STACKED_AREA: {
+            StackedAreaChart<Number, Number> chart = new StackedAreaChart<>(xAxis, yAxis);
+            chart.setTitle("Stacked Area Chart");
+            return chart;
+        }
+        case STACKED_BAR: {
+            CategoryAxis x = new CategoryAxis();
+            StackedBarChart<String, Number> chart = new StackedBarChart<>(x, yAxis);
+            chart.setTitle("Stacked Bar Chart");
+            return chart;
+        }
         }
 
         return null;
     }
-    
-    public Series<Number,Number> createNumberSeries() {
+
+    public Series<Number, Number> createNumberSeries() {
         String name = Long.toString(System.currentTimeMillis(), 16);
-        
+
         XYChart.Series s = new XYChart.Series();
         s.setName(name);
-        for(int i=0; i<12; i++) {
+        for (int i = 0; i < 12; i++) {
             int v = rnd.nextInt(50);
             s.getData().add(new XYChart.Data(i, v));
         }
         return s;
     }
-    
-    public Series<String,Number> createBarSeries() {
+
+    public Series<String, Number> createBarSeries() {
         String name = Long.toString(System.currentTimeMillis(), 16);
-        
+
         XYChart.Series s = new XYChart.Series();
         s.setName(name);
-        for(int i=0; i<12; i++) {
+        for (int i = 0; i < 12; i++) {
             int v = rnd.nextInt(50);
             s.getData().add(new XYChart.Data("c" + i, v));
         }

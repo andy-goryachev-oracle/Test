@@ -42,36 +42,42 @@ public class ScrollBarPage extends TestPaneBase {
     };
 
     public ScrollBarPage() {
+        setId("ScrollBarPage");
+
         scroll = new ScrollBar();
-        
+
         ComboBox<Long> min = new ComboBox<>();
+        min.setId("min");
         min.getItems().setAll(VALUES);
-        min.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        min.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             int v = parse(min);
             scroll.setMin(v);
         });
-        
+
         ComboBox<Long> val = new ComboBox<>();
+        val.setId("val");
         val.getItems().setAll(VALUES);
-        val.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        val.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             int v = parse(val);
             scroll.setValue(v);
         });
-        
+
         ComboBox<Long> visible = new ComboBox<>();
+        visible.setId("visible");
         visible.getItems().setAll(VALUES);
-        visible.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        visible.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             int v = parse(visible);
             scroll.setVisibleAmount(v);
         });
-        
+
         ComboBox<Long> max = new ComboBox<>();
+        max.setId("max");
         max.getItems().setAll(VALUES);
-        max.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        max.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             int v = parse(max);
             scroll.setMax(v);
         });
-        
+
         OptionPane p = new OptionPane();
         p.label("Min:");
         p.option(min);
@@ -81,28 +87,28 @@ public class ScrollBarPage extends TestPaneBase {
         p.option(visible);
         p.label("Max:");
         p.option(max);
-        
+
         status = new Label();
-        
-        scroll.minProperty().addListener((s,pr,c) -> {
+
+        scroll.minProperty().addListener((s, pr, c) -> {
             updateStatus();
         });
-        scroll.valueProperty().addListener((s,pr,c) -> {
+        scroll.valueProperty().addListener((s, pr, c) -> {
             updateStatus();
         });
-        scroll.visibleAmountProperty().addListener((s,pr,c) -> {
+        scroll.visibleAmountProperty().addListener((s, pr, c) -> {
             updateStatus();
         });
-        scroll.maxProperty().addListener((s,pr,c) -> {
+        scroll.maxProperty().addListener((s, pr, c) -> {
             updateStatus();
         });
-        
+
         VBox b = new VBox(scroll, status);
         b.setSpacing(5);
-        
+
         setContent(b);
         setOptions(p);
-        
+
         min.getSelectionModel().select(0L);
         val.getSelectionModel().select(5L);
         visible.getSelectionModel().select(1L);
@@ -113,7 +119,7 @@ public class ScrollBarPage extends TestPaneBase {
         Long v = c.getSelectionModel().getSelectedItem();
         return (v == null) ? 0 : v.intValue();
     }
-    
+
     protected void updateStatus() {
         status.setText(
             "min=" + scroll.getMin() +

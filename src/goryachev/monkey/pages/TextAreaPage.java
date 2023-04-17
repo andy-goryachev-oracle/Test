@@ -65,14 +65,6 @@ public class TextAreaPage extends TestPaneBase {
         TextSelector promptChoice = Templates.promptChoice("promptChoice", control::setPromptText);
         promptChoice.addPair("Multiline", "1\n2\n3\n4");
         
-//        ComboBox<FormatterChoice> formatterChoice = new ComboBox<>();
-//        formatterChoice.setId("formatterChoice");
-//        formatterChoice.getItems().setAll(FormatterChoice.values());
-//        formatterChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
-//            TextFormatter<?> f = getFormatter(c);
-//            control.setTextFormatter(f);
-//        });
-        
         OptionPane p = new OptionPane();
         p.label("Text:");
         p.option(textSelector.node());

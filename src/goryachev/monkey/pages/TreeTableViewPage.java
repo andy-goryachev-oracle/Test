@@ -116,8 +116,11 @@ public class TreeTableViewPage extends TestPaneBase {
     protected TreeTableView<String> tree;
     
     public TreeTableViewPage() {
+        setId("TreeTableViewPage");
+        
         // selector
         demoSelector = new ComboBox<>();
+        demoSelector.setId("demoSelector");
         demoSelector.getItems().addAll(Demo.values());
         demoSelector.setEditable(false);
         demoSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
@@ -125,6 +128,7 @@ public class TreeTableViewPage extends TestPaneBase {
         });
 
         policySelector = new ComboBox<>();
+        policySelector.setId("policySelector");
         policySelector.getItems().addAll(ResizePolicy.values());
         policySelector.setEditable(false);
         policySelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
@@ -132,6 +136,7 @@ public class TreeTableViewPage extends TestPaneBase {
         });
         
         selectionSelector = new ComboBox<>();
+        selectionSelector.setId("selectionSelector");
         selectionSelector.getItems().addAll(Selection.values());
         selectionSelector.setEditable(false);
         selectionSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
@@ -139,6 +144,7 @@ public class TreeTableViewPage extends TestPaneBase {
         });
         
         nullFocusModel = new CheckBox("null focus model");
+        nullFocusModel.setId("nullFocusModel");
         nullFocusModel.selectedProperty().addListener((s,p,c) -> {
             updatePane();
         });

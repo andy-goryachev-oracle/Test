@@ -42,27 +42,29 @@ public class ComboBoxPage extends TestPaneBase {
         setId("ComboBoxPage");
 
         control = new ComboBox();
-        control.getItems().setAll("0","1","2","3","4","5","6","7","8","9");
-        
+        control.getItems().setAll("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
+
         VBox b = new VBox();
         b.getChildren().add(control);
         setContent(b);
-        
+
         addButton("Set Converter", () -> {
             control.setConverter(new StringConverter() {
                 int toStringCounter = 0;
                 int fromStringCounter = 0;
 
-                @Override public String toString(Object t) {
+                @Override
+                public String toString(Object t) {
                     return "toString-" + t;
                 }
 
-                @Override public Object fromString(String t) {
+                @Override
+                public Object fromString(String t) {
                     return "fromString" + t;
                 }
             });
         });
-        
+
         addButton("Change Item Count", () -> {
             new Timeline(
                 new KeyFrame(Duration.seconds(1.0), (ev) -> {
@@ -76,8 +78,7 @@ public class ComboBoxPage extends TestPaneBase {
                 new KeyFrame(Duration.seconds(3.0), (ev) -> {
                     System.out.println("2");
                     control.setVisibleRowCount(2);
-                })
-            ).play();
+                })).play();
         });
     }
 }

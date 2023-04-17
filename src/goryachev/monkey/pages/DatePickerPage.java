@@ -39,11 +39,13 @@ public class DatePickerPage extends TestPaneBase {
     private final Button button;
     private DatePicker datePicker;
     private Alert dialog;
-    
+
     public DatePickerPage() {
+        setId("DatePickerPage");
+
         button = new Button("Show Dialog");
         toolbar().add(button);
-        
+
         datePicker = new DatePicker(LocalDate.now());
         datePicker.valueProperty().addListener(event -> {
             dialog.close();
@@ -55,7 +57,7 @@ public class DatePickerPage extends TestPaneBase {
             dialog.initOwner(getWindow());
             dialog.getDialogPane().setContent(datePicker);
             dialog.show();
-            
+
             LocalDate v = datePicker.getValue();
             System.out.println(v);
         });
