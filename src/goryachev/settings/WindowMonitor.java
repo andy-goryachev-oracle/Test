@@ -26,6 +26,10 @@
 // https://github.com/andy-goryachev/FxDock
 package goryachev.settings;
 
+import java.util.HashSet;
+import java.util.WeakHashMap;
+import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
@@ -42,47 +46,48 @@ class WindowMonitor {
     private double y2;
     private double w2;
     private double h2;
-    
+    private static final WeakHashMap<Window, WindowMonitor> monitors = new WeakHashMap<>(4);
+
     public WindowMonitor(Window w, String id) {
         this.id = id;
-        
+
         x = w.getX();
         y = w.getY();
         width = w.getWidth();
         height = w.getHeight();
-        
+
         w.xProperty().addListener((p) -> updateX(w));
         w.yProperty().addListener((p) -> updateY(w));
         w.widthProperty().addListener((p) -> updateWidth(w));
         w.heightProperty().addListener((p) -> updateHeight(w));
-        
-        if(w instanceof Stage s) {
+
+        if (w instanceof Stage s) {
             s.iconifiedProperty().addListener((p) -> updateIconified(s));
             s.maximizedProperty().addListener((p) -> updateMaximized(s));
             s.fullScreenProperty().addListener((p) -> updateFullScreen(s));
         }
     }
-    
+
     public String getID() {
         return id;
     }
-    
+
     public double getX() {
         return x;
     }
-    
+
     public double getY() {
         return y;
     }
-    
+
     public double getWidth() {
         return width;
     }
-    
+
     public double getHeight() {
         return height;
     }
-    
+
     private void updateX(Window w) {
         x2 = x;
         x = w.getX();
@@ -92,37 +97,101 @@ class WindowMonitor {
         y2 = y;
         y = w.getY();
     }
-    
+
     private void updateWidth(Window w) {
         w2 = width;
         width = w.getWidth();
     }
-    
+
     private void updateHeight(Window w) {
         h2 = height;
         height = w.getHeight();
     }
 
     private void updateIconified(Stage s) {
-        if(s.isIconified()) {
+        if (s.isIconified()) {
             x = x2;
             y = y2;
         }
     }
 
     private void updateMaximized(Stage s) {
-        if(s.isMaximized()) {
+        if (s.isMaximized()) {
             x = x2;
             y = y2;
         }
     }
-    
+
     private void updateFullScreen(Stage s) {
-        if(s.isFullScreen()) {
+        if (s.isFullScreen()) {
             x = x2;
             y = y2;
             width = w2;
             height = h2;
         }
+    }
+
+    public static WindowMonitor getFor(Window w) {
+        if (w == null) {
+            return null;
+        }
+        WindowMonitor m = monitors.get(w);
+        if (m == null) {
+            String id = createID(w);
+            m = new WindowMonitor(w, id);
+            monitors.put(w, m);
+        }
+        return m;
+    }
+
+    public static WindowMonitor getFor(Node n) {
+        Window w = windowFor(n);
+        if (w != null) {
+            return getFor(w);
+        }
+        return null;
+    }
+
+    private static Window windowFor(Node n) {
+        Scene sc = n.getScene();
+        if (sc != null) {
+            Window w = sc.getWindow();
+            if (w != null) {
+                return w;
+            }
+        }
+        return null;
+    }
+
+    private static String createID(Window win) {
+        // TODO use name provided by setName
+        String prefix = win.getClass().getSimpleName() + ".";
+
+        HashSet<String> ids = new HashSet<>();
+        for (Window w: Window.getWindows()) {
+            if (w == win) {
+                continue;
+            }
+            WindowMonitor m = monitors.get(w);
+            String id = m.getID();
+            if (id.startsWith(prefix)) {
+                ids.add(id);
+            }
+        }
+
+        for (int i = 0; i < 100_000; i++) {
+            String id = prefix + i;
+            if (!ids.contains(id)) {
+                return id;
+            }
+        }
+
+        // safeguard measure
+        throw new Error("cannot create id: too many windows?");
+    }
+    
+    public static boolean remove(Window w) {
+        monitors.remove(w);
+        return monitors.size() == 0;
     }
 }

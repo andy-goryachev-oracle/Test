@@ -71,6 +71,10 @@ public class MonkeyTesterApp extends Application {
     public void init() {
         FxSettings.useDirectory(".MonkeyTesterApp");
     }
+    
+    @Override
+    public void stop() throws Exception {
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
