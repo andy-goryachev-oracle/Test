@@ -47,18 +47,19 @@ public class FxSettingsFileProvider implements ISettingsProvider {
     private static final char SEP = '=';
     private static final String DIV = ",";
     private final File file;
-    private final HashMap<String,Object> data = new HashMap<>();
+    private final HashMap<String, Object> data = new HashMap<>();
 
     public FxSettingsFileProvider(File dir) {
         file = new File(dir, "ui-settings.properties");
     }
-    
+
     @Override
     public void load() throws IOException {
         if (file.exists() && file.isFile()) {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(new FileInputStream(file), Charset.forName("utf-8")));
+            BufferedReader rd = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file), Charset.forName("utf-8")));
             try {
-                synchronized(data) {
+                synchronized (data) {
                     read(rd);
                 }
             } finally {
@@ -69,10 +70,10 @@ public class FxSettingsFileProvider implements ISettingsProvider {
 
     @Override
     public void save() throws IOException {
-        if(file.getParentFile() != null) {
+        if (file.getParentFile() != null) {
             file.getParentFile().mkdirs();
         }
-        
+
         Writer wr = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("utf-8")));
         try {
             synchronized (data) {
@@ -82,12 +83,12 @@ public class FxSettingsFileProvider implements ISettingsProvider {
             wr.close();
         }
     }
-    
+
     private void read(BufferedReader rd) throws IOException {
         String s;
-        while((s = rd.readLine()) != null) {
+        while ((s = rd.readLine()) != null) {
             int ix = s.indexOf(SEP);
-            if(ix <= 0) {
+            if (ix <= 0) {
                 continue;
             }
             String k = s.substring(0, ix);
@@ -99,8 +100,8 @@ public class FxSettingsFileProvider implements ISettingsProvider {
     private void write(Writer wr) throws IOException {
         ArrayList<String> keys = new ArrayList<>(data.keySet());
         Collections.sort(keys);
-        
-        for(String k: keys) {
+
+        for (String k: keys) {
             Object v = data.get(k);
             wr.write(k);
             wr.write(SEP);
@@ -111,7 +112,6 @@ public class FxSettingsFileProvider implements ISettingsProvider {
 
     @Override
     public void set(String key, String value) {
-        System.out.println("SET " + key + "=" + value); // FIX
         synchronized (data) {
             if (value == null) {
                 data.remove(key);
@@ -123,7 +123,6 @@ public class FxSettingsFileProvider implements ISettingsProvider {
 
     @Override
     public void set(String key, SStream s) {
-        System.out.println("SET stream " + key + "=" + s); // FIX
         synchronized (data) {
             if (s == null) {
                 data.remove(key);
@@ -146,7 +145,6 @@ public class FxSettingsFileProvider implements ISettingsProvider {
         } else {
             s = null;
         }
-        System.out.println("GET " + key + "=" + s); // FIX
         return s;
     }
 
@@ -157,14 +155,13 @@ public class FxSettingsFileProvider implements ISettingsProvider {
             Object v = data.get(key);
             if (v instanceof Object[]) {
                 s = SStream.reader((Object[])v);
-            } else if(v != null) {
+            } else if (v != null) {
                 s = parseStream(v.toString());
                 data.put(key, s.toArray());
             } else {
                 s = null;
             }
         }
-        System.out.println("GET stream " + key + "=" + s); // FIX
         return s;
     }
 
@@ -174,13 +171,13 @@ public class FxSettingsFileProvider implements ISettingsProvider {
     }
 
     private static String encode(Object x) {
-        if(x == null) {
+        if (x == null) {
             return "";
-        } else if(x instanceof Object[] items) {
+        } else if (x instanceof Object[] items) {
             StringBuilder sb = new StringBuilder();
             boolean sep = false;
-            for(Object item: items) {
-                if(sep) {
+            for (Object item: items) {
+                if (sep) {
                     sb.append(DIV);
                 } else {
                     sep = true;
