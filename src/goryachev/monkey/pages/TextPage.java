@@ -27,6 +27,7 @@ package goryachev.monkey.pages;
 import goryachev.monkey.util.FontSelector;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.ShowCharacterRuns;
+import goryachev.monkey.util.Templates;
 import goryachev.monkey.util.TestPaneBase;
 import goryachev.monkey.util.TextSelector;
 import javafx.scene.Group;
@@ -48,23 +49,23 @@ public class TextPage extends TestPaneBase {
 
     public TextPage() {
         setId("TextPage");
-        
+
         textGroup = new Group();
-        
+
         textSelector = TextSelector.fromPairs(
             "textSelector", 
             (t) -> updateText(),
             Templates.multiLineTextPairs()
         );
-        
+
         fontSelector = new FontSelector("font", (f) -> updateText());
-        
+
         showChars = new CheckBox("show characters");
         showChars.setId("showChars");
         showChars.selectedProperty().addListener((p) -> {
             updateText();
         });
-        
+
         CheckBox wrap = new CheckBox("set wrap width");
         wrap.setId("wrap");
         wrap.selectedProperty().addListener((p) -> {
@@ -78,26 +79,24 @@ public class TextPage extends TestPaneBase {
         p.option(fontSelector.fontNode());
         p.label("Font Size:");
         p.option(fontSelector.sizeNode());
-        // FIX fails to reduce width if enabled
-        //p.option(wrap);
         p.option(showChars);
-        
+
         setContent(new BorderPane(textGroup));
         setOptions(p);
 
         textSelector.selectFirst();
         fontSelector.selectSystemFont();
     }
-    
+
     protected void updateText() {
         String text = textSelector.getSelectedText();
         Font f = fontSelector.getFont();
 
         control = new Text(text);
         control.setFont(f);
-        
+
         textGroup.getChildren().setAll(control);
-        if(showChars.isSelected()) {
+        if (showChars.isSelected()) {
             Group g = ShowCharacterRuns.createFor(control);
             textGroup.getChildren().add(g);
         }

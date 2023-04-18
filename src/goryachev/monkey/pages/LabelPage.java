@@ -64,33 +64,33 @@ public class LabelPage extends TestPaneBase {
     
     public LabelPage() {
         setId("LabelPage");
-        
+
         im = createImage();
-        
+
         label1Selector = new ComboBox<>();
         label1Selector.setId("label1Selector");
         label1Selector.getItems().addAll(Demo.values());
         label1Selector.setEditable(false);
-        label1Selector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        label1Selector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updateControl();
         });
-        
+
         label2Selector = new ComboBox<>();
         label2Selector.setId("label2Selector");
         label2Selector.getItems().addAll(Demo.values());
         label2Selector.setEditable(false);
-        label2Selector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        label2Selector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updateControl();
         });
-        
+
         alignmentSelector = new ComboBox<>();
         alignmentSelector.setId("alignmentSelector");
         alignmentSelector.getItems().addAll(Pos.values());
         alignmentSelector.setEditable(false);
-        alignmentSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        alignmentSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updateControl();
         });
-        
+
         OptionPane p = new OptionPane();
         p.label("Label 1:");
         p.option(label1Selector);
@@ -99,26 +99,26 @@ public class LabelPage extends TestPaneBase {
         p.label("HBox Alignment:");
         p.option(alignmentSelector);
         setOptions(p);
-        
+
         FX.select(label1Selector, Demo.TEXT_ONLY);
         FX.select(label2Selector, Demo.TEXT_ONLY);
     }
-    
+
     protected void updateControl() {
         Demo d1 = FX.getSelectedItem(label1Selector);
         Label label1 = create(d1);
-        
+
         Demo d2 = FX.getSelectedItem(label2Selector);
         Label label2 = create(d2);
-        
+
         HBox b = new HBox(label1, label2);
         Pos a = FX.getSelectedItem(alignmentSelector);
-        if(a != null) {
+        if (a != null) {
             b.setAlignment(a);
         }
         setContent(b);
     }
-    
+
     protected Label create(Demo d) {
         if(d == null) {
             return new Label();

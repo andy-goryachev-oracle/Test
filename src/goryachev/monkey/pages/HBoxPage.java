@@ -77,7 +77,7 @@ public class HBoxPage extends TestPaneBase {
         MAX,
         FILL,
     }
-    
+
     protected final Cmd COL = Cmd.COL;
     protected final Cmd MIN = Cmd.MIN;
     protected final Cmd PREF = Cmd.PREF;
@@ -87,16 +87,16 @@ public class HBoxPage extends TestPaneBase {
     protected final ComboBox<Demo> demoSelector;
     protected final CheckBox grow;
     protected HBox hbox;
-    
+
     public HBoxPage() {
         setId("HBoxPage");
-        
+
         // selector
         demoSelector = new ComboBox<>();
         demoSelector.setId("demoSelector");
         demoSelector.getItems().addAll(Demo.values());
         demoSelector.setEditable(false);
-        demoSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        demoSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updatePane();
         });
 
@@ -104,15 +104,15 @@ public class HBoxPage extends TestPaneBase {
         addButton.setOnAction((ev) -> {
             hbox.getChildren().add(newItem());
         });
-        
+
         Button clearButton = new Button("Clear Items");
         clearButton.setOnAction((ev) -> {
             hbox.getChildren().clear();
         });
-        
+
         grow = new CheckBox("grow");
         grow.setId("grow");
-        grow.selectedProperty().addListener((s,p,on) -> {
+        grow.selectedProperty().addListener((s, p, on) -> {
             setGrow(on);
         });
 
@@ -137,7 +137,7 @@ public class HBoxPage extends TestPaneBase {
     }
 
     protected Object[] createSpec(Demo d) {
-        switch(d) {
+        switch (d) {
         case ALL:
             return new Object[] {
                 COL,
@@ -248,7 +248,7 @@ public class HBoxPage extends TestPaneBase {
                 COL, MAX, 50,
                 COL, MAX, 50
             };
-       case VARIOUS:
+        case VARIOUS:
             return new Object[] {
                 COL, PREF, 100,
                 COL, PREF, 200,
@@ -385,7 +385,7 @@ public class HBoxPage extends TestPaneBase {
         Color c = Color.hsb(h, 0.2, 0.99);
         return new Background(new BackgroundFill(c, null, null));
     }
-    
+
     protected void updatePane() {
         Demo d = demoSelector.getSelectionModel().getSelectedItem();
         Object[] spec = createSpec(d);

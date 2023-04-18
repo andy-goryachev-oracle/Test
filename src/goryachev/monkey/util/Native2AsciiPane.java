@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.monkey.pages;
+package goryachev.monkey.util;
 
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;

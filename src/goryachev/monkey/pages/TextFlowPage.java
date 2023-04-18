@@ -27,6 +27,7 @@ package goryachev.monkey.pages;
 import goryachev.monkey.util.FontSelector;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.ShowCharacterRuns;
+import goryachev.monkey.util.Templates;
 import goryachev.monkey.util.TestPaneBase;
 import goryachev.monkey.util.TextSelector;
 import goryachev.monkey.util.Utils;
@@ -67,21 +68,21 @@ public class TextFlowPage extends TestPaneBase {
 
     public TextFlowPage() {
         setId("TextFlowPage");
-        
+
         control = new TextFlow();
         control.addEventHandler(MouseEvent.ANY, this::handleMouseEvent);
-        
+
         pickResult = new Label();
-        
+
         hitInfo = new Label();
-        
+
         hitInfo2 = new Label();
-        
+
         caretPath = new Path();
         caretPath.setStrokeWidth(1);
         caretPath.setStroke(Color.RED);
         caretPath.setManaged(false);
-        
+
         textSelector = TextSelector.fromPairs(
             "textSelector", 
             (t) -> updateControl(),
@@ -91,15 +92,15 @@ public class TextFlowPage extends TestPaneBase {
                 "Rich Text", RICH_TEXT
             )
         );
-        
+
         fontSelector = new FontSelector("font", (f) -> updateControl());
-        
+
         showChars = new CheckBox("show characters");
         showChars.setId("showChars");
         showChars.selectedProperty().addListener((p) -> {
             updateControl();
         });
-        
+
         showCaretPath = new CheckBox("show caret path");
         showCaretPath.setId("showCaretPath");
         showCaretPath.selectedProperty().addListener((p) -> {
@@ -122,7 +123,7 @@ public class TextFlowPage extends TestPaneBase {
         p.option(hitInfo2);
         p.label("TextFlow.hitTest:");
         p.option(hitInfo);
-        
+
         setContent(control);
         setOptions(p);
 
@@ -144,20 +145,20 @@ public class TextFlowPage extends TestPaneBase {
         if (showCaretPath.isSelected()) {
             caretPath.getElements().clear();
             control.getChildren().add(caretPath);
-            
+
             int len = computeTextLength(control);
-            for(int i=0; i<len; i++) {
+            for (int i = 0; i < len; i++) {
                 PathElement[] es = control.caretShape(i, true);
                 caretPath.getElements().addAll(es);
             }
         }
     }
-    
+
     /** TextFlow.getTextLength() */
     private static int computeTextLength(TextFlow f) {
         int len = 0;
-        for(Node n: f.getChildrenUnmodifiable()) {
-            if(n instanceof Text t) {
+        for (Node n: f.getChildrenUnmodifiable()) {
+            if (n instanceof Text t) {
                 len += t.getText().length();
             }
             // embedded nodes do not have an associated text
@@ -186,13 +187,13 @@ public class TextFlowPage extends TestPaneBase {
             return new Node[] { t(text, f) };
         }
     }
-    
+
     protected static Text t(String text, Font f) {
         Text t = new Text(text);
         t.setFont(f);
         return t;
     }
-    
+
     protected static Text t(String text, Font f, String style) {
         Text t = new Text(text);
         t.setFont(f);

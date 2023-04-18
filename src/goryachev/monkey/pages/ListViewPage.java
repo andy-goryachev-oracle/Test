@@ -58,7 +58,7 @@ public class ListViewPage extends TestPaneBase {
         SINGLE("single selection"),
         MULTIPLE("multiple selection"),
         NULL("null selection model");
-        
+
         private final String text;
         Selection(String text) { this.text = text; }
         public String toString() { return text; }
@@ -73,16 +73,16 @@ public class ListViewPage extends TestPaneBase {
     protected final ComboBox<Selection> selectionSelector;
     protected final CheckBox nullFocusModel;
     protected ListView<Object> control;
-    
+
     public ListViewPage() {
         setId("ListViewPage");
-        
+
         // selector
         demoSelector = new ComboBox<>();
         demoSelector.setId("demoSelector");
         demoSelector.getItems().addAll(Demo.values());
         demoSelector.setEditable(false);
-        demoSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        demoSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updatePane();
         });
 
@@ -90,26 +90,26 @@ public class ListViewPage extends TestPaneBase {
         selectionSelector.setId("selectionSelector");
         selectionSelector.getItems().addAll(Selection.values());
         selectionSelector.setEditable(false);
-        selectionSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        selectionSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updatePane();
         });
-        
+
         nullFocusModel = new CheckBox("null focus model");
         nullFocusModel.setId("nullFocusModel");
-        nullFocusModel.selectedProperty().addListener((s,p,c) -> {
+        nullFocusModel.selectedProperty().addListener((s, p, c) -> {
             updatePane();
         });
-        
+
         Button addButton = new Button("Add Item");
         addButton.setOnAction((ev) -> {
             control.getItems().add(newItem(""));
         });
-        
+
         Button clearButton = new Button("Clear Items");
         clearButton.setOnAction((ev) -> {
             control.getItems().clear();
         });
-        
+
         Button jumpButton = new Button("Jump w/VirtualFlow");
         jumpButton.setOnAction((ev) -> {
             jump();
@@ -133,7 +133,7 @@ public class ListViewPage extends TestPaneBase {
     }
 
     protected Object[] createSpec(Demo d) {
-        switch(d) {
+        switch (d) {
         case EMPTY:
             return new Object[] {
             };
@@ -166,12 +166,12 @@ public class ListViewPage extends TestPaneBase {
         if ((demo == null) || (spec == null)) {
             return new BorderPane();
         }
-        
+
         boolean nullSelectionModel = false;
         SelectionMode selectionMode = SelectionMode.SINGLE;
         Selection sel = selectionSelector.getSelectionModel().getSelectedItem();
-        if(sel != null) {
-            switch(sel) {
+        if (sel != null) {
+            switch (sel) {
             case MULTIPLE:
                 selectionMode = SelectionMode.MULTIPLE;
                 break;
@@ -187,32 +187,30 @@ public class ListViewPage extends TestPaneBase {
 
         control = new ListView<>();
         control.getSelectionModel().setSelectionMode(selectionMode);
-        if(nullSelectionModel) {
+        if (nullSelectionModel) {
             control.setSelectionModel(null);
         }
-        if(nullFocusModel.isSelected()) {
+        if (nullFocusModel.isSelected()) {
             control.setFocusModel(null);
         }
-        
+
         for (int i = 0; i < spec.length;) {
             Object x = spec[i++];
             if (x instanceof Cmd cmd) {
                 switch (cmd) {
-                case ROWS:
-                    {
-                        int n = (int)(spec[i++]);
-                        for (int j = 0; j < n; j++) {
-                            control.getItems().add(newItem(i));
-                        }
+                case ROWS: {
+                    int n = (int)(spec[i++]);
+                    for (int j = 0; j < n; j++) {
+                        control.getItems().add(newItem(i));
                     }
+                }
                     break;
-                case VARIABLE_ROWS:
-                    {
-                        int n = (int)(spec[i++]);
-                        for (int j = 0; j < n; j++) {
-                            control.getItems().add(newVariableItem(j));
-                        }
+                case VARIABLE_ROWS: {
+                    int n = (int)(spec[i++]);
+                    for (int j = 0; j < n; j++) {
+                        control.getItems().add(newVariableItem(j));
                     }
+                }
                     break;
                 default:
                     throw new Error("?" + cmd);
@@ -230,31 +228,31 @@ public class ListViewPage extends TestPaneBase {
     protected String newItem(Object n) {
         return n + "." + System.currentTimeMillis() + "." + System.nanoTime();
     }
-    
+
     protected String newVariableItem(Object n) {
         int rows = 1 << new Random().nextInt(5);
         StringBuilder sb = new StringBuilder();
-        for(int i=0; i<rows; i++) {
-            if(i > 0) {
+        for (int i = 0; i < rows; i++) {
+            if (i > 0) {
                 sb.append('\n');
             }
             sb.append(i);
         }
         return n + "." + System.currentTimeMillis() + "." + System.nanoTime() + "." + sb;
     }
-    
+
     protected void jump() {
         int sz = control.getItems().size();
         int ix = sz / 2;
-        
+
         control.getSelectionModel().select(ix);
         VirtualFlow f = findVirtualFlow(control);
         f.scrollTo(ix);
         f.scrollPixels(-1.0);
     }
-    
+
     private VirtualFlow findVirtualFlow(Parent parent) {
-        for (Node node : parent.getChildrenUnmodifiable()) {
+        for (Node node: parent.getChildrenUnmodifiable()) {
             if (node instanceof VirtualFlow f) {
                 return f;
             }

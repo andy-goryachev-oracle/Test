@@ -26,6 +26,7 @@ package goryachev.monkey.pages;
 
 import goryachev.monkey.util.FontSelector;
 import goryachev.monkey.util.OptionPane;
+import goryachev.monkey.util.Templates;
 import goryachev.monkey.util.TestPaneBase;
 import goryachev.monkey.util.TextSelector;
 import javafx.scene.control.CheckBox;
@@ -40,31 +41,31 @@ public class TextAreaPage extends TestPaneBase {
 
     public TextAreaPage() {
         setId("TextAreaPage");
-        
+
         control = new TextArea();
         control.setPromptText("<prompt>");
-        
+
         textSelector = TextSelector.fromPairs(
             "textSelector", 
             (t) -> control.setText(t),
             Templates.multiLineTextPairs()
         );
-        
+
         FontSelector fontSelector = new FontSelector("font", control::setFont);
-        
+
         CheckBox wrap = new CheckBox("wrap text");
         wrap.setId("wrapText");
-        wrap.selectedProperty().addListener((s,p,on) -> {
+        wrap.selectedProperty().addListener((s, p, on) -> {
             control.setWrapText(on);
         });
-        
+
         CheckBox editable = new CheckBox("editable");
         editable.setId("editable");
         editable.selectedProperty().bindBidirectional(control.editableProperty());
-        
+
         TextSelector promptChoice = Templates.promptChoice("promptChoice", control::setPromptText);
         promptChoice.addPair("Multiline", "1\n2\n3\n4");
-        
+
         OptionPane p = new OptionPane();
         p.label("Text:");
         p.option(textSelector.node());
@@ -77,8 +78,7 @@ public class TextAreaPage extends TestPaneBase {
         p.label("Prompt:");
         p.option(promptChoice.node());
         p.label("Formatter: TODO");
-        // TODO p.option(formatterChoice);
-        
+
         setContent(control);
         setOptions(p);
 

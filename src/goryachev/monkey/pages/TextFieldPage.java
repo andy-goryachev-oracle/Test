@@ -27,6 +27,7 @@ package goryachev.monkey.pages;
 import goryachev.monkey.util.FontSelector;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.PosSelector;
+import goryachev.monkey.util.Templates;
 import goryachev.monkey.util.TestPaneBase;
 import goryachev.monkey.util.TextSelector;
 import javafx.geometry.Pos;
@@ -40,13 +41,13 @@ import javafx.scene.control.TextField;
 public class TextFieldPage extends TestPaneBase {
     private final TextField control;
     private final TextSelector textSelector;
-    
+
     public TextFieldPage() {
         setId("TextFieldPage");
-        
+
         control = new TextField();
         control.setAlignment(Pos.BASELINE_RIGHT);
-        
+
         textSelector = TextSelector.fromPairs(
             "textSelector", 
             (t) -> {
@@ -54,13 +55,13 @@ public class TextFieldPage extends TestPaneBase {
             },
             Templates.singleLineTextPairs()
         );
-        
+
         FontSelector fontSelector = new FontSelector("font", control::setFont);
- 
+
         PosSelector posSelector = new PosSelector(control::setAlignment);
-        
+
         TextSelector promptChoice = Templates.promptChoice("promptChoice", control::setPromptText);
-        
+
         ComboBox<Integer> prefColumnCount = new ComboBox<>();
         prefColumnCount.setId("prefColumnCount");
         prefColumnCount.getItems().setAll(
@@ -71,16 +72,16 @@ public class TextFieldPage extends TestPaneBase {
             100,
             1000
         );
-        prefColumnCount.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        prefColumnCount.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             Integer ct = prefColumnCount.getSelectionModel().getSelectedItem();
             int count = ct == null ? TextField.DEFAULT_PREF_COLUMN_COUNT : ct;
             control.setPrefColumnCount(count);
         });
-        
+
         CheckBox editable = new CheckBox("editable");
         editable.setId("editable");
         editable.selectedProperty().bindBidirectional(control.editableProperty());
-        
+
         OptionPane p = new OptionPane();
         p.label("Text:");
         p.option(textSelector.node());
@@ -95,10 +96,10 @@ public class TextFieldPage extends TestPaneBase {
         p.label("Preferred Column Count:");
         p.option(prefColumnCount);
         p.option(editable);
-        
+
         setContent(control);
         setOptions(p);
-        
+
         posSelector.select(Pos.BASELINE_RIGHT);
         fontSelector.selectSystemFont();
     }

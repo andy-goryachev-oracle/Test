@@ -42,7 +42,7 @@ public class SpinnerPage extends TestPaneBase {
         DOUBLE,
         INTEGER,
     }
-    
+
     enum Converter {
         NULL("null"),
         PERCENT("0.##%"),
@@ -52,7 +52,7 @@ public class SpinnerPage extends TestPaneBase {
         Converter(String text) { this.text = text; }
         public String toString() { return text; }
     }
-    
+
     private final ComboBox<Mode> modeChoice;
     private final ComboBox<Converter> converterChoice;
     private final CheckBox editable;
@@ -60,20 +60,20 @@ public class SpinnerPage extends TestPaneBase {
 
     public SpinnerPage() {
         setId("SpinnerPage");
-        
+
         modeChoice = new ComboBox<>();
         modeChoice.setId("modeChoice");
         modeChoice.getItems().addAll(Mode.values());
         modeChoice.setEditable(false);
-        modeChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        modeChoice.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updateControl();
         });
-        
+
         converterChoice = new ComboBox<>();
         converterChoice.setId("converterChoice");
         converterChoice.getItems().addAll(Converter.values());
         converterChoice.setEditable(false);
-        converterChoice.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        converterChoice.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updateControl();
         });
 
@@ -91,19 +91,19 @@ public class SpinnerPage extends TestPaneBase {
         p.option(editable);
         p.label("Converter:");
         p.option(converterChoice);
-        
+
         setOptions(p);
         updateControl();
         FX.select(modeChoice, Mode.DOUBLE);
     }
-    
+
     protected void updateControl() {
         Mode m = modeChoice.getSelectionModel().getSelectedItem();
-        if(m == null) {
+        if (m == null) {
             m = Mode.DOUBLE;
         }
 
-        switch(m) {
+        switch (m) {
         case DOUBLE:
             control = new Spinner(-10.5, 10.5, 0.5);
             break;

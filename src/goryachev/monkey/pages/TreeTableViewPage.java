@@ -86,14 +86,14 @@ public class TreeTableViewPage extends TestPaneBase {
         CONSTRAINED_RESIZE_POLICY,
         USER_DEFINED_EQUAL_WIDTHS,
     }
-    
+
     public enum Selection {
         SINGLE_ROW("single row selection"),
         MULTIPLE_ROW("multiple row selection"),
         SINGLE_CELL("single cell selection"),
         MULTIPLE_CELL("multiple cell selection"),
         NULL("null selection model");
-        
+
         private final String text;
         Selection(String text) { this.text = text; }
         public String toString() { return text; }
@@ -114,16 +114,16 @@ public class TreeTableViewPage extends TestPaneBase {
     protected final ComboBox<Selection> selectionSelector;
     protected final CheckBox nullFocusModel;
     protected TreeTableView<String> tree;
-    
+
     public TreeTableViewPage() {
         setId("TreeTableViewPage");
-        
+
         // selector
         demoSelector = new ComboBox<>();
         demoSelector.setId("demoSelector");
         demoSelector.getItems().addAll(Demo.values());
         demoSelector.setEditable(false);
-        demoSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        demoSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updatePane();
         });
 
@@ -131,24 +131,24 @@ public class TreeTableViewPage extends TestPaneBase {
         policySelector.setId("policySelector");
         policySelector.getItems().addAll(ResizePolicy.values());
         policySelector.setEditable(false);
-        policySelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        policySelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updatePane();
         });
-        
+
         selectionSelector = new ComboBox<>();
         selectionSelector.setId("selectionSelector");
         selectionSelector.getItems().addAll(Selection.values());
         selectionSelector.setEditable(false);
-        selectionSelector.getSelectionModel().selectedItemProperty().addListener((s,p,c) -> {
+        selectionSelector.getSelectionModel().selectedItemProperty().addListener((s, p, c) -> {
             updatePane();
         });
-        
+
         nullFocusModel = new CheckBox("null focus model");
         nullFocusModel.setId("nullFocusModel");
-        nullFocusModel.selectedProperty().addListener((s,p,c) -> {
+        nullFocusModel.selectedProperty().addListener((s, p, c) -> {
             updatePane();
         });
-        
+
         Button clearButton = new Button("Clear Items");
         clearButton.setOnAction((ev) -> {
             tree.setRoot(new TreeItem(null));
@@ -173,8 +173,8 @@ public class TreeTableViewPage extends TestPaneBase {
         selectionSelector.getSelectionModel().select(Selection.MULTIPLE_CELL);
     }
 
-    protected Callback<ResizeFeatures,Boolean> wrap(Callback<ResizeFeatures,Boolean> policy) {
-        return new Callback<ResizeFeatures,Boolean>() {
+    protected Callback<ResizeFeatures, Boolean> wrap(Callback<ResizeFeatures, Boolean> policy) {
+        return new Callback<ResizeFeatures, Boolean>() {
             @Override
             public Boolean call(ResizeFeatures f) {
                 Boolean rv = policy.call(f);
@@ -192,20 +192,20 @@ public class TreeTableViewPage extends TestPaneBase {
 
     protected String describe(TreeTableColumn c) {
         StringBuilder sb = new StringBuilder();
-        if(c.getMinWidth() != 10.0) {
+        if (c.getMinWidth() != 10.0) {
             sb.append("m");
         }
-        if(c.getPrefWidth() != 80.0) {
+        if (c.getPrefWidth() != 80.0) {
             sb.append("p");
         }
-        if(c.getMaxWidth() != 5000.0) {
+        if (c.getMaxWidth() != 5000.0) {
             sb.append("X");
         }
         return sb.toString();
     }
 
     protected Callback<ResizeFeatures, Boolean> createPolicy(ResizePolicy p) {
-        switch(p) {
+        switch (p) {
         case AUTO_RESIZE_FLEX_NEXT_COLUMN:
             return TreeTableView.CONSTRAINED_RESIZE_POLICY_FLEX_NEXT_COLUMN;
         case AUTO_RESIZE_FLEX_LAST_COLUMN:
@@ -230,7 +230,7 @@ public class TreeTableViewPage extends TestPaneBase {
     }
 
     protected Object[] createSpec(Demo d) {
-        switch(d) {
+        switch (d) {
         case ALL:
             return new Object[] {
                 Cmd.ROWS, 3,
@@ -450,11 +450,11 @@ public class TreeTableViewPage extends TestPaneBase {
     }
 
     protected void combineColumns(TreeTableView<String> t, int ix, int count, int name) {
-        TreeTableColumn<String,?> tc = new TreeTableColumn<>();
+        TreeTableColumn<String, ?> tc = new TreeTableColumn<>();
         tc.setText("N" + name);
 
         for (int i = 0; i < count; i++) {
-            TreeTableColumn<String,?> c = t.getColumns().remove(ix);
+            TreeTableColumn<String, ?> c = t.getColumns().remove(ix);
             tc.getColumns().add(c);
         }
         t.getColumns().add(ix, tc);
@@ -464,13 +464,13 @@ public class TreeTableViewPage extends TestPaneBase {
         if ((demo == null) || (spec == null) || (policy == null)) {
             return new BorderPane();
         }
-        
+
         boolean cellSelection = false;
         boolean nullSelectionModel = false;
         SelectionMode selectionMode = SelectionMode.SINGLE;
         Selection sel = selectionSelector.getSelectionModel().getSelectedItem();
-        if(sel != null) {
-            switch(sel) {
+        if (sel != null) {
+            switch (sel) {
             case MULTIPLE_CELL:
                 selectionMode = SelectionMode.MULTIPLE;
                 cellSelection = true;
@@ -494,17 +494,17 @@ public class TreeTableViewPage extends TestPaneBase {
         tree = new TreeTableView<>(new TreeItem<>(null));
         tree.getSelectionModel().setCellSelectionEnabled(cellSelection);
         tree.getSelectionModel().setSelectionMode(selectionMode);
-        if(nullSelectionModel) {
+        if (nullSelectionModel) {
             tree.setSelectionModel(null);
         }
-        if(nullFocusModel.isSelected()) {
+        if (nullFocusModel.isSelected()) {
             tree.setFocusModel(null);
         }
-        
-        Callback<ResizeFeatures,Boolean> p = createPolicy(policy);
+
+        Callback<ResizeFeatures, Boolean> p = createPolicy(policy);
         tree.setColumnResizePolicy(p);
 
-        TreeTableColumn<String,String> lastColumn = null;
+        TreeTableColumn<String, String> lastColumn = null;
         int id = 1;
 
         for (int i = 0; i < spec.length;) {
@@ -595,16 +595,16 @@ public class TreeTableViewPage extends TestPaneBase {
      */
     protected static class UserDefinedResizePolicy
         extends ConstrainedColumnResizeBase
-        implements Callback<TreeTableView.ResizeFeatures,Boolean> {
+        implements Callback<TreeTableView.ResizeFeatures, Boolean> {
 
         @SuppressWarnings("unchecked")
         @Override
         public Boolean call(ResizeFeatures rf) {
-            List<? extends TableColumnBase<?,?>> visibleLeafColumns = rf.getTable().getVisibleLeafColumns();
+            List<? extends TableColumnBase<?, ?>> visibleLeafColumns = rf.getTable().getVisibleLeafColumns();
             int sz = visibleLeafColumns.size();
             // using added public method getContentWidth()
             double w = rf.getContentWidth() / sz;
-            for (TableColumnBase<?,?> c: visibleLeafColumns) {
+            for (TableColumnBase<?, ?> c: visibleLeafColumns) {
                 // using added public method setColumnWidth()
                 rf.setColumnWidth(c, w);
             }
