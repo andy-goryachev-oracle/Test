@@ -141,20 +141,30 @@ public class FxSettings {
     }
 
     public static void set(String key, String value) {
-        provider.set(key, value);
-        triggerSave();
+        if (provider != null) {
+            provider.set(key, value);
+            triggerSave();
+        }
     }
 
     public static String get(String key) {
+        if (provider == null) {
+            return null;
+        }
         return provider.get(key);
     }
 
     public static void setStream(String key, SStream s) {
-        provider.set(key, s);
-        triggerSave();
+        if (provider != null) {
+            provider.set(key, s);
+            triggerSave();
+        }
     }
 
     public static SStream getStream(String key) {
+        if (provider == null) {
+            return null;
+        }
         return provider.getSStream(key);
     }
 

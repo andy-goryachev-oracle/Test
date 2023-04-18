@@ -54,7 +54,11 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
- * Monkey Tester Application
+ * Monkey Tester Application.
+ * 
+ * Applications stores its user preferences (window location, etc.) in ~/.MonkeyTester directory.
+ * To use a different directory, redefine the "user.home" system property, -Duser.home=<...>.
+ * To disable saving, specify -Ddisable.settings=true vm agrument.
  */
 public class MonkeyTesterApp extends Application {
     protected Stage stage;
@@ -70,7 +74,9 @@ public class MonkeyTesterApp extends Application {
 
     @Override
     public void init() {
-        FxSettings.useDirectory(".MonkeyTesterApp");
+        if (!Boolean.getBoolean("disable.settings")) {
+            FxSettings.useDirectory(".MonkeyTester");
+        }
     }
 
     @Override
