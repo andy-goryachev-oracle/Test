@@ -28,7 +28,9 @@ import java.util.Random;
 import goryachev.monkey.util.FX;
 import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.TestPaneBase;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -59,10 +61,9 @@ public class HBoxPage extends TestPaneBase {
         ALL_MAX("all with maximum width"),
         MIN_IN_CENTER("min widths set in middle columns"),
         MAX_IN_CENTER("max widths set in middle columns"),
-        NO_NESTED("no nested columns"),
+        VARIOUS("various"),
         MANY_COLUMNS("many columns"),
         MANY_COLUMNS_SAME("many columns, same pref"),
-        MANY_COLUMNS_SAME_FILL("many columns, same pref, fill"),
         ;
         private final String text;
         Demo(String text) { this.text = text; }
@@ -84,6 +85,7 @@ public class HBoxPage extends TestPaneBase {
     protected final Cmd FILL = Cmd.FILL;
 
     protected final ComboBox<Demo> demoSelector;
+    protected final CheckBox grow;
     protected HBox hbox;
     
     public HBoxPage() {
@@ -107,6 +109,12 @@ public class HBoxPage extends TestPaneBase {
         clearButton.setOnAction((ev) -> {
             hbox.getChildren().clear();
         });
+        
+        grow = new CheckBox("grow");
+        grow.setId("grow");
+        grow.selectedProperty().addListener((s,p,on) -> {
+            setGrow(on);
+        });
 
         // layout
 
@@ -115,9 +123,17 @@ public class HBoxPage extends TestPaneBase {
         p.option(demoSelector);
         p.option(addButton);
         p.option(clearButton);
+        p.option(grow);
         setOptions(p);
 
         FX.selectFirst(demoSelector);
+    }
+
+    protected void setGrow(boolean on) {
+        Priority p = on ? Priority.ALWAYS : Priority.NEVER;
+        for (Node n: hbox.getChildren()) {
+            HBox.setHgrow(n, p);
+        }
     }
 
     protected Object[] createSpec(Demo d) {
@@ -157,9 +173,9 @@ public class HBoxPage extends TestPaneBase {
                 COL, MAX, 33, FILL,
                 COL, MAX, 34, FILL,
                 COL, MAX, 35, FILL,
-                COL, MAX, 34, FILL,
-                COL, MAX, 33, FILL,
-                COL, MAX, 25, FILL,
+                COL, MAX, 36, FILL,
+                COL, MAX, 37, FILL,
+                COL, MAX, 38, FILL,
             };
         case MIN_WIDTH2:
             return new Object[] {
@@ -232,7 +248,7 @@ public class HBoxPage extends TestPaneBase {
                 COL, MAX, 50,
                 COL, MAX, 50
             };
-       case NO_NESTED:
+       case VARIOUS:
             return new Object[] {
                 COL, PREF, 100,
                 COL, PREF, 200,
@@ -286,29 +302,6 @@ public class HBoxPage extends TestPaneBase {
                 COL, PREF, 30,
                 COL, PREF, 30
             };
-        case MANY_COLUMNS_SAME_FILL:
-            return new Object[] {
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-                COL, PREF, 30, FILL,
-            };
         default:
             throw new Error("?" + d);
         }
@@ -330,6 +323,7 @@ public class HBoxPage extends TestPaneBase {
                     {
                         Region c = newItem();
                         b.getChildren().add(c);
+                        HBox.setHgrow(c, grow.isSelected() ? Priority.ALWAYS : Priority.NEVER);
                         region = c;
                     }
                     break;

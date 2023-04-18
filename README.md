@@ -30,8 +30,6 @@ To launch, specify the path to the javaFX SDK lib/ folder on the command line, e
 java -p javafx-sdk-20/lib/ --add-modules ALL-MODULE-PATH -jar MonkeyTester.jar
 ```
 
-Alternatively, the JAR file can be launched simply by double-clicking on it if you have Azul JDKFX installed.
-
 
 ## Contact
 
