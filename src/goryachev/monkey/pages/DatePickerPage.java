@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,7 +25,9 @@
 package goryachev.monkey.pages;
 
 import java.time.LocalDate;
+import goryachev.monkey.util.OptionPane;
 import goryachev.monkey.util.TestPaneBase;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -33,18 +35,18 @@ import javafx.scene.control.DatePicker;
 import javafx.stage.StageStyle;
 
 /**
- *
+ * DatePicker Page
  */
 public class DatePickerPage extends TestPaneBase {
     private final Button button;
     private DatePicker datePicker;
+    private DatePicker datePicker2;
     private Alert dialog;
 
     public DatePickerPage() {
         setId("DatePickerPage");
 
-        button = new Button("Show Dialog");
-        toolbar().add(button);
+        button = new Button("Show in Alert");
 
         datePicker = new DatePicker(LocalDate.now());
         datePicker.valueProperty().addListener(event -> {
@@ -52,14 +54,26 @@ public class DatePickerPage extends TestPaneBase {
         });
 
         button.setOnAction(event -> {
+            Point2D p = button.localToScreen(0, button.getHeight());
+
             dialog = new Alert(AlertType.INFORMATION);
             dialog.initStyle(StageStyle.UNDECORATED);
             dialog.initOwner(getWindow());
             dialog.getDialogPane().setContent(datePicker);
+            dialog.setX(p.getX());
+            dialog.setY(p.getY());
             dialog.show();
 
             LocalDate v = datePicker.getValue();
             System.out.println(v);
         });
+
+        datePicker2 = new DatePicker(LocalDate.now());
+
+        OptionPane p = new OptionPane();
+        p.option(button);
+
+        setContent(datePicker2);
+        setOptions(p);
     }
 }

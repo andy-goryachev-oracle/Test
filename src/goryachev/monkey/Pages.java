@@ -41,6 +41,7 @@ public class Pages {
             new DemoPage("ChoiceBox", ChoiceBoxPage::new),
             new DemoPage("ComboBox", ComboBoxPage::new),
             // ColorPicker
+            new DemoPage("DatePicker", DatePickerPage::new),
             new DemoPage("HBox", HBoxPage::new),
             new DemoPage("HtmlEditor", HtmlEditorPage::new),
             // TODO Hyperlink

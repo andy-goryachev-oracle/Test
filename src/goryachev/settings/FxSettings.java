@@ -110,10 +110,12 @@ public class FxSettings {
 
     public static void restoreWindow(Window w) {
         WindowMonitor m = WindowMonitor.getFor(w);
-        FxSettingsSchema.restoreWindow(m, w);
-
-        Node p = w.getScene().getRoot();
-        FxSettingsSchema.restoreNode(p);
+        if (m != null) {
+            FxSettingsSchema.restoreWindow(m, w);
+    
+            Node p = w.getScene().getRoot();
+            FxSettingsSchema.restoreNode(p);
+        }
     }
 
     private static void handleWindowClosing(Window w) {
@@ -134,10 +136,12 @@ public class FxSettings {
 
     public static void storeWindow(Window w) {
         WindowMonitor m = WindowMonitor.getFor(w);
-        FxSettingsSchema.storeWindow(m, w);
-
-        Node p = w.getScene().getRoot();
-        FxSettingsSchema.storeNode(m, p);
+        if (m != null) {
+            FxSettingsSchema.storeWindow(m, w);
+    
+            Node p = w.getScene().getRoot();
+            FxSettingsSchema.storeNode(m, p);
+        }
     }
 
     public static void set(String key, String value) {
