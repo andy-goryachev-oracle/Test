@@ -159,8 +159,8 @@ public class HBoxPage extends TestPaneBase {
                 COL, PREF, 25.3,
                 COL, PREF, 25.3,
                 COL, PREF, 25.4,
-                COL, PREF, 25.3,
-                COL, PREF, 25.3,
+                COL, PREF, 25.3, MAX, 100,
+                COL, PREF, 25.3, MAX, 101,
                 COL, PREF, 25.4
             };
         case FILL_MAX:
