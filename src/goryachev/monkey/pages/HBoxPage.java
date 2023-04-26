@@ -33,7 +33,6 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -69,16 +68,9 @@ public class HBoxPage extends TestPaneBase {
         MANY_COLUMNS("many columns"),
         MANY_COLUMNS_SAME("many columns, same pref"),
         ;
-
         private final String text;
-
-        Demo(String text) {
-            this.text = text;
-        }
-
-        public String toString() {
-            return text;
-        }
+        Demo(String text) { this.text = text; }
+        public String toString() { return text; }
     }
 
     public enum Cmd {
@@ -124,9 +116,6 @@ public class HBoxPage extends TestPaneBase {
 
         snap = new CheckBox("snap");
         snap.setId("snap");
-        snap.selectedProperty().addListener((s, p, on) -> {
-            setSnap(on);
-        });
 
         grow = new CheckBox("grow");
         grow.setId("grow");
@@ -146,10 +135,6 @@ public class HBoxPage extends TestPaneBase {
         setOptions(p);
 
         FX.selectFirst(demoSelector);
-    }
-
-    protected void setSnap(boolean on) {
-        
     }
 
     protected void setGrow(boolean on) {
@@ -377,6 +362,8 @@ public class HBoxPage extends TestPaneBase {
         }
 
         HBox box = new HBox();
+        box.setSnapToPixel(snap.isSelected());
+        snap.selectedProperty().bindBidirectional(box.snapToPixelProperty());
         Region region = null;
 
         for (int i = 0; i < spec.length;) {
@@ -420,7 +407,7 @@ public class HBoxPage extends TestPaneBase {
                 throw new Error("?" + x);
             }
         }
-        
+
         box.setPadding(new Insets(0, 0, 10, 0));
         box.setBackground(FX.background(Color.DARKGRAY));
 
@@ -433,12 +420,7 @@ public class HBoxPage extends TestPaneBase {
 
     protected Region addItem(HBox box) {
         boolean even = (box.getChildren().size() % 2) == 0;
-        Background bg = new Background(
-            new BackgroundFill(Color.RED, null, new Insets(0)),
-            new BackgroundFill(even ? Color.GRAY : Color.LIGHTGRAY, null, new Insets(0, 1, 0, 0))
-        );
-
-        bg = FX.background(even ? Color.GRAY : Color.LIGHTGRAY);
+        Background bg = FX.background(even ? Color.GRAY : Color.LIGHTGRAY);
 
         Region r = new Region();
         r.setPrefWidth(30);
@@ -462,7 +444,6 @@ public class HBoxPage extends TestPaneBase {
         Demo d = demoSelector.getSelectionModel().getSelectedItem();
         Object[] spec = createSpec(d);
         hbox = createPane(d, spec);
-        snap.selectedProperty().bindBidirectional(hbox.snapToPixelProperty());
 
         BorderPane bp = new BorderPane(hbox);
         bp.setPadding(new Insets(0, 10, 0, 0));
