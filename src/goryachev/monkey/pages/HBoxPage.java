@@ -96,6 +96,7 @@ public class HBoxPage extends TestPaneBase {
     protected final Cmd FILL = Cmd.FILL;
 
     protected final ComboBox<Demo> demoSelector;
+    protected final CheckBox snap;
     protected final CheckBox grow;
     protected HBox hbox;
 
@@ -121,6 +122,12 @@ public class HBoxPage extends TestPaneBase {
             hbox.getChildren().clear();
         });
 
+        snap = new CheckBox("snap");
+        snap.setId("snap");
+        snap.selectedProperty().addListener((s, p, on) -> {
+            setSnap(on);
+        });
+
         grow = new CheckBox("grow");
         grow.setId("grow");
         grow.selectedProperty().addListener((s, p, on) -> {
@@ -134,10 +141,15 @@ public class HBoxPage extends TestPaneBase {
         p.option(demoSelector);
         p.option(addButton);
         p.option(clearButton);
+        p.option(snap);
         p.option(grow);
         setOptions(p);
 
         FX.selectFirst(demoSelector);
+    }
+
+    protected void setSnap(boolean on) {
+        
     }
 
     protected void setGrow(boolean on) {
@@ -450,6 +462,7 @@ public class HBoxPage extends TestPaneBase {
         Demo d = demoSelector.getSelectionModel().getSelectedItem();
         Object[] spec = createSpec(d);
         hbox = createPane(d, spec);
+        snap.selectedProperty().bindBidirectional(hbox.snapToPixelProperty());
 
         BorderPane bp = new BorderPane(hbox);
         bp.setPadding(new Insets(0, 10, 0, 0));
