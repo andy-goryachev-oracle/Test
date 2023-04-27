@@ -33,12 +33,24 @@ public class TestScaleCeil {
     // from Region
     private static final double EPSILON = 1e-14;
     
-    @Test
+    //@Test
     public void test() {
         for(double x = 100.0; x<200.0; ) {
             t(x, 1.75);
             x = Math.nextUp(x);
         }
+    }
+    
+    @Test
+    public void testFloat() {
+        int ct = 0;
+        float max = Integer.MAX_VALUE;
+        for(float x = 0.0f; x<max; ) {
+            t(x, 1.75);
+            x = Math.nextUp(x);
+            ct++;
+        }
+        System.out.println("count=" + ct);
     }
     
     private static void t(double x, double scale)
