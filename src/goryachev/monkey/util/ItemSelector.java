@@ -54,12 +54,20 @@ public class ItemSelector<T> {
                 return null;
             }
         });
+
+        field.getSelectionModel().selectFirst();
+
         field.getSelectionModel().selectedItemProperty().addListener((p) -> {
             Object v = field.getSelectionModel().getSelectedItem();
             T text = toValue(v);
             client.accept(text);
         });
-        field.getSelectionModel().selectFirst();
+    }
+
+    public T getSelectedItem() {
+        Object x = field.getSelectionModel().getSelectedItem();
+        T v = toValue(x);
+        return v;
     }
     
     private Pair[] toPairs(Object[] pairs) {
