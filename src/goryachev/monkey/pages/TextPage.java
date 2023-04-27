@@ -53,7 +53,7 @@ public class TextPage extends TestPaneBase {
         setId("TextPage");
 
         textSelector = TextSelector.fromPairs(
-            "textSelector", 
+            "textSelector",
             (t) -> updateText(),
             Templates.multiLineTextPairs()
         );
