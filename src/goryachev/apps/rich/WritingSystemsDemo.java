@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.monkey.util;
+package goryachev.apps.rich;
 
 /**
  * Sample text for testing writing systems support.
