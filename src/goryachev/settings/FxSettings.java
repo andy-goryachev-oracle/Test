@@ -28,178 +28,165 @@ package goryachev.settings;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.WeakHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.PopupWindow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Duration;
 
 /**
  * This facility coordinates saving UI settings to and from persistent media.
  * All the calls, excepr useProvider(), are expected to happen in an FX application thread.
  * 
+ * When using {@link FxSettingsFileProvider}, the settings file "ui-settings.properties"
+ * is placed in the specified directory in the user home.
+ * 
  * TODO handle i/o errors - set handler?
  */
 public class FxSettings {
+    private static final Duration SAVE_DELAY = Duration.millis(100);
     private static ISettingsProvider provider;
-    private static final WeakHashMap<Window,WindowMonitor> monitors = new WeakHashMap<>(4);
-    private static final AtomicBoolean save = new AtomicBoolean();
-    private static Thread saveThread;
-
-    public static void useDirectory(String dir) {
-        File d = new File(System.getProperty("user.home"), dir);
-        useProvider(new FxSettingsFileProvider(d));
-    }
+    private static boolean save;
+    private static Timeline saveTimer;
 
     /** call this in Application.init() */
     public static synchronized void useProvider(ISettingsProvider p) {
-        if(provider != null) {
+        if (provider != null) {
             throw new IllegalArgumentException("provider is already set");
         }
-        
+
         provider = p;
 
         // TODO once, in FX thread - later?
         Window.getWindows().addListener((ListChangeListener.Change<? extends Window> ch) -> {
             while (ch.next()) {
                 if (ch.wasAdded()) {
-                    for(Window w: ch.getAddedSubList()) {
+                    for (Window w: ch.getAddedSubList()) {
                         handleWindowOpening(w);
                     }
                 } else if (ch.wasRemoved()) {
-                    for(Window w: ch.getRemoved()) {
+                    for (Window w: ch.getRemoved()) {
                         handleWindowClosing(w);
                     }
                 }
             }
         });
-        
+
         try {
             provider.load();
         } catch (IOException e) {
             throw new Error(e);
         }
+        
+        saveTimer = new Timeline(new KeyFrame(SAVE_DELAY, (ev) -> save()));
     }
-    
+
+    public static void useDirectory(String dir) {
+        File d = new File(System.getProperty("user.home"), dir);
+        useProvider(new FxSettingsFileProvider(d));
+    }
+
     public static void setName(Window w, String name) {
         // TODO
-    }
-
-    private static WindowMonitor getWindowMonitor(Window w) {
-        if (w == null) {
-            return null;
-        }
-        WindowMonitor m = monitors.get(w);
-        if (m == null) {
-            String id = createID(w);
-            m = new WindowMonitor(w, id);
-            monitors.put(w, m);
-        }
-        return m;
-    }
-
-    private static String createID(Window win) {
-        // TODO use name provided by setName
-        String prefix = win.getClass().getSimpleName() + ".";
-        
-        HashSet<String> ids = new HashSet<>();
-        for(Window w: Window.getWindows()) {
-            if(w == win) {
-                continue;
-            }
-            WindowMonitor m = monitors.get(w);
-            String id = m.getID();
-            if(id.startsWith(prefix)) {
-                ids.add(id);
-            }
-        }
-        
-        for(int i=0; i<100_000; i++) {
-            String id = prefix + i;
-            if(!ids.contains(id)) {
-                return id;
-            }
-        }
-
-        // safeguard measure
-        throw new Error("cannot create id: too many windows?");
     }
 
     private static void handleWindowOpening(Window w) {
         if (w instanceof PopupWindow) {
             return;
         }
-        
-        if(w instanceof Stage s) {
-            if(s.getModality() != Modality.NONE) {
+
+        if (w instanceof Stage s) {
+            if (s.getModality() != Modality.NONE) {
                 return;
             }
         }
-        
+
         restoreWindow(w);
     }
-    
-    public static void restoreWindow(Window w) {
-        WindowMonitor m = getWindowMonitor(w);
-        FxSettingsSchema.restoreWindow(m, w);
 
-        Node p = w.getScene().getRoot();
-        FxSettingsSchema.restoreNode(m, p);
+    public static void restoreWindow(Window w) {
+        WindowMonitor m = WindowMonitor.getFor(w);
+        if (m != null) {
+            FxSettingsSchema.restoreWindow(m, w);
+    
+            Node p = w.getScene().getRoot();
+            FxSettingsSchema.restoreNode(p);
+        }
     }
 
     private static void handleWindowClosing(Window w) {
         if (w instanceof PopupWindow) {
             return;
         }
-        
+
         storeWindow(w);
+
+        boolean last = WindowMonitor.remove(w);
+        if (last) {
+            if (saveTimer != null) {
+                saveTimer.stop();
+                save();
+            }
+        }
     }
-    
+
     public static void storeWindow(Window w) {
-        WindowMonitor m = getWindowMonitor(w);
-        FxSettingsSchema.storeWindow(m, w);
-        
-        Node p = w.getScene().getRoot();
-        FxSettingsSchema.storeNode(m, p);
+        WindowMonitor m = WindowMonitor.getFor(w);
+        if (m != null) {
+            FxSettingsSchema.storeWindow(m, w);
+    
+            Node p = w.getScene().getRoot();
+            FxSettingsSchema.storeNode(m, p);
+        }
     }
 
     public static void set(String key, String value) {
-        provider.set(key, value);
-        triggerSave();
+        if (provider != null) {
+            provider.set(key, value);
+            triggerSave();
+        }
     }
-    
+
     public static String get(String key) {
+        if (provider == null) {
+            return null;
+        }
         return provider.get(key);
     }
 
     public static void setStream(String key, SStream s) {
-        provider.set(key, s);
-        triggerSave();
+        if (provider != null) {
+            provider.set(key, s);
+            triggerSave();
+        }
     }
-    
+
     public static SStream getStream(String key) {
+        if (provider == null) {
+            return null;
+        }
         return provider.getSStream(key);
     }
-    
+
     public static void setInt(String key, int value) {
         set(key, String.valueOf(value));
     }
-    
+
     public static int getInt(String key, int defaultValue) {
         String v = get(key);
         if (v != null) {
             try {
                 return Integer.parseInt(v);
-            } catch (NumberFormatException e) { }
+            } catch (NumberFormatException e) {
+            }
         }
         return defaultValue;
     }
-    
+
     public static void setBoolean(String key, boolean value) {
         set(key, String.valueOf(value));
     }
@@ -217,59 +204,28 @@ public class FxSettings {
     }
 
     private static synchronized void triggerSave() {
-        save.set(true);
-        
-        if(saveThread == null) {
-            saveThread = new Thread("saving settings") {
-                @Override
-                public void run() {
-                    do {
-                        try {
-                            sleep(50);
-                        } catch (InterruptedException e) { }
-                        
-                        if(save.getAndSet(false)) {
-                            try {
-                                provider.save();
-                            } catch(IOException e) {
-                                // TODO handle error
-                            }
-                        }
-                    } while(save.get());
-                }
-            };
-            saveThread.start();
+        save = true;
+        if (saveTimer != null) {
+            saveTimer.stop();
+            saveTimer.play();
         }
     }
-
-    private static Window windowFor(Node n) {
-        Scene sc = n.getScene();
-        if (sc != null) {
-            Window w = sc.getWindow();
-            if (w != null) {
-                return w;
-            }
+    
+    private static void save() {
+        try {
+            save = false;
+            provider.save();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        return null;
-    }
-
-    private static WindowMonitor monitorFor(Node n) {
-        Window w = windowFor(n);
-        if (w != null) {
-            return getWindowMonitor(w);
-        }
-        return null;
     }
 
     public static void restore(Node n) {
-        WindowMonitor m = monitorFor(n);
-        if (m != null) {
-            FxSettingsSchema.restoreNode(m, n);
-        }
+        FxSettingsSchema.restoreNode(n);
     }
 
     public static void store(Node n) {
-        WindowMonitor m = monitorFor(n);
+        WindowMonitor m = WindowMonitor.getFor(n);
         if (m != null) {
             FxSettingsSchema.storeNode(m, n);
         }

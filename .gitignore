@@ -1,4 +1,6 @@
 /bin/
+/build/
 .DS_Store
-hs_err*.log
 /testbin/
+/*.jar
+/hs_err*.log

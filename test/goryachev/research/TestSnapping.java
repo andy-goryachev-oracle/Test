@@ -22,17 +22,34 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.monkey.util;
+package goryachev.research;
+
+import org.junit.Test;
 
 /**
- * Monkey Tester Utilities
+ *
  */
-public class Utils {
-    public static Object[] combine(Object[] src, Object ... pairs) {
-        int sz = src.length + pairs.length;
-        Object[] rv = new Object[sz];
-        System.arraycopy(src, 0, rv, 0, src.length);
-        System.arraycopy(pairs, 0, rv, src.length, pairs.length);
-        return rv;
+public class TestSnapping {
+    @Test
+    public void test() {
+        for(double scale: new double[] { 1.25, 1.5, 1.75, 2.25 }) {
+            System.out.println("scale=" + scale);
+    
+            double prev = 0;
+            for (int i = 0; i < 10; i++) {
+                double w = snapPositionX(1.0, true, scale);
+                double x = snapPositionX(prev + w, true, scale);
+                System.out.println(String.format("x=%d snapped=%.3f step=%.3f", i, x, x - prev));
+                prev = x;
+            }
+        }
+    }
+
+    private double snapPositionX(double value, boolean snapToPixel, double scale) {
+        return snapToPixel ? scaledRound(value, scale) : value;
+    }
+
+    private static double scaledRound(double value, double scale) {
+        return Math.round(value * scale) / scale;
     }
 }

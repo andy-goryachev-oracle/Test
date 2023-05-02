@@ -35,6 +35,6 @@ import javafx.application.Application;
  */
 public class AppTestLauncher {
     public static void main(String[] args) {
-        Application.launch(X.class, args);
+        Application.launch(MVE.class, args);
     }
 }

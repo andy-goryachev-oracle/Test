@@ -25,7 +25,6 @@
 package goryachev.apps.rich;
 
 import javafx.scene.paint.Color;
-import goryachev.monkey.util.WritingSystemsDemo;
 import goryachev.rich.TextPos;
 import goryachev.rich.model.EditablePlainTextModel;
 import goryachev.rich.model.EditableRichTextModel;

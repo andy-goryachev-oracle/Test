@@ -180,8 +180,13 @@ public class FxSettingsSchema {
         }
     }
     
-    // TODO may not need WindowMonitor here, can get a window id from map
-    public static void restoreNode(WindowMonitor m, Node n) {
+    public static void restoreNode(Node n) {
+        if(checkNoScene(n)) {
+            return;
+        }
+        
+        WindowMonitor m = WindowMonitor.getFor(n);
+
         //System.out.println("restoreNode " + n); // FIX
         if (n instanceof ListView lv) {
             restoreListView(m, lv);
@@ -193,13 +198,13 @@ public class FxSettingsSchema {
         
         if(n instanceof SplitPane sp) {
             for(Node ch: sp.getItems()) {
-                restoreNode(m, ch);
+                restoreNode(ch);
             }
         }
 
         if (n instanceof Parent p) {
             for(Node ch: p.getChildrenUnmodifiable()) {
-                restoreNode(m, ch);
+                restoreNode(ch);
             }
         }
     }
@@ -228,7 +233,7 @@ public class FxSettingsSchema {
             return;
         }
         
-        if(checkNoScene(m, n)) {
+        if(checkNoScene(n)) {
             return;
         }
 
@@ -247,7 +252,7 @@ public class FxSettingsSchema {
         n.getSelectionModel().select(ix);
     }
     
-    private static boolean checkNoScene(WindowMonitor m, Node n) {
+    private static boolean checkNoScene(Node n) {
         if (n.getScene() == null) {
             class ChLi implements ChangeListener<Scene> {
                 private final Node node;
@@ -262,7 +267,7 @@ public class FxSettingsSchema {
                         Window w = scene.getWindow();
                         if (w != null) {
                             n.sceneProperty().removeListener(this);
-                            restoreNode(m, n);
+                            restoreNode(n);
                             FxSettings.restore(n);
                         }
                     }
@@ -299,7 +304,7 @@ public class FxSettingsSchema {
             return;
         }
         
-        if(checkNoScene(m, n)) {
+        if(checkNoScene(n)) {
             return;
         }
 
@@ -329,7 +334,7 @@ public class FxSettingsSchema {
     }
     
     private static void restoreCheckBox(WindowMonitor m, CheckBox n) {
-        if(checkNoScene(m, n)) {
+        if(checkNoScene(n)) {
             return;
         }
 
