@@ -94,6 +94,13 @@ public class Markers {
     // TODO unit test
     // TODO do we need (leading/trailing) bias in TextPos?
     public void update(TextPos start, TextPos end, int charsTop, int linesAdded, int charsBottom) {
+//        System.out.println(
+//            "start=" + start +
+//            " end=" + end +
+//            " top=" + charsTop +
+//            " lines=" + linesAdded +
+//            " btm=" + charsBottom
+//        ); // FIX
         if(start.compareTo(end) > 0) {
             TextPos p = start;
             start = end;
@@ -108,17 +115,15 @@ public class Markers {
             if (pos.compareTo(start) <= 0) {
                 // position before the change: keep unchanged
                 p = pos;
-                //System.out.println("  unchanged " + pos); // FIX
             } else if (pos.compareTo(end) < 0) {
                 // position inside the change: section removed, move marker to start
                 p = start;
-                //System.out.println("  move to start " + pos + " -> " + p); // FIX
             } else {
                 // position after the change: shift
                 int ix = pos.index();
                 int off;
                 if (ix == end.index()) {
-                    if (start.index() == end.index()) {
+                    if ((linesAdded == 0) && (start.index() == end.index())) {
                         // all on the same line
                         off = pos.offset() - (end.offset() - start.offset()) + charsTop + charsBottom;
                     } else {
@@ -130,12 +135,7 @@ public class Markers {
                 }
 
                 ix += (linesAdded - end.index() + start.index());
-
                 p = new TextPos(ix, off);
-                //System.out.println("  shift from " + pos + " -> " + p); // FIX
-//                if(pos.index()==1 && pos.offset()==0) {
-//                    System.out.println("");
-//                }
             }
 
             // update markers with the new position, removing gc'ed
