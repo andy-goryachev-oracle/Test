@@ -30,16 +30,16 @@ import java.util.ArrayList;
  * Represents a string property as a stream of objects.
  */
 public abstract class SStream {
-    
-    public abstract Object[] toArray() ;
-    
+
+    public abstract Object[] toArray();
+
     private SStream() {
     }
-    
+
     public static SStream writer() {
         return new SStream() {
             private ArrayList<Object> items = new ArrayList<>();
-            
+
             @Override
             protected void addValue(Object x) {
                 items.add(x);
@@ -51,26 +51,30 @@ public abstract class SStream {
             }
         };
     }
-    
+
     public static SStream reader(Object[] items) {
         return new SStream() {
             int index;
-            
+
             @Override
             protected Object nextValue() {
-                if(index >= items.length) {
+                if (index >= items.length) {
                     return null;
                 }
                 return items[index++];
             }
-            
+
             @Override
             public Object[] toArray() {
                 return items;
             }
         };
     }
-    
+
+    public void add(int x) {
+        addValue(x);
+    }
+
     public void add(double x) {
         addValue(x);
     }
@@ -82,37 +86,53 @@ public abstract class SStream {
     protected void addValue(Object x) {
         throw new UnsupportedOperationException();
     }
-    
+
     protected Object nextValue() {
         throw new UnsupportedOperationException();
     }
-    
+
     public final String nextString(String defaultValue) {
         Object v = nextValue();
-        if(v instanceof String s) {
+        if (v instanceof String s) {
             return s;
         }
         return defaultValue;
     }
 
-    public double nextDouble(double defaultValue) {
+    public final double nextDouble(double defaultValue) {
         Object v = nextValue();
         if (v instanceof String s) {
             try {
                 return Double.parseDouble(s);
-            } catch (NumberFormatException e) { }
+            } catch (NumberFormatException e) {
+                // ignore
+            }
         } else if (v instanceof Double d) {
             return d;
         }
         return defaultValue;
     }
-    
+
+    public final int nextInt(int defaultValue) {
+        Object v = nextValue();
+        if (v instanceof String s) {
+            try {
+                return Integer.parseInt(s);
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        } else if (v instanceof Integer d) {
+            return d;
+        }
+        return defaultValue;
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder(64);
         sb.append("[");
         boolean sep = false;
-        for(Object x: toArray()) {
-            if(sep) {
+        for (Object x: toArray()) {
+            if (sep) {
                 sb.append(",");
             } else {
                 sep = true;

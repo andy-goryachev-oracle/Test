@@ -39,6 +39,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -48,11 +49,11 @@ import javafx.stage.Window;
  */
 public class FxSettingsSchema {
     private static final String PREFIX = "FX.";
-    
     private static final String WINDOW_NORMAL = "N";
     private static final String WINDOW_ICONIFIED = "I";
     private static final String WINDOW_MAXIMIZED = "M";
     private static final String WINDOW_FULLSCREEN = "F";
+    private static final Object NAME_PROP = new Object();
 
     public static void storeWindow(WindowMonitor m, Window w) {
         SStream ss = SStream.writer();
@@ -60,12 +61,12 @@ public class FxSettingsSchema {
         ss.add(m.getY());
         ss.add(m.getWidth());
         ss.add(m.getHeight());
-        if(w instanceof Stage s) {
-            if(s.isIconified()) {
+        if (w instanceof Stage s) {
+            if (s.isIconified()) {
                 ss.add(WINDOW_ICONIFIED);
-            } else if(s.isMaximized()) {
+            } else if (s.isMaximized()) {
                 ss.add(WINDOW_MAXIMIZED);
-            } else if(s.isFullScreen()) {
+            } else if (s.isFullScreen()) {
                 ss.add(WINDOW_FULLSCREEN);
             } else {
                 ss.add(WINDOW_NORMAL);
@@ -73,32 +74,32 @@ public class FxSettingsSchema {
         }
         FxSettings.setStream(PREFIX + m.getID(), ss);
     }
-    
+
     public static void restoreWindow(WindowMonitor m, Window win) {
         SStream ss = FxSettings.getStream(PREFIX + m.getID());
-        if(ss == null) {
+        if (ss == null) {
             return;
         }
-        
+
         double x = ss.nextDouble(-1);
         double y = ss.nextDouble(-1);
         double w = ss.nextDouble(-1);
         double h = ss.nextDouble(-1);
         String t = ss.nextString(WINDOW_NORMAL);
-        
-        if((w > 0) && (h > 0)) {
-            if(isValid(x, y)) {
+
+        if ((w > 0) && (h > 0)) {
+            if (isValid(x, y)) {
                 win.setX(x);
                 win.setY(y);
             }
-            
-            if(win instanceof Stage s) {
-                if(s.isResizable()) {
+
+            if (win instanceof Stage s) {
+                if (s.isResizable()) {
                     s.setWidth(w);
                     s.setHeight(h);
                 }
-                
-                switch(t) {
+
+                switch (t) {
                 case WINDOW_FULLSCREEN:
                     s.setFullScreen(true);
                     break;
@@ -110,11 +111,11 @@ public class FxSettingsSchema {
             }
         }
     }
-    
+
     private static boolean isValid(double x, double y) {
-        for(Screen s: Screen.getScreens()) {
+        for (Screen s: Screen.getScreens()) {
             Rectangle2D r = s.getVisualBounds();
-            if(r.contains(x, y)) {
+            if (r.contains(x, y)) {
                 return true;
             }
         }
@@ -133,58 +134,62 @@ public class FxSettingsSchema {
 
     // returns true if Node should be ignored
     private static boolean collectNames(StringBuilder sb, Node n) {
-        if(n instanceof MenuBar) {
+        if (n instanceof MenuBar) {
             return true;
-        } else if(n instanceof Shape) {
+        } else if (n instanceof Shape) {
             return true;
-        } else if(n instanceof ImageView) {
+        } else if (n instanceof ImageView) {
             return true;
         }
 
         Parent p = n.getParent();
         // FIX parent is null, so it's not yet connected (probably because of the skin)
-        if(p != null) {
-            if(collectNames(sb, p)) {
+        if (p != null) {
+            if (collectNames(sb, p)) {
                 return true;
             }
         }
-        sb.append('.');
-        String name = n.getId();
-        if((name == null) || (name.trim().length() == 0)) {
-            name = n.getClass().getSimpleName();
+
+        String name = getName(n);
+        if (name == null) {
+            return true;
         }
+
+        sb.append('.');
         sb.append(name);
         return false;
     }
 
     public static void storeNode(WindowMonitor m, Node n) {
         //System.out.println("storeNode " + n); // FIX
+        // ignore nodes that have no set names
+        String name = getName(n);
+        if(name == null) {
+            return;
+        }
+
         if (n instanceof ListView lv) {
             storeListView(m, lv);
         } else if (n instanceof ComboBox cb) {
             storeComboBox(m, cb);
         } else if (n instanceof CheckBox cb) {
             storeCheckBox(m, cb);
-        }
-        
-        if(n instanceof SplitPane sp) {
-            for(Node ch: sp.getItems()) {
-                storeNode(m, ch);
-            }
+        } else if (n instanceof SplitPane sp) {
+            storeSplitPane(m, sp);
         }
 
         if (n instanceof Parent p) {
-            for(Node ch: p.getChildrenUnmodifiable()) {
+            for (Node ch: p.getChildrenUnmodifiable()) {
                 storeNode(m, ch);
             }
         }
     }
-    
+
     public static void restoreNode(Node n) {
-        if(checkNoScene(n)) {
+        if (checkNoScene(n)) {
             return;
         }
-        
+
         WindowMonitor m = WindowMonitor.getFor(n);
 
         //System.out.println("restoreNode " + n); // FIX
@@ -194,19 +199,53 @@ public class FxSettingsSchema {
             restoreComboBox(m, cb);
         } else if (n instanceof CheckBox cb) {
             restoreCheckBox(m, cb);
-        }
-        
-        if(n instanceof SplitPane sp) {
-            for(Node ch: sp.getItems()) {
-                restoreNode(ch);
-            }
+        } else if (n instanceof SplitPane sp) {
+            restoreSplitPane(m, sp);
         }
 
         if (n instanceof Parent p) {
-            for(Node ch: p.getChildrenUnmodifiable()) {
+            for (Node ch: p.getChildrenUnmodifiable()) {
                 restoreNode(ch);
             }
         }
+    }
+
+    private static void storeSplitPane(WindowMonitor m, SplitPane sp) {
+        double[] div = sp.getDividerPositions();
+        SStream ss = SStream.writer();
+        ss.add(div.length);
+        for (int i = 0; i < div.length; i++) {
+            ss.add(div[i]);
+        }
+        String name = getName(m, sp);
+        FxSettings.setStream(PREFIX + name, ss);
+
+        for (Node ch: sp.getItems()) {
+            storeNode(m, ch);
+        }
+    }
+
+    private static void restoreSplitPane(WindowMonitor m, SplitPane sp) {
+        for (Node ch: sp.getItems()) {
+            restoreNode(ch);
+        }
+
+        /** FIX getting smaller and smaller
+        String name = getName(m, sp);
+        SStream ss = FxSettings.getStream(PREFIX + name);
+        if (ss != null) {
+            int ct = ss.nextInt(-1);
+            if (ct > 0) {
+                for (int i = 0; i < ct; i++) {
+                    double div = ss.nextDouble(-1);
+                    if (div < 0) {
+                        break;
+                    }
+                    sp.setDividerPosition(i, div);
+                }
+            }
+        }
+        */
     }
 
     private static void storeComboBox(WindowMonitor m, ComboBox n) {
@@ -232,8 +271,8 @@ public class FxSettingsSchema {
         if (n.getSelectionModel() == null) {
             return;
         }
-        
-        if(checkNoScene(n)) {
+
+        if (checkNoScene(n)) {
             return;
         }
 
@@ -251,16 +290,16 @@ public class FxSettingsSchema {
 
         n.getSelectionModel().select(ix);
     }
-    
+
     private static boolean checkNoScene(Node n) {
         if (n.getScene() == null) {
             class ChLi implements ChangeListener<Scene> {
                 private final Node node;
-                
+
                 public ChLi(Node n) {
                     this.node = n;
                 }
-                
+
                 @Override
                 public void changed(ObservableValue<? extends Scene> src, Scene old, Scene scene) {
                     if (scene != null) {
@@ -272,8 +311,9 @@ public class FxSettingsSchema {
                         }
                     }
                 }
-            };
-            
+            }
+            ;
+
             n.sceneProperty().addListener(new ChLi(n));
 
             return true;
@@ -290,7 +330,7 @@ public class FxSettingsSchema {
         if (ix < 0) {
             return;
         }
-        
+
         String name = getName(m, n);
         if (name == null) {
             return;
@@ -298,13 +338,13 @@ public class FxSettingsSchema {
 
         FxSettings.setInt(PREFIX + name, ix);
     }
-    
+
     private static void restoreListView(WindowMonitor m, ListView n) {
         if (n.getSelectionModel() == null) {
             return;
         }
-        
-        if(checkNoScene(n)) {
+
+        if (checkNoScene(n)) {
             return;
         }
 
@@ -322,19 +362,19 @@ public class FxSettingsSchema {
 
         n.getSelectionModel().select(ix);
     }
-    
+
     private static void storeCheckBox(WindowMonitor m, CheckBox n) {
         String name = getName(m, n);
         if (name == null) {
             return;
         }
-        
+
         boolean sel = n.isSelected();
         FxSettings.setBoolean(PREFIX + name, sel);
     }
-    
+
     private static void restoreCheckBox(WindowMonitor m, CheckBox n) {
-        if(checkNoScene(n)) {
+        if (checkNoScene(n)) {
             return;
         }
 
@@ -349,5 +389,22 @@ public class FxSettingsSchema {
         }
 
         n.setSelected(sel);
+    }
+
+    /** sets the name for the purposes of storing user preferences */
+    public static void setName(Node n, String name) {
+        n.getProperties().put(NAME_PROP, name);
+    }
+
+    /** returns a name associated with this node for the purposes of storing user preferences */
+    public static String getName(Node n) {
+        Object x = n.getProperties().get(NAME_PROP);
+        if (x instanceof String s) {
+            return s;
+        }
+        if(n instanceof Pane) {
+            return n.getClass().getSimpleName();
+        }
+        return null;
     }
 }

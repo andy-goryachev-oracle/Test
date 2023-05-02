@@ -49,6 +49,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
+import goryachev.apps.FX;
 import goryachev.rich.RichTextArea;
 import goryachev.rich.SideDecorator;
 import goryachev.rich.TextPos;
@@ -74,37 +75,39 @@ public class RichTextAreaDemoPane extends BorderPane {
     public final ComboBox<Models> modelField;
 
     public RichTextAreaDemoPane(StyledTextModel m) {
-        setId("RichTextAreaDemoPane");
+        FX.name(this, "RichTextAreaDemoPane");
         control = new RichTextArea();
 
         SplitPane hsplit = new SplitPane(control, pane());
+        FX.name(hsplit, "hsplit");
         hsplit.setBorder(null);
         hsplit.setDividerPositions(0.9);
         hsplit.setOrientation(Orientation.HORIZONTAL);
         
         SplitPane vsplit = new SplitPane(hsplit, pane());
+        FX.name(vsplit, "vsplit");
         vsplit.setBorder(null);
         vsplit.setDividerPositions(0.9);
         vsplit.setOrientation(Orientation.VERTICAL);
         
         modelField = new ComboBox<>();
-        modelField.setId("modelField");
+        FX.name(modelField, "modelField");
         modelField.getItems().setAll(Models.values());
         
         CheckBox editable = new CheckBox("editable");
-        editable.setId("editable");
+        FX.name(editable, "editable");
         editable.selectedProperty().bindBidirectional(control.editableProperty());
         
         CheckBox wrapText = new CheckBox("wrap text");
-        wrapText.setId("wrapText");
+        FX.name(wrapText, "wrapText");
         wrapText.selectedProperty().bindBidirectional(control.wrapTextProperty());
         
         CheckBox displayCaret = new CheckBox("display caret");
-        displayCaret.setId("displayCaret");
+        FX.name(displayCaret, "displayCaret");
         displayCaret.selectedProperty().bindBidirectional(control.displayCaretProperty());
         
         CheckBox fatCaret = new CheckBox("fat caret");
-        fatCaret.setId("fatCaret");
+        FX.name(fatCaret, "fatCaret");
         fatCaret.selectedProperty().addListener((s,p,on) -> {
             Node n = control.lookup(".caret");
             if(n != null) {
@@ -117,13 +120,13 @@ public class RichTextAreaDemoPane extends BorderPane {
         });
         
         CheckBox highlightCurrentLine = new CheckBox("highlight current line");
-        highlightCurrentLine.setId("highlightCurrentLine");
+        FX.name(highlightCurrentLine, "highlightCurrentLine");
         highlightCurrentLine.selectedProperty().addListener((s,p,on) -> {
             control.setHighlightCurrentLine(on);
         });
         
         ComboBox<Integer> tabSize = new ComboBox<>();
-        tabSize.setId("tabSize");
+        FX.name(tabSize, "tabSize");
         tabSize.getItems().setAll(1, 2, 3, 4, 8, 16);
         tabSize.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
             control.setTabSize(v);
@@ -133,12 +136,13 @@ public class RichTextAreaDemoPane extends BorderPane {
         reloadModelButton.setOnAction((ev) -> reloadModel());
         
         CheckBox customPopup = new CheckBox("custom popup menu");
-        customPopup.setId("customPopup");
+        FX.name(customPopup, "customPopup");
         customPopup.selectedProperty().addListener((s,p,v) -> {
             setCustomPopup(v);
         });
         
         ComboBox<Insets> contentPadding = new ComboBox<>();
+        FX.name(contentPadding, "contentPadding");
         contentPadding.setConverter(new StringConverter<Insets>() {
             @Override
             public String toString(Insets x) {
@@ -174,7 +178,7 @@ public class RichTextAreaDemoPane extends BorderPane {
         });
         
         ComboBox<Double> lineSpacing = new ComboBox<>();
-        lineSpacing.setId("lineSpacing");
+        FX.name(lineSpacing, "lineSpacing");
         lineSpacing.getItems().setAll(
             0.0,
             5.0,
@@ -185,14 +189,14 @@ public class RichTextAreaDemoPane extends BorderPane {
         });
         
         ComboBox<Decorator> leftDecorator = new ComboBox<>();
-        leftDecorator.setId("leftDecorator");
+        FX.name(leftDecorator, "leftDecorator");
         leftDecorator.getItems().setAll(Decorator.values());
         leftDecorator.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
             control.setLeftDecorator(createDecorator(v));
         });
         
         ComboBox<Decorator> rightDecorator = new ComboBox<>();
-        rightDecorator.setId("rightDecorator");
+        FX.name(rightDecorator, "rightDecorator");
         rightDecorator.getItems().setAll(Decorator.values());
         rightDecorator.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
             control.setRightDecorator(createDecorator(v));

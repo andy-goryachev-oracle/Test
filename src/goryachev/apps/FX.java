@@ -24,63 +24,131 @@
  */
 package goryachev.apps;
 
+import java.util.List;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
+import javafx.stage.Window;
+import goryachev.settings.FxSettingsSchema;
 
 /**
- * Poor man replacement of my FX hacks.
+ * Shortcuts and convenience methods that perhaps could be added to JavaFX.
  */
 public class FX {
-    public static Menu menu(MenuBar mb, String text) {
+    public static Menu menu(MenuBar b, String text) {
         Menu m = new Menu(text);
-        mb.getMenus().add(m);
+        applyMnemonic(m);
+        b.getMenus().add(m);
         return m;
     }
 
-    public static MenuItem item(MenuBar mb, String text, Runnable action) {
+    public static MenuItem item(MenuBar b, String text, Runnable action) {
         MenuItem mi = new MenuItem(text);
+        applyMnemonic(mi);
         mi.setOnAction((ev) -> action.run());
-        lastMenu(mb).getItems().add(mi);
+        lastMenu(b).getItems().add(mi);
         return mi;
     }
-    
-    private static Menu lastMenu(MenuBar mb) {
-        int ct = mb.getMenus().size();
-        return mb.getMenus().get(ct - 1);
+
+    public static MenuItem item(MenuBar b, MenuItem mi) {
+        applyMnemonic(mi);
+        lastMenu(b).getItems().add(mi);
+        return mi;
     }
 
-    public static SeparatorMenuItem separator(MenuBar mb) {
-        SeparatorMenuItem m = new SeparatorMenuItem();
-        lastMenu(mb).getItems().add(m);
-        return m;
+    public static MenuItem item(MenuBar b, String text) {
+        MenuItem mi = new MenuItem(text);
+        applyMnemonic(mi);
+        lastMenu(b).getItems().add(mi);
+        return mi;
     }
 
-    public static void setStyle(Node n, String name, String value) {
-        String oldStyle = n.getStyle();
-        String newStyle = changeStyle(oldStyle, name, value);
-        n.setStyle(newStyle);
-    }
-    
-    private static String changeStyle(String s, String name, String value) {
-        if (s == null) {
-            return name + ":" + value + "; ";
-        } else {
-            String token = name + ":";
-            // does not understand "name : value" with spaces
-            int ix = s.indexOf(token);
-            if(ix < 0) {
-                return s + " " + token + value + "; ";
-            } else {
-                int ixe = s.indexOf(";", ix);
-                if(ixe < 0) {
-                    return s.substring(0, ix) + token + value + "; ";
-                } else {
-                    return s.substring(0, ix) + token + value + s.substring(ixe);
-                }
+    private static void applyMnemonic(MenuItem m) {
+        String text = m.getText();
+        if (text != null) {
+            if (text.contains("_")) {
+                m.setMnemonicParsing(true);
             }
         }
+    }
+
+    private static Menu lastMenu(MenuBar b) {
+        List<Menu> ms = b.getMenus();
+        return ms.get(ms.size() - 1);
+    }
+
+    public static SeparatorMenuItem separator(MenuBar b) {
+        SeparatorMenuItem s = new SeparatorMenuItem();
+        lastMenu(b).getItems().add(s);
+        return s;
+    }
+
+    public static RadioMenuItem radio(MenuBar b, String text, KeyCombination accelerator, ToggleGroup g) {
+        RadioMenuItem mi = new RadioMenuItem(text);
+        mi.setAccelerator(accelerator);
+        mi.setToggleGroup(g);
+        lastMenu(b).getItems().add(mi);
+        return mi;
+    }
+
+    public static void add(GridPane p, Node n, int col, int row) {
+        p.getChildren().add(n);
+        GridPane.setConstraints(n, col, row);
+    }
+
+    public static <T> void select(ComboBox<T> cb, T value) {
+        cb.getSelectionModel().select(value);
+    }
+
+    public static <T> void selectFirst(ComboBox<T> cb) {
+        cb.getSelectionModel().selectFirst();
+    }
+
+    public static <T> T getSelectedItem(ComboBox<T> cb) {
+        return cb.getSelectionModel().getSelectedItem();
+    }
+
+    public static Window getParentWindow(Object nodeOrWindow) {
+        if (nodeOrWindow == null) {
+            return null;
+        } else if (nodeOrWindow instanceof Window w) {
+            return w;
+        } else if (nodeOrWindow instanceof Node n) {
+            Scene s = n.getScene();
+            if (s != null) {
+                return s.getWindow();
+            }
+            return null;
+        } else {
+            throw new Error("Node or Window only");
+        }
+    }
+
+    /** cascades the window relative to its owner, if any */
+    public static void cascade(Stage w) {
+        if (w != null) {
+            Window p = w.getOwner();
+            if (p != null) {
+                double x = p.getX();
+                double y = p.getY();
+                double off = 20;
+                w.setX(x + off);
+                w.setY(y + off);
+            }
+        }
+    }
+
+    /** adds a name property to the Node for the purposes of storing the preferences */
+    public static void name(Node n, String name) {
+        FxSettingsSchema.setName(n, name);
     }
 }
