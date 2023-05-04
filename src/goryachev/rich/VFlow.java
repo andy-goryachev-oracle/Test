@@ -166,7 +166,7 @@ public class VFlow extends Pane {
         );
         
         lh.addChangeListener(
-            this::recomputeLayout,
+            this::requestLayout,
             true,
             origin
         );
@@ -191,12 +191,13 @@ public class VFlow extends Pane {
         setOrigin(new Origin(0, -topPadding));
         setOffsetX(-leftPadding);
         cache.clear();
-        recomputeLayout();
+        requestLayout();
     }
-    
-    protected void recomputeLayout() {
+
+    @Override
+    public void requestLayout() {
         invalidateLayout();
-        layoutChildren();
+        super.requestLayout();
     }
     
     protected double wrappedWidth() {
@@ -214,7 +215,7 @@ public class VFlow extends Pane {
         }
         setOffsetX(-leftPadding);
         cache.clear();
-        recomputeLayout();
+        requestLayout();
         updateHorizontalScrollBar();
         updateVerticalScrollBar();
     }
@@ -223,14 +224,13 @@ public class VFlow extends Pane {
         leftGutter.getChildren().clear();
         rightGutter.getChildren().clear();
 
-        recomputeLayout();
+        requestLayout();
         updateHorizontalScrollBar();
         updateVerticalScrollBar();
     }
     
     public void handleLineSpacing() {
-        // TODO extract into a separate method?
-        recomputeLayout();
+        requestLayout();
         updateHorizontalScrollBar();
         updateVerticalScrollBar();
     }
@@ -246,7 +246,7 @@ public class VFlow extends Pane {
             }
         }
 
-        recomputeLayout();
+        requestLayout();
         updateHorizontalScrollBar();
         updateVerticalScrollBar();
     }
@@ -1083,7 +1083,7 @@ public class VFlow extends Pane {
     
     public void updateTabSize() {
         CaretInfo c = getCaretInfo();
-        recomputeLayout();
+        requestLayout();
         // TODO remember caret line position, do layout pass, block move to preserve the caret y position
         // as it might shift (only if wrapping is enabled)
         // also if wrap is off, might need a horizontal block scroll to keep caret in the same x position
@@ -1101,7 +1101,7 @@ public class VFlow extends Pane {
         // TODO clear cache >= start, update layout
         cache.clear();
         // TODO rebuild from start.lineIndex()
-        recomputeLayout();
+        requestLayout();
     }
 
     // TODO this implementation might be more advanced to reduce the amount of re-computation and re-flow
@@ -1109,7 +1109,7 @@ public class VFlow extends Pane {
         // TODO clear cache >= start, update layout
         cache.clear();
         // TODO rebuild from start.lineIndex()
-        recomputeLayout();
+        requestLayout();
     }
     
     public WritableImage snapshot(Node n) {
