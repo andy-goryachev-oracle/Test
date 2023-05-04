@@ -78,7 +78,7 @@ public class VFlow extends Pane {
     private final RPane leftGutter;
     private final RPane rightGutter;
     private final RPane content;
-    private TextCellLayout layout;
+    private TextCellLayout layout; // FIX rename
     private final Path caretPath;
     private final Path caretLineHighlight;
     private final Path selectionHighlight;
@@ -194,12 +194,6 @@ public class VFlow extends Pane {
         requestLayout();
     }
 
-    @Override
-    public void requestLayout() {
-        invalidateLayout();
-        super.requestLayout();
-    }
-    
     protected double wrappedWidth() {
         double w = content.getWidth() - leftPadding - rightPadding;
         w = Math.max(w, 0.0);
@@ -422,7 +416,7 @@ public class VFlow extends Pane {
         if (end.index() < topCellIndex) {
             // selection is above visible area
             return;
-        } else if (start.index() >= (topCellIndex + layout.getVisibleCellCount())) {
+        } else if (start.index() >= (topCellIndex + textCellLayout().getVisibleCellCount())) {
             // selection is below visible area
             return;
         }
@@ -458,7 +452,7 @@ public class VFlow extends Pane {
 
     protected void createCurrentLineHighlight(FxPathBuilder b, TextPos caret) {
         int ix = caret.index();
-        TextCell cell = layout.getVisibleCell(ix);
+        TextCell cell = textCellLayout().getVisibleCell(ix);
         if(cell != null) {
             double w;
             if(control.isWrapText()) {
@@ -472,15 +466,12 @@ public class VFlow extends Pane {
 
     /** uses vflow.content cooridinates */ 
     public TextPos getTextPosLocal(double localX, double localY) {
-        if (layout == null) {
-            return null;
-        }
-        return layout.getTextPos(getOffsetX(), localX, localY);
+        return textCellLayout().getTextPos(getOffsetX(), localX, localY);
     }
 
     /** uses vflow.content coordinates */
     protected CaretInfo getCaretInfo(TextPos p) {
-        return layout.getCaretInfo(getOffsetX() + leftPadding, p);
+        return textCellLayout().getCaretInfo(getOffsetX() + leftPadding, p);
     }
 
     /** returns caret sizing info using vflow.content coordinates, or null */
@@ -519,7 +510,7 @@ public class VFlow extends Pane {
 
     /** returns the shape if both ends are at the same line */
     protected PathElement[] getRangeShape(int line, int startOffset, int endOffset) {
-        TextCell cell = layout.getVisibleCell(line);
+        TextCell cell = textCellLayout().getVisibleCell(line);
         if (cell == null) {
             return null;
         }
@@ -594,10 +585,11 @@ public class VFlow extends Pane {
             visible = 1.0;
             val = 0.0;
         } else {
-            double av = layout.averageHeight();
-            double max = layout.estimatedMax(); // TODO? + topPadding + bottomPadding;
+            TextCellLayout la = textCellLayout();
+            double av = la.averageHeight();
+            double max = la.estimatedMax();
             double h = getHeight();
-            val = toScrollBarValue((topCellIndex() - layout.topCount()) * av + layout.topHeight(), h, max);
+            val = toScrollBarValue((topCellIndex() - la.topCount()) * av + la.topHeight(), h, max);
             visible = h / max;
         }
 
@@ -624,7 +616,7 @@ public class VFlow extends Pane {
             double visible = vscroll.getVisibleAmount();
             double pos = fromScrollBarValue(val, visible, max); // max is 1.0
 
-            Origin p = layout.fromAbsolutePosition(pos);
+            Origin p = textCellLayout().fromAbsolutePosition(pos);
             setOrigin(p);
         }
     }
@@ -738,30 +730,42 @@ public class VFlow extends Pane {
         return 0.0;
     }
 
-    protected void invalidateLayout() {
+    @Override
+    public void requestLayout() {
+        removeCells();
+        super.requestLayout();
+    }
+
+    @Override
+    protected void layoutChildren() {
+        removeCells();
+
+        layout = new TextCellLayout(this);
+        layoutCells();
+
+        checkForExcessiveWhitespaceAtTheEnd();
+        updateCaretAndSelection();
+
+        // eliminate VSB during scrolling with a mouse
+        // the VSB will finally get updated on mouse released event
+        if (!vsbPressed) {
+            updateVerticalScrollBar();
+        }
+    }
+
+    protected void removeCells() {
         if (layout != null) {
             layout.removeNodesFrom(content);
             layout = null;
         }
     }
 
-    @Override
-    protected void layoutChildren() {
-        if ((layout == null) || !layout.isValid(this)) {
-            invalidateLayout();
-
-            layout = new TextCellLayout(this);
-            layoutCells();
-
-            checkForExcessiveWhitespaceAtTheEnd();
-            updateCaretAndSelection();
-
-            // eliminate VSB during scrolling with a mouse
-            // the VSB will finally get updated on mouse released event
-            if (!vsbPressed) {
-                updateVerticalScrollBar();
-            }
+    /** returns a non-null layout, laying out cells if necessary */
+    protected TextCellLayout textCellLayout() {
+        if(layout == null) {
+            layoutChildren();
         }
+        return layout;
     }
 
     /** recomputes sliding window */
@@ -997,7 +1001,7 @@ public class VFlow extends Pane {
 
     /** scroll by a number of pixels, delta must not exceed the view height in absolute terms */
     public void blockScroll(double delta) {
-        Origin p = layout.computeOrigin(delta);
+        Origin p = textCellLayout().computeOrigin(delta);
         if (p != null) {
             setOrigin(p);
         }
@@ -1075,7 +1079,7 @@ public class VFlow extends Pane {
     }
 
     protected void checkForExcessiveWhitespaceAtTheEnd() {
-        double delta = layout.bottomHeight() - getViewHeight();
+        double delta = textCellLayout().bottomHeight() - getViewHeight();
         if(delta < 0) {
             blockScroll(delta);
         }
