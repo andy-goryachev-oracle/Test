@@ -43,7 +43,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Screen;
 
 /**
- * These APIs should be added to JavaFX.
+ * We may consider making these APIs public.
  */
 public class NewAPI {
     /**
@@ -66,6 +66,9 @@ public class NewAPI {
         for (Node n : f.getChildrenUnmodifiable()) {
             if (n instanceof Text t) {
                 len += t.getText().length();
+            } else {
+                // treat non-Text nodes as having 1 character
+                len++;
             }
         }
         return len;
@@ -75,10 +78,6 @@ public class NewAPI {
         return Platform.isSupported(ConditionalFeature.INPUT_TOUCH);
     }
 
-    /** TODO need com.sun.javafx.scene.control.ListenerHelper to be public
-    public static ListenerHelper listenerHelper() {
-    } */
-    
     // com.sun.javafx.util.Utils:769
     public static Screen getScreenForPoint(final double x, final double y) {
         ObservableList<Screen> screens = Screen.getScreens();
