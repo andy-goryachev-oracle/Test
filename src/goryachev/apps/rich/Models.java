@@ -40,6 +40,7 @@ public enum Models {
     EDITABLE_STYLED("❤ Editable Rich Text Model"),
     NOTEBOOK("Notebook: Embedded Chart"),
     NOTEBOOK2("Notebook: SQL Queries"),
+    INLINE("Inline Nodes"),
     NULL("null"),
     MONOSPACED("Monospaced"),
     TABS("Tabs"),
@@ -78,6 +79,8 @@ public enum Models {
             return new DemoStyledTextModel(1_000_000_000, false);
         case DEMO:
             return new DemoModel();
+        case INLINE:
+            return new InlineNodesModel();
         case EDITABLE_PLAIN:
             return new EditablePlainTextModel();
         case EDITABLE_STYLED:
