@@ -37,6 +37,7 @@ import javafx.scene.input.DataFormat;
 import goryachev.rich.Marker;
 import goryachev.rich.RichTextArea;
 import goryachev.rich.StyleResolver;
+import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 import goryachev.rich.impl.Markers;
 import goryachev.rich.util.Util;
@@ -77,15 +78,29 @@ public abstract class StyledTextModel {
     /**
      * Returns the number of paragraphs in the model.
      */
+    // TODO rename size() ?
     public abstract int getParagraphCount();
 
     /**
-     * Returns the specified paragraph.  The caller should never attempt to ask for a paragraph outside of the
-     * valid range.
+     * Returns the plain text string for the specified paragraph.  The text string must not
+     * contain any line separators.
+     * The caller should never attempt to ask for a paragraph outside of the valid range.
+     * This method might return null if no text is associated with the paragraph.
      *
      * @param index paragraph index in the range (0...{@link getParagraphCount()})
      */
-    public abstract StyledParagraph getParagraph(int index);
+    public abstract String getPlainText(int index);
+
+    /**
+     * Creates Nodes which provide visual representation of the paragraph.
+     * This method must create new Nodes each time, in order to support multiple RichTextArea instances
+     * connected to the same model.
+     * The nodes are not reused, and might be created repeatedly,
+     * so the model must not keep strong references to these nodes.
+     *
+     * @param index paragraph index in the range (0...{@link getParagraphCount()})
+     */
+    public abstract TextCell createTextCell(int index);
     
     /**
      * This method gets called only if the model is editable.
@@ -158,20 +173,6 @@ public abstract class StyledTextModel {
     private final Markers markers = new Markers();
 
     public StyledTextModel() {
-    }
-
-    /**
-     * Returns the plain text string for the specified paragraph.
-     * The caller should never attempt to ask for a paragraph outside of the valid range.
-     * 
-     * The default implementation requests a plain text string from StyledParagraph;
-     * models that have a cheaper access to the plain text should override this method. 
-     *
-     * @param index paragraph index in the range (0...{@link getParagraphCount()})
-     */
-    public String getPlainText(int index) {
-        StyledParagraph p = getParagraph(index);
-        return p.getText();
     }
     
     public void addChangeListener(ChangeListener listener) {

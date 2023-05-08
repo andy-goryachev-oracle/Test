@@ -56,7 +56,6 @@ import javafx.util.Duration;
 import goryachev.rich.impl.CellCache;
 import goryachev.rich.impl.RPane;
 import goryachev.rich.impl.SelectionHelper;
-import goryachev.rich.model.StyledParagraph;
 import goryachev.rich.model.StyledTextModel;
 import goryachev.rich.util.FxPathBuilder;
 import goryachev.rich.util.ListenerHelper;
@@ -687,8 +686,7 @@ public class VFlow extends Pane {
     protected TextCell getCell(int modelIndex) {
         TextCell cell = cache.get(modelIndex);
         if (cell == null) {
-            StyledParagraph p = control.getModel().getParagraph(modelIndex);
-            cell = p.createTextCell();
+            cell = control.getModel().createTextCell(modelIndex);
 
             // a bit of a hack: avoid TextCells with an empty TextFlow,
             // as it makes the caret collapse to a single point
@@ -738,9 +736,14 @@ public class VFlow extends Pane {
 
     @Override
     protected void layoutChildren() {
+        layout = reflow();
+    }
+
+    protected TextCellLayout reflow() {
         removeCells();
 
-        layout = new TextCellLayout(this);
+        TextCellLayout la = new TextCellLayout(this);
+        layout = la;
         layoutCells();
 
         checkForExcessiveWhitespaceAtTheEnd();
@@ -751,6 +754,9 @@ public class VFlow extends Pane {
         if (!vsbPressed) {
             updateVerticalScrollBar();
         }
+
+        // layout might get invalidated in the process, but we must return a non-null value
+        return la;
     }
 
     protected void removeCells() {

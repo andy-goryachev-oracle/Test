@@ -27,15 +27,15 @@ package goryachev.rich.model;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.function.Supplier;
+import javafx.scene.Node;
 import goryachev.rich.StyleResolver;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
-import javafx.scene.Node;
 
 /**
  * Editable plain text model.
  * 
- * TODO should it be here or as a standard model?
+ * TODO is this necessary? or convert to DecoratedPlainTextModel ?
  */
 public class EditablePlainTextModel extends StyledTextModelEditableBase {
     private final ArrayList<String> paragraphs = new ArrayList<>();
@@ -47,21 +47,11 @@ public class EditablePlainTextModel extends StyledTextModelEditableBase {
     }
 
     @Override
-    public StyledParagraph getParagraph(int index) {
-        return new StyledParagraph(index) {
-            @Override
-            public String getText() {
-                return getPlainText(index);
-            }
-
-            @Override
-            public TextCell createTextCell() {
-                String text = getText();
-                TextCell c = new TextCell(index);
-                c.addSegment(text, STYLE, null);
-                return c;
-            }
-        };
+    public TextCell createTextCell(int index) {
+        String text = getPlainText(index);
+        TextCell c = new TextCell(index);
+        c.addSegment(text, STYLE, null);
+        return c;
     }
 
     @Override

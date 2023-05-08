@@ -75,17 +75,22 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
     }
 
     @Override
-    public StyledParagraph getParagraph(int index) {
-        return paragraphs.get(index);
+    public String getPlainText(int index) {
+        return paragraphs.get(index).getText();
     }
-    
+
+    @Override
+    public TextCell createTextCell(int index) {
+        return paragraphs.get(index).createTextCell(index);
+    }
+
     public SimpleReadOnlyStyledModel addSegment(String text) {
         return addSegment(text, null);
     }
 
     public SimpleReadOnlyStyledModel addSegment(String text, String style, String... css) {
         if (paragraphs.size() == 0) {
-            paragraphs.add(new SParagraph(0));
+            paragraphs.add(new SParagraph());
         }
 
         SParagraph p = lastSegmentStyledTextParagraph();
@@ -107,7 +112,7 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
             return ss;
         } else {
             int ix = paragraphs.size();
-            SParagraph p = new SParagraph(ix);
+            SParagraph p = new SParagraph();
             paragraphs.add(p);
             return p;
         }
@@ -116,14 +121,14 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
     public SimpleReadOnlyStyledModel addImage(InputStream in) {
         int ix = paragraphs.size();
         Image im = new Image(in);
-        SimpleStyledImageParagraph p = new SimpleStyledImageParagraph(ix, im);
+        SimpleStyledImageParagraph p = new SimpleStyledImageParagraph(im);
         paragraphs.add(p);
         return this;
     }
     
     public SimpleReadOnlyStyledModel addParagraph(Supplier<Region> generator) {
         int ix = paragraphs.size();
-        NodeStyledParagraph p = new NodeStyledParagraph(ix, generator);
+        NodeStyledParagraph p = new NodeStyledParagraph(generator);
         paragraphs.add(p);
         return this;
     }
@@ -142,7 +147,7 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
     public SimpleReadOnlyStyledModel nl(int count) {
         for (int i = 0; i < count; i++) {
             int ix = paragraphs.size();
-            paragraphs.add(new SParagraph(ix));
+            paragraphs.add(new SParagraph());
         }
         return this;
     }
@@ -159,25 +164,27 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
         if (par instanceof SParagraph p) {
             p.export(start, end, out);
         } else if(par instanceof SimpleStyledImageParagraph p) {
-            StyledSegment s = StyledSegment.nodeParagraph(() -> p.createTextCell().getContent());
+            StyledSegment s = StyledSegment.nodeParagraph(() -> p.createTextCell(index).getContent());
             out.append(s);
         } else if(par instanceof NodeStyledParagraph p) {
-            StyledSegment s = StyledSegment.nodeParagraph(() -> p.createTextCell().getContent());
+            StyledSegment s = StyledSegment.nodeParagraph(() -> p.createTextCell(index).getContent());
             out.append(s);
         }
+    }
+    
+    /** Base Class */
+    protected abstract static class StyledParagraph {
+        public abstract String getText();
+
+        public abstract TextCell createTextCell(int index);
     }
     
     /** Styled Paragraph Based on SSegments */
     protected static class SParagraph extends StyledParagraph {
         private ArrayList<SSegment> segments;
 
-        public SParagraph(int index) {
-            super(index);
-        }
-        
         @Override
-        public TextCell createTextCell() {
-            int ix = getIndex();
+        public TextCell createTextCell(int ix) {
             TextCell b = new TextCell(ix);
             if(segments == null) {
                 // avoid zero height
@@ -293,7 +300,44 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
             return StyledSegment.of(s, style);
         }
     }
-    
+
+    public class NodeStyledParagraph extends StyledParagraph {
+        private final Supplier<Region> generator;
+
+        public NodeStyledParagraph(Supplier<Region> generator) {
+            this.generator = generator;
+        }
+
+        @Override
+        public TextCell createTextCell(int index) {
+            Region n = generator.get();
+            return new TextCell(index, new NodeCellPane(n));
+        }
+
+        @Override
+        public String getText() {
+            return null;
+        }
+    }
+
+    public class SimpleStyledImageParagraph extends StyledParagraph {
+        private final Image image;
+        
+        public SimpleStyledImageParagraph(Image image) {
+            this.image = image;
+        }
+        
+        @Override
+        public TextCell createTextCell(int index) {
+            return new TextCell(index, new ImageCellPane(image));
+        }
+
+        @Override
+        public String getText() {
+            return null;
+        }
+    }
+
     /** inline node segment */
     protected static class NodeSSegment extends SSegment {
         public final Supplier<Node> generator;

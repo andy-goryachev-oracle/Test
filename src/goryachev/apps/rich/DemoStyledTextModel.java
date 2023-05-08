@@ -25,14 +25,10 @@
 package goryachev.apps.rich;
 
 import java.text.DecimalFormat;
-import java.util.AbstractList;
-import java.util.Collection;
-import java.util.RandomAccess;
 import javafx.scene.text.TextFlow;
 import goryachev.rich.TextCell;
 import goryachev.rich.TextPos;
 import goryachev.rich.model.StyleInfo;
-import goryachev.rich.model.StyledParagraph;
 import goryachev.rich.model.StyledTextModelReadOnlyBase;
 import goryachev.rich.util.NewAPI;
 
@@ -41,114 +37,85 @@ import goryachev.rich.util.NewAPI;
  * Does not support editing events - populate the model first, then pass it to the control.
  */
 public class DemoStyledTextModel extends StyledTextModelReadOnlyBase {
-    private final SList paragraphs;
-    
+    private final int size;
+    private final boolean monospaced;
+    private static final DecimalFormat format = new DecimalFormat("#,##0");
+
     public DemoStyledTextModel(int size, boolean monospaced) {
-        this.paragraphs = new SList(size, monospaced);
+        this.size = size;
+        this.monospaced = monospaced;
     }
 
     @Override
     public int getParagraphCount() {
-        return paragraphs.size();
+        return size;
     }
 
     @Override
-    public StyledParagraph getParagraph(int index) {
-        return paragraphs.get(index);
-    }
-    
-    @Override
     public StyleInfo getStyleInfo(TextPos pos) {
-        // TODO use segments
         return StyleInfo.NONE;
     }
 
-    /** */
-    public static class SList extends AbstractList<StyledParagraph> implements RandomAccess {
-        private final int size;
-        private final boolean monospaced;
-        
-        public SList(int size, boolean monospaced) {
-            this.size = size;
-            this.monospaced = monospaced;
+    @Override
+    public String getPlainText(int index) {
+        TextCell c = createTextCell(index);
+        TextFlow f = ((TextFlow)c.getContent());
+        return NewAPI.getText(f);
+    }
+
+    @Override
+    public TextCell createTextCell(int ix) {
+        TextCell c = new TextCell(ix);
+        String s = format.format(ix + 1);
+        String sz = format.format(size);
+        String[] css = monospaced ? new String[] { "monospaced" } : null;
+
+        c.addSegment(s, "-fx-fill:darkgreen;", css);
+        c.addSegment(" / ", null, css);
+        c.addSegment(sz, "-fx-fill:black;", css);
+        if (monospaced) {
+            c.addSegment(" (monospaced)", null, css);
         }
 
-        @Override
-        public int size() {
-            return size;
+        if ((ix % 10) == 9) {
+            String words = generateWords(ix);
+            c.addSegment(words, null, css);
         }
+        return c;
+    }
 
-        @Override
-        public boolean addAll(Collection<? extends StyledParagraph> c) {
-            throw new UnsupportedOperationException();
+    private String generateWords(int ix) {
+        String s = String.valueOf(ix);
+        StringBuilder sb = new StringBuilder(128);
+        for (char c: s.toCharArray()) {
+            String digit = getDigit(c);
+            sb.append(digit);
         }
+        return sb.toString();
+    }
 
-        @Override
-        public StyledParagraph get(int index) {
-            return new SParagraph(index);
-        }
-
-        /** */
-        public class SParagraph extends StyledParagraph {
-            private static String words;
-            private static final DecimalFormat format = new DecimalFormat("#,##0");
-            
-            public SParagraph(int index) {
-                super(index);
-            }
-
-            @Override
-            public String getText() {
-                TextCell c = createTextCell();
-                TextFlow f = ((TextFlow)c.getContent());
-                return NewAPI.getText(f);
-            }
-
-            public int hashCode() {
-                return System.identityHashCode(SList.this) ^ getIndex();
-            }
-
-            private SList list() {
-                return SList.this;
-            }
-
-            public boolean equals(Object x) {
-                if (x == this) {
-                    return true;
-                } else if (x instanceof SParagraph p) {
-                    return (p.list() == list()) && (p.getIndex() == getIndex());
-                } else {
-                    return false;
-                }
-            }
-
-            @Override
-            public TextCell createTextCell() {
-                int ix = getIndex();
-                TextCell c = new TextCell(ix);
-                String s = format.format(ix + 1);
-                String sz = format.format(SList.this.size());
-                String[] css = monospaced ? new String[] { "monospaced" } : null;
-
-                c.addSegment(s, "-fx-fill:darkgreen;", css);
-                c.addSegment(" / ", null, css);
-                c.addSegment(sz, "-fx-fill:black;", css);
-                if (monospaced) {
-                    c.addSegment(" (monospaced)", null, css);
-                }
-
-                if ((ix % 10) == 9) {
-                    if (words == null) {
-                        StringBuilder sb = new StringBuilder();
-                        for (int i = 0; i < 4; i++) {
-                            sb.append(" one two three four five six seven eight nine ten");
-                        }
-                        words = sb.toString();
-                    }
-                    c.addSegment(words, null, css);
-                }
-                return c;
-            }
+    private String getDigit(char c) {
+        switch (c) {
+        case '0':
+            return " zero";
+        case '1':
+            return " one";
+        case '2':
+            return " two";
+        case '3':
+            return " three";
+        case '4':
+            return " four";
+        case '5':
+            return " five";
+        case '6':
+            return " six";
+        case '7':
+            return " seven";
+        case '8':
+            return " eight";
+        default:
+            return " nine";
         }
     }
 }

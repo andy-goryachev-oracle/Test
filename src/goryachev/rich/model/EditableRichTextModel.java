@@ -61,27 +61,16 @@ public class EditableRichTextModel extends StyledTextModelEditableBase {
     }
 
     @Override
-    public StyledParagraph getParagraph(int index) {
+    public TextCell createTextCell(int index) {
+        // TODO empty paragraph?
+        TextCell c = new TextCell(index);
         RParagraph p = paragraphs.get(index);
-
-        return new StyledParagraph(index) {
-            @Override
-            public String getText() {
-                return p.getPlainText();
-            }
-
-            @Override
-            public TextCell createTextCell() {
-                // TODO empty paragraph?
-                TextCell c = new TextCell(index);
-                for(RSegment seg: p) {
-                    String text = seg.text();
-                    String style = seg.attrs().getStyle();
-                    c.addSegment(text, style, null);
-                }
-                return c;
-            }
-        };
+        for (RSegment seg: p) {
+            String text = seg.text();
+            String style = seg.attrs().getStyle();
+            c.addSegment(text, style, null);
+        }
+        return c;
     }
 
     @Override
