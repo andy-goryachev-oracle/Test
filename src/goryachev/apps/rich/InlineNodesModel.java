@@ -26,11 +26,12 @@ package goryachev.apps.rich;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import goryachev.rich.model.SimpleReadOnlyStyledModel;
 
 /**
  * A demo model with inline Nodes.
  */
-public class InlineNodesModel extends SegmentStyledTextModel {
+public class InlineNodesModel extends SimpleReadOnlyStyledModel {
     private final SimpleStringProperty textField = new SimpleStringProperty();
     
     public InlineNodesModel() {

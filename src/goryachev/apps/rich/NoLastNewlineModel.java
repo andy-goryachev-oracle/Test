@@ -24,7 +24,9 @@
  */
 package goryachev.apps.rich;
 
-public class NoLastNewlineModel extends SegmentStyledTextModel {
+import goryachev.rich.model.SimpleReadOnlyStyledModel;
+
+public class NoLastNewlineModel extends SimpleReadOnlyStyledModel {
     public NoLastNewlineModel(int lineCount) {
         for(int i=0; i<lineCount; i++) {
             addSegment("L." + i);

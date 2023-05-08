@@ -28,11 +28,12 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import goryachev.rich.model.SimpleReadOnlyStyledModel;
 
 /**
  * Mocks a Notebook Page that Provides a SQL Query Engine Interface
  */
-public class NotebookModel2 extends SegmentStyledTextModel {
+public class NotebookModel2 extends SimpleReadOnlyStyledModel {
     private final SimpleStringProperty query = new SimpleStringProperty();
     private final SimpleObjectProperty<Object> result = new SimpleObjectProperty<>();
     private static final String QUERY = "SELECT * FROM Book WHERE price > 100.00;";

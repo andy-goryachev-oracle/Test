@@ -24,41 +24,31 @@
  */
 package goryachev.apps.rich;
 
-import java.util.Random;
+import goryachev.rich.RichTextArea;
+import goryachev.rich.model.EditableRichTextModel;
 import goryachev.rich.model.SimpleReadOnlyStyledModel;
 
-public class UnevenStyledTextModel extends SimpleReadOnlyStyledModel {
-    private Random r = new Random();
-
-    public UnevenStyledTextModel(int lineCount) {
-        float longLineProbability = 0.1f;
-        for (int i = 0; i < lineCount; i++) {
-            boolean large = (r.nextFloat() < longLineProbability);
-            addSegment((large ? "L." : "S.") + (i + 1));
-
-            if (large) {
-                add(1000);
-            } else {
-                add(10);
-            }
-            nl();
-        }
+/**
+ * Code Examples to be Inlcuded in the Design Document
+ */
+public class Examples {
+    /** creates an editable rich text control */
+    public void editableControl() {
+        RichTextArea t = new RichTextArea();
+        t.setModel(new EditableRichTextModel());
     }
 
-    private void add(int count) {
-        StringBuilder sb = new StringBuilder();
+    /** creates an editable rich text control */
+    public void readOnlyControl() {
+        SimpleReadOnlyStyledModel m = new SimpleReadOnlyStyledModel();
+        // add text segment using CSS style name (requires a style sheet)
+        m.addSegment("Demo ", null, "HEADER");
+        // add text segment using direct style
+        m.addSegment("Demo ", "-fx-font-size:200%;", null);
+        // newline
+        m.nl();
 
-        for (int i = 0; i < count; i++) {
-            int len = r.nextInt(10) + 1;
-            sb.append(' ');
-            sb.append(i);
-            sb.append('.');
-            
-            for (int j = 0; j < len; j++) {
-                sb.append('*');
-            }
-        }
-
-        addSegment(sb.toString());
+        RichTextArea t = new RichTextArea();
+        t.setModel(m);
     }
 }

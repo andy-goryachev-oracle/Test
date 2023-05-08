@@ -28,6 +28,7 @@ import javafx.scene.paint.Color;
 import goryachev.rich.TextPos;
 import goryachev.rich.model.EditablePlainTextModel;
 import goryachev.rich.model.EditableRichTextModel;
+import goryachev.rich.model.SimpleReadOnlyStyledModel;
 import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.model.StyleInfo;
 import goryachev.rich.model.StyledInput;
@@ -116,7 +117,7 @@ public enum Models {
         case UNEVEN_LARGE:
             return new UnevenStyledTextModel(2000);
         case WRITING_SYSTEMS:
-            return SegmentStyledTextModel.from(WritingSystemsDemo.getText());
+            return SimpleReadOnlyStyledModel.from(WritingSystemsDemo.getText());
         case WRITING_SYSTEMS_EDITABLE:
             return writingSystems();
         case ZERO_LINES:
@@ -127,7 +128,7 @@ public enum Models {
     }
 
     private static StyledTextModel tabs() {
-        return SegmentStyledTextModel.from("0123456789012345678901234567890\n0\n\t1\n\t\t2\n\t\t\t3\n\t\t\t\t4\n0\n");
+        return SimpleReadOnlyStyledModel.from("0123456789012345678901234567890\n0\n\t1\n\t\t2\n\t\t\t3\n\t\t\t\t4\n0\n");
     }
     
     private static StyledTextModel writingSystems() {

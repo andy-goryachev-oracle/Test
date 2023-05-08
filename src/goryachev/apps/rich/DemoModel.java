@@ -28,11 +28,12 @@ import java.util.Random;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import goryachev.rich.model.SimpleReadOnlyStyledModel;
 
 /**
  * RichTextArea demo model.
  */
-public class DemoModel extends SegmentStyledTextModel {
+public class DemoModel extends SimpleReadOnlyStyledModel {
     private final SimpleStringProperty textField = new SimpleStringProperty();
     
     public DemoModel() {

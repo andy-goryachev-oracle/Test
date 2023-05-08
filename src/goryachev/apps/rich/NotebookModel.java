@@ -25,8 +25,9 @@
 package goryachev.apps.rich;
 
 import javafx.scene.Node;
+import goryachev.rich.model.SimpleReadOnlyStyledModel;
 
-public class NotebookModel extends SegmentStyledTextModel {
+public class NotebookModel extends SimpleReadOnlyStyledModel {
     public NotebookModel() {
         String GREEN = "green";
         String GRAY = "gray";
