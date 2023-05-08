@@ -55,7 +55,7 @@ public class EditablePlainTextModel extends StyledTextModelEditableBase {
     }
 
     @Override
-    public int getParagraphCount() {
+    public int size() {
         return paragraphs.size();
     }
 
@@ -84,7 +84,7 @@ public class EditablePlainTextModel extends StyledTextModelEditableBase {
     
     @Override
     protected void insertLineBreak(int index, int offset) {
-        if(index >= getParagraphCount()) {
+        if(index >= size()) {
             paragraphs.add("");
         } else {
             String s = paragraphs.get(index);

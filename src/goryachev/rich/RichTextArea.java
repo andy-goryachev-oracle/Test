@@ -463,7 +463,7 @@ public class RichTextArea extends Control {
 
     public int getParagraphCount() {
         StyledTextModel m = getModel();
-        return (m == null) ? 0 : m.getParagraphCount();
+        return (m == null) ? 0 : m.size();
     }
     
     public String getPlainText(int modelIndex) {

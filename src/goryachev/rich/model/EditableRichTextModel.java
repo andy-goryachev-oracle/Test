@@ -51,7 +51,7 @@ public class EditableRichTextModel extends StyledTextModelEditableBase {
     }
     
     @Override
-    public int getParagraphCount() {
+    public int size() {
         return paragraphs.size();
     }
     
@@ -95,7 +95,7 @@ public class EditableRichTextModel extends StyledTextModelEditableBase {
 
     @Override
     protected void insertLineBreak(int index, int offset) {
-        if(index >= getParagraphCount()) {
+        if(index >= size()) {
             paragraphs.add(new RParagraph());
         } else {
             RParagraph par = paragraphs.get(index);

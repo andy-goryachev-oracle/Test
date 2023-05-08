@@ -70,7 +70,7 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
     }
 
     @Override
-    public int getParagraphCount() {
+    public int size() {
         return paragraphs.size();
     }
 

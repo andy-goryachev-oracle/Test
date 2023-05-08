@@ -113,7 +113,7 @@ public class DemoModel extends SimpleReadOnlyStyledModel {
                 char c = '*';
 
                 if (word == 0) {
-                    addSegment("L" + (getParagraphCount() + 1), null, GRAY);
+                    addSegment("L" + (size() + 1), null, GRAY);
                 }
                 
                 addSegment(" ", null);

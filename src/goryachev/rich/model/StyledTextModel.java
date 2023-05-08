@@ -78,8 +78,7 @@ public abstract class StyledTextModel {
     /**
      * Returns the number of paragraphs in the model.
      */
-    // TODO rename size() ?
-    public abstract int getParagraphCount();
+    public abstract int size();
 
     /**
      * Returns the plain text string for the specified paragraph.  The text string must not
@@ -355,7 +354,7 @@ public abstract class StyledTextModel {
     }
 
     protected TextPos clamp(TextPos p) {
-        int ct = getParagraphCount();
+        int ct = size();
         int ix = p.index();
         if (ix < 0) {
             return TextPos.ZERO;
@@ -386,7 +385,7 @@ public abstract class StyledTextModel {
 
     /** Returns a TextPos corresponding to the end of the document */
     public TextPos getEndTextPos() {
-        int ix = getParagraphCount() - 1;
+        int ix = size() - 1;
         if (ix < 0) {
             return TextPos.ZERO;
         } else {
