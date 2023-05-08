@@ -64,8 +64,6 @@ import goryachev.rich.util.Util;
 /**
  * Virtual text flow deals with TextCells, scroll bars, and conversion
  * between the model and the screen coordinates.
- * 
- * TODO threshold for a full-model rendering
  */
 public class VFlow extends Pane {
     /** maximum width for unwrapped TextFlow layout. Neither Double.MAX_VALUE nor 1e20 work */
@@ -777,12 +775,14 @@ public class VFlow extends Pane {
     /** recomputes sliding window */
     protected void layoutCells() {
         if (control.getModel() == null) {
+            leftGutter.setVisible(false);
+            rightGutter.setVisible(false);
             return;
         }
-        
+
         double width = getWidth();
         double height = getHeight();
-        
+
         // sides
         SideDecorator leftDecorator = control.getLeftDecorator();
         SideDecorator rightDecorator = control.getRightDecorator();
