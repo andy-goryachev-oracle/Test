@@ -85,10 +85,10 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
 
     public SimpleReadOnlyStyledModel addSegment(String text, String style, String... css) {
         if (paragraphs.size() == 0) {
-            paragraphs.add(new SegmentStyledTextParagraph(0));
+            paragraphs.add(new SParagraph(0));
         }
 
-        SegmentStyledTextParagraph p = lastSegmentStyledTextParagraph();
+        SParagraph p = lastSegmentStyledTextParagraph();
         p.addSegment(text, style, css);
         return this;
     }
@@ -101,13 +101,13 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
         return paragraphs.get(sz - 1);
     }
     
-    protected SegmentStyledTextParagraph lastSegmentStyledTextParagraph() {
+    protected SParagraph lastSegmentStyledTextParagraph() {
         StyledParagraph last = lastParagraph();
-        if(last instanceof SegmentStyledTextParagraph ss) {
+        if(last instanceof SParagraph ss) {
             return ss;
         } else {
             int ix = paragraphs.size();
-            SegmentStyledTextParagraph p = new SegmentStyledTextParagraph(ix);
+            SParagraph p = new SParagraph(ix);
             paragraphs.add(p);
             return p;
         }
@@ -130,7 +130,7 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
     
     /** adds inline node segment */
     public SimpleReadOnlyStyledModel addNodeSegment(Supplier<Node> generator) {
-        SegmentStyledTextParagraph p = lastSegmentStyledTextParagraph();
+        SParagraph p = lastSegmentStyledTextParagraph();
         p.addSegment(generator);
         return this;
     }
@@ -142,7 +142,7 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
     public SimpleReadOnlyStyledModel nl(int count) {
         for (int i = 0; i < count; i++) {
             int ix = paragraphs.size();
-            paragraphs.add(new SegmentStyledTextParagraph(ix));
+            paragraphs.add(new SParagraph(ix));
         }
         return this;
     }
@@ -156,7 +156,7 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
     @Override
     protected void exportParagraph(int index, int start, int end, StyledOutput out) throws IOException {
         StyledParagraph par = paragraphs.get(index);
-        if (par instanceof SegmentStyledTextParagraph p) {
+        if (par instanceof SParagraph p) {
             p.export(start, end, out);
         } else if(par instanceof SimpleStyledImageParagraph p) {
             StyledSegment s = StyledSegment.nodeParagraph(() -> p.createTextCell().getContent());
@@ -167,11 +167,11 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
         }
     }
     
-    /** */
-    public static class SegmentStyledTextParagraph extends StyledParagraph {
-        private ArrayList<Segment> segments;
+    /** Styled Paragraph Based on SSegments */
+    protected static class SParagraph extends StyledParagraph {
+        private ArrayList<SSegment> segments;
 
-        public SegmentStyledTextParagraph(int index) {
+        public SParagraph(int index) {
             super(index);
         }
         
@@ -183,11 +183,11 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
                 // avoid zero height
                 b.addSegment("");
             } else {
-                for(Segment s: segments) {
+                for(SSegment s: segments) {
                     // TODO Segment.createNode()
-                    if(s instanceof TextSegment t) {
+                    if(s instanceof TextSSegment t) {
                         b.addSegment(t.text, t.direct, t.css);
-                    } else if(s instanceof NodeSegment n) {
+                    } else if(s instanceof NodeSSegment n) {
                         b.addInlineNode(n.generator.get());
                     }
                 }
@@ -206,7 +206,7 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
                         return;
                     }
 
-                    Segment seg = segments.get(i);
+                    SSegment seg = segments.get(i);
                     String text = seg.getText();
                     int len = (text == null ? 0: text.length());
                     if (start <= (off + len)) {
@@ -227,13 +227,13 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
             }
 
             StringBuilder sb = new StringBuilder(64);
-            for (Segment s : segments) {
+            for (SSegment s : segments) {
                 sb.append(s.getText());
             }
             return sb.toString();
         }
         
-        protected List<Segment> segments() {
+        protected List<SSegment> segments() {
             if(segments == null) {
                 segments = new ArrayList<>();
             }
@@ -246,71 +246,71 @@ public class SimpleReadOnlyStyledModel extends StyledTextModelReadOnlyBase {
 
         public void addSegment(String text, String style, String[] css) {
             // TODO check for newlines/formfeed chars
-            segments().add(new TextSegment(text, style, css));
+            segments().add(new TextSSegment(text, style, css));
         }
         
         public void addSegment(Supplier<Node> generator) {
-            segments().add(new NodeSegment(generator));
+            segments().add(new NodeSSegment(generator));
+        }
+    }
+
+    /** base class */
+    protected static abstract class SSegment {
+        public abstract String getText();
+
+        protected abstract StyledSegment createStyledSegment(int start, int end);
+    }
+    
+    /** text segment */
+    protected static class TextSSegment extends SSegment {
+        public final String text;
+        public final String direct;
+        public final String[] css;
+        private final StyleInfo style;
+
+        public TextSSegment(String text, String direct, String[] css) {
+            this.text = text;
+            this.direct = direct;
+            this.css = css;
+            this.style = StyleInfo.of(direct, css);
         }
 
-        /** base class */
-        public static abstract class Segment {
-            public abstract String getText();
+        @Override
+        public String getText() {
+            return text;
+        }
 
-            protected abstract StyledSegment createStyledSegment(int start, int end);
+        @Override
+        protected StyledSegment createStyledSegment(int start, int end) {
+            int len = text.length();
+            String s;
+            if ((start <= 0) && (end >= len)) {
+                s = text;
+            } else {
+                s = text.substring(Math.max(0, start), Math.min(end, len));
+            }
+
+            return StyledSegment.of(s, style);
+        }
+    }
+    
+    /** inline node segment */
+    protected static class NodeSSegment extends SSegment {
+        public final Supplier<Node> generator;
+        
+        public NodeSSegment(Supplier<Node> generator) {
+            this.generator = generator;
         }
         
-        /** text segment */
-        public static class TextSegment extends Segment {
-            public final String text;
-            public final String direct;
-            public final String[] css;
-            private final StyleInfo style;
-
-            public TextSegment(String text, String direct, String[] css) {
-                this.text = text;
-                this.direct = direct;
-                this.css = css;
-                this.style = StyleInfo.of(direct, css);
-            }
-
-            @Override
-            public String getText() {
-                return text;
-            }
-
-            @Override
-            protected StyledSegment createStyledSegment(int start, int end) {
-                int len = text.length();
-                String s;
-                if ((start <= 0) && (end >= len)) {
-                    s = text;
-                } else {
-                    s = text.substring(Math.max(0, start), Math.min(end, len));
-                }
-
-                return StyledSegment.of(s, style);
-            }
+        @Override
+        public String getText() {
+            // must be one character
+            return " ";
         }
-        
-        /** inline node segment */
-        public static class NodeSegment extends Segment {
-            public final Supplier<Node> generator;
-            
-            public NodeSegment(Supplier<Node> generator) {
-                this.generator = generator;
-            }
-            
-            @Override
-            public String getText() {
-                // must be one character
-                return " ";
-            }
 
-            @Override
-            protected StyledSegment createStyledSegment(int start, int end) {
-                return StyledSegment.inlineNode(generator);
-            }
+        @Override
+        protected StyledSegment createStyledSegment(int start, int end) {
+            return StyledSegment.inlineNode(generator);
         }
     }
 }
