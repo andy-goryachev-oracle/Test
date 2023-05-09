@@ -212,16 +212,12 @@ public class VFlow extends Pane {
         updateHorizontalScrollBar();
         updateVerticalScrollBar();
     }
-    
-    public void handleDecoratorChange() {
-        leftGutter.getChildren().clear();
-        rightGutter.getChildren().clear();
 
+    public void handleDecoratorChange() {
+        // TODO clear left/right side caches
         requestLayout();
-        updateHorizontalScrollBar();
-        updateVerticalScrollBar();
     }
-    
+
     public void handleLineSpacing() {
         requestLayout();
         updateHorizontalScrollBar();
@@ -735,11 +731,6 @@ public class VFlow extends Pane {
     }
 
     @Override
-    public void requestLayout() {
-        super.requestLayout();
-    }
-
-    @Override
     protected void layoutChildren() {
         layout = reflow();
     }
@@ -1120,11 +1111,13 @@ public class VFlow extends Pane {
     public void handleTextUpdated(TextPos start, TextPos end, int addedTop, int linesAdded, int addedBottom) {
         // change origin if start position is before the top line
         Origin origin = getOrigin();
-        if(start.index() < origin.index()) {
+        if (start.index() < origin.index()) {
             origin = new Origin(start.index(), 0);
             setOrigin(origin);
         }
-        
+
+        // TODO causes flicker in line number nodes
+
         // TODO clear cache >= start, update layout
         cache.clear();
         // TODO rebuild from start.lineIndex()
