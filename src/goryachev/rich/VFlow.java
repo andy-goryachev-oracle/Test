@@ -53,7 +53,7 @@ import javafx.scene.shape.PathElement;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.util.Duration;
-import goryachev.rich.impl.CellCache;
+import goryachev.rich.impl.FastCache;
 import goryachev.rich.impl.RPane;
 import goryachev.rich.impl.SelectionHelper;
 import goryachev.rich.model.StyledTextModel;
@@ -75,7 +75,8 @@ public class VFlow extends Pane {
     private final RPane leftGutter;
     private final RPane rightGutter;
     private final RPane content;
-    private TextCellLayout layout; // FIX rename
+    protected final FastCache<TextCell> cellCache;
+    private TextCellLayout layout; // FIX rename?
     private final Path caretPath;
     private final Path caretLineHighlight;
     private final Path selectionHighlight;
@@ -85,7 +86,6 @@ public class VFlow extends Pane {
     protected final SimpleDoubleProperty offsetX = new SimpleDoubleProperty(0.0);
     protected final SimpleDoubleProperty contentWidth = new SimpleDoubleProperty(0.0);
     protected final Timeline caretAnimation;
-    protected final CellCache cache;
     private boolean handleScrollEvents = true;
     private boolean vsbPressed;
     private double topPadding;
@@ -103,7 +103,7 @@ public class VFlow extends Pane {
 
         getStyleClass().add("flow");
 
-        cache = new CellCache(config.cellCacheSize);
+        cellCache = new FastCache(config.cellCacheSize);
 
         // TODO consider creating upond demand
         leftGutter = new RPane("left-side");
@@ -189,7 +189,7 @@ public class VFlow extends Pane {
         setContentWidth(0.0);
         setOrigin(new Origin(0, -topPadding));
         setOffsetX(-leftPadding);
-        cache.clear();
+        cellCache.clear();
         requestLayout();
     }
 
@@ -207,7 +207,7 @@ public class VFlow extends Pane {
             setContentWidth(0.0);
         }
         setOffsetX(-leftPadding);
-        cache.clear();
+        cellCache.clear();
         requestLayout();
         updateHorizontalScrollBar();
         updateVerticalScrollBar();
@@ -686,7 +686,7 @@ public class VFlow extends Pane {
     }
 
     protected TextCell getCell(int modelIndex) {
-        TextCell cell = cache.get(modelIndex);
+        TextCell cell = cellCache.get(modelIndex);
         if (cell == null) {
             cell = control.getModel().createTextCell(modelIndex);
 
@@ -701,7 +701,7 @@ public class VFlow extends Pane {
                 }
             }
 
-            cache.add(cell);
+            cellCache.add(cell.getIndex(), cell);
         }
         return cell;
     }
@@ -1119,7 +1119,7 @@ public class VFlow extends Pane {
         // TODO causes flicker in line number nodes
 
         // TODO clear cache >= start, update layout
-        cache.clear();
+        cellCache.clear();
         // TODO rebuild from start.lineIndex()
         requestLayout();
     }
@@ -1127,7 +1127,7 @@ public class VFlow extends Pane {
     // TODO this implementation might be more advanced to reduce the amount of re-computation and re-flow
     public void handleStyleUpdated(TextPos start, TextPos end) {
         // TODO clear cache >= start, update layout
-        cache.clear();
+        cellCache.clear();
         // TODO rebuild from start.lineIndex()
         requestLayout();
     }

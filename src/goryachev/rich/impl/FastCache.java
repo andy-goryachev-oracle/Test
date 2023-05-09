@@ -27,25 +27,26 @@ package goryachev.rich.impl;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Random;
-import goryachev.rich.TextCell;
 
 /**
  * A simple cache implementation which provides a cheap invalidation via {@link #clear()} 
  * and a cheap random eviction via {@link #evict()}.
  * This object must be accessed from the FX application thread, although it does not check.
  */
-public class CellCache {
+public class FastCache<T> {
+    private static record Entry<V>(int index, V cell) { }
+
     private int size;
-    private final TextCell[] linear;
-    private final HashMap<Integer, TextCell> data;
+    private final Entry<T>[] linear;
+    private final HashMap<Integer, T> data;
     private final static Random random = new Random();
 
-    public CellCache(int capacity) {
-        linear = new TextCell[capacity];
+    public FastCache(int capacity) {
+        linear = new Entry[capacity];
         data = new HashMap<>(capacity);
     }
 
-    public TextCell get(int row) {
+    public T get(int row) {
         return data.get(row);
     }
 
@@ -55,9 +56,7 @@ public class CellCache {
      * another cell for the given row is present, so this call must be preceded by a
      * {@link #get(int)}.
      */
-    public void add(TextCell cell) {
-        int row = cell.getIndex();
-
+    public void add(int index, T cell) {
         int ix;
         if (size >= capacity()) {
             ix = evict();
@@ -65,17 +64,17 @@ public class CellCache {
             ix = size++;
         }
 
-        data.put(row, cell);
-        linear[ix] = cell;
+        data.put(index, cell);
+        linear[ix] = new Entry<>(index, cell);
     }
 
     /** returns an index in the linear array of the cell that has been evicted */
     protected int evict() {
         int ix = random.nextInt(size);
         // does not clear the slot because it will get overwritten by the caller
-        TextCell c = linear[ix];
-        int row = c.getIndex();
-        data.remove(row);
+        Entry<T> en = linear[ix];
+        int index = en.index();
+        data.remove(index);
         return ix;
     }
 
