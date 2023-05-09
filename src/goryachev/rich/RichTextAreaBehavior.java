@@ -591,20 +591,20 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         if (moveRight) {
             cix++;
             if (cix > cell.getTextLength()) {
-                int line = cell.getLineIndex() + 1;
+                int line = cell.getIndex() + 1;
                 TextPos p;
                 if (line < control.getParagraphCount()) {
                     // next line
                     p = new TextPos(line, 0);
                 } else {
                     // end of last paragraph w/o newline
-                    p = new TextPos(cell.getLineIndex(), cell.getTextLength());
+                    p = new TextPos(cell.getIndex(), cell.getTextLength());
                 }
                 return p;
             }
         } else {
             if (start.offset() == 0) {
-                int line = cell.getLineIndex() - 1;
+                int line = cell.getIndex() - 1;
                 if (line >= 0) {
                     // prev line
                     TextCell prevCell = vflow().getCell(line);
@@ -617,7 +617,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
         // using default locale, same as TextInputControl.backward() for example
         BreakIterator br = BreakIterator.getCharacterInstance();
-        String text = getPlainText(cell.getLineIndex());
+        String text = getPlainText(cell.getIndex());
         br.setText(text);
         int off = start.offset();
         try {
@@ -645,20 +645,20 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
         if (moveRight) {
             cix++;
             if (cix > cell.getTextLength()) {
-                int line = cell.getLineIndex() + 1;
+                int line = cell.getIndex() + 1;
                 TextPos p;
                 if (line < control.getParagraphCount()) {
                     // next line
                     p = new TextPos(line, 0);
                 } else {
                     // end of last paragraph w/o newline
-                    p = new TextPos(cell.getLineIndex(), cell.getTextLength());
+                    p = new TextPos(cell.getIndex(), cell.getTextLength());
                 }
                 return p;
             }
         } else {
             if (start.offset() == 0) {
-                int line = cell.getLineIndex() - 1;
+                int line = cell.getIndex() - 1;
                 if (line >= 0) {
                     // prev line
                     TextCell prevCell = vflow().getCell(line);
@@ -671,7 +671,7 @@ public class RichTextAreaBehavior extends BehaviorBase2 {
 
         // using default locale, same as TextInputControl.backward() for example
         BreakIterator br = BreakIterator.getCharacterInstance();
-        String text = getPlainText(cell.getLineIndex());
+        String text = getPlainText(cell.getIndex());
         br.setText(text);
         int off = start.offset();
         try {

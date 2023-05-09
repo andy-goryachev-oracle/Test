@@ -100,17 +100,18 @@ public class VFlow extends Pane {
         this.config = c;
         this.vscroll = vscroll;
         this.hscroll = hscroll;
-        
+
         getStyleClass().add("flow");
 
         cache = new CellCache(config.cellCacheSize);
 
+        // TODO consider creating upond demand
         leftGutter = new RPane("left-side");
-        
+        // TODO consider creating upond demand
         rightGutter = new RPane("right-side");
-        
+
         content = new RPane("content");
-        
+
         caretPath = new Path();
         caretPath.getStyleClass().add("caret");
         caretPath.setManaged(false);
@@ -980,7 +981,7 @@ public class VFlow extends Pane {
             // in theory, these can be cached
             SideDecorator leftDecorator = control.getLeftDecorator();
             if (leftDecorator != null) {
-                Node n = leftDecorator.getNode(cell.getLineIndex(), false);
+                Node n = leftDecorator.getNode(cell.getIndex(), false);
                 if (n != null) {
                     n.setManaged(false);
                     leftGutter.getChildren().add(n);
@@ -990,7 +991,7 @@ public class VFlow extends Pane {
 
             SideDecorator rightDecorator = control.getRightDecorator();
             if (rightDecorator != null) {
-                Node n = rightDecorator.getNode(cell.getLineIndex(), false);
+                Node n = rightDecorator.getNode(cell.getIndex(), false);
                 if (n != null) {
                     n.setManaged(false);
                     rightGutter.getChildren().add(n);

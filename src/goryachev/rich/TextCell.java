@@ -105,7 +105,7 @@ public class TextCell {
         return y;
     }
     
-    public int getLineIndex() {
+    public int getIndex() {
         return index;
     }
 

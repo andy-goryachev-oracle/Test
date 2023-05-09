@@ -130,7 +130,7 @@ public class TextCellLayout {
             Insets pad = r.getPadding();
             double y = localY - cell.getY() - pad.getTop();
             if (y < 0) {
-                return new TextPos(cell.getLineIndex(), 0);
+                return new TextPos(cell.getIndex(), 0);
             } else if (y < cell.getCellHeight()) {
                 // TODO move this to TextCell?
                 if (r instanceof TextFlow t) {
@@ -145,9 +145,9 @@ public class TextCellLayout {
                     //}
 
                     int ii = Bugs.getInsertionIndex(t, p);
-                    return new TextPos(cell.getLineIndex(), ii);
+                    return new TextPos(cell.getIndex(), ii);
                 } else {
-                    return new TextPos(cell.getLineIndex(), 0);
+                    return new TextPos(cell.getIndex(), 0);
                 }
             } else {
                 // TODO
@@ -159,7 +159,7 @@ public class TextCellLayout {
         if (r instanceof TextFlow f) {
             cix = NewAPI.getTextLength(f);
         }
-        return new TextPos(cell.getLineIndex(), cix);
+        return new TextPos(cell.getIndex(), cix);
     }
 
     /** returns the cell contained in this layout, or null */
@@ -308,7 +308,7 @@ public class TextCellLayout {
         if(localY < y) {
             return 1;
         } else if(localY >= y + cell.getCellHeight()) {
-            if(cell.getLineIndex() == (lineCount - 1)) {
+            if(cell.getIndex() == (lineCount - 1)) {
                 return 0;
             }
             return -1;
@@ -340,7 +340,7 @@ public class TextCellLayout {
             
             ix = binarySearch(localY, topIx, btmIx - 1);
             TextCell cell = getCell(ix);
-            return new Origin(cell.getLineIndex(), localY - cell.getY());
+            return new Origin(cell.getIndex(), localY - cell.getY());
         }
         return new Origin(ix, 0.0);
     }
@@ -375,6 +375,6 @@ public class TextCellLayout {
         int ix = binarySearch(y, topIx, btmIx - 1);
         TextCell cell = getCell(ix);
         double off = y - cell.getY();
-        return new Origin(cell.getLineIndex(), off);
+        return new Origin(cell.getIndex(), off);
     }
 }

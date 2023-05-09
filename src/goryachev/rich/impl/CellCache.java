@@ -30,10 +30,9 @@ import java.util.Random;
 import goryachev.rich.TextCell;
 
 /**
- * A simple cache implementation.
+ * A simple cache implementation which provides a cheap invalidation via {@link #clear()} 
+ * and a cheap random eviction via {@link #evict()}.
  * This object must be accessed from the FX application thread, although it does not check.
- * 
- * Requirements: - cheap full invalidation (clear) - cheap random eviction
  */
 public class CellCache {
     private int size;
@@ -57,7 +56,7 @@ public class CellCache {
      * {@link #get(int)}.
      */
     public void add(TextCell cell) {
-        int row = cell.getLineIndex();
+        int row = cell.getIndex();
 
         int ix;
         if (size >= capacity()) {
@@ -75,7 +74,7 @@ public class CellCache {
         int ix = random.nextInt(size);
         // does not clear the slot because it will get overwritten by the caller
         TextCell c = linear[ix];
-        int row = c.getLineIndex();
+        int row = c.getIndex();
         data.remove(row);
         return ix;
     }
