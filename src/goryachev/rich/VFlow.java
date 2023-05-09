@@ -93,6 +93,7 @@ public class VFlow extends Pane {
     private double leftPadding;
     private double rightPadding;
     private double lineSpacing;
+    private boolean inReflow;
 
     public VFlow(RichTextAreaSkin skin, Config c, ListenerHelper lh, ScrollBar vscroll, ScrollBar hscroll) {
         this.control = skin.getSkinnable();
@@ -163,7 +164,7 @@ public class VFlow extends Pane {
         );
         
         lh.addChangeListener(
-            this::requestLayout,
+            this::handleOrigin,
             true,
             origin
         );
@@ -274,6 +275,12 @@ public class VFlow extends Pane {
     
     public ReadOnlyProperty<Origin> originProperty() {
         return origin.getReadOnlyProperty();
+    }
+    
+    protected void handleOrigin() {
+        if(!inReflow) {
+            requestLayout();
+        }
     }
 
     public int topCellIndex() {
@@ -728,7 +735,6 @@ public class VFlow extends Pane {
 
     @Override
     public void requestLayout() {
-        removeCells();
         super.requestLayout();
     }
 
@@ -738,23 +744,28 @@ public class VFlow extends Pane {
     }
 
     protected TextCellLayout reflow() {
-        removeCells();
-
-        TextCellLayout la = new TextCellLayout(this);
-        layout = la;
-        layoutCells();
-
-        checkForExcessiveWhitespaceAtTheEnd();
-        updateCaretAndSelection();
-
-        // eliminate VSB during scrolling with a mouse
-        // the VSB will finally get updated on mouse released event
-        if (!vsbPressed) {
-            updateVerticalScrollBar();
+        inReflow = true;
+        try {
+            removeCells();
+    
+            TextCellLayout la = new TextCellLayout(this);
+            layout = la;
+            layoutCells();
+    
+            checkForExcessiveWhitespaceAtTheEnd();
+            updateCaretAndSelection();
+    
+            // eliminate VSB during scrolling with a mouse
+            // the VSB will finally get updated on mouse released event
+            if (!vsbPressed) {
+                updateVerticalScrollBar();
+            }
+    
+            // layout might get invalidated in the process, but we must return a non-null value
+            return la;
+        } finally {
+            inReflow = false;
         }
-
-        // layout might get invalidated in the process, but we must return a non-null value
-        return la;
     }
 
     protected void removeCells() {
@@ -1086,11 +1097,16 @@ public class VFlow extends Pane {
 
     protected void checkForExcessiveWhitespaceAtTheEnd() {
         double delta = textCellLayout().bottomHeight() - getViewHeight();
-        if(delta < 0) {
+        if (delta < 0) {
+            if (getOrigin().index() == 0) {
+                if (getOrigin().offset() <= -topPadding) {
+                    return;
+                }
+            }
             blockScroll(delta);
         }
     }
-    
+
     public void updateTabSize() {
         CaretInfo c = getCaretInfo();
         requestLayout();
