@@ -53,11 +53,13 @@ public class TextCellLayout {
     private final int lineCount;
     private final Insets contentPadding;
     private final Origin origin;
-    private int visible;
+    private int visibleCount;
     private int bottomCount;
     private double unwrappedWidth;
     private double topHeight;
     private double bottomHeight;
+    private Node[] left;
+    private Node[] right;
     
     public TextCellLayout(VFlow f) {
         this.flowWidth = f.getWidth();
@@ -93,8 +95,8 @@ public class TextCellLayout {
             "}";
     }
 
-    public void addCell(TextCell box) {
-        cells.add(box);
+    public void addCell(TextCell cell) {
+        cells.add(cell);
     }
     
     public void setUnwrappedWidth(double w) {
@@ -102,16 +104,15 @@ public class TextCellLayout {
     }
     
     public double getUnwrappedWidth() {
-        // TODO add line number section width + any other gutters widths
         return unwrappedWidth;
     }
     
     public int getVisibleCellCount() {
-        return visible;
+        return visibleCount;
     }
     
-    public void setVisibleCount(int n) {
-        visible = n;
+    public void setVisibleCellCount(int n) {
+        visibleCount = n;
     }
 
     /** finds text position inside the sliding window */
@@ -180,7 +181,7 @@ public class TextCellLayout {
     /** returns a visible cell, or null */
     public TextCell getVisibleCell(int modelIndex) {
         int ix = modelIndex - origin.index();
-        if((ix >= 0) && (ix < visible)) {
+        if((ix >= 0) && (ix < visibleCount)) {
             return cells.get(ix);
         }
         return null;
@@ -188,7 +189,7 @@ public class TextCellLayout {
     
     /** returns a TextCell from the visible or bottom margin parts, or null */
     public TextCell getCellAt(int ix) {
-        if(ix < bottomCount) {
+        if(ix < visibleCount) {
             return cells.get(ix);
         }
         return null;
@@ -208,7 +209,6 @@ public class TextCellLayout {
         return null;
     }
 
-    // TODO combine with previous method?
     private CaretInfo translateCaretInfo(double xoffset, TextCell cell, PathElement[] elements) {
         double x = 0.0;
         double y0 = 0.0;
@@ -376,5 +376,27 @@ public class TextCellLayout {
         TextCell cell = getCell(ix);
         double off = y - cell.getY();
         return new Origin(cell.getIndex(), off);
+    }
+
+    public void addLeftNode(int index, Node n) {
+        if (left == null) {
+            left = new Node[visibleCount];
+        }
+        left[index] = n;
+    }
+
+    public void addRightNode(int index, Node n) {
+        if (right == null) {
+            right = new Node[visibleCount];
+        }
+        right[index] = n;
+    }
+
+    public Node getLeftNodeAt(int index) {
+        return left[index];
+    }
+
+    public Node getRightNodeAt(int index) {
+        return right[index];
     }
 }

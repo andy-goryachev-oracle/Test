@@ -75,8 +75,6 @@ public class VFlow extends Pane {
     private final RPane leftGutter;
     private final RPane rightGutter;
     private final RPane content;
-    protected final FastCache<TextCell> cellCache;
-    private TextCellLayout layout; // FIX rename?
     private final Path caretPath;
     private final Path caretLineHighlight;
     private final Path selectionHighlight;
@@ -86,6 +84,10 @@ public class VFlow extends Pane {
     protected final SimpleDoubleProperty offsetX = new SimpleDoubleProperty(0.0);
     protected final SimpleDoubleProperty contentWidth = new SimpleDoubleProperty(0.0);
     protected final Timeline caretAnimation;
+    protected final FastCache<TextCell> cellCache;
+    private TextCellLayout layout; // FIX rename?
+    private FastCache<Node> leftCache;
+    private FastCache<Node> rightCache;
     private boolean handleScrollEvents = true;
     private boolean vsbPressed;
     private double topPadding;
@@ -214,8 +216,24 @@ public class VFlow extends Pane {
     }
 
     public void handleDecoratorChange() {
-        // TODO clear left/right side caches
+        leftCache = updateSideCache(control.getLeftDecorator(), leftCache);
+        rightCache = updateSideCache(control.getRightDecorator(), rightCache);
         requestLayout();
+    }
+
+    private FastCache<Node> updateSideCache(SideDecorator decorator, FastCache<Node> cache) {
+        if (decorator == null) {
+            if (cache != null) {
+                cache.clear();
+            }
+        } else {
+            if (cache == null) {
+                cache = new FastCache<>(config.cellCacheSize);
+            } else {
+                cache.clear();
+            }
+        }
+        return cache;
     }
 
     public void handleLineSpacing() {
@@ -874,7 +892,7 @@ public class VFlow extends Pane {
                 if (y > height) {
                     topMarginCount = (int)Math.ceil(count * config.slidingWindowMargin);
                     bottomMarginCount = count + topMarginCount;
-                    layout.setVisibleCount(count);
+                    layout.setVisibleCellCount(count);
                     visible = false;
                 }
             } else {
@@ -887,13 +905,50 @@ public class VFlow extends Pane {
             }
         }
 
-        // less paragraphs than can fit in the view
+        // in case there are less paragraphs than can fit in the view
         if (visible) {
-            layout.setVisibleCount(count);
+            layout.setVisibleCellCount(count);
         }
         
         if (i == paragraphCount) {
             y += bottomPadding;
+        }
+        
+        // populate side nodes
+        if (leftDecorator != null) {
+            for (i = 0; i < layout.getVisibleCellCount(); i++) {
+                TextCell cell = layout.getCellAt(i);
+                int ix = cell.getIndex();
+                Node n = leftCache.get(ix);
+                if (n == null) {
+                    n = leftDecorator.getNode(ix, false);
+                    if (n != null) {
+                        n.setManaged(false);
+                        leftCache.add(ix, n);
+                    }
+                }
+                if (n != null) {
+                    layout.addLeftNode(i, n);
+                }
+            }
+        }
+
+        if (rightDecorator != null) {
+            for (i = 0; i < layout.getVisibleCellCount(); i++) {
+                TextCell cell = layout.getCellAt(i);
+                int ix = cell.getIndex();
+                Node n = rightCache.get(ix);
+                if (n == null) {
+                    n = rightDecorator.getNode(cell.getIndex(), false);
+                    if (n != null) {
+                        n.setManaged(false);
+                        rightCache.add(ix, n);
+                    }
+                }
+                if (n != null) {
+                    layout.addRightNode(i, n);
+                }
+            }
         }
 
         layout.setBottomCount(count);
@@ -960,6 +1015,9 @@ public class VFlow extends Pane {
         leftGutter.getChildren().clear();
         rightGutter.getChildren().clear();
 
+        boolean addLeft = control.getLeftDecorator() != null;
+        boolean addRight = control.getRightDecorator() != null;
+
         int sz = layout.getVisibleCellCount();
         for (int i=0; i < sz; i++) {
             TextCell cell = layout.getCellAt(i);
@@ -970,21 +1028,21 @@ public class VFlow extends Pane {
 
             // place side nodes
             // in theory, these can be cached
-            SideDecorator leftDecorator = control.getLeftDecorator();
-            if (leftDecorator != null) {
-                Node n = leftDecorator.getNode(cell.getIndex(), false);
+            if (addLeft) {
+                Node n = layout.getLeftNodeAt(i);
+//                    leftDecorator.getNode(cell.getIndex(), false);
                 if (n != null) {
-                    n.setManaged(false);
+//                    n.setManaged(false);
                     leftGutter.getChildren().add(n);
                     leftGutter.layoutInArea(n, 0.0, y, leftGutter.getWidth(), h);
                 }
             }
 
-            SideDecorator rightDecorator = control.getRightDecorator();
-            if (rightDecorator != null) {
-                Node n = rightDecorator.getNode(cell.getIndex(), false);
+            if (addRight) {
+                Node n = layout.getRightNodeAt(i);
+                    //rightDecorator.getNode(cell.getIndex(), false);
                 if (n != null) {
-                    n.setManaged(false);
+//                    n.setManaged(false);
                     rightGutter.getChildren().add(n);
                     rightGutter.layoutInArea(n, 0.0, y, rightGutter.getWidth(), h);
                 }
