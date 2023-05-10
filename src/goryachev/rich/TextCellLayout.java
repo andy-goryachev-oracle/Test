@@ -132,7 +132,7 @@ public class TextCellLayout {
             double y = localY - cell.getY() - pad.getTop();
             if (y < 0) {
                 return new TextPos(cell.getIndex(), 0);
-            } else if (y < cell.getCellHeight()) {
+            } else if (y < cell.getHeight()) {
                 // TODO move this to TextCell?
                 if (r instanceof TextFlow t) {
                     double x = localX + xoffset - pad.getLeft();
@@ -307,7 +307,7 @@ public class TextCellLayout {
         double y = cell.getY();
         if(localY < y) {
             return 1;
-        } else if(localY >= y + cell.getCellHeight()) {
+        } else if(localY >= y + cell.getHeight()) {
             if(cell.getIndex() == (lineCount - 1)) {
                 return 0;
             }

@@ -43,7 +43,7 @@ public class TextCell {
     private final int index;
     private final Region content;
     private double height;
-    private double forWidth; // TODO not used right now, use to skip layout when possible
+    private double forWidth; // TODO not used right now, to be used to skip layout when possible
     private double y;
 
     public TextCell(int index, Region content) {
@@ -87,12 +87,12 @@ public class TextCell {
         }
     }
 
-    public void setCellHeight(double height, double forWidth) {
+    public void setHeight(double height, double forWidth) {
         this.height = height;
         this.forWidth = forWidth;
     }
 
-    public double getCellHeight() {
+    public double getHeight() {
         return height;
     }
 

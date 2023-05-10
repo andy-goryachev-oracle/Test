@@ -479,7 +479,7 @@ public class VFlow extends Pane {
             } else {
                 w = getContentWidth() + leftPadding + rightPadding;
             }
-            cell.addBoxOutline(b, 0.0, snapPositionX(w), cell.getCellHeight());
+            cell.addBoxOutline(b, 0.0, snapPositionX(w), cell.getHeight());
         }
     }
 
@@ -871,7 +871,7 @@ public class VFlow extends Pane {
 
             double h = r.prefHeight(forWidth) + lineSpacing;
             h = snapSizeY(h); // is this right?  or snap(y + h) - snap(y) ?
-            cell.setCellHeight(h, forWidth);
+            cell.setHeight(h, forWidth);
             cell.setLocationY(y);
 
             if (!wrap) {
@@ -980,7 +980,7 @@ public class VFlow extends Pane {
             y = snapPositionY(y - h);
             count++;
 
-            cell.setCellHeight(h, forWidth);
+            cell.setHeight(h, forWidth);
             cell.setLocationY(y);
             
             content.getChildren().remove(r);
@@ -1022,17 +1022,14 @@ public class VFlow extends Pane {
         for (int i=0; i < sz; i++) {
             TextCell cell = layout.getCellAt(i);
             Region r = cell.getContent();
-            double h = cell.getCellHeight();
+            double h = cell.getHeight();
             double y = cell.getY();
             content.layoutInArea(r, x, y, w, h);
 
             // place side nodes
-            // in theory, these can be cached
             if (addLeft) {
                 Node n = layout.getLeftNodeAt(i);
-//                    leftDecorator.getNode(cell.getIndex(), false);
                 if (n != null) {
-//                    n.setManaged(false);
                     leftGutter.getChildren().add(n);
                     leftGutter.layoutInArea(n, 0.0, y, leftGutter.getWidth(), h);
                 }
@@ -1040,9 +1037,7 @@ public class VFlow extends Pane {
 
             if (addRight) {
                 Node n = layout.getRightNodeAt(i);
-                    //rightDecorator.getNode(cell.getIndex(), false);
                 if (n != null) {
-//                    n.setManaged(false);
                     rightGutter.getChildren().add(n);
                     rightGutter.layoutInArea(n, 0.0, y, rightGutter.getWidth(), h);
                 }
@@ -1051,7 +1046,7 @@ public class VFlow extends Pane {
     }
 
     public double getViewHeight() {
-        return content.getHeight(); // TODO padding
+        return content.getHeight();
     }
     
     public void pageUp() {
