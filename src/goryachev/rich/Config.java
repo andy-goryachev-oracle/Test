@@ -24,6 +24,9 @@
  */
 package goryachev.rich;
 
+import java.util.function.Supplier;
+import javafx.scene.control.ScrollBar;
+
 /**
  * Configuration parameters for RichTextArea.
  */
@@ -66,6 +69,12 @@ public class Config {
      * Must be > 1.0f for relative navigation to work.
      */
     public final float slidingWindowMargin;
+
+    /** creates a vertical scroll bar.  when set to null (default) a standard ScrollBar will be created */
+    public final Supplier<ScrollBar> verticalScrollBarGenerator;
+
+    /** creates a horizontal scroll bar.  when set to null (default) a standard ScrollBar will be created */
+    public final Supplier<ScrollBar> horizontalScrollBarGenerator;
     
     public static Builder builder() {
         return new Builder();
@@ -88,6 +97,8 @@ public class Config {
         scrollWheelBlockSizeHorizontal = b.scrollWheelBlockSizeHorizontal;
         slidingWindowMargin = b.slidingWindowMargin;
         scrollWheelBlockSizeVertical = b.scrollWheelBlockSizeVertical;
+        verticalScrollBarGenerator = b.verticalScrollBarGenerator;
+        horizontalScrollBarGenerator = b.horizontalScrollBarGenerator;
     }
 
     /** Config builder is necessary to make Config immutable */
@@ -104,7 +115,9 @@ public class Config {
         private double scrollWheelBlockSizeHorizontal = 0.1;
         private double scrollWheelBlockSizeVertical = 0.1;
         private float slidingWindowMargin = 3.0f;
-
+        private Supplier<ScrollBar> verticalScrollBarGenerator;
+        private Supplier<ScrollBar> horizontalScrollBarGenerator;
+        
         private Builder() {
         }
 
@@ -170,6 +183,16 @@ public class Config {
         /** Sets sliding window margin size. */
         public void setSlidingWindowMargin(float x) {
             slidingWindowMargin = x;
+        }
+
+        /** Allows for creating custom vertical scroll bar.  A null (default) results in a standard ScrollBar */
+        public void setVerticalScrollBarGenerator(Supplier<ScrollBar> gen) {
+            verticalScrollBarGenerator = gen;
+        }
+
+        /** Allows for creating custom horizontal scroll bar.  A null (default) results in a standard ScrollBar */
+        public void setHorizontalScrollBarGenerator(Supplier<ScrollBar> gen) {
+            horizontalScrollBarGenerator = gen;
         }
     }
 }

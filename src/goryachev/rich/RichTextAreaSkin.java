@@ -26,6 +26,7 @@
 // https://github.com/andy-goryachev/FxEditor
 package goryachev.rich;
 
+import java.util.function.Supplier;
 import javafx.geometry.HPos;
 import javafx.geometry.Orientation;
 import javafx.geometry.VPos;
@@ -39,7 +40,6 @@ import javafx.scene.text.Text;
 import goryachev.rich.RichTextArea.Cmd;
 import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.util.ListenerHelper;
-import goryachev.rich.util.NewAPI;
 
 /**
  * Provides visual representation for RichTextArea.
@@ -66,9 +66,6 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
         this.config = cnf;
         this.listenerHelper = new ListenerHelper();
         
-        // TODO maybe create scroll bars in the control (as they might be custom) -
-        // TODO alternatively, the scrollbars can come from Config
-        // this way they are available before vflow is created by the skin
         vscroll = createVScrollBar();
         vscroll.setOrientation(Orientation.VERTICAL);
         vscroll.setManaged(true);
@@ -77,7 +74,7 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
         vscroll.setUnitIncrement(config.scrollBarsUnitIncrement);
         vscroll.addEventFilter(ScrollEvent.ANY, (ev) -> ev.consume());
         
-        hscroll = createVScrollBar();
+        hscroll = createHScrollBar();
         hscroll.setOrientation(Orientation.HORIZONTAL);
         hscroll.setManaged(true);
         hscroll.setMin(0.0);
@@ -135,21 +132,19 @@ public class RichTextAreaSkin extends SkinBase<RichTextArea> implements StyleRes
     }
 
     /** called from the constructor.  override to provide custom behavior */
-    // TODO variant: generator in Config
+    // TODO variant: generator in Config, or add methods to manipulate behavior to control
     protected RichTextAreaBehavior createBehavior() {
         return new RichTextAreaBehavior(this, config);
     }
     
-    /** called from the constructor. override to provide a custom scroll bar */
-    // TODO variant: generator in Config
-    protected ScrollBar createVScrollBar() {
-        return new ScrollBar();
+    private final ScrollBar createVScrollBar() {
+        Supplier<ScrollBar> gen = config.verticalScrollBarGenerator;
+        return gen == null ? new ScrollBar() : gen.get();
     }
 
-    /** called from the constructor. override to provide a custom scroll bar */
-    // TODO variant: generator in Config
-    protected ScrollBar createHScrollBar() {
-        return new ScrollBar();
+    private final ScrollBar createHScrollBar() {
+        Supplier<ScrollBar> gen = config.horizontalScrollBarGenerator;
+        return gen == null ? new ScrollBar() : gen.get();
     }
 
     public VFlow getVFlow() {
