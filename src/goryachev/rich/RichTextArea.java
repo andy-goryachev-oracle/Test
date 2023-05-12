@@ -52,6 +52,7 @@ import javafx.scene.AccessibleAttribute;
 import javafx.scene.AccessibleRole;
 import javafx.scene.control.Control;
 import javafx.util.Duration;
+import goryachev.rich.model.EditableRichTextModel;
 import goryachev.rich.model.StyleAttrs;
 import goryachev.rich.model.StyleInfo;
 import goryachev.rich.model.StyledTextModel;
@@ -60,11 +61,9 @@ import goryachev.rich.util.Util;
 /**
  * Styled Text Area.
  * 
- * TODO line spacing property
- * TODO content padding property
- * TODO set size to content property
+ * TODO fit height property
+ * TODO fit width property
  * TODO highlight current line property
- * TODO line count r/o property
  * 
  * TODO add methods corresponding to the remaining Action tags
  */
@@ -123,11 +122,28 @@ public class RichTextArea extends Control {
     private DoubleProperty lineSpacing;
     private BooleanProperty highlightCurrentLine;
 
+    /**
+     * Creates an editable instance with default configuration parameters,
+     * using an in-memory model {@link EditableRichTextModel}.
+     */
     public RichTextArea() {
-        this(Config.defaultConfig());
+        this(new EditableRichTextModel());
     }
 
-    public RichTextArea(Config c) {
+    /**
+     * Creates an instance with default configuration parameters, using the specified model.
+     * @param model styled text model
+     */
+    public RichTextArea(StyledTextModel model) {
+        this(Config.defaultConfig(), model);
+    }
+
+    /**
+     * Creates an instance with the specified configuration parameters and model.
+     * @param c configuration parameters
+     * @param m styled text model
+     */
+    public RichTextArea(Config c, StyledTextModel m) {
         this.config = c;
         
         caretBlinkPeriod = new ReadOnlyObjectWrapper<>(this, "caretBlinkPeriod", Duration.millis(config.caretBlinkPeriod));
@@ -139,6 +155,10 @@ public class RichTextArea extends Control {
         // TODO move to main stylesheet
         // TODO focus border around content area, not the whole thing?
         getStylesheets().add(Util.getResourceURL(getClass(), "RichTextArea.css"));
+
+        if (m != null) {
+            setModel(m);
+        }
     }
 
     @Override
@@ -163,17 +183,20 @@ public class RichTextArea extends Control {
      * then this variable indicates whether the text should wrap onto
      * another line.
      */
-    // TODO perhaps all other properties need to be styleable properties?
+    // TODO perhaps all other properties also need to be styleable?
     private StyleableBooleanProperty wrapText = new StyleableBooleanProperty(false) {
-        @Override public Object getBean() {
+        @Override
+        public Object getBean() {
             return RichTextArea.this;
         }
 
-        @Override public String getName() {
+        @Override
+        public String getName() {
             return "wrapText";
         }
 
-        @Override public CssMetaData<RichTextArea,Boolean> getCssMetaData() {
+        @Override
+        public CssMetaData<RichTextArea, Boolean> getCssMetaData() {
             return StyleableProperties.WRAP_TEXT;
         }
     };

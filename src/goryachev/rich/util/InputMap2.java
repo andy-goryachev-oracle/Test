@@ -30,8 +30,8 @@ import java.util.List;
 import javafx.scene.input.KeyCode;
 
 /**
- * Input Map maps KeyBindings(2) to Action IDs (any object but Runnable or FxAction, typically an enum) and
- * Action IDs to the actual actions (Runnable, FxAction, or lambda).
+ * Input Map maps KeyBindings(2) to function tags (any object except Runnable),
+ * followed by mapping from tags to the actual Runnable function.
  * 
  * The input map may not be limited to a keyboard event, so looking up an action from an Action ID for a
  * built-in functionality such as copy, paste, etc. is also permitted.
@@ -47,19 +47,19 @@ import javafx.scene.input.KeyCode;
  * - maps action ids to methods in the behavior
  */
 public class InputMap2 {
-    // keyBinding2 -> Runnable (FIX: Action tag)
-    // Action -> Runnable
+    // keyBinding2 -> tag
+    // tag -> Runnable
     private final HashMap<Object,Object> map = new HashMap<>();
 
     public InputMap2() {
     }
 
-    /** adds a mapping: actionTag -> function */
-    public void add(Object actionTag, Runnable function) {
-        map.put(actionTag, function);
+    /** adds a mapping: tag -> function */
+    public void add(Object tag, Runnable function) {
+        map.put(tag, function);
     }
 
-    /** adds a mapping: keyBinding -> actionTag */
+    /** adds a mapping: keyBinding -> tag */
     public void add(Object actionTag, KeyCode code, KCondition... modifiers) {
         // TODO check for nulls
         KeyBinding2 k = KeyBinding2.of(code, modifiers);
@@ -97,11 +97,7 @@ public class InputMap2 {
         }
         return null;
     }
-    
-    // TODO this should return FxAction which app developer can enable/disable
-    /*
-    public FxAction getAction(Object tag) {
-        // map can hold Actions as well
-    }
-    */
+
+    // TODO restore function for tag
+    // TODO restore key binding for tag
 }
