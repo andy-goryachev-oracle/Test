@@ -179,6 +179,13 @@ public class CodeAreaDemoPane extends BorderPane {
             setLineNumbers(lineNumbers.isSelected());
         });
         
+        CheckBox syntax = new CheckBox("syntax highlighter");
+        FX.name(syntax, "syntax");
+        syntax.selectedProperty().addListener((x) -> {
+            boolean on = syntax.isSelected();
+            control.setSyntaxHighlighter(on ? new DemoSyntaxDecorator() : null);
+        });
+        
         op = new ROptionPane();
         op.option(editable);
         op.option(wrapText);
@@ -193,6 +200,7 @@ public class CodeAreaDemoPane extends BorderPane {
         op.option(contentPadding);
         op.label("Line Spacing:");
         op.option(lineSpacing);
+        op.option(syntax);
         
         setCenter(vsplit);
         setRight(op);

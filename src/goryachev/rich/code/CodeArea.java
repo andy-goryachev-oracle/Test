@@ -34,25 +34,39 @@ import javafx.css.Styleable;
 import javafx.css.StyleableObjectProperty;
 import javafx.css.StyleableProperty;
 import javafx.scene.control.rich.RichTextArea;
+import javafx.scene.control.rich.TextCell;
 import javafx.scene.control.rich.model.BaseDecoratedModel;
 import javafx.scene.control.rich.model.EditableDecoratedModel;
+import javafx.scene.control.rich.model.SyntaxDecorator;
 import javafx.scene.control.rich.util.Util;
 import javafx.scene.text.Font;
+import javafx.scene.text.TextFlow;
 
 /**
  * CodeArea is a text component which supports styling (a.k.a. "syntax highlighting") of monospaced text.
  */
+// TODO show line numbers - use font
 public class CodeArea extends RichTextArea {
     private ObjectProperty<Font> font;
+    private String fontStyle;
 
     public CodeArea(BaseDecoratedModel m) {
         super(m);
+        modelProperty().addListener((s, prev, newValue) -> {
+            // TODO perhaps even block any change of (already set BaseDecoratedModel)
+            if (newValue != null) {
+                if (!(newValue instanceof BaseDecoratedModel)) {
+                    setModel(prev);
+                    throw new IllegalArgumentException("model must be of type " + BaseDecoratedModel.class);
+                }
+            }
+        });
     }
-    
+
     public CodeArea() {
-        super(new EditableDecoratedModel());
+        this(new EditableDecoratedModel());
     }
-    
+
     /**
      * The default font to use for text in the TextInputControl. If the TextInputControl's text is
      * rich text then this font may or may not be used depending on the font
@@ -62,7 +76,7 @@ public class CodeArea extends RichTextArea {
      */
     public final ObjectProperty<Font> fontProperty() {
         if (font == null) {
-            font = new StyleableObjectProperty<Font>(Font.getDefault()) {
+            font = new StyleableObjectProperty<Font>(getDefaultFont()) {
                 private boolean fontSetByCss;
 
                 @Override
@@ -100,6 +114,7 @@ public class CodeArea extends RichTextArea {
                         // NodeHelper.reapplyCSS(CodeArea.this);
                         layoutChildren();
                     }
+                    fontStyle = null;
                 }
 
                 @Override
@@ -128,10 +143,9 @@ public class CodeArea extends RichTextArea {
     public final Font getFont() {
         return font == null ? Font.getDefault() : font.getValue();
     }
-    
+
     private static class StyleableProperties {
-        private static final FontCssMetaData<CodeArea> FONT =
-            new FontCssMetaData<>("-fx-font", Font.getDefault()) {
+        private static final FontCssMetaData<CodeArea> FONT = new FontCssMetaData<>("-fx-font", Font.getDefault()) {
 
             @Override
             public boolean isSettable(CodeArea n) {
@@ -144,10 +158,8 @@ public class CodeArea extends RichTextArea {
             }
         };
 
-        private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES = Util.initStyleables(
-            RichTextArea.getClassCssMetaData(),
-            FONT
-        );
+        private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES = Util
+            .initStyleables(RichTextArea.getClassCssMetaData(), FONT);
     }
 
     /**
@@ -162,5 +174,45 @@ public class CodeArea extends RichTextArea {
     @Override
     public List<CssMetaData<? extends Styleable, ?>> getControlCssMetaData() {
         return getClassCssMetaData();
+    }
+
+    private BaseDecoratedModel baseDecoratedModel() {
+        return (BaseDecoratedModel)getModel();
+    }
+
+    // TODO another school of thought suggests to move the highlighter property here.
+    public void setSyntaxHighlighter(SyntaxDecorator d) {
+        var m = baseDecoratedModel();
+        if (m != null) {
+            m.setDecorator(d);
+        }
+    }
+
+    public SyntaxDecorator getSyntaxDecorator() {
+        var m = baseDecoratedModel();
+        return (m == null) ? null : m.getDecorator();
+    }
+
+    private static Font getDefaultFont() {
+        Font f = Font.getDefault();
+        return Font.font("monospace", f.getSize());
+    }
+
+    protected String fontStyle() {
+        if (fontStyle == null) {
+            Font f = getFont();
+            fontStyle = "-fx-font-family:'" + f.getFamily() + "'; -fx-font-size:" + f.getSize() + ";";
+        }
+        return fontStyle;
+    }
+
+    // sets direct font style on a TextFlow-based TextCell
+    protected TextCell createTextCell(int modelIndex) {
+        TextCell c = getModel().createTextCell(modelIndex);
+        if (c.getContent() instanceof TextFlow f) {
+            String st = fontStyle();
+            f.setStyle(st);
+        }
+        return c;
     }
 }

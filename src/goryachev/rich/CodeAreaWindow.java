@@ -69,7 +69,7 @@ public class CodeAreaWindow extends Stage {
         Scene scene = new Scene(bp);
 
         setScene(scene);
-        setTitle("RichTextArea Demo " + System.getProperty("javafx.runtime.version") + " " + System.getProperty("java.version"));
+        setTitle("CodeArea Demo " + System.getProperty("javafx.runtime.version") + " " + System.getProperty("java.version"));
         setWidth(1200);
         setHeight(600);
         
