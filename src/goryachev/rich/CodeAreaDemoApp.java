@@ -22,18 +22,26 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-module andy_test {
-    exports goryachev.apps;
-    exports goryachev.bugs;
-    exports goryachev.research;
-    exports goryachev.rich;
-    exports goryachev.test;
-    exports goryachev.util;
+package goryachev.rich;
+import javafx.application.Application;
+import javafx.stage.Stage;
+import goryachev.settings.FxSettings;
 
-    requires javafx.base;
-    requires javafx.controls;
-    requires javafx.graphics;
-    requires javafx.web;
-    requires java.desktop;
-    requires javafx.swing;
+/**
+ * CodeArea Demo Application.
+ */
+public class CodeAreaDemoApp extends Application {
+    public static void main(String[] args) {
+        Application.launch(CodeAreaDemoApp.class, args);
+    }
+    
+    @Override
+    public void init() {
+        FxSettings.useDirectory(".CodeAreaDemoApp");
+    }
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        new CodeAreaWindow(null).show();
+    }
 }

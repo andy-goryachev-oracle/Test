@@ -22,18 +22,40 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-module andy_test {
-    exports goryachev.apps;
-    exports goryachev.bugs;
-    exports goryachev.research;
-    exports goryachev.rich;
-    exports goryachev.test;
-    exports goryachev.util;
+package goryachev.rich.util;
 
-    requires javafx.base;
-    requires javafx.controls;
-    requires javafx.graphics;
-    requires javafx.web;
-    requires java.desktop;
-    requires javafx.swing;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Priority;
+
+/**
+ *
+ */
+public class ROptionPane extends GridPane {
+    private int row;
+    private int column;
+    private static final Insets MARGIN = new Insets(2, 4, 2, 4);
+    
+    public ROptionPane() {
+        // no such thing
+        // https://stackoverflow.com/questions/20454021/how-to-set-padding-between-columns-of-a-javafx-gridpane
+        // setVGap(2);
+    }
+    
+    public void label(String text) {
+        add(new Label(text));
+    }
+    
+    public void option(Node n) {
+        add(n);
+    }
+
+    public void add(Node n) {
+        add(n, column, row++);
+        setMargin(n, MARGIN);
+        setFillHeight(n, Boolean.TRUE);
+        setFillWidth(n, Boolean.TRUE);
+    }
 }
