@@ -47,7 +47,6 @@ import javafx.scene.control.rich.model.BaseDecoratedModel;
 import javafx.scene.control.rich.model.EditableRichTextModel;
 import javafx.scene.control.rich.model.StyleAttribute;
 import javafx.scene.control.rich.model.StyleAttrs;
-import javafx.scene.control.rich.util.LineNumberDecorator;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -175,9 +174,7 @@ public class CodeAreaDemoPane extends BorderPane {
         
         CheckBox lineNumbers = new CheckBox("line numbers");
         FX.name(lineNumbers, "lineNumbers");
-        lineNumbers.selectedProperty().addListener((x) -> {
-            setLineNumbers(lineNumbers.isSelected());
-        });
+        lineNumbers.selectedProperty().bindBidirectional(control.lineNumbersEnabledProperty());
         
         CheckBox syntax = new CheckBox("syntax highlighter");
         FX.name(syntax, "syntax");
@@ -207,10 +204,6 @@ public class CodeAreaDemoPane extends BorderPane {
 
         contentPadding.getSelectionModel().selectFirst();
         lineSpacing.getSelectionModel().selectFirst();
-    }
-
-    protected void setLineNumbers(boolean on) {
-        control.setLeftDecorator(on ? new LineNumberDecorator() : null);
     }
 
     protected static Pane pane() {

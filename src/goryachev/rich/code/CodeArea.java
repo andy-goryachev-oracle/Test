@@ -25,7 +25,9 @@
 package goryachev.rich.code;
 
 import java.util.List;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.WritableValue;
 import javafx.css.CssMetaData;
 import javafx.css.FontCssMetaData;
@@ -33,11 +35,14 @@ import javafx.css.StyleOrigin;
 import javafx.css.Styleable;
 import javafx.css.StyleableObjectProperty;
 import javafx.css.StyleableProperty;
+import javafx.scene.Node;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.rich.RichTextArea;
 import javafx.scene.control.rich.TextCell;
 import javafx.scene.control.rich.model.BaseDecoratedModel;
 import javafx.scene.control.rich.model.EditableDecoratedModel;
 import javafx.scene.control.rich.model.SyntaxDecorator;
+import javafx.scene.control.rich.util.LineNumberDecorator;
 import javafx.scene.control.rich.util.Util;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextFlow;
@@ -48,6 +53,7 @@ import javafx.scene.text.TextFlow;
 // TODO show line numbers - use font
 public class CodeArea extends RichTextArea {
     private ObjectProperty<Font> font;
+    private BooleanProperty lineNumbers;
     private String fontStyle;
 
     public CodeArea(BaseDecoratedModel m) {
@@ -214,5 +220,40 @@ public class CodeArea extends RichTextArea {
             f.setStyle(st);
         }
         return c;
+    }
+
+    public BooleanProperty lineNumbersEnabledProperty() {
+        if (lineNumbers == null) {
+            lineNumbers = new SimpleBooleanProperty() {
+                @Override
+                protected void invalidated() {
+                    LineNumberDecorator d;
+                    if(get()) {
+                        d = new LineNumberDecorator() {
+                            @Override
+                            public Node getNode(int ix, boolean forMeasurement) {
+                                Node n = super.getNode(ix, forMeasurement);
+                                if(n instanceof Labeled t) {
+                                    t.fontProperty().bind(fontProperty());
+                                }
+                                return n;
+                            }
+                        };
+                    } else {
+                        d = null;
+                    }
+                    setLeftDecorator(d);
+                }
+            };
+        }
+        return lineNumbers;
+    }
+
+    public boolean isLineNumbersEnabled() {
+        return lineNumbers == null ? false : lineNumbers.get();
+    }
+
+    public void setLineNumbersEnabled(boolean on) {
+        lineNumbersEnabledProperty().set(on);
     }
 }
