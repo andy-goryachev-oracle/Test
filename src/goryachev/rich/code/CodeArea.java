@@ -42,7 +42,7 @@ import javafx.scene.control.rich.TextCell;
 import javafx.scene.control.rich.model.BaseDecoratedModel;
 import javafx.scene.control.rich.model.EditableDecoratedModel;
 import javafx.scene.control.rich.model.SyntaxDecorator;
-import javafx.scene.control.rich.util.LineNumberDecorator;
+import javafx.scene.control.rich.skin.LineNumberDecorator;
 import javafx.scene.control.rich.util.Util;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextFlow;
@@ -164,8 +164,8 @@ public class CodeArea extends RichTextArea {
             }
         };
 
-        private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES = Util
-            .initStyleables(RichTextArea.getClassCssMetaData(), FONT);
+        private static final List<CssMetaData<? extends Styleable, ?>> STYLEABLES =
+            Util.initStyleables(RichTextArea.getClassCssMetaData(), FONT);
     }
 
     /**
