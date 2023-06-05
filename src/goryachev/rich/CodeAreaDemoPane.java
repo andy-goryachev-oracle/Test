@@ -265,7 +265,7 @@ public class CodeAreaDemoPane extends BorderPane {
     }
 
     protected void populatePopupMenu(ObservableList<MenuItem> items) {
-        boolean sel = control.hasSelection();
+        boolean sel = control.hasNonEmptySelection();
         boolean paste = true; // would be easier with Actions (findFormatForPaste() != null);
         boolean styled = (control.getModel() instanceof EditableRichTextModel);
 
