@@ -69,22 +69,18 @@ public class CodeAreaWindow extends Stage {
         Scene scene = new Scene(bp);
 
         setScene(scene);
-        setTitle("CodeArea Demo " + System.getProperty("javafx.runtime.version") + " " + System.getProperty("java.version"));
+        setTitle("CodeArea Demo  JFX:" + System.getProperty("javafx.runtime.version") + "  JDK:" + System.getProperty("java.version"));
         setWidth(1200);
         setHeight(600);
-        
+
         demoPane.control.caretPositionProperty().addListener((x) -> updateStatus());
-        demoPane.control.originProperty().addListener((x) -> updateStatus());
     }
 
     protected void updateStatus() {
         RichTextArea t = demoPane.control;
         TextPos p = t.getCaretPosition();
-        Origin origin = t.getOrigin();
 
         StringBuilder sb = new StringBuilder();
-
-        sb.append(origin);
 
         if (p != null) {
             sb.append(" line=").append(p.index());
