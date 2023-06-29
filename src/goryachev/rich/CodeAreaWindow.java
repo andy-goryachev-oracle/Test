@@ -29,25 +29,23 @@ import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuBar;
-import javafx.scene.control.rich.Origin;
 import javafx.scene.control.rich.RichTextArea;
 import javafx.scene.control.rich.TextPos;
-import javafx.scene.control.rich.model.BaseDecoratedModel;
-import javafx.scene.control.rich.model.EditableDecoratedModel;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import goryachev.apps.FX;
+import goryachev.rich.code.CodeModel;
 
 /**
  * CodeArea Demo window
  */
 public class CodeAreaWindow extends Stage {
-    private BaseDecoratedModel model;
+    private CodeModel model;
     public final CodeAreaDemoPane demoPane;
     public final Label status;
     
-    public CodeAreaWindow(BaseDecoratedModel m) {
-        model = (m == null ? new EditableDecoratedModel() : m);
+    public CodeAreaWindow(CodeModel m) {
+        model = (m == null ? new CodeModel() : m);
         demoPane = new CodeAreaDemoPane(model);
         
         MenuBar mb = new MenuBar();

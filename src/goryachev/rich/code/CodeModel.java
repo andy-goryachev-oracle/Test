@@ -22,45 +22,41 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
 
+package goryachev.rich.code;
+
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.rich.TextCell;
-import goryachev.rich.code.SyntaxDecorator;
+import javafx.scene.control.rich.model.BasePlainTextModel;
 
-/**
- * Simple Syntax Highlighter which emphasizes digits.
- */
-public class DemoSyntaxDecorator implements SyntaxDecorator {
-    private static final String DIGITS = "-fx-fill:magenta;";
+public class CodeModel extends BasePlainTextModel {
+    private final SimpleObjectProperty<SyntaxDecorator> decorator = new SimpleObjectProperty<>();
 
-    public DemoSyntaxDecorator() {
+    public CodeModel() {
+    }
+    
+    public final TextCell createTextCell(int index) {
+        String text = getPlainText(index);
+        SyntaxDecorator d = getDecorator();
+        if (d == null) {
+            TextCell c = new TextCell(index);
+            c.addSegment(text);
+            return c;
+        } else {
+            return d.createTextCell(index, text);
+        }
+    }
+    
+    public final SyntaxDecorator getDecorator() {
+        return decorator.get();
     }
 
-    @Override
-    public TextCell createTextCell(int index, String text) {
-        TextCell cell = new TextCell(index);
-        if (text != null) {
-            int start = 0;
-            int sz = text.length();
-            boolean num = false;
-            for (int i = 0; i < sz; i++) {
-                char c = text.charAt(i);
-                if (num != Character.isDigit(c)) {
-                    if (i > start) {
-                        String s = text.substring(start, i);
-                        String style = num ? DIGITS : null;
-                        cell.addSegment(s, style, null);
-                        start = i;
-                    }
-                    num = !num;
-                }
-            }
-            if (start < sz) {
-                String s = text.substring(start);
-                String style = num ? DIGITS : null;
-                cell.addSegment(s, style, null);
-            }
-        }
-        return cell;
+    public final void setDecorator(SyntaxDecorator d) {
+        decorator.set(d);
+    }
+
+    public final ObjectProperty<SyntaxDecorator> decoratorProperty() {
+        return decorator;
     }
 }

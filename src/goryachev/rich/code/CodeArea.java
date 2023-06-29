@@ -39,9 +39,6 @@ import javafx.scene.Node;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.rich.RichTextArea;
 import javafx.scene.control.rich.TextCell;
-import javafx.scene.control.rich.model.BaseDecoratedModel;
-import javafx.scene.control.rich.model.EditableDecoratedModel;
-import javafx.scene.control.rich.model.SyntaxDecorator;
 import javafx.scene.control.rich.skin.LineNumberDecorator;
 import javafx.scene.control.rich.util.Util;
 import javafx.scene.text.Font;
@@ -56,21 +53,21 @@ public class CodeArea extends RichTextArea {
     private BooleanProperty lineNumbers;
     private String fontStyle;
 
-    public CodeArea(BaseDecoratedModel m) {
+    public CodeArea(CodeModel m) {
         super(m);
         modelProperty().addListener((s, prev, newValue) -> {
-            // TODO perhaps even block any change of (already set BaseDecoratedModel)
+            // TODO perhaps even block any change of (already set CodeModel)
             if (newValue != null) {
-                if (!(newValue instanceof BaseDecoratedModel)) {
+                if (!(newValue instanceof CodeModel)) {
                     setModel(prev);
-                    throw new IllegalArgumentException("model must be of type " + BaseDecoratedModel.class);
+                    throw new IllegalArgumentException("model must be of type " + CodeModel.class);
                 }
             }
         });
     }
 
     public CodeArea() {
-        this(new EditableDecoratedModel());
+        this(new CodeModel());
     }
 
     /**
@@ -182,20 +179,20 @@ public class CodeArea extends RichTextArea {
         return getClassCssMetaData();
     }
 
-    private BaseDecoratedModel baseDecoratedModel() {
-        return (BaseDecoratedModel)getModel();
+    private CodeModel codeModel() {
+        return (CodeModel)getModel();
     }
 
     // TODO another school of thought suggests to move the highlighter property here.
     public void setSyntaxHighlighter(SyntaxDecorator d) {
-        var m = baseDecoratedModel();
+        var m = codeModel();
         if (m != null) {
             m.setDecorator(d);
         }
     }
 
     public SyntaxDecorator getSyntaxDecorator() {
-        var m = baseDecoratedModel();
+        var m = codeModel();
         return (m == null) ? null : m.getDecorator();
     }
 

@@ -43,7 +43,6 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.rich.TextPos;
-import javafx.scene.control.rich.model.BaseDecoratedModel;
 import javafx.scene.control.rich.model.EditableRichTextModel;
 import javafx.scene.control.rich.model.StyleAttribute;
 import javafx.scene.control.rich.model.StyleAttrs;
@@ -55,6 +54,7 @@ import javafx.stage.Window;
 import javafx.util.StringConverter;
 import goryachev.apps.FX;
 import goryachev.rich.code.CodeArea;
+import goryachev.rich.code.CodeModel;
 import goryachev.rich.util.FontSelector;
 import goryachev.rich.util.ROptionPane;
 
@@ -65,7 +65,7 @@ public class CodeAreaDemoPane extends BorderPane {
     public final ROptionPane op;
     public final CodeArea control;
 
-    public CodeAreaDemoPane(BaseDecoratedModel m) {
+    public CodeAreaDemoPane(CodeModel m) {
         FX.name(this, "CodeAreaDemoPane");
         control = new CodeArea(m);
 

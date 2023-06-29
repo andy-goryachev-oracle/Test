@@ -22,45 +22,22 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.rich;
+
+package goryachev.rich.code;
 
 import javafx.scene.control.rich.TextCell;
-import goryachev.rich.code.SyntaxDecorator;
 
 /**
- * Simple Syntax Highlighter which emphasizes digits.
+ * Generates {@link TextCell} from a plain text string.
  */
-public class DemoSyntaxDecorator implements SyntaxDecorator {
-    private static final String DIGITS = "-fx-fill:magenta;";
-
-    public DemoSyntaxDecorator() {
-    }
-
-    @Override
-    public TextCell createTextCell(int index, String text) {
-        TextCell cell = new TextCell(index);
-        if (text != null) {
-            int start = 0;
-            int sz = text.length();
-            boolean num = false;
-            for (int i = 0; i < sz; i++) {
-                char c = text.charAt(i);
-                if (num != Character.isDigit(c)) {
-                    if (i > start) {
-                        String s = text.substring(start, i);
-                        String style = num ? DIGITS : null;
-                        cell.addSegment(s, style, null);
-                        start = i;
-                    }
-                    num = !num;
-                }
-            }
-            if (start < sz) {
-                String s = text.substring(start);
-                String style = num ? DIGITS : null;
-                cell.addSegment(s, style, null);
-            }
-        }
-        return cell;
-    }
+public interface SyntaxDecorator {
+    /**
+     * Converts plain text into its visual representation.
+     *
+     * @param index model index
+     * @param text text to decorate, can be {@code null}
+     * @return a new {@link TextCell} instance with the decorated representation of
+     * the given text.
+     */
+    public TextCell createTextCell(int index, String text);
 }
