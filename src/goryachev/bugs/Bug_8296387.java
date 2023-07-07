@@ -1,4 +1,4 @@
-package goryachev.apps;
+package goryachev.bugs;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -11,7 +11,7 @@ import javafx.stage.Stage;
 /**
  * JDK-8296387 [Tooltip, CSS] -fx-show-delay is only applied to the first tooltip that is shown before it is displayed
  */
-public class X extends Application {
+public class Bug_8296387 extends Application {
 
     public static void main(String[] args) {
         launch(args);
@@ -24,7 +24,7 @@ public class X extends Application {
         t.setBackground(new Background(new BackgroundFill(Color.RED, null, null)));
         
         Scene scene = new Scene(t, 300, 250);
-        scene.getStylesheets().add(X.class.getResource("HelloTooltip.css").toExternalForm());
+        scene.getStylesheets().add(Bug_8296387.class.getResource("HelloTooltip.css").toExternalForm());
         primaryStage.setScene(scene);
 
         primaryStage.show();
