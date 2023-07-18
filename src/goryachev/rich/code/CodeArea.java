@@ -40,7 +40,7 @@ import javafx.scene.control.Labeled;
 import javafx.scene.control.rich.RichTextArea;
 import javafx.scene.control.rich.TextCell;
 import javafx.scene.control.rich.skin.LineNumberDecorator;
-import javafx.scene.control.rich.util.Util;
+import javafx.scene.control.util.Util;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextFlow;
 
