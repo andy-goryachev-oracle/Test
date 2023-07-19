@@ -40,14 +40,17 @@ public class JTextAreaCursor {
     }
     
     private static void start() {
-        JTextArea t = new JTextArea("TEST\nTEST");
+        JTextArea t = new JTextArea("TEST\nTEST\n" +
+            System.getProperty("java.vm.version") + 
+            " " + 
+            System.getProperty("java.vendor"));
         t.setFont(new Font("Tahoma", Font.PLAIN, 48));
         t.setEditable(true);
 
         JFrame f = new JFrame();
         f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         f.getContentPane().add(new JScrollPane(t));
-        f.setSize(500, 200);
+        f.setSize(900, 300);
         f.setVisible(true);
     }
 }
