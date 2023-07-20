@@ -32,7 +32,8 @@ import javax.swing.JTextArea;
 import javax.swing.WindowConstants;
 
 /**
- *
+ * JFrame corrupted when switching resolution (Windows 11)
+ * https://bugs.openjdk.org/browse/JDK-8312470
  */
 public class JTextAreaCursor {
     public static void main(String[] args) {
