@@ -35,6 +35,6 @@ import javafx.application.Application;
  */
 public class AppTestLauncher {
     public static void main(String[] args) {
-        Application.launch(StyleTest.class, args);
+        Application.launch(EmptyTextBug.class, args);
     }
 }
