@@ -185,6 +185,10 @@ public class CodeAreaDemoPane extends BorderPane {
         
         op = new ROptionPane();
         op.option(editable);
+        op.label("Font:");
+        op.option(fontSelector.fontNode());
+        op.label("Size:");
+        op.option(fontSelector.sizeNode());
         op.option(wrapText);
         op.option(displayCaret);
         op.option(fatCaret);
