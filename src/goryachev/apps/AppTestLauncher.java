@@ -35,6 +35,6 @@ import javafx.application.Application;
  */
 public class AppTestLauncher {
     public static void main(String[] args) {
-        Application.launch(EmptyTextBug.class, args);
+        Application.launch(Bug_8312963_TTVLeak.class, args);
     }
 }
