@@ -24,7 +24,6 @@
  */
 package goryachev.apps;
 
-import goryachev.bugs.*;
 import javafx.application.Application;
 
 /**
@@ -35,6 +34,6 @@ import javafx.application.Application;
  */
 public class AppTestLauncher {
     public static void main(String[] args) {
-        Application.launch(JapaneseIMETest.class, args);
+        Application.launch(goryachev.bugs.Bug_8312963_TTVLeak.class, args);
     }
 }
