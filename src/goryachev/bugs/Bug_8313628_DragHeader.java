@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class Bug_8313628_DragHeader extends Application {
@@ -18,7 +18,7 @@ public class Bug_8313628_DragHeader extends Application {
             tableView.getColumns().add(new TableColumn<>("col" + i));
         }
 
-        Parent root = new StackPane(tableView);
+        Parent root = new BorderPane(tableView);
 
         Scene scene = new Scene(root, 600, 400);
         primaryStage.setScene(scene);

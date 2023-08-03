@@ -77,6 +77,9 @@ public class EmbeddedFrameBug {
         scene.windowProperty().addListener((ob, oldWindow, newWindow) -> {
             newWindow.renderScaleXProperty().addListener((obs, oldValue, newValue) -> updateText(label, newValue));
             updateText(label, newWindow.getRenderScaleX());
+            newWindow.renderScaleXProperty().addListener((s,p,c) -> {
+               System.out.println("w=" + newWindow + " scale=" + c); 
+            });
         });
 
         root.getChildren().addAll(hBox, label);
