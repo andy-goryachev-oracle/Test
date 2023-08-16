@@ -1,4 +1,4 @@
-package goryachev.apps;
+package goryachev.tests;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -37,9 +37,5 @@ public class LineChartDemo extends Application {
             y += (r.nextInt(11) - 5);
             series.getData().add(new XYChart.Data<Number, Number>(i, y));
         }
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

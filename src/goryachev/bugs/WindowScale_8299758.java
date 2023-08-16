@@ -22,7 +22,7 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.apps;
+package goryachev.bugs;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -33,12 +33,8 @@ import javafx.stage.Stage;
 /**
  * https://bugs.openjdk.org/browse/JDK-8299758
  */
-public class WindowScale extends Application {
+public class WindowScale_8299758 extends Application {
     private Label label;
-
-    public static void main(String[] args) {
-        launch(args);
-    }
 
     @Override
     public void start(Stage stage) throws Exception {

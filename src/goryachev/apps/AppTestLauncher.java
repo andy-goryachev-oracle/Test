@@ -35,6 +35,6 @@ import javafx.application.Application;
  */
 public class AppTestLauncher {
     public static void main(String[] args) {
-        Application.launch(JapaneseIMETest.class, args);
+        Application.launch(ScrollPaneTest_8313709.class, args);
     }
 }

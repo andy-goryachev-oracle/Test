@@ -1,4 +1,4 @@
-package goryachev.apps;
+package goryachev.bugs;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -22,9 +22,5 @@ public class CssParserTest extends Application {
 
         primaryStage.setScene(scene);
         primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        Application.launch(args);
     }
 }

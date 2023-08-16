@@ -1,4 +1,4 @@
-package goryachev.apps;
+package goryachev.bugs;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Parent;
@@ -11,12 +11,7 @@ import javafx.stage.Stage;
 
 // https://bugs.openjdk.org/browse/JDK-8291853
 // JDK-8291853 ClassCastException in CssStyleHelper calculateValue
-public class CssWarningBug extends Application {
-
-    public static void main(String[] args) {
-        launch(args);
-    }
-
+public class CssWarningBug_8291853 extends Application {
     @Override
     public void start(Stage stage) {
         Scene scene = new Scene(new StackPane(buildTableView()));
