@@ -39,30 +39,42 @@ public class Bug_8312963_TTVLeak extends Application {
 
         TableColumn<Map<String, Object>, String> firstCol = new TableColumn<>("first");
         firstCol.setPrefWidth(150);
-        TableColumn<Map<String, Object>, String> secondCol = new TableColumn<>("second");
-        tableView.getColumns().addAll(firstCol, secondCol);
-
         firstCol.setCellValueFactory(new MapValueFactory("first"));
-        secondCol.setCellFactory(param -> new TableCell<Map<String, Object>, String>() {
-            @Override
-            public void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                VBox box = new VBox();
-                box.getChildren().addAll(new Label("We have"),
-                    new Label(String.valueOf(getTableView().getItems().size())), new Label("items"),
-                    new Label("in the table"),
-                    new Label(
-                        "running time: " + TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startTime) + " seconds"),
-                    new Label("free memory: " + Runtime.getRuntime().freeMemory() + " bytes"),
-                    new Label("and a lot"),
-                    new Label("labels"),
-                    new Text("and"),
-                    new Text("Text"),
-                    new Text("and"),
-                    new Text("such"));
-                setGraphic(box);
-            }
+        
+        TableColumn<Map<String, Object>, String> secondCol = new TableColumn<>("second");
+        secondCol.setCellValueFactory(new MapValueFactory("second"));
+
+        secondCol.setCellFactory((p) -> {
+            return new TableCell<Map<String, Object>, String>() {
+                @Override
+                public void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    
+                    if (empty || item == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        VBox box = new VBox();
+                        box.getChildren().addAll(new Label("We have"),
+                            new Label(String.valueOf(getTableView().getItems().size())), new Label("items"),
+                            new Label("in the table"),
+                            new Label(
+                                "running time: " + TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startTime) + " seconds"),
+                            new Label("free memory: " + Runtime.getRuntime().freeMemory() + " bytes"),
+                            new Label("and a lot"),
+                            new Label("labels"),
+                            new Text("and"),
+                            new Text("Text"),
+                            new Text("and"),
+                            new Text("such"));
+                        setText(null);
+                        setGraphic(box);
+                    }
+                }
+            };
         });
+        
+        tableView.getColumns().addAll(firstCol, secondCol);
 
         BorderPane root = new BorderPane();
         root.setCenter(tableView);
@@ -76,6 +88,7 @@ public class Bug_8312963_TTVLeak extends Application {
             public void run() {
                 Map<String, Object> map = new HashMap<>();
                 map.put("first", "test" + System.currentTimeMillis());
+                map.put("second", "");
                 data.add(map);
             }
         };

@@ -24,8 +24,8 @@
  */
 package goryachev.apps;
 
-import goryachev.bugs.*;
 import javafx.application.Application;
+import goryachev.bugs.*;
 
 /**
  * Use this class to launch various test snippets, so one does not have to 
