@@ -1,4 +1,4 @@
-package goryachev.apps;
+package goryachev.bugs;
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
@@ -9,11 +9,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 // https://bugs.openjdk.org/browse/JDK-8296653
-public class ComboBoxPromptTextIssue extends Application {
-    public static void main(String[] args) {
-        launch(args);
-    }
-    
+public class ComboBoxPromptTextIssue_8296653 extends Application {
     @Override
     public void start(Stage stage) {
         ComboBox<String> comboBox = new ComboBox<>();

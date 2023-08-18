@@ -24,8 +24,8 @@
  */
 package goryachev.apps;
 
-import goryachev.bugs.*;
 import javafx.application.Application;
+import goryachev.bugs.*;
 
 /**
  * Use this class to launch various test snippets, so one does not have to 
@@ -35,6 +35,6 @@ import javafx.application.Application;
  */
 public class AppTestLauncher {
     public static void main(String[] args) {
-        Application.launch(JapaneseIMETest.class, args);
+        Application.launch(ScrollPaneTest_8313709.class, args);
     }
 }
