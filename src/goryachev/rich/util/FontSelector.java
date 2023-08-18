@@ -30,7 +30,7 @@ import java.util.function.Consumer;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.text.Font;
-import goryachev.apps.FX;
+import goryachev.util.FX;
 
 /**
  * Font Selector.

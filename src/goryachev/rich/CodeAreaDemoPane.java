@@ -52,11 +52,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.Window;
 import javafx.util.StringConverter;
-import goryachev.apps.FX;
 import goryachev.rich.code.CodeArea;
 import goryachev.rich.code.CodeModel;
 import goryachev.rich.util.FontSelector;
 import goryachev.rich.util.ROptionPane;
+import goryachev.util.FX;
 
 /**
  * Main Panel contains CodeArea, split panes for quick size adjustment, and an option pane.

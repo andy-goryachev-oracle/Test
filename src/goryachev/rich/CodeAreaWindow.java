@@ -33,8 +33,8 @@ import javafx.scene.control.rich.RichTextArea;
 import javafx.scene.control.rich.TextPos;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import goryachev.apps.FX;
 import goryachev.rich.code.CodeModel;
+import goryachev.util.FX;
 
 /**
  * CodeArea Demo window
