@@ -35,6 +35,6 @@ import goryachev.bugs.*;
  */
 public class AppTestLauncher {
     public static void main(String[] args) {
-        Application.launch(ScrollPaneTest_8313709.class, args);
+        Application.launch(TableViewFilterIssue_8314758.class, args);
     }
 }
