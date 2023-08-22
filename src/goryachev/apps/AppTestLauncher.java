@@ -35,6 +35,6 @@ import goryachev.bugs.*;
  */
 public class AppTestLauncher {
     public static void main(String[] args) {
-        Application.launch(TableViewFilterIssue_8314758.class, args);
+        Application.launch(TextFieldTest_8248914.class, args);
     }
 }
