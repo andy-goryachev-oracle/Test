@@ -35,6 +35,6 @@ import goryachev.bugs.*;
  */
 public class AppTestLauncher {
     public static void main(String[] args) {
-        Application.launch(TextFieldTest_8248914.class, args);
+        Application.launch(SwingNodeLeakDemo_8262518.class, args);
     }
 }
