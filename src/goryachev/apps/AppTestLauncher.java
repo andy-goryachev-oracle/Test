@@ -35,7 +35,7 @@ import goryachev.bugs.*;
  */
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
-        JFXPanel_NPE_8255248.main(args);
-        //Application.launch(SwingNodeLeakDemo_8262518.class, args);
+        //JFXPanel_NPE_8255248.main(args);
+        Application.launch(ScrollPane_Pref.class, args);
     }
 }
