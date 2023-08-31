@@ -34,7 +34,8 @@ import goryachev.bugs.*;
  * (Remove main(String) from the test snippet)
  */
 public class AppTestLauncher {
-    public static void main(String[] args) {
-        Application.launch(SwingNodeLeakDemo_8262518.class, args);
+    public static void main(String[] args) throws Throwable {
+        JFXPanel_NPE_8255248.main(args);
+        //Application.launch(SwingNodeLeakDemo_8262518.class, args);
     }
 }
