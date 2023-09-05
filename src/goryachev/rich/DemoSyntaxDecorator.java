@@ -24,7 +24,7 @@
  */
 package goryachev.rich;
 
-import javafx.scene.control.rich.TextCell;
+import javafx.scene.control.rich.model.RichParagraph;
 import goryachev.rich.code.SyntaxDecorator;
 
 /**
@@ -36,9 +36,10 @@ public class DemoSyntaxDecorator implements SyntaxDecorator {
     public DemoSyntaxDecorator() {
     }
 
+
     @Override
-    public TextCell createTextCell(int index, String text) {
-        TextCell cell = new TextCell(index);
+    public RichParagraph createRichParagraph(String text) {
+        RichParagraph p = new RichParagraph();
         if (text != null) {
             int start = 0;
             int sz = text.length();
@@ -49,7 +50,7 @@ public class DemoSyntaxDecorator implements SyntaxDecorator {
                     if (i > start) {
                         String s = text.substring(start, i);
                         String style = num ? DIGITS : null;
-                        cell.addSegment(s, style, null);
+                        p.addSegment(s, style, null);
                         start = i;
                     }
                     num = !num;
@@ -58,9 +59,9 @@ public class DemoSyntaxDecorator implements SyntaxDecorator {
             if (start < sz) {
                 String s = text.substring(start);
                 String style = num ? DIGITS : null;
-                cell.addSegment(s, style, null);
+                p.addSegment(s, style, null);
             }
         }
-        return cell;
+        return p;
     }
 }

@@ -25,19 +25,17 @@
 
 package goryachev.rich.code;
 
-import javafx.scene.control.rich.TextCell;
+import javafx.scene.control.rich.model.RichParagraph;
 
 /**
- * Generates {@link TextCell} from a plain text string.
+ * Decorates plain text by producing a {@link RichParagraph}.
  */
 public interface SyntaxDecorator {
     /**
-     * Converts plain text into its visual representation.
+     * Converts plain text into a rich text paragraph.
      *
-     * @param index model index
      * @param text text to decorate, can be {@code null}
-     * @return a new {@link TextCell} instance with the decorated representation of
-     * the given text.
+     * @return the decorated {@link RichParagraph} instance
      */
-    public TextCell createTextCell(int index, String text);
+    public RichParagraph createRichParagraph(String text);
 }

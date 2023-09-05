@@ -27,24 +27,23 @@ package goryachev.rich.code;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.rich.TextCell;
 import javafx.scene.control.rich.model.BasePlainTextModel;
+import javafx.scene.control.rich.model.RichParagraph;
 
 public class CodeModel extends BasePlainTextModel {
     private final SimpleObjectProperty<SyntaxDecorator> decorator = new SimpleObjectProperty<>();
 
     public CodeModel() {
     }
-    
-    public final TextCell createTextCell(int index) {
-        String text = getPlainText(index);
+
+    @Override
+    public final RichParagraph getParagraph(int index) {
         SyntaxDecorator d = getDecorator();
         if (d == null) {
-            TextCell c = new TextCell(index);
-            c.addSegment(text);
-            return c;
+            return super.getParagraph(index);
         } else {
-            return d.createTextCell(index, text);
+            String text = getPlainText(index);
+            return d.createRichParagraph(text);
         }
     }
     
