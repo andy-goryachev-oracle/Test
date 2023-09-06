@@ -35,7 +35,12 @@ import goryachev.bugs.*;
  */
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
+//        System.setProperty("prism.order", "sw");
+//        System.setProperty("javafx.pulseLogger", "true");
+//        System.setProperty("javafx.pulseLogger.threshold", "-1");
+//        System.setProperty("prism.showdirty", "true");
+        
         //JFXPanel_NPE_8255248.main(args);
-        Application.launch(ScrollPane_Pref.class, args);
+        Application.launch(ToolTipIssue_8315645.class, args);
     }
 }
