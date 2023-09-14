@@ -20,8 +20,9 @@ import javafx.stage.Stage;
 
 /**
  * Robot fails to send keypad keys (at least on macOS).
+ * https://bugs.openjdk.org/browse/JDK-8316307
  */
-public class RobotKeypadFail extends Application {
+public class RobotKeypadFail_8316307 extends Application {
 
     Robot robot;
     TextField control;
@@ -84,4 +85,8 @@ public class RobotKeypadFail extends Application {
             System.err.println("keycode=" + k + " key.press=" + received);
         });
     }
+
+//    public static void main(String[] args) throws Throwable {
+//        Application.launch(RobotKeypadFail_8316307.class, args);
+//    }
 }
