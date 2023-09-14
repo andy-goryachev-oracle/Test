@@ -6,6 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
@@ -23,6 +24,9 @@ public class TextArea_SelectionColor extends Application {
         TextArea textArea = new TextArea("Selection Text Color is Wrong if Scale != 100%");
         textArea.setWrapText(true);
         textArea.selectAll();
+        textArea.addEventFilter(KeyEvent.ANY, (ev) -> {
+            System.out.println(ev);
+        });
 
         // comment this out and it works just fine
         textArea.setFont(Font.getDefault().font(48));

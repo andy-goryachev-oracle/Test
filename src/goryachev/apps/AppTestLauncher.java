@@ -26,6 +26,7 @@ package goryachev.apps;
 
 import javafx.application.Application;
 import goryachev.bugs.*;
+import goryachev.tests.*;
 
 /**
  * Use this class to launch various test snippets, so one does not have to 
@@ -36,6 +37,6 @@ import goryachev.bugs.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         //JFXPanel_NPE_8255248.main(args);
-        Application.launch(ScrollPane_Pref.class, args);
+        Application.launch(RobotKeypadFail.class, args);
     }
 }
