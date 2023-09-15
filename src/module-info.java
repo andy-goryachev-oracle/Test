@@ -27,6 +27,7 @@ module andy_test {
     exports goryachev.apps;
     exports goryachev.bugs;
     exports goryachev.rich;
+    exports goryachev.tests;
     exports goryachev.util;
 
     requires javafx.base;
