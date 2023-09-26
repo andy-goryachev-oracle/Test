@@ -64,6 +64,7 @@ import goryachev.util.FX;
 public class CodeAreaDemoPane extends BorderPane { 
     public final ROptionPane op;
     public final CodeArea control;
+    private StyleAttrs paragraphAttributes = StyleAttrs.EMPTY;
 
     public CodeAreaDemoPane(CodeModel m) {
         FX.name(this, "CodeAreaDemoPane");
@@ -169,7 +170,7 @@ public class CodeAreaDemoPane extends BorderPane {
             31.415
         );
         lineSpacing.getSelectionModel().selectedItemProperty().addListener((s,p,v) -> {
-            control.setLineSpacing(v);
+            setLineSpacing(v);
         });
         
         CheckBox lineNumbers = new CheckBox("line numbers");
@@ -394,7 +395,7 @@ public class CodeAreaDemoPane extends BorderPane {
         m.setOnAction((ev) -> apply(StyleAttrs.TEXT_COLOR, color));
         menu.getItems().add(m);
     }
-    
+
     protected void apply(StyleAttribute attr, Object val) {
         TextPos ca = control.getCaretPosition();
         TextPos an = control.getAnchorPosition();
@@ -404,9 +405,16 @@ public class CodeAreaDemoPane extends BorderPane {
             create();
         control.applyStyle(ca, an, a);
     }
-    
+
+    protected void setLineSpacing(double x) {
+        paragraphAttributes = paragraphAttributes.toBuilder().
+            setLineSpacing(x).
+            create();
+        control.setDefaultParagraphAttributes(paragraphAttributes);
+    }
+
     //
-    
+
     public static class TBar extends HBox {
         public TBar() {
             setFillHeight(true);
