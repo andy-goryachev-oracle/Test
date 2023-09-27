@@ -42,6 +42,6 @@ public class AppTestLauncher {
 //        System.setProperty("prism.showdirty", "true");
         
         //JFXPanel_NPE_8255248.main(args);
-        Application.launch(RobotKeypadFail_8316307.class, args);
+        Application.launch(TextFlow_RangeShape_8317120.class, args);
     }
 }
