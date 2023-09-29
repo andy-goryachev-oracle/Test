@@ -27,7 +27,7 @@ The InputMap properties are mutable and can be modified at run time, allowing fo
 
 It is not the goal of this proposal to require behaviors for all existing Controls be made public at the same time since a gradual transition is possible.
 
-It is not the goal to make the concrete behaviors of existing controls public (but nothing precludes us from doing so in the future). 
+It is not the goal to make the concrete behaviors of existing controls adopt the new design (but nothing precludes us from doing so in the future).
 
 Neither does this proposal introduce or require an equivalent of Swing Actions.
 
@@ -50,7 +50,9 @@ In addition to making the BehaviorBase and the InputMap classes public, this pro
 
 ## Description
 
-The first public API being introduced is **InputMap**, via Control.getInputMap().  An InputMap maps the user input events to methods in the control's behavior class or methods defined by the user.
+Most of the changes concentrate in a new package **javafx.scene.control.behavior**.
+
+The first public API being introduced is **javafx.scene.control.behavior.InputMap**, via Control.getInputMap().  An InputMap maps the user input events to methods in the control's behavior class or methods defined by the user.
 
 The purpose of InputMap is to enable a wide range of operations performed by both the skin and the user:
 - map a key binding to a function, either default one or supplied by the user
@@ -59,8 +61,7 @@ The purpose of InputMap is to enable a wide range of operations performed by bot
 - obtain the default behavior function
 - ensure that user-defined mappings overwrite default ones and survive a skin change
 
-
-To achieve that, the InputMap utilizes a two-stage lookup.  First, the key binding (or input even in general) is mapped to a **FunctionTag** - a method identifier declared by the corresponding Control.  Then, if such a mapping exists, the actual function (a Runnable) is obtained and executed.  This approach allow for to customizing the key bindings separately from customizing the behavior.
+To achieve that, the InputMap utilizes a two-stage lookup.  First, the key binding (or input even in general) is mapped to a **javafx.scene.control.behavior.FunctionTag** - a method identifier declared by the corresponding Control.  Then, if such a mapping exists, the actual function (a Runnable) is obtained and executed.  This approach allow for to customizing the key bindings separately from customizing the behavior.
 
 InputMap provides the following public methods:
 - void **registerKey**(KeyBinding, FunctionTag)
@@ -76,7 +77,7 @@ InputMap provides the following public methods:
 - void **restoreDefaultFunction**(FunctionTag)
 - void **unbind**(KeyBinding)
 
-The concrete behavior must extend the **BaseBehavior** class.  It is expected that behavior classes are instantiated by the Skin.  The lifecycle of a behavior starts with BaseBehavior.install(Skin) called from Skin.install(), and terminates with BaseBehavior.dispose() called from Skin.dispose().
+The concrete behavior must extend the **javafx.scene.control.behavior.BaseBehavior** abstract class.  It is expected that behavior classes are instantiated by the Skin.  The lifecycle of a behavior starts with BaseBehavior.install(Skin) called from Skin.install(), and terminates with BaseBehavior.dispose() called from Skin.dispose().
 
 During installation, the actual behavior registers event mappings that are specific to that behavior.  It is important to note that any user-defined mappings added at the Control level (since InputMap is a property of the Control) take priority over behavior-specific mappings, so a null skin, or changing a skin has no effect on the user-defined mappings.  All mappings added by the install() method will be removed by the dispose().
 
