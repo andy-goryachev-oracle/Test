@@ -1,6 +1,8 @@
 # Behavior / InputMap Redesign Proposal
 
-Andy Goryachev <andy.goryachev@oracle.com>
+Andy Goryachev
+
+<andy.goryachev@oracle.com>
 
 
 ## Summary
