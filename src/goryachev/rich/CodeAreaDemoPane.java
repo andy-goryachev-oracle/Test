@@ -396,7 +396,7 @@ public class CodeAreaDemoPane extends BorderPane {
         menu.getItems().add(m);
     }
 
-    protected void apply(StyleAttribute attr, Object val) {
+    protected <X> void apply(StyleAttribute<X> attr, X val) {
         TextPos ca = control.getCaretPosition();
         TextPos an = control.getAnchorPosition();
         StyleAttrs a = StyleAttrs.
