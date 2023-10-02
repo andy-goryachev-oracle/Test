@@ -402,14 +402,14 @@ public class CodeAreaDemoPane extends BorderPane {
         StyleAttrs a = StyleAttrs.
             builder().
             set(attr, val).
-            create();
+            build();
         control.applyStyle(ca, an, a);
     }
 
     protected void setLineSpacing(double x) {
         paragraphAttributes = paragraphAttributes.toBuilder().
             setLineSpacing(x).
-            create();
+            build();
         control.setDefaultParagraphAttributes(paragraphAttributes);
     }
 
