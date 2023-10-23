@@ -371,10 +371,10 @@ public class CodeAreaDemoPane extends BorderPane {
         menu.getItems().add(m);
     }
 
-    protected void sizeMenu(Menu menu, boolean selected, int percent) {
-        MenuItem m = new MenuItem(percent + "%");
+    protected void sizeMenu(Menu menu, boolean selected, double size) {
+        MenuItem m = new MenuItem(String.valueOf(size));
         m.setDisable(!selected);
-        m.setOnAction((ev) -> apply(StyleAttrs.FONT_SIZE, percent));
+        m.setOnAction((ev) -> apply(StyleAttrs.FONT_SIZE, size));
         menu.getItems().add(m);
     }
     
