@@ -33,17 +33,39 @@ public class TreeTableView_8187314 extends Application {
 
         table.setEditable(true);
 
-        TreeTableColumn<Dummy, String> first = new TreeTableColumn<>("Text");
-        first.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
-        first.setCellValueFactory(new TreeItemPropertyValueFactory<>("dummy"));
-
-        first.setOnEditStart(t -> editPosition = t.getTreeTablePosition());
-        first.addEventHandler(TreeTableColumn.editCommitEvent(), t -> {
-            editValue = t.getNewValue();
-            System.out.println("doing nothing");
-        });
-
-        table.getColumns().addAll(first);
+        {
+            TreeTableColumn<Dummy, String> c = new TreeTableColumn<>("C1");
+            table.getColumns().add(c);
+            c.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
+            c.setCellValueFactory(new TreeItemPropertyValueFactory<>("dummy1"));
+            c.setOnEditStart(t -> editPosition = t.getTreeTablePosition());
+            c.addEventHandler(TreeTableColumn.editCommitEvent(), t -> {
+                editValue = t.getNewValue();
+                System.out.println("doing nothing 1");
+            });
+        }
+        {
+            TreeTableColumn<Dummy, String> c = new TreeTableColumn<>("C2");
+            table.getColumns().add(c);
+            c.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
+            c.setCellValueFactory(new TreeItemPropertyValueFactory<>("dummy2"));
+            c.setOnEditStart(t -> editPosition = t.getTreeTablePosition());
+            c.addEventHandler(TreeTableColumn.editCommitEvent(), t -> {
+                editValue = t.getNewValue();
+                System.out.println("doing nothing 2");
+            });
+        }
+        {
+            TreeTableColumn<Dummy, String> c = new TreeTableColumn<>("C3");
+            table.getColumns().add(c);
+            c.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn());
+            c.setCellValueFactory(new TreeItemPropertyValueFactory<>("dummy3"));
+            c.setOnEditStart(t -> editPosition = t.getTreeTablePosition());
+            c.addEventHandler(TreeTableColumn.editCommitEvent(), t -> {
+                editValue = t.getNewValue();
+                System.out.println("doing nothing 3");
+            });
+        }
 
         Button button = new Button("Check value");
         button.setOnAction(e -> {
@@ -63,14 +85,26 @@ public class TreeTableView_8187314 extends Application {
     }
 
     public static class Dummy {
-        private String dummy;
+        private String dummy1;
+        private String dummy2;
+        private String dummy3;
 
         public Dummy(String dummy) {
-            this.dummy = dummy;
+            this.dummy1 = dummy;
+            this.dummy2 = dummy + ".";
+            this.dummy3 = dummy + ";";
         }
 
-        public String getDummy() {
-            return dummy;
+        public String getDummy1() {
+            return dummy1;
+        }
+        
+        public String getDummy2() {
+            return dummy2;
+        }
+        
+        public String getDummy3() {
+            return dummy3;
         }
 
         public static ObservableList<Dummy> dummies() {
