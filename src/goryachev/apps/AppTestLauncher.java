@@ -42,6 +42,6 @@ public class AppTestLauncher {
 //        System.setProperty("prism.showdirty", "true");
         
         //JFXPanel_NPE_8255248.main(args);
-        Application.launch(StartIconified_8305675.class, args);
+        Application.launch(MaximizedStage_8255835.class, args);
     }
 }
