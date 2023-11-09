@@ -1,3 +1,4 @@
+package goryachev.bugs;
 /*
  * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
@@ -22,26 +23,24 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.apps;
 
 import javafx.application.Application;
-import goryachev.bugs.*;
-import goryachev.tests.*;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
-/**
- * Use this class to launch various test snippets, so one does not have to 
- * create a new launch configuration each time.
- * 
- * (Remove main(String) from the test snippet)
- */
-public class AppTestLauncher {
-    public static void main(String[] args) throws Throwable {
-//        System.setProperty("prism.order", "sw");
-//        System.setProperty("javafx.pulseLogger", "true");
-//        System.setProperty("javafx.pulseLogger.threshold", "-1");
-//        System.setProperty("prism.showdirty", "true");
-        
-        //JFXPanel_NPE_8255248.main(args);
-        Application.launch(TextFlow_RTL_8319845.class, args);
+public class SetXYAndMaximize_8316419 extends Application {
+    @Override
+    public void start(final Stage stage) {
+        stage.setTitle("This should be maximized Stage");
+
+        Scene scene = new Scene(new Group(), 600, 450);
+        stage.setScene(scene);
+
+        stage.setMaximized(true);
+        stage.setX(10.0);
+        stage.setY(10.0);
+
+        stage.show();
     }
 }
