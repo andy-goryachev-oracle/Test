@@ -42,6 +42,6 @@ public class AppTestLauncher {
 //        System.setProperty("prism.showdirty", "true");
         
         //JFXPanel_NPE_8255248.main(args);
-        Application.launch(CanvasSleep.class, args);
+        Application.launch(TestKeyCombination.class, args);
     }
 }
