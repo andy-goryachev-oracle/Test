@@ -42,6 +42,6 @@ public class AppTestLauncher {
 //        System.setProperty("prism.showdirty", "true");
         
         //JFXPanel_NPE_8255248.main(args);
-        Application.launch(TestKeyCombination.class, args);
+        Application.launch(DatePicker_8303478.class, args);
     }
 }
