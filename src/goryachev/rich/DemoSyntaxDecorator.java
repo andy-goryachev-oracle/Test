@@ -24,7 +24,7 @@
  */
 package goryachev.rich;
 
-import javafx.scene.control.rich.model.RichParagraph;
+import javafx.incubator.scene.control.rich.model.RichParagraph;
 import goryachev.rich.code.SyntaxDecorator;
 
 /**

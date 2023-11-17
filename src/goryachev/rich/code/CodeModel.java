@@ -27,8 +27,8 @@ package goryachev.rich.code;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.scene.control.rich.model.BasePlainTextModel;
-import javafx.scene.control.rich.model.RichParagraph;
+import javafx.incubator.scene.control.rich.model.BasePlainTextModel;
+import javafx.incubator.scene.control.rich.model.RichParagraph;
 
 public class CodeModel extends BasePlainTextModel {
     private final SimpleObjectProperty<SyntaxDecorator> decorator = new SimpleObjectProperty<>();

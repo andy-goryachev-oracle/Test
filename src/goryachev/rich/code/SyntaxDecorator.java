@@ -25,7 +25,7 @@
 
 package goryachev.rich.code;
 
-import javafx.scene.control.rich.model.RichParagraph;
+import javafx.incubator.scene.control.rich.model.RichParagraph;
 
 /**
  * Decorates plain text by producing a {@link RichParagraph}.

@@ -31,8 +31,8 @@ import javafx.css.CssMetaData;
 import javafx.css.Styleable;
 import javafx.scene.Node;
 import javafx.scene.control.Labeled;
-import javafx.scene.control.rich.RichTextArea;
-import javafx.scene.control.rich.skin.LineNumberDecorator;
+import javafx.incubator.scene.control.rich.RichTextArea;
+import javafx.incubator.scene.control.rich.skin.LineNumberDecorator;
 import javafx.scene.text.Font;
 
 /**
