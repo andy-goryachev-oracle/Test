@@ -1,0 +1,134 @@
+package goryachev.bugs;
+
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.geometry.NodeOrientation;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
+import javafx.scene.text.HitInfo;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
+import javafx.stage.Stage;
+
+/**
+ * JDK-8319050
+ * TextFlow.caretShape() and .rangeShape() wrong in RTL orientation
+ */
+public class TextFlow_CaretRangeShape_8319050 extends Application {
+
+    private TextFlow flow;
+    private Path caret;
+    private Path range;
+
+    @Override
+    public void start(Stage stage) throws Exception {
+        flow = new TextFlow(t("Arabic: ", Color.RED), t("العربية", Color.GREEN), new Text("\n"),
+            t("Hebrew: ", Color.BLUE), t("עברית", Color.BLACK));
+        flow.setStyle("-fx-font-size:400%");
+        flow.addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleMousePress);
+
+        caret = new Path();
+        caret.setManaged(false);
+        caret.setStroke(Color.MAGENTA);
+        caret.setStrokeWidth(1);
+
+        range = new Path();
+        range.setManaged(false);
+        range.setStroke(null);
+        range.setFill(Color.rgb(255, 0, 0, 0.2));
+
+        flow.getChildren().addAll(caret, range);
+
+        BorderPane bp = new BorderPane(flow);
+        Scene scene = new Scene(bp);
+        scene.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+
+        stage.setScene(scene);
+        stage.setTitle("TextFlow RTL");
+        stage.setWidth(500);
+        stage.setHeight(300);
+        stage.show();
+
+        Platform.runLater(() -> {
+            updateRange();
+        });
+    }
+
+    private void updateRange() {
+        int len = getTextLength(flow);
+        PathElement[] pe = flow.rangeShape(0, len);
+        System.out.println("range=" + dump(pe));
+        range.getElements().setAll(pe);
+    }
+
+    private int getTextLength(TextFlow f) {
+        int len = 0;
+        for (Node n : f.getChildren()) {
+            if (n instanceof Text t) {
+                len += t.getText().length();
+            }
+        }
+        return len;
+    }
+
+    private static Text t(String text, Color c) {
+        Text t = new Text(text);
+        t.setFill(c);
+        return t;
+    }
+
+    private void handleMousePress(MouseEvent ev) {
+        if (ev.getButton() == MouseButton.PRIMARY) {
+            Point2D p = new Point2D(ev.getX(), ev.getY());
+            HitInfo h = flow.hitTest(p);
+            System.out.println("hit=" + h);
+
+            PathElement[] pe = flow.caretShape(h.getCharIndex(), h.isLeading());
+            System.out.println("caret=" + dump(pe));
+            caret.getElements().setAll(pe);
+        } else {
+            updateRange();
+        }
+    }
+
+    /** dumps the path element array to a compact human-readable string */
+    public static String dump(PathElement[] elements) {
+        StringBuilder sb = new StringBuilder();
+        if (elements == null) {
+            sb.append("null");
+        } else {
+            for (PathElement em : elements) {
+                if (em instanceof MoveTo p) {
+                    sb.append('M');
+                    sb.append(r(p.getX()));
+                    sb.append(',');
+                    sb.append(r(p.getY()));
+                    sb.append(' ');
+                } else if (em instanceof LineTo p) {
+                    sb.append('L');
+                    sb.append(r(p.getX()));
+                    sb.append(',');
+                    sb.append(r(p.getY()));
+                    sb.append(' ');
+                } else {
+                    sb.append(em);
+                    sb.append(' ');
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    private static int r(double x) {
+        return (int)Math.round(x);
+    }
+}
