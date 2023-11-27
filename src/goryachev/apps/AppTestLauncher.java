@@ -42,6 +42,6 @@ public class AppTestLauncher {
 //        System.setProperty("prism.showdirty", "true");
         
         //JFXPanel_NPE_8255248.main(args);
-        Application.launch(TableView_NestedColumnDrag_8320444.class, args);
+        Application.launch(BrokenFocusAndKeyboardInput_8319317.class, args);
     }
 }
