@@ -35,9 +35,6 @@ public class TestKeyCombination extends Application {
         KeyCombination cmdMinusFromCharacter = new KeyCharacterCombination("-", KeyCombination.CONTROL_DOWN);
         Runnable runnable = () -> System.out.println("HI");
         scene.getAccelerators().put(cmdMinus, runnable);
-        scene.getAccelerators().put(cmdMinus, () -> System.out.println("1"));
-        scene.getAccelerators().put(cmdMinus, () -> System.out.println("2"));
-        scene.getAccelerators().put(cmdMinus, () -> System.out.println("3"));
         scene.getAccelerators().put(cmdMinusFromCharacter, runnable);
         
         System.out.println(cmdMinus + " equals " + cmdMinusFromCharacter + " = " + cmdMinus.equals(cmdMinusFromCharacter));
