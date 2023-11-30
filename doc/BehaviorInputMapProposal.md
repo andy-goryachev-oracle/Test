@@ -25,32 +25,35 @@ The InputMap properties are mutable and can be modified at run time, allowing fo
 
 ## Non-Goals
 
-It is not the goal of this proposal to require behaviors for all existing Controls be made public at the same time since a gradual transition is possible.
-
-It is not the goal to make the concrete behaviors of existing controls adopt the new design (but nothing precludes us from doing so in the future).
-
-Neither does this proposal introduce or require an equivalent of Swing Actions.
+It is not the goal of this proposal:
+1. to require behaviors for all existing Controls be made public at the same time since a gradual transition is possible.
+2. to make the concrete behaviors of existing controls adopt the new design (but nothing precludes us from doing so in the future). 
+3. to introduce or require an equivalent of Swing Actions.
+4. to introduce a global way of setting priority/ordering of invoking event handlers, even though there is a limited mechanism within InputMap to do so. 
 
 
 
 ## Motivation
 
-The main motivation behind this proposal is to provide a mechanism for extending functionality of FX Controls and offering a greater flexibility in working with key bindings and event handlers, including being able to remap keys and functions dynamically.
+Historically, going outside of what is provided by JavaFX core (i.e. creating a new component or subclassing one) has always been a rather costly endeavor due to opaque nature of JavaFX, so this proposal tries reduce the pain by providing APIs useful for third party developers.
 
-Equally important, the same mechanism should also be offered to third party controls, especially for the capability to redefine the default functions and key mappings, or to revert custom key mappings back to their default settings.  Historically, going outside of what is provided by JavaFX core (i.e. creating a new component or subclassing one) has always been a rather costly endeavor due to opaque nature of JavaFX, so this proposal tries reduce the pain by providing APIs useful for third party developers. 
+This proposal addresses the following problems:
 
-Several JBS tickets ask for making the behavior and related classes public and other related functionality:
+-	provide public API for adding, removing, and customizing the key bindings at per-control level via InputMap
+-	provide public API for registering key bindings and event handlers for skins that should be equally usable for core controls, custom skins, or completely new controls via BehaviorBase class that provides access to methods in InputMap specifically for skins/behaviors
+-	provide a public API for customizing key bindings and the functionality associated with a particular key binding
+-	enable ability to remap keys and functions dynamically
+-	retain mappings set on control by the user when changing skins
+-	provide public APIs for accessing the default function when it's been overwritten, or reverting back to its default implementation
+-	simplify creation of platform-specific key mappings via KeyBinding
 
-- [JDK-8091189](https://bugs.openjdk.org/browse/JDK-8091189) Move BehaviorBase into public API
-- [JDK-8092211](https://bugs.openjdk.org/browse/JDK-8092211) Promote all skin and behavior classes of the default controls to the public API
-- [JDK-8186137](https://bugs.openjdk.org/browse/JDK-8186137) [JavaFX 9] TextFieldSkin, MenuButtonSkinBase - behavior can't be passed
-
-In addition to making the BehaviorBase and the InputMap classes public, this proposal enables a wide range of operations with the key mappings, including runtime remapping and reverting to the default behavior.
 
 
 ## Description
 
 Most of the changes concentrate in a new package **javafx.scene.control.behavior**.
+
+### InputMap
 
 The first public API being introduced is **javafx.scene.control.behavior.InputMap**, via Control.getInputMap().  An InputMap maps the user input events to methods in the control's behavior class or methods defined by the user.
 
@@ -77,11 +80,13 @@ InputMap provides the following public methods:
 - void **restoreDefaultFunction**(FunctionTag)
 - void **unbind**(KeyBinding)
 
-The concrete behavior must extend the **javafx.scene.control.behavior.BaseBehavior** abstract class.  It is expected that behavior classes are instantiated by the Skin.  The lifecycle of a behavior starts with BaseBehavior.install(Skin) called from Skin.install(), and terminates with BaseBehavior.dispose() called from Skin.dispose().
+### BehaviorBase
+
+The concrete behavior must extend the **javafx.scene.control.behavior.BehaviorBase** abstract class.  It is expected that behavior classes are instantiated by the Skin.  The lifecycle of a behavior starts with BehaviorBase.install(Skin) called from Skin.install(), and terminates with BehaviorBase.dispose() called from Skin.dispose().
 
 During installation, the actual behavior registers event mappings that are specific to that behavior.  It is important to note that any user-defined mappings added at the Control level (since InputMap is a property of the Control) take priority over behavior-specific mappings, so a null skin, or changing a skin has no effect on the user-defined mappings.  All mappings added by the install() method will be removed by the dispose().
 
-BaseBehavior provides the following public methods: 
+BehaviorBase provides the following public methods: 
 - public void **install**()
 - public void **dispose**()
 
@@ -100,9 +105,17 @@ It also provides a number of protected methods intended to be called by the beha
 - protected void **setOnKeyEventEnter**(Runnable)
 - protected void **setOnKeyEventExit**(Runnable)
 
-Finally, the **Control** base class declares two new methods:
+### Control
+
+Two new methods are added to the **Control** class:
 - public InputMap **getInputMap**()
 - protected void **execute**(FunctionTag)
+
+### KeyBinding
+
+And finally, an immutable **javafx.scene.control.behavior.KeyBinding** is introduce that captures exactly one key press/release/typed condition, for use as a key in the InputMap hash map.
+
+### Using BehaviorBase
 
 For custom skin/component developers, we now can describe the recommended (although not required) structure of programmatic access to the behavior APIs.
 
@@ -250,15 +263,14 @@ Behavior is usually tightly coupled with its skin.  This might pose a problem fo
 Possible solution: design for a protected createBehavior() method to be invoked from the constructor.
 
 ### How to account for platform specific aspects of behavior?
-There is enough behavioral differences among the three popular platforms to warrant creation of isWindows(), isMac(), and isLinux() methods in either BehaviorBase or Platform.
+There is enough behavioral differences in Controls between the three popular platforms (Linux/Mac/Windows) to warrant adding dedicated methods to help with conditional blocks and key bindings.
 
-### KeyBinding.notForMac()
-Simplifies writing key binding initialization code:
- 
-        registerKey(KeyBinding.with(KeyCode.LEFT).shift().control().notForMac().build(), RichTextArea.SELECT_WORD_LEFT);
-        registerKey(KeyBinding.with(KeyCode.LEFT).shift().option().forMac().build(), RichTextArea.SELECT_WORD_LEFT);
+One solution could be adding methods like
+- protected boolean isLinux()
+- protected boolean isMac()
+- protected boolean isWindows()
 
-These could be replaced by platform-specific if-else blocks.
+to Platform or at least to BehaviorBase.
 
 ### Would InputMap.unbind(FunctionTag) be useful?
 Pros: symmetry
