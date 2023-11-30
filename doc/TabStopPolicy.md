@@ -15,20 +15,27 @@ font size.
 
 ## Goals
 
-The goal of this proposal is to provide a better way to control tab stops - relative to the document edge.
+The goal of this proposal is to provide a better way to control tab stops, by supporting the existing capability of
+specifying a fixed tab size as well as a variable number of user-definable tab stops positioned relative
+to the document edge.
 
 
 
 ## Non-Goals
 
-TBD
+- support for a BAR (|) tab stop
+- support the 'leader' property (symbols to fill the empty space before the tab stop)
 
 
 
 ## Motivation
 
-Currently, a tabSize property in Text and TextFlow controls is inadequate to represent tab stops in the context of a rich text
-control (and event in TextFlow which contains multiple Text nodes with different font sizes).
+The existing tabSize property in Text and TextFlow controls is inadequate to represent tab stops in the context
+of a rich text control, failing spectacularly when TextFlow contains multiple Text nodes which use different fonts.
+
+In addition to that, a rich text editor (either the RichTextArea control currently being developed,
+or a custom rich text editor) might need support for user-customizable tab stops offered by RTF or MS Word documents.
+
 
 
 
@@ -56,12 +63,21 @@ control (and event in TextFlow which contains multiple Text nodes with different
 	 */
 	public interface TabStopPolicy {
 	    /**
+	     * Determines whether this policy specifies a fixed tab size in terms of the width or the digit 0
+	     * (any positive value), or provides the tab stops relative to document leading edge.
+	     *
+	     * @return the tab size
+	     */
+	    public int tabSize();
+	
+	    /**
 	     * @return the non-null list of tab stops 
 	     */
 	    public List<TabStop> tabStops();
 	    
 	    /**
-	     * First line indent, a positive value.
+	     * First line indent, a positive value or 0.
+	     * This value is ignored when {@link #tabSize()} returns a non-zero value.
 	     *
 	     * TODO
 	     * It is unclear whether the TextLayout should support negative values as it might impact the size and
@@ -72,7 +88,8 @@ control (and event in TextFlow which contains multiple Text nodes with different
 	    public double firstLineIndent();
 	
 	    /**
-	     * Provides default tab stops (beyond any tab stops specified by {@code #tabStops()}.
+	     * Provides default tab stops (beyond the last tab stop specified by {@code #tabStops()}.
+	     * This value is ignored when {@link #tabSize()} returns a non-zero value.
 	     *
 	     * TODO
 	     * It is unclear how to specify NONE value (negative perhaps?).  MS Word does not allow for NONE.
@@ -82,6 +99,7 @@ control (and event in TextFlow which contains multiple Text nodes with different
 	    
 	    // TODO: factory method to create a simple fixed tab size policy
 	}
+
 
 ### TabStop
 
@@ -156,13 +174,13 @@ control (and event in TextFlow which contains multiple Text nodes with different
 
 ## Alternatives
 
-None.
+None known.
 
 
 
 ## Risks and Assumptions
 
-Possible incompatibility with custom controls which define similar property or a property with the same name (highly unlikely). 
+Possible incompatibility with custom controls which define similar property or a property with the same name. 
 
 
 
