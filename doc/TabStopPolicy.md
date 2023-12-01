@@ -24,7 +24,8 @@ to the document edge.
 ## Non-Goals
 
 - support for a BAR (|) tab stop
-- support the 'leader' property (symbols to fill the empty space before the tab stop)
+- support the `leader` property (symbols to fill the empty space before the tab stop)
+- provide a replacement for `tabsize` property
 
 
 
@@ -48,56 +49,69 @@ or a custom rich text editor) might need support for user-customizable tab stops
      * This value overrides the {@code tabSize} of this TextFlow as well as
      * in contained {@link Text} nodes.
      *
-     * @since 999
+	 * TODO
+	 * @since 999
      */
     public final ObjectProperty<TabStopPolicy> tabStopPolicyProperty()
-
+	
     public final TabStopPolicy getTabStopPolicy()
-
+	
     public final void setTabStopPolicy(TabStopPolicy policy)
 
 ### TabStopPolicy
 
 	/**
 	 * Tab Stop Policy.
+	 *
+	 * TODO
+	 * @since 999
 	 */
-	public interface TabStopPolicy {
-	    /**
-	     * Determines whether this policy specifies a fixed tab size in terms of the width or the digit 0
-	     * (any positive value), or provides the tab stops relative to document leading edge.
-	     *
-	     * @return the tab size
-	     */
-	    public int tabSize();
+	public final class TabStopPolicy {
 	
 	    /**
+	     * Creates an immutable {@code TabStop} instance.
+	     *
+	     * @param tabStops the tab stops (a copy will be made)
+	     * @param firstLineIndent the first line indent, in points
+	     * @param defaultStops the default stops, in points
+	     */
+		public TabStopPolicy(List<TabStop> tabStops, double firstLineIndent, double defaultStops);
+	
+	    /**
+	     * Specifies the list of tab stops.
+	     *
 	     * @return the non-null list of tab stops 
 	     */
-	    public List<TabStop> tabStops();
+	    public List<TabStop> tabStops() {
+	        return tabStops;
+	    }
 	    
 	    /**
-	     * First line indent, a positive value or 0.
-	     * This value is ignored when {@link #tabSize()} returns a non-zero value.
+	     * First line indent, in points, a positive value.  Negative or 0 values are treated as no first line indent.
 	     *
 	     * TODO
 	     * It is unclear whether the TextLayout should support negative values as it might impact the size and
 	     * the preferred size of the layout.
 	     *
-	     * @return the first line indent
+	     * @return the first line indent, in points
 	     */
-	    public double firstLineIndent();
+	    public double firstLineIndent() {
+	        return firstLineIndent;
+	    }
 	
 	    /**
-	     * Provides default tab stops (beyond the last tab stop specified by {@code #tabStops()}.
-	     * This value is ignored when {@link #tabSize()} returns a non-zero value.
+	     * Provides default tab stops (beyond the last tab stop specified by {@code #tabStops()}, as a distance
+	     * in points from the last tab stop position.
 	     *
 	     * TODO
 	     * It is unclear how to specify NONE value (negative perhaps?).  MS Word does not allow for NONE.
 	     * @return the default tab stops, in points.
 	     */
-	    public double defaultStops();
+	    public double defaultStops() {
+	        return defaultStops;
+	    }
 	    
-	    // TODO: factory method to create a simple fixed tab size policy
+	    // TODO hashCode, equals, toString
 	}
 
 
@@ -108,40 +122,30 @@ or a custom rich text editor) might need support for user-customizable tab stops
 	 * A tab stop is at a specified distance from the
 	 * left margin, aligns text in a specified way, and has a specified leader.
 	 * TabStops are immutable, and usually contained in {@link TabStopPolicy}.
+	 *
+	 * TODO
+	 * @since 999
 	 */
-	public class TabStop {
+	public final class TabStop {
 	    public enum Alignment {
 	        CENTER,
 	        LEFT,
 	        RIGHT,
 	        DECIMAL
-	        // TODO BAR?
-	    }
-	    
-	    public enum Leader {
-	        /** Lead none */
-	        NONE,
-	        /** Lead dots */
-	        DOTS,
-	        /** Lead hyphens */
-	        HYPHENS,
-	        /** Lead underline */
-	        UNDERLINE,
-	        /** Lead thickline */
-	        THICK_LINE,
-	        /** Lead equals */
-	        EQUALS
 	    }
 	    
 	    private final double position;
 	    private final Alignment alignment;
-	    private final Leader leader;
 	
-	    // TODO this might be a record
-	    public TabStop(double position, Alignment alignment, Leader leader) {
+	    /**
+	     * Creates an immutable {@code TabStop} instance.
+	     *
+	     * @param position the tab stop position in points
+	     * @param alignment the alignment
+     	*/
+	    public TabStop(double position, Alignment alignment) {
 	        this.position = position;
 	        this.alignment = alignment;
-	        this.leader = leader;
 	    }
 	    
 	    /**
@@ -159,16 +163,8 @@ or a custom rich text editor) might need support for user-customizable tab stops
 	    public Alignment getAlignment() {
 	        return alignment;
 	    }
-	
-	    /**
-	     * Returns the leader of the tab.
-	     * @return the leader of the tab
-	     */
-	    public Leader getLeader() {
-	        return leader;
-	    }
 	    
-	    // TODO equals, toString
+	    // TODO hashCode, equals, toString
 	}
 
 
