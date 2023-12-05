@@ -42,6 +42,6 @@ public class AppTestLauncher {
 //        System.setProperty("prism.showdirty", "true");
         
         //JFXPanel_NPE_8255248.main(args);
-        Application.launch(TextField_IME_8320912.class, args);
+        Application.launch(TreeTable_Select_8321323.class, args);
     }
 }
