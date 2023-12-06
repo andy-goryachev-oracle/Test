@@ -33,7 +33,8 @@ public class VerticalGridPane extends Pane {
     public VerticalGridPane(Node ... children) {
         getChildren().addAll(children);
     }
-    
+
+    @Override
     protected void layoutChildren() {
         double x = snappedLeftInset();
         double y = snappedTopInset();

@@ -17,6 +17,7 @@ import javafx.stage.StageStyle;
  * https://bugs.openjdk.org/browse/JDK-8255835
  */
 public class MaximizedStage_8255835 extends Application {
+    @Override
     public void start(Stage stage) {
         StackPane sp = new StackPane(new Label("Hello"));
         Color color = new Color(1.0, 0.0, 0.0, 1.0);
