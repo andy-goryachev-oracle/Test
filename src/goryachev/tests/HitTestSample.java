@@ -61,154 +61,155 @@ import javax.swing.UIManager;
  */
 public class HitTestSample extends JPanel {
 
-  private static String mixed = "\u05D0\u05E0\u05D9 Hello \u05DC\u05D0 \u05DE\u05D1\u05D9\u05DF "
-      + "\u05E2\u05D1\u05E8\u05D9\u05EA Arabic \u0644\u0645\u062C\u0645\u0648\u0639\u0629";
+    private static String mixed = "\u05D0\u05E0\u05D9 Hello \u05DC\u05D0 \u05DE\u05D1\u05D9\u05DF "
+        + "\u05E2\u05D1\u05E8\u05D9\u05EA Arabic \u0644\u0645\u062C\u0645\u0648\u0639\u0629";
 
-  private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-  private static final FontRenderContext DEFAULT_FRC = new FontRenderContext(
-      null, false, false);
+    private static final FontRenderContext DEFAULT_FRC = new FontRenderContext(null, false, false);
 
-  private static JFrame frame;
+    private static JFrame frame;
 
-  private static final Hashtable<TextAttribute, Object> map = new Hashtable<TextAttribute, Object>();
+    private static final Hashtable<TextAttribute, Object> map = new Hashtable<TextAttribute, Object>();
 
-  static {
-    map.put(TextAttribute.FAMILY, "Serif");
-    map.put(TextAttribute.SIZE, new Float(24.0));
-  }
-
-  // Colors to use for the strong and weak carets.
-  private static final Color STRONG_CARET_COLOR = Color.red;
-  private static final Color WEAK_CARET_COLOR = Color.black;
-
-  // The TextLayout to draw and hit-test.
-  private TextLayout textLayout;
-
-  // The insertion index of the most recent mouse click.
-  private int insertionIndex;
-
-  public HitTestSample() {
-
-    AttributedString attributedMixed;
-    attributedMixed = new AttributedString(mixed, map);
-    AttributedCharacterIterator text = attributedMixed.getIterator();
-
-    // Create a new TextLayout from the given text.
-    textLayout = new TextLayout(text, DEFAULT_FRC);
-
-    // Initialize insertionIndex.
-    insertionIndex = 0;
-
-    addMouseListener(new HitTestMouseListener());
-  }
-
-  private static void createAndShowGUI() {
-
-    // Create and set up the window.
-    HitTestSample demo = new HitTestSample();
-    frame = new JFrame("Hit Test Sample");
-
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-    // Add contents to the window.
-
-    frame.add(demo);
-    frame.setBackground(Color.white);
-
-    // Display the window.
-    frame.pack();
-    frame.setSize(new Dimension(400, 250));
-    frame.setVisible(true);
-  }
-
-  /**
-   * Compute a location within this Component for textLayout's origin, such that
-   * textLayout is centered horizontally and vertically.
-   * 
-   * Note that this location is unknown to textLayout; it is used only by this
-   * Component for positioning.
-   */
-  private Point2D computeLayoutOrigin() {
-
-    Dimension size = getSize();
-
-    Point2D.Float origin = new Point2D.Float();
-
-    origin.x = (size.width - textLayout.getAdvance()) / 2;
-    origin.y = (size.height - textLayout.getDescent() + textLayout.getAscent()) / 2;
-
-    return origin;
-  }
-
-  /**
-   * Draw textLayout and the carets corresponding to the most recent mouse click
-   * (if any).
-   */
-  public void paint(Graphics g) {
-
-    Graphics2D graphics2D = (Graphics2D) g;
-
-    Point2D origin = computeLayoutOrigin();
-
-    // Since the caret Shapes are relative to the origin
-    // of textLayout, we'll translate the graphics so that
-    // the origin of the graphics is where we want textLayout
-    // to appear.
-
-    graphics2D.translate(origin.getX(), origin.getY());
-
-    // Draw textLayout.
-    textLayout.draw(graphics2D, 0, 0);
-
-    // Retrieve caret Shapes for insertionIndex.
-    Shape[] carets = textLayout.getCaretShapes(insertionIndex);
-
-    // Draw the carets. carets[0] is the strong caret, and
-    // is never null. carets[1], if it is not null, is the
-    // weak caret.
-    graphics2D.setColor(STRONG_CARET_COLOR);
-    graphics2D.draw(carets[0]);
-
-    if (carets[1] != null) {
-      graphics2D.setColor(WEAK_CARET_COLOR);
-      graphics2D.draw(carets[1]);
+    static {
+        map.put(TextAttribute.FAMILY, "Serif");
+        map.put(TextAttribute.SIZE, new Float(24.0));
     }
-  }
 
-  /**
-   * Compute the character position of the mouse click.
-   */
+    // Colors to use for the strong and weak carets.
+    private static final Color STRONG_CARET_COLOR = Color.red;
+    private static final Color WEAK_CARET_COLOR = Color.black;
 
-  private class HitTestMouseListener extends MouseAdapter {
+    // The TextLayout to draw and hit-test.
+    private TextLayout textLayout;
 
-    public void mouseClicked(MouseEvent e) {
+    // The insertion index of the most recent mouse click.
+    private int insertionIndex;
 
-      Point2D origin = computeLayoutOrigin();
+    public HitTestSample() {
 
-      // Compute the mouse click location relative to
-      // textLayout's origin.
-      float clickX = (float) (e.getX() - origin.getX());
-      float clickY = (float) (e.getY() - origin.getY());
+        AttributedString attributedMixed;
+        attributedMixed = new AttributedString(mixed, map);
+        AttributedCharacterIterator text = attributedMixed.getIterator();
 
-      // Get the character position of the mouse click.
-      TextHitInfo currentHit = textLayout.hitTestChar(clickX, clickY);
-      insertionIndex = currentHit.getInsertionIndex();
+        // Create a new TextLayout from the given text.
+        textLayout = new TextLayout(text, DEFAULT_FRC);
 
-      // Repaint the Component so the new caret(s) will be displayed.
-      frame.repaint();
+        // Initialize insertionIndex.
+        insertionIndex = 0;
+
+        addMouseListener(new HitTestMouseListener());
     }
-  }
 
-  public static void main(String[] args) {
-    // Schedule a job for the event dispatch thread:
-    // creating and showing this application's GUI.
-    SwingUtilities.invokeLater(new Runnable() {
-      public void run() {
-        // Turn off metal's use of bold fonts
-        UIManager.put("swing.boldMetal", Boolean.FALSE);
-        createAndShowGUI();
-      }
-    });
-  }
+    private static void createAndShowGUI() {
+
+        // Create and set up the window.
+        HitTestSample demo = new HitTestSample();
+        frame = new JFrame("Hit Test Sample");
+
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        // Add contents to the window.
+
+        frame.add(demo);
+        frame.setBackground(Color.white);
+
+        // Display the window.
+        frame.pack();
+        frame.setSize(new Dimension(400, 250));
+        frame.setVisible(true);
+    }
+
+    /**
+     * Compute a location within this Component for textLayout's origin, such that
+     * textLayout is centered horizontally and vertically.
+     * 
+     * Note that this location is unknown to textLayout; it is used only by this
+     * Component for positioning.
+     */
+    private Point2D computeLayoutOrigin() {
+
+        Dimension size = getSize();
+
+        Point2D.Float origin = new Point2D.Float();
+
+        origin.x = (size.width - textLayout.getAdvance()) / 2;
+        origin.y = (size.height - textLayout.getDescent() + textLayout.getAscent()) / 2;
+
+        return origin;
+    }
+
+    /**
+     * Draw textLayout and the carets corresponding to the most recent mouse click
+     * (if any).
+     */
+    @Override
+    public void paint(Graphics g) {
+
+        Graphics2D graphics2D = (Graphics2D)g;
+
+        Point2D origin = computeLayoutOrigin();
+
+        // Since the caret Shapes are relative to the origin
+        // of textLayout, we'll translate the graphics so that
+        // the origin of the graphics is where we want textLayout
+        // to appear.
+
+        graphics2D.translate(origin.getX(), origin.getY());
+
+        // Draw textLayout.
+        textLayout.draw(graphics2D, 0, 0);
+
+        // Retrieve caret Shapes for insertionIndex.
+        Shape[] carets = textLayout.getCaretShapes(insertionIndex);
+
+        // Draw the carets. carets[0] is the strong caret, and
+        // is never null. carets[1], if it is not null, is the
+        // weak caret.
+        graphics2D.setColor(STRONG_CARET_COLOR);
+        graphics2D.draw(carets[0]);
+
+        if (carets[1] != null) {
+            graphics2D.setColor(WEAK_CARET_COLOR);
+            graphics2D.draw(carets[1]);
+        }
+    }
+
+    /**
+     * Compute the character position of the mouse click.
+     */
+
+    private class HitTestMouseListener extends MouseAdapter {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+
+            Point2D origin = computeLayoutOrigin();
+
+            // Compute the mouse click location relative to
+            // textLayout's origin.
+            float clickX = (float)(e.getX() - origin.getX());
+            float clickY = (float)(e.getY() - origin.getY());
+
+            // Get the character position of the mouse click.
+            TextHitInfo currentHit = textLayout.hitTestChar(clickX, clickY);
+            insertionIndex = currentHit.getInsertionIndex();
+
+            // Repaint the Component so the new caret(s) will be displayed.
+            frame.repaint();
+        }
+    }
+
+    public static void main(String[] args) {
+        // Schedule a job for the event dispatch thread:
+        // creating and showing this application's GUI.
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                // Turn off metal's use of bold fonts
+                UIManager.put("swing.boldMetal", Boolean.FALSE);
+                createAndShowGUI();
+            }
+        });
+    }
 }
