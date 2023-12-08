@@ -68,6 +68,10 @@ Creating a read-only informational control should also be easy:
 
 ## Description
 
+[Complete Public API javadoc](javadoc/javafx.incubator.controls.zip) is available.
+
+
+
 ### Design Principles
 
 - paragraph-oriented model, up to ~2 billion rows
