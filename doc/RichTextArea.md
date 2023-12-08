@@ -84,7 +84,7 @@ Creating a read-only informational control should also be easy:
 The new **RichTextArea** control exposes the following properties:
 
 |Property	|Description	|Styleable|
-|-----------|---------------|---------|
+|:----------|:--------------|:--------|
 |anchorPosition	|provides the anchor position (read-only)	
 |caretBlinkPeriod	|determines the caret blink rate	
 |caretPosition	|provides the caret position (read-only)	
@@ -203,7 +203,7 @@ Additionally, the InputMap allows for redefining of the key mappings.
 
 A number of open source projects do exist:
 
-- [](https://github.com/FXMisc/RichTextFX)
+- https://github.com/FXMisc/RichTextFX
 - https://github.com/gluonhq/rich-text-area
 - https://github.com/andy-goryachev/FxEditor
 
@@ -221,5 +221,5 @@ TBD
 This enhancement depends on the following RFEs:
 
 - Input map: https://github.com/openjdk/jfx/pull/1254
-- Tab stop policy: https://bugs.openjdk.org/browse/JDK-8314482
+- Tab stop policy: [JDK-8314482](https://bugs.openjdk.org/browse/JDK-8314482)
 
