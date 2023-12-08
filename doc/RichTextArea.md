@@ -81,32 +81,36 @@ Creating a read-only informational control should also be easy:
 
 ### Properties
 
-The new RichTextArea control exposes the following properties:
+The new **RichTextArea** control exposes the following properties:
 
-Property	Description	Styleable
-anchorPosition	provides the anchor position (read-only)	
-caretBlinkPeriod	determines the caret blink rate	
-caretPosition	provides the caret position (read-only)	
-contentPadding	defines the amount of padding in the content area	Yes
-displayCaret	indicates whether the caret is displayed	
-editable	indicates whether the editing is enabled	
-highlightCurrentParagraph	indicates whether the current paragraph is highlighted	
-model	document data model	
-wrapText	indicates whether text should be wrapped	Yes
+|Property	|Description	|Styleable|
+|-----------|---------------|---------|
+|anchorPosition	|provides the anchor position (read-only)	
+|caretBlinkPeriod	|determines the caret blink rate	
+|caretPosition	|provides the caret position (read-only)	
+|contentPadding	|defines the amount of padding in the content area	|Yes
+|displayCaret	|indicates whether the caret is displayed	
+|editable	|indicates whether the editing is enabled	
+|highlightCurrentParagraph	|indicates whether the current paragraph is highlighted	
+|model	|document data model	
+|wrapText	|indicates whether text should be wrapped	|Yes
 
 
 ### Model
 
-The RichTextArea control separates data model from the view by providing a model property.
+The RichTextArea control separates data model from the view by providing the **model** property.
 
-The data model is represented by an implementation of an abstract StyledTextModel class.  Conceptually, the model is a sequence of styled text paragraphs (represented by RichParagraph class), exposed by these three methods:
+The data model is represented by an implementation of an abstract **StyledTextModel** class.  Conceptually, the model is a sequence of styled text paragraphs (represented by **RichParagraph** class), exposed by these three methods:
+
 - int size()
 - String getPlainText(int index)
 - RichParagraph getParagraph(int index)
 
 It is important to note that the model does not contain or manages any Nodes, as that will prevent multiple views working off the same model.
 
-The default model for RichTextArea control is EditableRichTextModel.  This model stores the styled text segments styled with embedded attributes and should be good enough for majority of use cases.  Attributes supported by this model are listed in the following table:
+The default model for RichTextArea control is **EditableRichTextModel**.  This model stores the styled text segments styled with embedded attributes and should be good enough for majority of use cases.
+
+Attributes supported by this model are listed in the following table:
 
 
 |Attribute	|Description|
@@ -140,53 +144,54 @@ The size of the sliding window slightly exceeds the visible area, resulting in i
 
 ### Behavior
 
-RichTextArea control utilizes the new capabilities offered by the new InputMap design.  In this design, the control exposes a number of function tags identifying the public methods that convey the behavior.  There is one public method that corresponds to each function tag, allowing for customization of the behavior when required.
+RichTextArea control utilizes the new capabilities offered by the new **InputMap** design.  In this design, the control exposes a number of function tags identifying the public methods that convey the behavior.  There is one public method that corresponds to each function tag, allowing for customization of the behavior when required.
 
 The table below lists the available function tags:
 
-Attribute	Description
-BACKSPACE	Deletes the previous symbol
-COPY	Copies selected text to the clipboard
-CUT	Cuts selected text and places it to the clipboard
-DELETE	Deletes symbol at the caret
-DELETE_PARAGRAPH	Deletes paragraph at the caret, or selected paragraphs
-INSERT_LINE_BREAK	Inserts a single line break
-INSERT_TAB	Inserts a TAB symbol
-MOVE_DOCUMENT_END	Moves the caret to end of the document
-MOVE_DOCUMENT_START	Moves the caret to beginning of the document
-MOVE_DOWN	Moves the caret one visual text line down
-MOVE_LEFT	Moves the caret one symbol to the left
-MOVE_PARAGRAPH_END	Moves the caret to the end of the current paragraph
-MOVE_PARAGRAPH_START	Moves the caret to the beginning of the current paragraph
-MOVE_RIGHT	Moves the caret one symbol to the right
-MOVE_UP	Moves the caret one visual text line up
-MOVE_WORD_LEFT	Moves the caret one word left (previous word if LTR, next word if RTL)
-MOVE_WORD_NEXT	Moves the caret to the next word
-MOVE_WORD_NEXT_END	Moves the caret to the end of next word
-MOVE_WORD_PREVIOUS	Moves the caret to the previous word
-MOVE_WORD_RIGHT	Moves the caret one word right (next word if LTR, previous word if RTL)
-PAGE_DOWN	Moves the caret one page down
-PAGE_UP	Moves the caret one page up
-PASTE	Inserts rich text from the clipboard
-PASTE_PLAIN_TEXT	Inserts plain text from the clipboard
-REDO	Reverts the last undo operation
-SELECT_ALL	Selects all text in the document
-SELECT_DOCUMENT_END	Selects text (or extends selection) from the current caret position to the end of document
-SELECT_DOCUMENT_START	Selects text (or extends selection) from the current caret position to the start of document
-SELECT_DOWN	Selects text (or extends selection) from the current caret position one visual text line down
-SELECT_LEFT	Selects text (or extends selection) from the current position to one symbol to the left
-SELECT_PAGE_DOWN	Selects text (or extends selection) from the current position to one page down
-SELECT_PAGE_UP	Selects text (or extends selection) from the current position to one page up
-SELECT_PARAGRAPH	Selects text (or extends selection) of the current paragraph
-SELECT_RIGHT	Selects text (or extends selection) from the current position to one symbol to the right
-SELECT_UP	Selects text (or extends selection) from the current caret position one visual text line up
-SELECT_WORD	Selects word at the caret position
-SELECT_WORD_LEFT	Extends selection to the previous word (LTR) or next word (RTL)
-SELECT_WORD_NEXT	Extends selection to the next word
-SELECT_WORD_NEXT_END	Extends selection to the end of next word
-SELECT_WORD_PREVIOUS	Extends selection to the previous word
-SELECT_WORD_RIGHT	Extends selection to the next word (LTR) or previous word (RTL)
-UNDO	Undoes the last edit operation
+|Function Tag	|Description|
+|---|---|
+|BACKSPACE	|Deletes the previous symbol
+|COPY	|Copies selected text to the clipboard
+|CUT	|Cuts selected text and places it to the clipboard
+|DELETE	|Deletes symbol at the caret
+|DELETE_PARAGRAPH	|Deletes paragraph at the caret, or selected paragraphs
+|INSERT_LINE_BREAK	|Inserts a single line break
+|INSERT_TAB	|Inserts a TAB symbol
+|MOVE_DOCUMENT_END	|Moves the caret to end of the document
+|MOVE_DOCUMENT_START	|Moves the caret to beginning of the document
+|MOVE_DOWN	|Moves the caret one visual text line down
+|MOVE_LEFT	|Moves the caret one symbol to the left
+|MOVE_PARAGRAPH_END	|Moves the caret to the end of the current paragraph
+|MOVE_PARAGRAPH_START	|Moves the caret to the beginning of the current paragraph
+|MOVE_RIGHT	|Moves the caret one symbol to the right
+|MOVE_UP	|Moves the caret one visual text line up
+|MOVE_WORD_LEFT	|Moves the caret one word left (previous word if LTR, next word if RTL)
+|MOVE_WORD_NEXT	|Moves the caret to the next word
+|MOVE_WORD_NEXT_END	|Moves the caret to the end of next word
+|MOVE_WORD_PREVIOUS	|Moves the caret to the previous word
+|MOVE_WORD_RIGHT	|Moves the caret one word right (next word if LTR, previous word if RTL)
+|PAGE_DOWN	|Moves the caret one page down
+|PAGE_UP	|Moves the caret one page up
+|PASTE	|Inserts rich text from the clipboard
+|PASTE_PLAIN_TEXT	|Inserts plain text from the clipboard
+|REDO	|Reverts the last undo operation
+|SELECT_ALL	|Selects all text in the document
+|SELECT_DOCUMENT_END	|Selects text (or extends selection) from the current caret position to the end of document
+|SELECT_DOCUMENT_START	|Selects text (or extends selection) from the current caret position to the start of document
+|SELECT_DOWN	|Selects text (or extends selection) from the current caret position one visual text line down
+|SELECT_LEFT	|Selects text (or extends selection) from the current position to one symbol to the left
+|SELECT_PAGE_DOWN	|Selects text (or extends selection) from the current position to one page down
+|SELECT_PAGE_UP	|Selects text (or extends selection) from the current position to one page up
+|SELECT_PARAGRAPH	|Selects text (or extends selection) of the current paragraph
+|SELECT_RIGHT	|Selects text (or extends selection) from the current position to one symbol to the right
+|SELECT_UP	|Selects text (or extends selection) from the current caret position one visual text line up
+|SELECT_WORD	|Selects word at the caret position
+|SELECT_WORD_LEFT	|Extends selection to the previous word (LTR) or next word (RTL)
+|SELECT_WORD_NEXT	|Extends selection to the next word
+|SELECT_WORD_NEXT_END	|Extends selection to the end of next word
+|SELECT_WORD_PREVIOUS	|Extends selection to the previous word
+|SELECT_WORD_RIGHT	|Extends selection to the next word (LTR) or previous word (RTL)
+|UNDO	|Undoes the last edit operation
 
 Additionally, the InputMap allows for redefining of the key mappings.
 
@@ -198,7 +203,7 @@ Additionally, the InputMap allows for redefining of the key mappings.
 
 A number of open source projects do exist:
 
-- https://github.com/FXMisc/RichTextFX
+- [](https://github.com/FXMisc/RichTextFX)
 - https://github.com/gluonhq/rich-text-area
 - https://github.com/andy-goryachev/FxEditor
 
