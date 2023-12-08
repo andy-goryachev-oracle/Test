@@ -83,8 +83,8 @@ Creating a read-only informational control should also be easy:
 
 The new **RichTextArea** control exposes the following properties:
 
-|Property	|Description	|Styleable|
-|:----------|:--------------|:--------|
+|Property |Description |Styleable|
+|:--------|:-----------|:--------|
 |anchorPosition	|provides the anchor position (read-only)	
 |caretBlinkPeriod	|determines the caret blink rate	
 |caretPosition	|provides the caret position (read-only)	
@@ -113,8 +113,8 @@ The default model for RichTextArea control is **EditableRichTextModel**.  This m
 Attributes supported by this model are listed in the following table:
 
 
-|Attribute	|Description|
-|-----------|-----------|
+|Attribute |Description|
+|:---------|:----------|
 |BACKGROUND	|paragraph background color
 |BULLET	|paragraph bullet point symbol
 |BOLD	|bold typeface
@@ -148,8 +148,8 @@ RichTextArea control utilizes the new capabilities offered by the new **InputMap
 
 The table below lists the available function tags:
 
-|Function Tag	|Description|
-|---|---|
+|Function Tag|Description|
+|:-----------|:----------|
 |BACKSPACE	|Deletes the previous symbol
 |COPY	|Copies selected text to the clipboard
 |CUT	|Cuts selected text and places it to the clipboard
