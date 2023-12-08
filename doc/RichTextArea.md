@@ -68,7 +68,7 @@ Creating a read-only informational control should also be easy:
 
 ## Description
 
-[Complete Public API javadoc](javadoc/javafx.incubator.controls.zip) is available.
+[Complete Public API javadoc](javadoc/RichTextArea/javadoc.zip) is available.
 
 
 
