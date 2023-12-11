@@ -11,7 +11,7 @@ For a long time, JavaFX has lacked a dedicated rich text area control, resulting
 
 The new RichTextArea control intends to bridge this gap by providing a dedicated control for displaying and editing rich text.
 
-
+![rich text area screenshot](rich-text-area.png)
 
 
 ## Goals
@@ -68,7 +68,7 @@ Creating a read-only informational control should also be easy:
 
 ## Description
 
-[Complete Public API javadoc](javadoc/RichTextArea/javadoc.zip) is available.
+[Complete Public API javadoc](javadoc/javadoc.zip) is available.
 
 
 
