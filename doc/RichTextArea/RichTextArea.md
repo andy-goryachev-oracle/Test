@@ -7,11 +7,10 @@ Andy Goryachev
 
 ## Summary
 
-For a long time, JavaFX has lacked a dedicated rich text area control, resulting in a functional gap in relation to Swing with its StyledEditorKit/JEditorPane.  
-
-The new RichTextArea control intends to bridge this gap by providing a dedicated control for displaying and editing rich text.
+Introducing a RichTextArea control for displaying and editing of rich text.
 
 ![rich text area screenshot](rich-text-area.png)
+
 
 
 ## Goals
@@ -20,11 +19,9 @@ RichTextArea control addresses a number of common use cases:
 
 - read-only presentation of rich text information (help pages, documentation, etc.)
 - a simple editor similar to WordPad or TextEdit level, suitable for note taking or message editing.
-- a code editor
+- a code editor with syntax highlighting
 - an editor which combines rich text with interactive content, such as a code notebook
 - enable extension and customization using via the input map
-
-
 
 
 
@@ -40,8 +37,11 @@ The following list represents features RichTextArea does not support:
 
 
 
-
 ## Motivation
+
+For a long time, JavaFX has lacked a dedicated rich text area control, resulting in a functional gap in relation to Swing with its StyledEditorKit/JEditorPane.  
+
+The new RichTextArea control intends to bridge this gap by providing a dedicated control for displaying and editing rich text.
 
 The main design goal is to provide a good enough control to be useful out-of-the box, as well as open to extension by the application developers.
 
@@ -114,28 +114,31 @@ It is important to note that the model does not contain or manages any Nodes, as
 
 The default model for RichTextArea control is **EditableRichTextModel**.  This model stores the styled text segments styled with embedded attributes and should be good enough for majority of use cases.
 
-Attributes supported by this model are listed in the following table:
+The attributes supported by this model are declared in **StyleAttrs** class.  The attributes are applicable either to the whole paragraph (BACKGROUND, BULLET, FIRST_LINE_INDENT, ...) or to the individual text segments (BOLD, FONT_FAMILY, etc.).
+
+This example illustrates how to populate an editable RichTextArea programmatically:
+
+        // create styles
+        StyleAttrs heading = StyleAttrs.builder().setBold(true).setFontSize(24).build();
+        StyleAttrs plain = StyleAttrs.builder().setFontFamily("Monospaced").build();
+
+        RichTextArea rta = new RichTextArea();
+        // build the content
+        rta.appendText("Heading\n", heading);
+        rta.appendText("Plain monospaced text.\n", plain);
 
 
-|Attribute |Description|
-|:---------|:----------|
-|BACKGROUND	|paragraph background color
-|BULLET	|paragraph bullet point symbol
-|BOLD	|bold typeface
-|FIRST_LINE_INDENT	|paragraph's first line indent
-|FONT_FAMILY	|font family
-|FONT_SIZE	|font size in pixels
-|ITALIC	|italic typeface
-|LINE_SPACING	|paragraph line spacing, in pixels
-|RIGHT_TO_LEFT	|paragraph right-to-left text orientation
-|SPACE_ABOVE	|space above the paragraph
-|SPACE_BELOW	|space below the paragraph
-|SPACE_LEFT	|space to the left of the paragraph
-|SPACE_RIGHT	|space to the right of the paragraph
-|STRIKE_THROUGH	|strike-through text
-|TEXT_ALIGNMENT	|paragraph text alignment
-|TEXT_COLOR	|text fill color
-|UNDERLINE	|underline text
+
+### Export/Import
+
+StyledTextModel provides a common mechanism for importing/exporting styled text into/from the model via the following methods:
+
+•	exportText(TextPos start, TextPos end, StyledOutput out)
+•	TextPos replace(StyleResolver, TextPos start, TextPos end, String text, boolean createUndo)
+•	TextPos replace(StyleResolver, TextPos start, TextPos end, StyledInput in, boolean createUndo)
+
+The I/O classes **StyledInput** and **StyledOutput** provide the transport of individual **StyledSegment**s.
+
 
 
 ### View
@@ -148,7 +151,7 @@ The size of the sliding window slightly exceeds the visible area, resulting in i
 
 ### Behavior
 
-RichTextArea control utilizes the new capabilities offered by the new **InputMap** design.  In this design, the control exposes a number of function tags identifying the public methods that convey the behavior.  There is one public method that corresponds to each function tag, allowing for customization of the behavior when required.
+RichTextArea control utilizes the new capabilities offered by the new **InputMap** feature.  In this design, the control exposes a number of function tags identifying the public methods that convey the behavior.  There is one public method that corresponds to each function tag, allowing for customization of the behavior when required.
 
 The table below lists the available function tags:
 
