@@ -1,3 +1,3 @@
-# Projects // Work in Progress
+# Test Projects // Work in Progress
 
-- [Rich Text Area](https://github.com/andy-goryachev-oracle/Test/blob/rich.text.area/src/goryachev/apps/RichTextAreaDemoApp.java)
+This repo houses miscellaneous test cases.

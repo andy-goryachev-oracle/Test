@@ -40,8 +40,6 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-        
-        //JFXPanel_NPE_8255248.main(args);
         Application.launch(TableView_UnableSelectRow_8322002.class, args);
     }
 }
