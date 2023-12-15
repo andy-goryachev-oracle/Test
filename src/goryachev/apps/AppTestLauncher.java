@@ -40,7 +40,6 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-
-        Application.launch(TreeTable_Select_8321323.class, args);
+        Application.launch(TableView_UnableSelectRow_8322002.class, args);
     }
 }
