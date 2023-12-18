@@ -15,7 +15,7 @@ Introducing a RichTextArea control for displaying and editing of rich text.
 
 ## Goals
 
-RichTextArea control addresses a number of common use cases:
+**RichTextArea** control enables support for a number of common use cases:
 
 - read-only presentation of rich text information (help pages, documentation, etc.)
 - a simple editor similar to WordPad or TextEdit level, suitable for note taking or message editing.
@@ -45,7 +45,7 @@ The new RichTextArea control intends to bridge this gap by providing a dedicated
 
 The main design goal is to provide a good enough control to be useful out-of-the box, as well as open to extension by the application developers.
 
-Creating a simple editable control should be easy:
+Creating a simple editable control should be as easy as this:
 
         RichTextArea t = new RichTextArea();
 
@@ -76,7 +76,7 @@ Creating a read-only informational control should also be easy:
 
 - paragraph-oriented model, up to ~2 billion rows
 - virtualized text cell flow
-- supports text styling with CSS or attributes embedded in the model
+- supports text styling with an application stylesheet or inline attributes
 - supports multiple views connected to the same model
 - single selection
 - input map allows for control extension
@@ -104,7 +104,7 @@ The new **RichTextArea** control exposes the following properties:
 
 The RichTextArea control separates data model from the view by providing the **model** property.
 
-The data model is represented by an implementation of an abstract **StyledTextModel** class.  Conceptually, the model is a sequence of styled text paragraphs (represented by **RichParagraph** class), exposed by these three methods:
+Conceptually, the model is a sequence of styled text paragraphs, represented by **RichParagraph** class, exposed by these three methods:
 
 - int size()
 - String getPlainText(int index)
@@ -112,9 +112,34 @@ The data model is represented by an implementation of an abstract **StyledTextMo
 
 It is important to note that the model does not contain or manages any Nodes, as that will prevent multiple views working off the same model.
 
-The default model for RichTextArea control is **EditableRichTextModel**.  This model stores the styled text segments styled with embedded attributes and should be good enough for majority of use cases.
 
-The attributes supported by this model are declared in **StyleAttrs** class.  The attributes are applicable either to the whole paragraph (BACKGROUND, BULLET, FIRST_LINE_INDENT, ...) or to the individual text segments (BOLD, FONT_FAMILY, etc.).
+#### Standard Models
+
+The base class for any data model is **StyledTextModel**.  This abstract class provides no data storage, however, it takes care of many mundane tasks in order to ease the process of writing custom models, such as dealing with styled segments, keeping track of markers, sending events, and so on.
+
+Other models are also included, as described in this table:
+
+|Class Name	|Description
+|:---|:---|
+|StyledTextModel	|Base class
+|├ EditableRichTextModel	|Default model for RichTextArea
+|├ BasePlainTextModel	|Base class for models based on plain text
+|│ └ CodeTextModel	|Default model for CodeArea
+|└ StyledTextModelReadOnlyBase	|Base class for a read-only model
+|   └ SimpleReadOnlyStyledModel	|In-memory read-only styled model
+
+**EditableRichTextModel** stores the data in memory, in the form of text segments styled with attributes defined in **StyleAttrs** class.  This is a default model for RichTextArea.
+
+The abstract **BasePlainTextModel** is a base class for in-memory text models which are based on plain text.  This class provides foundation for the **CodeTextModel**, which styles the text using a pluggable **SyntaxDecorator**.
+
+The abstract **StyledTextModelReadOnlyBase** is a base class for read-only models.  This class is used by **SimpleReadOnlyStyledModel** which simplifies building of in-memory read-only styled documents.
+
+
+#### Styling
+
+There are two ways of styling text in RichTextArea: either using inline attributes, or relying on style names in the application style sheet.  It is important to understand the limitation of stylesheet approach as it is only suitable for read-only models because editing of styles by the user is nearly impossible given the static nature of the application stylesheet.  (An example provided earlier illustrates how to style a read-only document using SimpleReadOnlyStyledModel and an application stylesheet).
+
+The default model for RichTextArea, EditableRichTextModel, utilizes a number of style attributes (found in StyleAttrs class).  These attributes are applicable either to the whole paragraph (BACKGROUND, BULLET, FIRST_LINE_INDENT, ...) or to the individual text segments (BOLD, FONT_FAMILY, etc.).
 
 This example illustrates how to populate an editable RichTextArea programmatically:
 
@@ -133,17 +158,21 @@ This example illustrates how to populate an editable RichTextArea programmatical
 
 StyledTextModel provides a common mechanism for importing/exporting styled text into/from the model via the following methods:
 
-•	exportText(TextPos start, TextPos end, StyledOutput out)
-•	TextPos replace(StyleResolver, TextPos start, TextPos end, String text, boolean createUndo)
-•	TextPos replace(StyleResolver, TextPos start, TextPos end, StyledInput in, boolean createUndo)
+- exportText(TextPos start, TextPos end, StyledOutput out)
+- TextPos replace(StyleResolver, TextPos start, TextPos end, String text, boolean createUndo)
+- TextPos replace(StyleResolver, TextPos start, TextPos end, StyledInput in, boolean createUndo)
 
 The I/O classes **StyledInput** and **StyledOutput** provide the transport of individual **StyledSegment**s.
 
+At the control level, save() and load() methods allow for data transfer using any of the data formats supported by the underlying model.
 
 
-### View
 
-The main feature of RichTextArea is a virtualized text flow, where only a small number of paragraphs is laid out in a sliding window, enabling visualization and even editing of large models.
+### Skin
+
+The default skin, implemented by the **RichTextAreaSkin** class, provides the visual representation of RichTextArea control.
+
+The main feature of the default skin is a virtualized text flow, where only a small number of paragraphs is laid out in a sliding window, enabling visualization and even editing of large models.
 
 The size of the sliding window slightly exceeds the visible area, resulting in improved scrolling experience when paragraph heights differ.
 
@@ -202,7 +231,25 @@ The table below lists the available function tags:
 
 Additionally, the InputMap allows for redefining of the key mappings.
 
+The following example illustrates how the basic navigation can be altered to support custom navigation (for example, allowing to jump to the next CamelCase word):
 
+        richTextArea.getInputMap().registerFunction(RichTextArea.MOVE_WORD_NEXT, () -> {
+            // refers to custom logic
+            TextPos p = getCustomNextWordPosition(richTextArea);
+            richTextArea.setCaret(p);
+        });
+
+
+
+### Extensibility
+
+RichTextArea is designed with extensibility in mind.  A number of mechanisms are provided for the application developer to customize the control behavior:
+
+- extending the model by adding new attributes
+- adding new functions with new key bindings
+- redefining the existing key bindings
+- by adding left and right side paragraph decorators
+- providing custom scroll bars via **ConfigurationParameters**
 
 
 
@@ -213,6 +260,14 @@ A number of open source projects do exist:
 - https://github.com/FXMisc/RichTextFX
 - https://github.com/gluonhq/rich-text-area
 - https://github.com/andy-goryachev/FxEditor
+
+
+## Testing
+
+Two manual test applications are provided - one for RichTextArea (**RichTextAreaDemoApp**)
+and one for the CodeArea (**CodeAreaDemoApp**).
+
+In addition to these two testers, a small example provides a standalone rich text editor, see **RichEditorDemoApp**.
 
 
 
