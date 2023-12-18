@@ -164,6 +164,14 @@ StyledTextModel provides a common mechanism for importing/exporting styled text 
 
 The I/O classes **StyledInput** and **StyledOutput** provide the transport of individual **StyledSegment**s.
 
+
+
+### Clipboard
+
+The StyledTextModel provides capability to copy to and paste from the system clipboard in a variety of formats.  Please refer to the **DataFormatHandler** class hierarchy.
+
+The default model, EditableRichTextModel, copies plain text, HTML, RTF, as well as the data in an internal format.  It also supports pasting plain text and internal formatted data, as well as a limited support for pasting RTF.
+
 At the control level, save() and load() methods allow for data transfer using any of the data formats supported by the underlying model.
 
 
