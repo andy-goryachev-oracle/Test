@@ -121,12 +121,12 @@ Other models are also included, as described in this table:
 
 |Class Name	|Description
 |:---|:---|
-|StyledTextModel	|Base class
-|├ EditableRichTextModel	|Default model for RichTextArea
-|├ BasePlainTextModel	|Base class for models based on plain text
-|│ └ CodeTextModel	|Default model for CodeArea
-|└ StyledTextModelReadOnlyBase	|Base class for a read-only model
-|   └ SimpleReadOnlyStyledModel	|In-memory read-only styled model
+|`StyledTextModel`	|Base class
+|`├ EditableRichTextModel`	|Default model for RichTextArea
+|`├ BasePlainTextModel`	|Base class for models based on plain text
+|`│ └ CodeTextModel`	|Default model for CodeArea
+|`└ StyledTextModelReadOnlyBase`	|Base class for a read-only model
+|`   └ SimpleReadOnlyStyledModel`	|In-memory read-only styled model
 
 **EditableRichTextModel** stores the data in memory, in the form of text segments styled with attributes defined in **StyleAttrs** class.  This is a default model for RichTextArea.
 
@@ -229,15 +229,7 @@ The table below lists the available function tags:
 |SELECT_WORD_RIGHT	|Extends selection to the next word (LTR) or previous word (RTL)
 |UNDO	|Undoes the last edit operation
 
-Additionally, the InputMap allows for redefining of the key mappings.
-
-The following example illustrates how the basic navigation can be altered to support custom navigation (for example, allowing to jump to the next CamelCase word):
-
-        richTextArea.getInputMap().registerFunction(RichTextArea.MOVE_WORD_NEXT, () -> {
-            // refers to custom logic
-            TextPos p = getCustomNextWordPosition(richTextArea);
-            richTextArea.setCaret(p);
-        });
+These functions and the key mappings can be customized using the control's InputMap.
 
 
 
@@ -250,6 +242,14 @@ RichTextArea is designed with extensibility in mind.  A number of mechanisms are
 - redefining the existing key bindings
 - by adding left and right side paragraph decorators
 - providing custom scroll bars via **ConfigurationParameters**
+
+The following example illustrates how the basic navigation can be altered to support custom navigation (for example, allowing to jump to the next CamelCase word):
+
+        richTextArea.getInputMap().registerFunction(RichTextArea.MOVE_WORD_NEXT, () -> {
+            // refers to custom logic
+            TextPos p = getCustomNextWordPosition(richTextArea);
+            richTextArea.setCaret(p);
+        });
 
 
 
