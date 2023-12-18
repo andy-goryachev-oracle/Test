@@ -122,11 +122,11 @@ Other models are also included, as described in this table:
 |Class Name	|Description
 |:---|:---|
 |`StyledTextModel`	|Base class
-|`├ EditableRichTextModel`	|Default model for RichTextArea
-|`├ BasePlainTextModel`	|Base class for models based on plain text
-|`│ └ CodeTextModel`	|Default model for CodeArea
-|`└ StyledTextModelReadOnlyBase`	|Base class for a read-only model
-|`   └ SimpleReadOnlyStyledModel`	|In-memory read-only styled model
+|` ├─ EditableRichTextModel`	|Default model for RichTextArea
+|` ├─ BasePlainTextModel`	|Base class for models based on plain text
+|` │   └─ CodeTextModel`	|Default model for CodeArea
+|` └─ StyledTextModelReadOnlyBase`	|Base class for a read-only model
+|`     └─ SimpleReadOnlyStyledModel`	|In-memory read-only styled model
 
 **EditableRichTextModel** stores the data in memory, in the form of text segments styled with attributes defined in **StyleAttrs** class.  This is a default model for RichTextArea.
 
