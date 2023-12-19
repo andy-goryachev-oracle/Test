@@ -38,14 +38,65 @@ public class ControlExample extends Control {
     private static final int DEFAULT_TAB_SIZE = 8;
     private StyleableProperty<Number> tabSize;
     private StyleableProperty<Font> font;
+    private Styleable two;
     
     private List<CssMetaData<? extends Styleable, ?>> classMetadata = List.of(
         CssMetaData.<ControlExample,Number>of("-fx-tab-size", SizeConverter.getInstance(), DEFAULT_TAB_SIZE, (n) -> n.tabSize),
         CssMetaData.<ControlExample,Font>of("-fx-font", Font.getDefault(), (n) -> n.font)
     );
     
+    private static String[] css = CssUtils.of(ControlExample.class);
+    
     @Override
     protected List<CssMetaData<? extends Styleable, ?>> getControlCssMetaData() {
         return classMetadata;
+    }
+
+    @AStyleable
+    public Styleable styleablePropertyTwo() {
+        if(two == null) {
+            two = new Styleable() {
+                @Override
+                public String getTypeSelector() {
+                    return null;
+                }
+                
+                @Override
+                public Styleable getStyleableParent() {
+                    return null;
+                }
+                
+                @Override
+                public ObservableList<String> getStyleClass() {
+                    return null;
+                }
+                
+                @Override
+                public String getStyle() {
+                    return null;
+                }
+                
+                @Override
+                public ObservableSet<PseudoClass> getPseudoClassStates() {
+                    return null;
+                }
+                
+                @Override
+                public String getId() {
+                    return null;
+                }
+                
+                @Override
+                public List<javafx.css.CssMetaData<? extends Styleable, ?>> getCssMetaData() {
+                    return null;
+                }
+            };
+        }
+        return two;
+    }
+    
+    public static void main(String[] args) {
+        new ControlExample();
+        System.exit(0);
     }
 }
