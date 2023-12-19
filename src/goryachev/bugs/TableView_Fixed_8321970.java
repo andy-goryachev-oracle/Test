@@ -26,7 +26,7 @@ public class TableView_Fixed_8321970 extends Application {
 
         for (int i = 0; i < 10; ++i) {
             final TableColumn<String, String> tableColumn = new TableColumn<>(Integer.toString(i));
-            tableColumn.setPrefWidth(20);
+//            tableColumn.setPrefWidth(20);
             tableColumn.setCellValueFactory(value -> new SimpleStringProperty("foo"));
             tableView.getColumns().add(tableColumn);
         }
@@ -36,7 +36,7 @@ public class TableView_Fixed_8321970 extends Application {
         primaryStage.setOnShown(e -> {
             for (int i = 0; i < 10; ++i) {
                 final TableColumn<String, String> tableColumn = new TableColumn<>(Integer.toString(i + 10));
-                tableColumn.setPrefWidth(20);
+//                tableColumn.setPrefWidth(20);
                 tableColumn.setCellValueFactory(value -> new SimpleStringProperty("bar"));
                 tableView.getColumns().add(tableColumn);
             }
