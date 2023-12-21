@@ -295,6 +295,6 @@ TBD
 
 This enhancement depends on the following RFEs:
 
-- Public InputMap (Incubator): https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.behavior.v1/doc/InputMap/BehaviorInputMapProposal.md
+- Public InputMap (Incubator): [BehaviorInputMapProposal](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.behavior.v1/doc/InputMap/BehaviorInputMapProposal.md)
 - Tab stop policy: [JDK-8314482](https://bugs.openjdk.org/browse/JDK-8314482)
 
