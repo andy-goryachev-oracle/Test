@@ -1,4 +1,4 @@
-# Rich Text Area Control
+# Rich Text Area Control (Incubator)
 
 Andy Goryachev
 
@@ -7,7 +7,7 @@ Andy Goryachev
 
 ## Summary
 
-Introducing a RichTextArea control for displaying and editing of rich text.
+Provide a RichTextArea control for displaying and editing of rich text that can be styled in a variety of ways.
 
 ![rich text area screenshot](rich-text-area.png)
 
@@ -29,9 +29,9 @@ Introducing a RichTextArea control for displaying and editing of rich text.
 
 The following list represents features RichTextArea does not support:
 
-- "wide" models with long (10K+ symbols) paragraphs (for performance reasons)
-- applications requiring arbitrary text/graphics positioning (MS Word)
-- desktop publishing application that require precise control of text appearance (Adobe InDesign)
+- models with arbitrarily long (10K+ symbols) paragraphs
+- applications requiring arbitrary text/graphics positioning
+- desktop publishing application that require precise control of text appearance
 - multiple or rectangular selection segments
 - embedded tables
 
@@ -39,11 +39,11 @@ The following list represents features RichTextArea does not support:
 
 ## Motivation
 
-For a long time, JavaFX has lacked a dedicated rich text area control, resulting in a functional gap in relation to Swing with its StyledEditorKit/JEditorPane.  
+JavaFX lacks a dedicated rich text area control, resulting in a functional gap in relation to Swing with its StyledEditorKit/JEditorPane.  
 
 The new RichTextArea control intends to bridge this gap by providing a dedicated control for displaying and editing rich text.
 
-The main design goal is to provide a good enough control to be useful out-of-the box, as well as open to extension by the application developers.
+The main design goal is to provide a control that is complete enough to be useful out-of-the box, as well as open to extension by the application developers.  The benefit of providing such a control as a part of the core platform is not just adding support for rich text, but also in taking care of many intricate details required for such support, making it easier for third party developers who decide to extend the basic functionality.
 
 Creating a simple editable control should be as easy as this:
 
@@ -63,12 +63,14 @@ Creating a read-only informational control should also be easy:
 
 
 
-
-
-
 ## Description
 
-[Complete Public API javadoc](javadoc/javadoc.zip) is available.
+The changes are mostly contained in **javafx.incubator.scene.control.rich** package hierarchy.
+The new controls are represented by **RichTextArea** and **CodeArea** controls,
+their corresponding default models are **EditableRichTextModel** and **CodeTextModel**.
+
+Public API surface is quite extensive, please refer to the following link for the
+[complete javadoc](javadoc/javadoc.zip).
 
 
 
@@ -263,7 +265,8 @@ The following example illustrates how the basic navigation can be altered to sup
 
 ## Alternatives
 
-A number of open source projects do exist:
+Do not provide a RichTextArea control as a core part of JavaFX.  
+A number of existing open source projects already provide some rich text capability:
 
 - https://github.com/FXMisc/RichTextFX
 - https://github.com/gluonhq/rich-text-area
@@ -271,6 +274,8 @@ A number of open source projects do exist:
 
 
 ## Testing
+
+Extensive tests, headless where possible, should be developed.  These tests should exercise every function, every key binding, ideally every condition that affects the behavior, similarly to [JDK-8314906](https://bugs.openjdk.org/browse/JDK-8314906).
 
 Two manual test applications are provided - one for RichTextArea (**RichTextAreaDemoApp**)
 and one for the CodeArea (**CodeAreaDemoApp**).
@@ -290,6 +295,6 @@ TBD
 
 This enhancement depends on the following RFEs:
 
-- Input map: https://github.com/openjdk/jfx/pull/1254
+- Public InputMap (Incubator): https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.behavior.v1/doc/InputMap/BehaviorInputMapProposal.md
 - Tab stop policy: [JDK-8314482](https://bugs.openjdk.org/browse/JDK-8314482)
 
