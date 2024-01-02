@@ -29,7 +29,7 @@ Provide a RichTextArea control for displaying and editing of rich text that can 
 
 The following list represents features RichTextArea does not support:
 
-- models with arbitrarily long (10K+ symbols) paragraphs
+- models with arbitrarily long (e.g., 10K+ symbols) paragraphs
 - applications requiring arbitrary text/graphics positioning
 - desktop publishing application that require precise control of text appearance
 - multiple or rectangular selection segments
@@ -65,13 +65,40 @@ Creating a read-only informational control should also be easy:
 
 ## Description
 
-The changes are mostly contained in **javafx.incubator.scene.control.rich** package hierarchy.
-The new controls are represented by **RichTextArea** and **CodeArea** controls,
-their corresponding default models are **EditableRichTextModel** and **CodeTextModel**.
+Two new controls are provided: **RichTextArea** and **CodeArea**.  RichTextArea works with styled text and embedded Nodes, whereas CodeArea is limited to plain text documents using single font, which allows for syntax highlighting.
 
-Public API surface is quite extensive, please refer to the following link for the
-[complete javadoc](javadoc/javadoc.zip).
+The data model (document) is separated from the control, allowing for greater flexibility.  **EditableRichTextModel** is a default model for RichTextArea, **CodeTextModel** is a default model for CodeArea.
 
+The code is currently being incubated in the **javafx.incubator.controls** module.  While this document makes an attempt to give an overview of various parts, please refer to the [API specification](javadoc/javadoc.zip) for more detail.
+
+The following diagram illustrates the logical relationship between important classes:
+
+```
+RichTextArea                   control
+ ├─ TextPos                    immutable text position
+ ├─ SelectionSegment           single selection segment (two markers)
+ │   └─ Marker                 moveable text position within the document
+ │
+ ├─ StyledTextModel            document data model
+ │   ├─ RichParagraph          presents the paragraph contents to view
+ │   │   ├─ StyleAttrs         immutable map of style attributes 
+ │   │   ├─ StyledSegment      immutable styled segment
+ │   └─ DataFormatHandler      converter for import/export/clipboard operations
+ │       ├─ StyledInput        input stream of StyledSegments
+ │       ├─ StyledOutput       output stream of StyledSegments
+ │       └─ StyleResolver      converts external CSS styles to attributes
+ │
+ └─ RichTextAreaSkin           default skin
+     └─SideDecorator           right/left paragraph decorator factory
+```
+
+CodeArea extends RichTextArea and brings a few additional classes into the picture:
+
+```
+CodeArea                       control
+ ├─ CodeTextModel              document model
+ └─ SyntaxDecorator            interface which provides styling for underlying plain text
+```
 
 
 ### Design Principles
@@ -85,7 +112,7 @@ Public API surface is quite extensive, please refer to the following link for th
 
 
 
-### Properties
+### RichTextArea Properties
 
 The new **RichTextArea** control exposes the following properties:
 
@@ -97,8 +124,13 @@ The new **RichTextArea** control exposes the following properties:
 |contentPadding	|defines the amount of padding in the content area	|Yes
 |displayCaret	|indicates whether the caret is displayed	
 |editable	|indicates whether the editing is enabled	
-|highlightCurrentParagraph	|indicates whether the current paragraph is highlighted	
+|highlightCurrentParagraph	|indicates whether the current paragraph is highlighted
+|leftDecorator	|specifies the left side paragraph decorator
 |model	|document data model	
+|rightDecorator	|specifies the right side paragraph decorator
+|selectionSegment	|tracks the selection segment (read-only)
+|useContentHeight	|determines whether the preferred height is the same as the content height
+|useContentWidth	|determines whether the preferred width is the same as the content width
 |wrapText	|indicates whether text should be wrapped	|Yes
 
 
@@ -156,7 +188,7 @@ This example illustrates how to populate an editable RichTextArea programmatical
 
 
 
-### Export/Import
+#### Export/Import
 
 StyledTextModel provides a common mechanism for importing/exporting styled text into/from the model via the following methods:
 
@@ -168,7 +200,7 @@ The I/O classes **StyledInput** and **StyledOutput** provide the transport of in
 
 
 
-### Clipboard
+#### Clipboard
 
 The StyledTextModel provides capability to copy to and paste from the system clipboard in a variety of formats.  Please refer to the **DataFormatHandler** class hierarchy.
 
@@ -243,9 +275,9 @@ These functions and the key mappings can be customized using the control's Input
 
 
 
-### Extensibility
+### Customization
 
-RichTextArea is designed with extensibility in mind.  A number of mechanisms are provided for the application developer to customize the control behavior:
+RichTextArea is designed with customization in mind.  A number of mechanisms are provided for the application developer to alter the control behavior:
 
 - extending the model by adding new attributes
 - adding new functions with new key bindings
