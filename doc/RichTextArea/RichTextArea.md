@@ -212,11 +212,42 @@ At the control level, save() and load() methods allow for data transfer using an
 
 ### Skin
 
-The default skin, implemented by the **RichTextAreaSkin** class, provides the visual representation of RichTextArea control.
+The default skin, implemented by the **RichTextAreaSkin** class, provides the visual representation of RichTextArea control
+ (i.e. represents a "View" in the MVC paradigm).
 
 The main feature of the default skin is a virtualized text flow, where only a small number of paragraphs is laid out in a sliding window, enabling visualization and even editing of large models.
 
 The size of the sliding window slightly exceeds the visible area, resulting in improved scrolling experience when paragraph heights differ.
+
+
+#### Selection
+
+RichTextArea control maintains a single contiguous selection segment, represented by the **selectionSegment** property.  Selection is ultimately linked with the View, to enable multiple controls working off the same data model to have their own selection.
+
+Selection is determined by two positions: the anchor and the caret.  The anchor comes into play when the user updates selection by pressing and holding the SHIFT key, and the caret is the position visually identified by a blinking caret.  Selection segments uses the **Marker** class which updates the actual position in the presence of edits (such as edits made by the user in another view, or by a background process).
+
+RichTextArea control provides a number of convenience methods to change selection programmatically:
+
+- extendSelection(TextPos)
+- select(TextPos, TextPos)
+- selectAll()
+- selectDocumentEnd()
+- selectDocumentStart()
+- selectDown
+- selectEndOfNextWord()
+- selectLeft()
+- selectLeftWord()
+- selectNextWord()
+- selectPageDown()
+- selectPageUp()
+- selectParagraph()
+- selectPreviousWord()
+- selectRight()
+- selectRightWord()
+- selectUp()
+- selectWord()
+- setCaret(TextPos)
+
 
 
 
@@ -228,10 +259,10 @@ The table below lists the available function tags:
 
 |Function Tag|Description|
 |:-----------|:----------|
-|BACKSPACE	|Deletes the previous symbol
+|BACKSPACE	|Deletes the symbol before the caret position
 |COPY	|Copies selected text to the clipboard
 |CUT	|Cuts selected text and places it to the clipboard
-|DELETE	|Deletes symbol at the caret
+|DELETE	|Deletes the symbol after the caret position
 |DELETE_PARAGRAPH	|Deletes paragraph at the caret, or selected paragraphs
 |INSERT_LINE_BREAK	|Inserts a single line break
 |INSERT_TAB	|Inserts a TAB symbol
@@ -279,7 +310,7 @@ These functions and the key mappings can be customized using the control's Input
 
 RichTextArea is designed with customization in mind.  A number of mechanisms are provided for the application developer to alter the control behavior:
 
-- extending the model by adding new attributes
+- adding support of new attributes to the model
 - adding new functions with new key bindings
 - redefining the existing key bindings
 - by adding left and right side paragraph decorators
