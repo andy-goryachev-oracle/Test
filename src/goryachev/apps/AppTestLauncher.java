@@ -40,6 +40,6 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-        Application.launch(ColorPicker_Blurry_8322486.class, args);
+        Application.launch(TableView_RowsDisappear_8320245.class, args);
     }
 }
