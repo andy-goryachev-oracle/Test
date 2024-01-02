@@ -33,6 +33,8 @@ import javafx.css.Styleable;
 
 public abstract class Control implements Styleable {
     protected abstract List<CssMetaData<? extends Styleable, ?>> getControlCssMetaData();
+    private static String[] css = CssUtils.of(Control.class);
+    private Styleable one;
     
     //
     
@@ -70,5 +72,48 @@ public abstract class Control implements Styleable {
     @Override
     public ObservableSet<PseudoClass> getPseudoClassStates() {
         return null;
+    }
+    
+    @AStyleable
+    public Styleable styleablePropertyOne() {
+        if(one == null) {
+            one = new Styleable() {
+                @Override
+                public String getTypeSelector() {
+                    return null;
+                }
+                
+                @Override
+                public Styleable getStyleableParent() {
+                    return null;
+                }
+                
+                @Override
+                public ObservableList<String> getStyleClass() {
+                    return null;
+                }
+                
+                @Override
+                public String getStyle() {
+                    return null;
+                }
+                
+                @Override
+                public ObservableSet<PseudoClass> getPseudoClassStates() {
+                    return null;
+                }
+                
+                @Override
+                public String getId() {
+                    return null;
+                }
+                
+                @Override
+                public List<javafx.css.CssMetaData<? extends Styleable, ?>> getCssMetaData() {
+                    return null;
+                }
+            };
+        }
+        return one;
     }
 }

@@ -22,24 +22,25 @@
  * or visit www.oracle.com if you need additional information or have any
  * questions.
  */
-package goryachev.apps;
 
-import javafx.application.Application;
-import goryachev.bugs.*;
-import goryachev.tests.*;
+package goryachev.research;
 
-/**
- * Use this class to launch various test snippets, so one does not have to 
- * create a new launch configuration each time.
- * 
- * (Remove main(String) from the test snippet)
- */
-public class AppTestLauncher {
-    public static void main(String[] args) throws Throwable {
-//        System.setProperty("prism.order", "sw");
-//        System.setProperty("javafx.pulseLogger", "true");
-//        System.setProperty("javafx.pulseLogger.threshold", "-1");
-//        System.setProperty("prism.showdirty", "true");
-        Application.launch(TreeTableView_InvisibleSelection_8311304.class, args);
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+
+public class CssUtils {
+    public static String[] of(Class<? extends Control> c) {
+        System.out.println("looking at " + c);
+        
+        Method[] methods = c.getMethods();
+        for(Method m: methods) {
+            AStyleable s = m.getAnnotation(AStyleable.class);
+            if(s != null) {
+                System.out.println("method " + m + ": " + s);
+            }
+        }
+        
+        return null;
     }
 }
