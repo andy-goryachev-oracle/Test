@@ -47,10 +47,13 @@ The main design goal is to provide a control that is complete enough to be usefu
 
 Creating a simple editable control should be as easy as this:
 
+```java
         RichTextArea t = new RichTextArea();
+```
 
 Creating a read-only informational control should also be easy:
 
+```java
         SimpleReadOnlyStyledModel m = new SimpleReadOnlyStyledModel();
         // add text segment using CSS style name (requires a style sheet)
         m.addSegment("RichTextArea ", null, "HEADER");
@@ -60,7 +63,7 @@ Creating a read-only informational control should also be easy:
         m.nl();
 
         RichTextArea t = new RichTextArea(m);
-
+```
 
 
 ## Description
@@ -114,7 +117,7 @@ While this document makes an attempt to give an overview of various parts, pleas
 - supports text styling with an application stylesheet or inline attributes
 - supports multiple views connected to the same model
 - single selection
-- input map allows for control extension
+- input map allows for easy behavior extension
 
 
 
@@ -144,20 +147,13 @@ The new **RichTextArea** control exposes the following properties:
 
 The RichTextArea control separates data model from the view by providing the **model** property.
 
-Conceptually, the model is a sequence of styled text paragraphs, represented by **RichParagraph** class, exposed by these three methods:
+The base class for any data model is **StyledTextModel**.  This abstract class provides no data storage, focusing instead on providing common functionality to the actual models, such as dealing with styled segments, keeping track of markers, sending events, etc.
 
-- int size()
-- String getPlainText(int index)
-- RichParagraph getParagraph(int index)
-
-It is important to note that the model does not contain or manages any Nodes, as that will prevent multiple views working off the same model.
 
 
 #### Standard Models
 
-The base class for any data model is **StyledTextModel**.  This abstract class provides no data storage, however, it takes care of many mundane tasks in order to ease the process of writing custom models, such as dealing with styled segments, keeping track of markers, sending events, and so on.
-
-Other models are also included, as described in this table:
+A number of standard models is included, designed for a specific use case, as described in this table:
 
 |Class Name	|Description
 |:---|:---|
@@ -168,11 +164,79 @@ Other models are also included, as described in this table:
 |` └─ StyledTextModelReadOnlyBase`	|Base class for a read-only model
 |`     └─ SimpleReadOnlyStyledModel`	|In-memory read-only styled model
 
-**EditableRichTextModel** stores the data in memory, in the form of text segments styled with attributes defined in **StyleAttrs** class.  This is a default model for RichTextArea.
+The **EditableRichTextModel** stores the data in memory, in the form of text segments styled with attributes defined in **StyleAttrs** class.  This is a default model for RichTextArea.
 
-The abstract **BasePlainTextModel** is a base class for in-memory text models which are based on plain text.  This class provides foundation for the **CodeTextModel**, which styles the text using a pluggable **SyntaxDecorator**.
+The abstract **BasePlainTextModel** is a base class for in-memory text models based on plain text.  This class provides foundation for the **CodeTextModel**, which styles the text using a pluggable **SyntaxDecorator**.
 
 The abstract **StyledTextModelReadOnlyBase** is a base class for read-only models.  This class is used by **SimpleReadOnlyStyledModel** which simplifies building of in-memory read-only styled documents.
+
+
+#### Read-Only Models
+
+A read-only model can be used to present rich text document not editable by the user (for example, a help or an informational page, or a virtualized view backed by a large file).
+
+**SimpleReadOnlyStyledModel** is suitable for a small in-memory styled document.  This model provides a number of methods to populate the document one segment at a time:
+
+- addSegment(String)
+- addSegment(String text, String style, String ... styleNames)
+- addSegment(String, StyleAttrs)
+
+Other methods allow for adding image paragraphs, embedded Nodes, paragraph containing a single Region, as well as various types of highlights:
+
+- addImage(InputStream)
+- addNodeSegment(Supplier<Node>)
+- addParagraph(Supplier<Region>)
+- highlight(int start, int length, Color)
+- nl()
+- nl(int)
+- setParagraphAttributes(StyleAttrs)
+- squiggly(int start, int length, Color)
+
+An example of how to pre-populate the SimpleReadOnlyStyledModel is provided in the "Motivation" section.
+
+
+The abstract base class **StyledTextModelReadOnlyBase** can be used in circumstances when the data is either too large to be stored in memory, such as a large file, or where data is generated on the fly.
+
+In this case, three abstract methods must be implemented:
+
+- int size()
+- String getPlainText(int)
+- RichParagraph getParagraph(int) 
+
+A **RichParagraph** represents a paragraph with rich text.  As an immutable class, it has to be built using the **RichParagraph.Builder** which offers a number of methods which help construct and style the content:
+
+- addHighlight(int, int, Color) 
+- addInlineNode(Supplier<Node>)
+- addSegment(String)
+- addSegment(String text, String inlineStyle, String[] styles)
+- addSegment(String text, StyleAttrs)
+- addSquiggly(int, int, Color)
+- setParagraphAttributes(StyleAttrs)
+
+Below is an example which illustrates the usage of RichParagraph.Builder by generating a demo paragraph on the fly:
+
+```java
+    @Override
+    public RichParagraph getParagraph(int ix) {
+        RichParagraph.Builder b = RichParagraph.builder();
+        String s = format.format(ix + 1);
+        String sz = format.format(size);
+        String[] css = monospaced ? new String[] { "monospaced" } : null;
+
+        b.addSegment(s, "-fx-fill:darkgreen;", css);
+        b.addSegment(" / ", null, css);
+        b.addSegment(sz, "-fx-fill:black;", css);
+        if (monospaced) {
+            b.addSegment(" (monospaced)", null, css);
+        }
+
+        if ((ix % 10) == 9) {
+            String words = generateWords(ix);
+            b.addSegment(words, null, css);
+        }
+        return b.build();
+    }
+```
 
 
 #### Styling
@@ -183,6 +247,7 @@ The default model for RichTextArea, EditableRichTextModel, utilizes a number of 
 
 This example illustrates how to populate an editable RichTextArea programmatically:
 
+```java
         // create styles
         StyleAttrs heading = StyleAttrs.builder().setBold(true).setFontSize(24).build();
         StyleAttrs plain = StyleAttrs.builder().setFontFamily("Monospaced").build();
@@ -191,7 +256,7 @@ This example illustrates how to populate an editable RichTextArea programmatical
         // build the content
         rta.appendText("Heading\n", heading);
         rta.appendText("Plain monospaced text.\n", plain);
-
+```
 
 
 #### Export/Import
@@ -324,11 +389,13 @@ RichTextArea is designed with customization in mind.  A number of mechanisms are
 
 The following example illustrates how the basic navigation can be altered to support custom navigation (for example, allowing to jump to the next CamelCase word):
 
+```java
         richTextArea.getInputMap().registerFunction(RichTextArea.MOVE_WORD_NEXT, () -> {
             // refers to custom logic
             TextPos p = getCustomNextWordPosition(richTextArea);
             richTextArea.setCaret(p);
         });
+```
 
 
 ### CodeArea Control
