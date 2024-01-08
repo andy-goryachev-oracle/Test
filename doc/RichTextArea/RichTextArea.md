@@ -95,10 +95,16 @@ RichTextArea                   control
 CodeArea extends RichTextArea and brings a few additional classes into the picture:
 
 ```
-CodeArea                       control
+CodeArea                       control, extends RichTextArea
  ├─ CodeTextModel              document model
  └─ SyntaxDecorator            interface which provides styling for underlying plain text
 ```
+
+The code is currently being incubated in the **javafx.incubator.controls module**.
+While this document makes an attempt to give an overview of various parts, please refer to the
+[API specification](javadoc/javadoc.zip) for more detail.
+
+
 
 
 ### Design Principles
@@ -323,6 +329,29 @@ The following example illustrates how the basic navigation can be altered to sup
             TextPos p = getCustomNextWordPosition(richTextArea);
             richTextArea.setCaret(p);
         });
+
+
+### CodeArea Control
+
+CodeArea extends RichTextArea control to provide a styled text based on a plain text data model coupled with a SyntaxDecorator.
+
+
+#### CodeArea Properties
+
+CodeArea adds a few properties in addition to the existing properties declared by the RichTextArea control:
+
+|Property |Description |Styleable|
+|:--------|:-----------|:--------|
+|font	|the default font	|yes
+|lineNumbers	|determines whether to show line numbers	
+|tabSize	|the size of tab stop in spaces	|yes
+
+
+#### CodeTextModel 
+
+CodeArea uses **CodeTextModel** - a dedicated editable, in-memory, plain text model which uses its decorator property to style the text.
+
+The function of a decorator, which implements the **SyntaxDecorator** interface, is to embellish the plain text contained in the model with colors and font styles, using the font provided by the control.
 
 
 
