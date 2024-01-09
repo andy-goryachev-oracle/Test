@@ -9,7 +9,7 @@ Andy Goryachev
 
 Provide a RichTextArea control for displaying and editing of rich text that can be styled in a variety of ways.
 
-![rich text area screenshot](rich-text-area.png)
+![RichTextArea screenshot](rich-text-area.png)
 
 
 
