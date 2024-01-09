@@ -15,7 +15,7 @@ Provide a RichTextArea control for displaying and editing of rich text that can 
 
 ## Goals
 
-**RichTextArea** control enables support for a number of common use cases:
+Out of the box, the **RichTextArea** control provides support for a number of common use cases:
 
 - read-only presentation of rich text information (help pages, documentation, etc.)
 - a simple editor similar to WordPad or TextEdit level, suitable for note taking or message editing.
@@ -72,8 +72,6 @@ Two new controls are provided: **RichTextArea** and **CodeArea**.  RichTextArea 
 
 The data model (document) is separated from the control, allowing for greater flexibility.  **EditableRichTextModel** is a default model for RichTextArea, **CodeTextModel** is a default model for CodeArea.
 
-The code is currently being incubated in the **javafx.incubator.controls** module.  While this document makes an attempt to give an overview of various parts, please refer to the [API specification](javadoc/javadoc.zip) for more detail.
-
 The following diagram illustrates the logical relationship between important classes:
 
 ```
@@ -105,7 +103,7 @@ CodeArea                       control, extends RichTextArea
 
 The code is currently being incubated in the **javafx.incubator.controls module**.
 While this document makes an attempt to give an overview of various parts, please refer to the
-[API specification](javadoc/javadoc.zip) for more detail.
+[API Specification](javadoc/javadoc.zip) for more detail.
 
 
 
@@ -239,13 +237,27 @@ Below is an example which illustrates the usage of RichParagraph.Builder by gene
 ```
 
 
-#### Styling
+#### Editing
 
-There are two ways of styling text in RichTextArea: either using inline attributes, or relying on style names in the application style sheet.  It is important to understand the limitation of stylesheet approach as it is only suitable for read-only models because editing of styles by the user is nearly impossible given the static nature of the application stylesheet.  (An example provided earlier illustrates how to style a read-only document using SimpleReadOnlyStyledModel and an application stylesheet).
+All the content modifications are channeled through two methods in the StyledTextModel:
 
-The default model for RichTextArea, EditableRichTextModel, utilizes a number of style attributes (found in StyleAttrs class).  These attributes are applicable either to the whole paragraph (BACKGROUND, BULLET, FIRST_LINE_INDENT, ...) or to the individual text segments (BOLD, FONT_FAMILY, etc.).
+- replace(StyleResolver, TextPos start, TextPos end, StyledInput, boolean createUndo)
+- applyStyle(TextPos start, TextPos end, StyleAttrs, boolean mergeAttributes)
 
-This example illustrates how to populate an editable RichTextArea programmatically:
+Once the model applies the changes, a corresponding event is broadcast to all the listeners registered with the model - one such listener is the skin, which in turn updates the scene graph by requesting new RichParagraphs within the affected range of text.
+
+At the control level, RichTextArea provides a number of convenience methods for editing the content programmatically:
+
+- appendText(String, StyleAttrs)
+- appendText(StyledInput)
+- applyStyle(TextPos start, TextPos end, StyleAttrs)
+- clear()
+- insertText(TexPos start, String, StyleAttrs)
+- insertText(TextPos start, StyledInput)
+- replaceText(TextPos start, TextPos end, StyledInput, boolean createUndo)
+- setStyle(TextPos start, TextPos end, StyleAttrs)
+
+The following example illustrates how to populate an editable RichTextArea programmatically:
 
 ```java
         // create styles
@@ -257,6 +269,15 @@ This example illustrates how to populate an editable RichTextArea programmatical
         rta.appendText("Heading\n", heading);
         rta.appendText("Plain monospaced text.\n", plain);
 ```
+
+
+
+#### Styling
+
+There are two ways of styling text in RichTextArea: either using inline attributes, or relying on style names in the application style sheet.  It is important to understand the limitation of stylesheet approach as it is only suitable for read-only models because editing of styles by the user is nearly impossible given the static nature of the application stylesheet.  (An example provided earlier illustrates how to style a read-only document using SimpleReadOnlyStyledModel and an application stylesheet).
+
+The default model for RichTextArea, EditableRichTextModel, utilizes a number of style attributes (found in StyleAttrs class).  These attributes are applicable either to the whole paragraph (BACKGROUND, BULLET, FIRST_LINE_INDENT, ...) or to the individual text segments (BOLD, FONT_FAMILY, etc.).
+
 
 
 #### Export/Import
@@ -409,9 +430,9 @@ CodeArea adds a few properties in addition to the existing properties declared b
 
 |Property |Description |Styleable|
 |:--------|:-----------|:--------|
-|font	|the default font	|yes
+|font	|the default font	|Yes
 |lineNumbers	|determines whether to show line numbers	
-|tabSize	|the size of tab stop in spaces	|yes
+|tabSize	|the size of tab stop in spaces	|Yes
 
 
 #### CodeTextModel 
