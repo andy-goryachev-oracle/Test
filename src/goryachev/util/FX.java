@@ -24,6 +24,8 @@
  */
 package goryachev.util;
 
+import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.List;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -150,5 +152,15 @@ public class FX {
     /** adds a name property to the Node for the purposes of storing the preferences */
     public static void name(Node n, String name) {
         FxSettingsSchema.setName(n, name);
+    }
+
+    /** encode stylesheet to a data: url */
+    public static String encodeStylesheet(String s) {
+        if (s == null) {
+            return null;
+        }
+        Charset utf8 = Charset.forName("utf-8");
+        byte[] b = s.getBytes(utf8);
+        return "data:text/css;base64," + Base64.getEncoder().encodeToString(b);
     }
 }
