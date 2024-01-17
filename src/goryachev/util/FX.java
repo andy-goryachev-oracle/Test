@@ -24,7 +24,11 @@
  */
 package goryachev.util;
 
+import java.nio.charset.Charset;
+import java.util.Base64;
 import java.util.List;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
@@ -38,6 +42,7 @@ import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.util.Duration;
 import goryachev.settings.FxSettingsSchema;
 
 /**
@@ -150,5 +155,29 @@ public class FX {
     /** adds a name property to the Node for the purposes of storing the preferences */
     public static void name(Node n, String name) {
         FxSettingsSchema.setName(n, name);
+    }
+
+    /** encode stylesheet to a data: url */
+    public static String encodeStylesheet(String s) {
+        if (s == null) {
+            return null;
+        }
+        Charset utf8 = Charset.forName("utf-8");
+        byte[] b = s.getBytes(utf8);
+        return "data:text/css;base64," + Base64.getEncoder().encodeToString(b);
+    }
+
+    /**
+     * Invokes the specified Runnable in the application thread
+     * after the specified timeout.
+     *
+     * @param ms the timeout in milliseconds
+     * @param r the runnable
+     */
+    public static void runLater(int ms, Runnable r) {
+        Timeline t = new Timeline(new KeyFrame(Duration.millis(ms), (ev) -> {
+            r.run();
+        }));
+        t.play();
     }
 }
