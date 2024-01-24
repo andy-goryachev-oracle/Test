@@ -17,11 +17,13 @@ Provide a RichTextArea control for displaying and editing of rich text that can 
 
 Out of the box, the **RichTextArea** control provides support for a number of common use cases:
 
+- a simple editor similar to WordPad or TextEdit level, suitable for note taking or message editing
 - read-only presentation of rich text information (help pages, documentation, etc.)
-- a simple editor similar to WordPad or TextEdit level, suitable for note taking or message editing.
 - a code editor with syntax highlighting
 - an editor which combines rich text with interactive content, such as a code notebook
-- enable extension and customization using via the input map
+- enable customization via the input map
+- enable limited extension via custom models, attributes, and side decorations
+
 
 
 
@@ -97,7 +99,7 @@ CodeArea extends RichTextArea and brings a few additional classes into the pictu
 
 ```
 CodeArea                       control, extends RichTextArea
- ├─ CodeTextModel              document model
+ ├─ CodeTextModel              document model, extends BasePlainTextModel, extends StyledTextModel
  └─ SyntaxDecorator            interface which provides styling for underlying plain text
 ```
 
@@ -151,7 +153,7 @@ The base class for any data model is **StyledTextModel**.  This abstract class p
 
 #### Standard Models
 
-A number of standard models is included, designed for a specific use case, as described in this table:
+A number of standard models are included, designed for a specific use case, as described in this table:
 
 |Class Name	|Description
 |:---|:---|
