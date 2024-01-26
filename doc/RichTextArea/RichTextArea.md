@@ -17,7 +17,7 @@ Provide a RichTextArea control for displaying and editing of rich text that can 
 
 Out of the box, the **RichTextArea** control provides support for a number of common use cases:
 
-- a simple editor similar to WordPad or TextEdit level, suitable for note taking or message editing
+- a simple editor similar to MS WordPad or macOS TextEdit, suitable for note taking or message editing
 - read-only presentation of rich text information (help pages, documentation, etc.)
 - a code editor with syntax highlighting
 - an editor which combines rich text with interactive content, such as a code notebook
@@ -34,8 +34,8 @@ The following list represents features RichTextArea does not support:
 - models with arbitrarily long (e.g., 10K+ symbols) paragraphs
 - applications requiring arbitrary text/graphics positioning
 - desktop publishing application that require precise control of text appearance
-- multiple or rectangular selection segments
-- embedded tables
+- non-contiguous selection
+- tabular-formatted text
 
 
 
@@ -257,6 +257,7 @@ At the control level, RichTextArea provides a number of convenience methods for 
 - insertText(TexPos start, String, StyleAttrs)
 - insertText(TextPos start, StyledInput)
 - replaceText(TextPos start, TextPos end, StyledInput, boolean createUndo)
+- replaceText(TextPos start, TextPos end, String, boolean createUndo)
 - setStyle(TextPos start, TextPos end, StyleAttrs)
 
 The following example illustrates how to populate an editable RichTextArea programmatically:
@@ -322,25 +323,26 @@ Selection is determined by two positions: the anchor and the caret.  The anchor 
 
 RichTextArea control provides a number of convenience methods to change selection programmatically:
 
-- extendSelection(TextPos)
-- select(TextPos, TextPos)
-- selectAll()
-- selectDocumentEnd()
-- selectDocumentStart()
-- selectDown
-- selectEndOfNextWord()
-- selectLeft()
-- selectLeftWord()
-- selectNextWord()
-- selectPageDown()
-- selectPageUp()
-- selectParagraph()
-- selectPreviousWord()
-- selectRight()
-- selectRightWord()
-- selectUp()
-- selectWord()
-- setCaret(TextPos)
+- void clearSelection()
+- void extendSelection(TextPos)
+- void select(TextPos anchor, TextPos caret)
+- void selectAll()
+- void selectDocumentEnd()
+- void selectDocumentStart()
+- void selectDown
+- void selectEndOfNextWord()
+- void selectLeft()
+- void selectLeftWord()
+- void selectNextWord()
+- void selectPageDown()
+- void selectPageUp()
+- void selectParagraph()
+- void selectPreviousWord()
+- void selectRight()
+- void selectRightWord()
+- void selectUp()
+- void selectWord()
+- void setCaret(TextPos)
 
 
 
