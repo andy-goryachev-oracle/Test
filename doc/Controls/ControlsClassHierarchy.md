@@ -1,4 +1,4 @@
-#Controls Class Hierarchy
+# Controls Class Hierarchy
 
 Control classes and their corresponding behaviors, based on jfx22.
 
@@ -6,13 +6,13 @@ Control classes and their corresponding behaviors, based on jfx22.
 
 |Control                                     |Behavior                  |Stateful?    |
 |:-------------------------------------------|:-------------------------|:------------|
-| Accordion                                  |AccordionBehavior         |yes
-| ButtonBar                                  |-                         |-
-| ChoiceBox                                  |ChoiceBoxBehavior         |no
-| ComboBoxBase (a)                           |                          |
-|  ├─ ColorPicker                            |ColorPickerBehavior       |yes
-|  ├─ ComboBox                               |ComboBoxListViewBehavior  |yes
-|  └─ DatePicker                             |DatePickerBehavior        |yes
+|` Accordion`                                  |AccordionBehavior         |yes
+|` ButtonBar`                                  |-                         |-
+|` ChoiceBox`                                  |ChoiceBoxBehavior         |no
+|` ComboBoxBase (a)`                           |                          |
+|`  ├─ ColorPicker `                           |ColorPickerBehavior       |yes
+|`  ├─ ComboBox `                              |ComboBoxListViewBehavior  |yes
+|`  └─ DatePicker`                             |DatePickerBehavior        |yes
 | HTMLEditor                                 |HTMLEditorBehavior        |no
 | Labeled (a)                                |-                         |-
 |  ├─ ButtonBase (a)                         |-                         |-
