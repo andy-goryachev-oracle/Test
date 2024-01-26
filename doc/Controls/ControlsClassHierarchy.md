@@ -4,6 +4,7 @@ Control classes and their corresponding behaviors, based on jfx22.
 
 (a) denotes an abstract class.
 
+```
 |Control                                     |Behavior                  |Stateful?    |
 |:-------------------------------------------|:-------------------------|:------------|
 |` Accordion`                                  |AccordionBehavior         |yes
@@ -68,5 +69,5 @@ Control classes and their corresponding behaviors, based on jfx22.
 | ToolBar                                    |ToolBarBehavior           |no
 | TreeTableView                              |TreeTableViewBehavior     |yes
 | TreeView                                   |TreeViewBehavior          |yes
-
+```
 
