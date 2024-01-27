@@ -17,13 +17,13 @@ Provide a RichTextArea control for displaying and editing of rich text that can 
 
 Out of the box, the **RichTextArea** control provides support for a number of common use cases:
 
-- a simple editor similar to MS WordPad or macOS TextEdit, suitable for note taking or message editing
+- a simple editor similar to WordPad or TextEdit level, suitable for note taking or message editing
 - read-only presentation of rich text information (help pages, documentation, etc.)
-- a code editor with syntax highlighting
+- an editor which supports large (~2B rows), virtualized models
 - an editor which combines rich text with interactive content, such as a code notebook
-- enable customization via the input map
+- a code editor with syntax highlighting
+- enable custom key mappings
 - enable limited extension via custom models, attributes, and side decorations
-
 
 
 
@@ -127,20 +127,20 @@ The new **RichTextArea** control exposes the following properties:
 
 |Property |Description |Styleable|
 |:--------|:-----------|:--------|
-|anchorPosition	|provides the anchor position (read-only)	
-|caretBlinkPeriod	|determines the caret blink rate	
-|caretPosition	|provides the caret position (read-only)	
-|contentPadding	|defines the amount of padding in the content area	|Yes
-|displayCaret	|indicates whether the caret is displayed	
-|editable	|indicates whether the editing is enabled	
+|anchorPosition	            |provides the anchor position (read-only)	
+|caretBlinkPeriod	        |determines the caret blink period	
+|caretPosition	            |provides the caret position (read-only)	
+|contentPadding	            |defines the amount of padding in the content area                           |Yes
+|displayCaret	            |indicates whether the caret is displayed	
+|editable	                |indicates whether the editing is enabled	
 |highlightCurrentParagraph	|indicates whether the current paragraph is highlighted
-|leftDecorator	|specifies the left side paragraph decorator
-|model	|document data model	
-|rightDecorator	|specifies the right side paragraph decorator
-|selectionSegment	|tracks the selection segment (read-only)
-|useContentHeight	|determines whether the preferred height is the same as the content height
-|useContentWidth	|determines whether the preferred width is the same as the content width
-|wrapText	|indicates whether text should be wrapped	|Yes
+|leftDecorator	            |specifies the left side paragraph decorator
+|model	                    |document data model	
+|rightDecorator	            |specifies the right side paragraph decorator
+|selectionSegment	        |tracks the selection segment (read-only)
+|useContentHeight	        |determines whether the preferred height is the same as the content height
+|useContentWidth	        |determines whether the preferred width is the same as the content width
+|wrapText	                |indicates whether text should be wrapped                                    |Yes
 
 
 ### Model
@@ -168,7 +168,7 @@ The **EditableRichTextModel** stores the data in memory, in the form of text seg
 
 The abstract **BasePlainTextModel** is a base class for in-memory text models based on plain text.  This class provides foundation for the **CodeTextModel**, which styles the text using a pluggable **SyntaxDecorator**.
 
-The abstract **StyledTextModelReadOnlyBase** is a base class for read-only models.  This class is used by **SimpleReadOnlyStyledModel** which simplifies building of in-memory read-only styled documents.
+The abstract **StyledTextModelReadOnlyBase** is a base class for immutable models.  This class is used by **SimpleReadOnlyStyledModel** which simplifies building of in-memory read-only styled documents.
 
 
 #### Read-Only Models
@@ -195,7 +195,7 @@ Other methods allow for adding image paragraphs, embedded Nodes, paragraph conta
 An example of how to pre-populate the SimpleReadOnlyStyledModel is provided in the "Motivation" section.
 
 
-The abstract base class **StyledTextModelReadOnlyBase** can be used in circumstances when the data is either too large to be stored in memory, such as a large file, or where data is generated on the fly.
+The abstract base class **StyledTextModelReadOnlyBase** can be used in circumstances when the data is either too large to be stored in memory (such as backed by a large file), or where data is generated on the fly.
 
 In this case, three abstract methods must be implemented:
 
@@ -241,23 +241,16 @@ Below is an example which illustrates the usage of RichParagraph.Builder by gene
 
 #### Editing
 
-All the content modifications are channeled through two methods in the StyledTextModel:
+RichTextArea provides a number of convenience methods for editing the content programmatically:
 
-- replace(StyleResolver, TextPos start, TextPos end, StyledInput, boolean createUndo)
-- applyStyle(TextPos start, TextPos end, StyleAttrs, boolean mergeAttributes)
-
-Once the model applies the changes, a corresponding event is broadcast to all the listeners registered with the model - one such listener is the skin, which in turn updates the scene graph by requesting new RichParagraphs within the affected range of text.
-
-At the control level, RichTextArea provides a number of convenience methods for editing the content programmatically:
-
-- appendText(String, StyleAttrs)
+- appendText(String text, StyleAttrs)
 - appendText(StyledInput)
 - applyStyle(TextPos start, TextPos end, StyleAttrs)
 - clear()
 - insertText(TexPos start, String, StyleAttrs)
 - insertText(TextPos start, StyledInput)
-- replaceText(TextPos start, TextPos end, StyledInput, boolean createUndo)
-- replaceText(TextPos start, TextPos end, String, boolean createUndo)
+- replaceText(TextPos start, TextPos end, String text, boolean allowUndo)
+- replaceText(TextPos start, TextPos end, StyledInput, boolean allowUndo)
 - setStyle(TextPos start, TextPos end, StyleAttrs)
 
 The following example illustrates how to populate an editable RichTextArea programmatically:
@@ -272,6 +265,35 @@ The following example illustrates how to populate an editable RichTextArea progr
         rta.appendText("Heading\n", heading);
         rta.appendText("Plain monospaced text.\n", plain);
 ```
+
+All the content modifications are eventually channeled through two methods in the StyledTextModel:
+
+- void applyStyle(TextPos start, TextPos end, StyleAttrs, boolean mergeAttributes)
+- void replace(StyleResolver, TextPos start, TextPos end, StyledInput, boolean createUndo)
+
+Once the model applies the changes, a corresponding event is broadcast to all the listeners registered with the model - one such listener is the skin, which in turn updates the scene graph by requesting new RichParagraphs within the affected range of text.
+
+
+
+#### Undo / Redo
+
+RichTextArea supports undo/redo.  The following methods deal with undo/redo stack:
+
+- void clearUndoRedo()
+- boolean isRedoable()
+- boolean isUndoable()
+- void redo()
+- void undo()
+
+
+The actual undo/redo stack is stored in the StyledTextModel.  The model a similar set of methods for accessing the undo/redo stack:
+
+- void clearUndoRedo()
+- boolean isRedoable()
+- boolean isUndoable()
+- void redo(StyleResolver)
+- void undo(StyleResolver)
+
 
 
 
@@ -402,27 +424,6 @@ These functions and the key mappings can be customized using the control's Input
 
 
 
-### Customization
-
-RichTextArea is designed with customization in mind.  A number of mechanisms are provided for the application developer to alter the control behavior:
-
-- adding support of new attributes to the model
-- adding new functions with new key bindings
-- redefining the existing key bindings
-- by adding left and right side paragraph decorators
-- providing custom scroll bars via **ConfigurationParameters**
-
-The following example illustrates how the basic navigation can be altered to support custom navigation (for example, allowing to jump to the next CamelCase word):
-
-```java
-        richTextArea.getInputMap().registerFunction(RichTextArea.MOVE_WORD_NEXT, () -> {
-            // refers to custom logic
-            TextPos p = getCustomNextWordPosition(richTextArea);
-            richTextArea.setCaret(p);
-        });
-```
-
-
 ### CodeArea Control
 
 CodeArea extends RichTextArea control to provide a styled text based on a plain text data model coupled with a SyntaxDecorator.
@@ -445,6 +446,31 @@ CodeArea uses **CodeTextModel** - a dedicated editable, in-memory, plain text mo
 
 The function of a decorator, which implements the **SyntaxDecorator** interface, is to embellish the plain text contained in the model with colors and font styles, using the font provided by the control.
 
+
+### Customization
+
+RichTextArea is designed with customization in mind.  A number of mechanisms are provided for the application developer to alter the control behavior:
+
+- adding support of new attributes to the model
+- adding new functions with new key bindings
+- redefining the existing key bindings
+- by adding left and right side paragraph decorators
+- providing custom scroll bars via **ConfigurationParameters**
+
+The following example illustrates how the basic navigation can be altered to support custom navigation (for example, allowing to jump to the next CamelCase word):
+
+```java
+        richTextArea.getInputMap().registerFunction(RichTextArea.MOVE_WORD_NEXT, () -> {
+            // refers to custom logic
+            TextPos p = getCustomNextWordPosition(richTextArea);
+            richTextArea.setCaret(p);
+        });
+```
+
+
+### Extensibility
+
+TBD
 
 
 ## Alternatives
