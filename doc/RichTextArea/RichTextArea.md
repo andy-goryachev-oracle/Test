@@ -56,7 +56,7 @@ Creating a simple editable control should be as easy as this:
 Creating a read-only informational control should also be easy:
 
 ```java
-        SimpleReadOnlyStyledModel m = new SimpleReadOnlyStyledModel();
+        SimpleViewOnlyStyledModel m = new SimpleViewOnlyStyledModel();
         // add text segment using CSS style name (requires a style sheet)
         m.addSegment("RichTextArea ", null, "HEADER");
         // add text segment using direct style
@@ -74,7 +74,7 @@ Two new controls are provided: **RichTextArea** and **CodeArea**.  RichTextArea 
 
 The data model (document) is separated from the control, allowing for greater flexibility.  **EditableRichTextModel** is a default model for RichTextArea, **CodeTextModel** is a default model for CodeArea.
 
-The following diagram illustrates the logical relationship between important classes:
+The following diagram illustrates the logical relationships between important classes:
 
 ```
 RichTextArea                   control
@@ -153,7 +153,7 @@ The base class for any data model is **StyledTextModel**.  This abstract class p
 
 #### Standard Models
 
-A number of standard models are included, designed for a specific use case, as described in this table:
+A number of standard models are provided, each designed for a specific use case.  The following table illustrates the standard models' class hierarchy:
 
 |Class Name                             |Description                                    |
 |:--------------------------------------|:----------------------------------------------|
@@ -296,6 +296,66 @@ CodeArea uses **CodeTextModel** - a dedicated editable, in-memory, plain text mo
 The function of a decorator, which implements the **SyntaxDecorator** interface, is to embellish the plain text contained in the model with colors and font styles, using the font provided by the control.
 
 
+
+#### Editing
+
+RichTextArea provides a number of convenience methods for editing the content programmatically:
+
+- TextPos **appendText**(String text, StyleAttrs)
+- TextPos **appendText**(StyledInput)
+- void **applyStyle**(TextPos start, TextPos end, StyleAttrs)
+- void **clear**()
+- TextPos **insertText**(TexPos start, String, StyleAttrs)
+- TextPos **insertText**(TextPos start, StyledInput)
+- TextPos **replaceText**(TextPos start, TextPos end, String text, boolean allowUndo)
+- TextPos **replaceText**(TextPos start, TextPos end, StyledInput, boolean allowUndo)
+- void **setStyle**(TextPos start, TextPos end, StyleAttrs)
+
+The following example illustrates how to populate an editable RichTextArea programmatically:
+
+```java
+        // create styles
+        StyleAttrs heading = StyleAttrs.builder().setBold(true).setFontSize(24).build();
+        StyleAttrs plain = StyleAttrs.builder().setFontFamily("Monospaced").build();
+
+        RichTextArea rta = new RichTextArea();
+        // build the content
+        rta.appendText("Heading\n", heading);
+        rta.appendText("Plain monospaced text.\n", plain);
+```
+
+All the content modifications are eventually channeled through two methods in the StyledTextModel:
+
+- void **applyStyle**(TextPos start, TextPos end, StyleAttrs, boolean mergeAttributes)
+- void **replace**(StyleResolver, TextPos start, TextPos end, StyledInput, boolean createUndo)
+
+Once the model applies the changes, a corresponding event is broadcast to all the listeners registered with the model - one such listener is the skin, which in turn updates the scene graph by requesting new RichParagraphs within the affected range of text.
+
+
+
+##### Undo / Redo
+
+RichTextArea supports undo/redo.  The following methods deal with undo/redo stack:
+
+- void **clearUndoRedo**()
+- boolean **isRedoable**()
+- boolean **isUndoable**()
+- void **redo**()
+- void **undo**()
+
+
+The actual undo/redo stack is stored in the StyledTextModel.
+The model therefore provides a similar set of methods for accessing the undo/redo stack:
+
+- void **clearUndoRedo**()
+- boolean **isRedoable**()
+- boolean **isUndoable**()
+- void **redo**(StyleResolver)
+- void **undo**(StyleResolver)
+
+
+
+
 ### Customization
 
 RichTextArea allows for some degree of customization without subclassing.  The application developer can alter the control behavior by:
@@ -389,30 +449,30 @@ While RichTextArea should be useful enough out-of-the-box, it is designed with e
 A typical use case for extending one of the standard models is to interface with a data source: a file, a stream, or some other kind of data generated on the fly.  The choice of class to be extended is determined by whether the data can be changed by the application, whether the model is allowed to be editable by the user, and whether the data will be stored by the model in memory.  Most likely, however, the application developer would need to extend the base class - StyledTextModel.
 
 
-##### Read-Only Models
+##### View-Only Models
 
 A read-only model can be used to present rich text document not editable by the user (for example, a help or an informational page, or a virtualized view backed by a large file).
 
-SimpleReadOnlyStyledModel is suitable for a small in-memory styled document.  This model provides a number of methods to populate the document one segment at a time:
+**SimpleViewOnlyStyledModel** is suitable for a small in-memory styled document.  This model provides a number of methods to populate the document one segment at a time:
 
-- SimpleReadOnlyStyledModel **addSegment**(String text)
-- SimpleReadOnlyStyledModel **addSegment**(String text, String style, String ... styleNames)
-- SimpleReadOnlyStyledModel **addSegment**(String text, StyleAttrs)
+- SimpleViewOnlyStyledModel **addSegment**(String text)
+- SimpleViewOnlyStyledModel **addSegment**(String text, String style, String ... styleNames)
+- SimpleViewOnlyStyledModel **addSegment**(String text, StyleAttrs)
 
 Other methods allow for adding image paragraphs, embedded Nodes, paragraph containing a single Region, as well as various types of highlights:
 
-- SimpleReadOnlyStyledModel **addImage**(InputStream)
-- SimpleReadOnlyStyledModel **addNodeSegment**(Supplier<Node>)
-- SimpleReadOnlyStyledModel **addParagraph**(Supplier<Region>)
-- SimpleReadOnlyStyledModel **highlight**(int start, int length, Color)
-- SimpleReadOnlyStyledModel **nl**()
-- SimpleReadOnlyStyledModel **nl**(int)
-- SimpleReadOnlyStyledModel **setParagraphAttributes**(StyleAttrs)
-- SimpleReadOnlyStyledModel **squiggly**(int start, int length, Color)
+- SimpleViewOnlyStyledModel **addImage**(InputStream)
+- SimpleViewOnlyStyledModel **addNodeSegment**(Supplier<Node>)
+- SimpleViewOnlyStyledModel **addParagraph**(Supplier<Region>)
+- SimpleViewOnlyStyledModel **highlight**(int start, int length, Color)
+- SimpleViewOnlyStyledModel **nl**()
+- SimpleViewOnlyStyledModel **nl**(int)
+- SimpleViewOnlyStyledModel **setParagraphAttributes**(StyleAttrs)
+- SimpleViewOnlyStyledModel **squiggly**(int start, int length, Color)
 
-An example of how to pre-populate the SimpleReadOnlyStyledModel is provided in the "Motivation" section.
+An example of how to pre-populate the SimpleViewOnlyStyledModel is provided in the "Motivation" section.
 
-The abstract base class StyledTextModelReadOnlyBase can be used in circumstances when the data is either too large to be stored in memory (such as backed by a large file), or where data is generated on the fly.
+The abstract base class **StyledTextModelViewOnlyBase** can be used in circumstances when the data is either too large to be stored in memory (such as backed by a large file), or where data is generated on the fly.
 
 In this case, three abstract methods must be implemented:
 
@@ -434,7 +494,7 @@ A RichParagraph represents a paragraph with rich text.  As an immutable class, i
 - Builder **addSquiggly**(int start, int length, Color)
 - Builder **setParagraphAttributes**(StyleAttrs)
 
-The following example illustrates how to use RichParagraph.Builder to create a paragraph that looks like this
+The following example illustrates how to use RichParagraph.Builder to create a paragraph that looks like this:
 
 ![paragraph example](paragraph-example.png)
 
@@ -456,70 +516,23 @@ The following example illustrates how to use RichParagraph.Builder to create a p
 ```
 
 
-
-#### Editing
-
-RichTextArea provides a number of convenience methods for editing the content programmatically:
-
-- TextPos **appendText**(String text, StyleAttrs)
-- TextPos **appendText**(StyledInput)
-- void **applyStyle**(TextPos start, TextPos end, StyleAttrs)
-- void **clear**()
-- TextPos **insertText**(TexPos start, String, StyleAttrs)
-- TextPos **insertText**(TextPos start, StyledInput)
-- TextPos **replaceText**(TextPos start, TextPos end, String text, boolean allowUndo)
-- TextPos **replaceText**(TextPos start, TextPos end, StyledInput, boolean allowUndo)
-- void **setStyle**(TextPos start, TextPos end, StyleAttrs)
-
-The following example illustrates how to populate an editable RichTextArea programmatically:
-
-```java
-        // create styles
-        StyleAttrs heading = StyleAttrs.builder().setBold(true).setFontSize(24).build();
-        StyleAttrs plain = StyleAttrs.builder().setFontFamily("Monospaced").build();
-
-        RichTextArea rta = new RichTextArea();
-        // build the content
-        rta.appendText("Heading\n", heading);
-        rta.appendText("Plain monospaced text.\n", plain);
-```
-
-All the content modifications are eventually channeled through two methods in the StyledTextModel:
-
-- void **applyStyle**(TextPos start, TextPos end, StyleAttrs, boolean mergeAttributes)
-- void **replace**(StyleResolver, TextPos start, TextPos end, StyledInput, boolean createUndo)
-
-Once the model applies the changes, a corresponding event is broadcast to all the listeners registered with the model - one such listener is the skin, which in turn updates the scene graph by requesting new RichParagraphs within the affected range of text.
-
-
-
-#### Undo / Redo
-
-RichTextArea supports undo/redo.  The following methods deal with undo/redo stack:
-
-- void **clearUndoRedo**()
-- boolean **isRedoable**()
-- boolean **isUndoable**()
-- void **redo**()
-- void **undo**()
-
-
-The actual undo/redo stack is stored in the StyledTextModel.
-The model therefore provides a similar set of methods for accessing the undo/redo stack:
-
-- void **clearUndoRedo**()
-- boolean **isRedoable**()
-- boolean **isUndoable**()
-- void **redo**(StyleResolver)
-- void **undo**(StyleResolver)
-
-
-
 #### Styling
 
-There are two ways of styling text in RichTextArea: either using inline attributes, or relying on style names in the application style sheet.  It is important to understand the limitation of stylesheet approach as it is only suitable for read-only models because editing of styles by the user is nearly impossible given the static nature of the application stylesheet.  (An example provided earlier illustrates how to style a read-only document using SimpleReadOnlyStyledModel and an application stylesheet).
+There are two ways of styling text in RichTextArea: either using inline attributes, or relying on style names in the application style sheet.  It is important to understand the limitation of stylesheet approach as it is only suitable for view-only models because editing of styles by the user is nearly impossible given the static nature of the application stylesheet.
 
-The default model for RichTextArea, EditableRichTextModel, utilizes a number of style attributes (found in StyleAttrs class).  These attributes are applicable either to the whole paragraph (BACKGROUND, BULLET, FIRST_LINE_INDENT, ...) or to the individual text segments (BOLD, FONT_FAMILY, etc.).
+This example illustrates how to style a read-only document created with the SimpleViewOnlyStyledModel and an application stylesheet:
+
+```java
+        SimpleViewOnlyStyledModel m = new SimpleViewOnlyStyledModel();
+        // add text segment using CSS style name (requires a style sheet)
+        m.addSegment("RichTextArea ", null, "HEADER");
+        // add text segment using direct style
+        m.addSegment("Demo", "-fx-font-size:200%;", null);
+        // newline
+        m.nl();
+```
+
+The default model for RichTextArea, the EditableRichTextModel, uses a number of style attributes (found in StyleAttrs class).  These attributes are applicable either to the whole paragraph (BACKGROUND, BULLET, FIRST_LINE_INDENT, ...) or to the individual text segments (BOLD, FONT_FAMILY, etc.).
 
 
 
@@ -527,22 +540,39 @@ The default model for RichTextArea, EditableRichTextModel, utilizes a number of 
 
 StyledTextModel provides a common mechanism for importing/exporting styled text into/from the model via the following methods:
 
-- void **exportText**(TextPos start, TextPos end, StyledOutput out)
+- void **export**(TextPos start, TextPos end, StyledOutput out)
 - TextPos **replace**(StyleResolver, TextPos start, TextPos end, String text, boolean allowUndo)
 - TextPos **replace**(StyleResolver, TextPos start, TextPos end, StyledInput in, boolean allowUndo)
 
-The I/O classes **StyledInput** and **StyledOutput** provide the transport of individual **StyledSegment**s.
+The I/O interfaces **StyledInput** and **StyledOutput** provide the transport mechanism based on streaming of individual **StyledSegment**s.
 
 
 
 #### Clipboard
 
-The StyledTextModel provides capability to copy to and paste from the system clipboard in a variety of formats.  Please refer to the **DataFormatHandler** class hierarchy.
+The StyledTextModel provides capability to copy to and paste from the system clipboard in a variety of formats.  Several implementations are provided, all extending the **DataFormatHandler** class:
 
-The default model, EditableRichTextModel, copies plain text, HTML, RTF, as well as the data in an internal format.  It also supports pasting plain text and internal formatted data, as well as a limited support for pasting RTF.
+|Format                             |Implementation                 |Export |Import |
+|:----------------------------------|:------------------------------|:------|:------|
+|DataFormat.HTML                    |**HtmlExportFormatHandler**    |yes    |no
+|DataFormat.PLAIN_TEXT              |**PlainTextFormatHandler**     |yes    |yes
+|RichTextFormatHandler.DATA_FORMAT  |**RichTextFormatHandler**      |yes    |yes
+|DataFormat.RTF                     |**RtfFormatHandler**           |yes    |yes (limited)
 
-At the control level, save() and load() methods allow for data transfer using any of the data formats supported by the underlying model.
+The default model, EditableRichTextModel, copies plain text, HTML, RTF, as well as an internal format.  It also supports pasting plain text, internally formatted data, and a limited support for RTF.
 
+The following methods in StyledTextModel allow to register, remove, or query the data formats supported by the model:
+
+- Set<StyleAttribute<?>> **getSupportedAttributes**()
+- void **registerDataFormatHandler**(DataFormatHandler, boolean forExport, boolean forImport, int priority)
+- void **removeDataFormatHandler**(DataFormat, boolean forExport)
+  
+At the control level, the following methods allow for data transfer in any format supported by the model:
+
+- void **read**(DataFormat)
+- void **read**(DataFormat, InputStream)
+- void **write**(OutputStream)
+- void **write**(DataFormat, OutputStream)
 
 
 
