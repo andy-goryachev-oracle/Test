@@ -28,3 +28,9 @@ We may need to talk about possible display options, animation, obtaining current
 TODO CaretInfo enhancement TBD
 
 [JDK-8296266](https://bugs.openjdk.org/browse/JDK-8296266): TextArea: Navigation breaks with RTL text (Bug - P3)
+
+
+## SelectionModel.setSelection(Marker, Marker)
+
+Should it clamp selection to the document start/end?
+

@@ -125,8 +125,8 @@ While this document makes an attempt to give an overview of various parts, pleas
 
 The new **RichTextArea** control exposes the following properties:
 
-|Property |Description |Styleable|
-|:--------|:-----------|:--------|
+|Property                   |Description                                                                 |Styleable|
+|:--------------------------|:---------------------------------------------------------------------------|:--------|
 |anchorPosition	            |provides the anchor position (read-only)	
 |caretBlinkPeriod	        |determines the caret blink period	
 |caretPosition	            |provides the caret position (read-only)	
@@ -155,103 +155,321 @@ The base class for any data model is **StyledTextModel**.  This abstract class p
 
 A number of standard models are included, designed for a specific use case, as described in this table:
 
-|Class Name	|Description
-|:---|:---|
-|`StyledTextModel`	|Base class
-|` ├─ EditableRichTextModel`	|Default model for RichTextArea
-|` ├─ BasePlainTextModel`	|Base class for models based on plain text
-|` │   └─ CodeTextModel`	|Default model for CodeArea
-|` └─ StyledTextModelReadOnlyBase`	|Base class for a read-only model
-|`     └─ SimpleReadOnlyStyledModel`	|In-memory read-only styled model
+|Class Name                             |Description                                    |
+|:--------------------------------------|:----------------------------------------------|
+|`StyledTextModel`                      |Base class
+|` ├─ EditableRichTextModel`            |Default model for RichTextArea
+|` ├─ BasePlainTextModel`               |Base class for models based on plain text
+|` │   └─ CodeTextModel`                |Default model for CodeArea
+|` └─ StyledTextModelViewOnlyBase`      |Base class for a view-only model
+|`     └─ SimpleViewOnlyStyledModel`    |In-memory view-only styled model
 
 The **EditableRichTextModel** stores the data in memory, in the form of text segments styled with attributes defined in **StyleAttrs** class.  This is a default model for RichTextArea.
 
 The abstract **BasePlainTextModel** is a base class for in-memory text models based on plain text.  This class provides foundation for the **CodeTextModel**, which styles the text using a pluggable **SyntaxDecorator**.
 
-The abstract **StyledTextModelReadOnlyBase** is a base class for immutable models.  This class is used by **SimpleReadOnlyStyledModel** which simplifies building of in-memory read-only styled documents.
+The abstract **StyledTextModelViewOnlyBase** is a base class for immutable models.  This class is used by **SimpleViewOnlyStyledModel** which simplifies building of in-memory read-only styled documents.
+
+Please refer to [Extensibility](#extensibility) section for more information.
 
 
-#### Read-Only Models
+
+### Skin
+
+The default skin, implemented by the **RichTextAreaSkin** class, provides the visual representation of RichTextArea control (i.e. represents a "View" in the MVC paradigm).
+
+The main feature of the default skin is a virtualized text flow, where only a small number of paragraphs is laid out, enabling visualization and editing of large models.  In addition to visible paragraphs, a couple of screenful is also laid out in a sliding window, allowing for precise scrolling by some number of pixels (such as page up / page down) , as well as improving the scrolling experience.
+
+
+
+#### Selection
+
+RichTextArea control maintains a single contiguous selection segment, ultimately linked with the View, to enable multiple controls working off the same data model to have their own selection.
+
+Selection is represented by the **selectionSegment** property, a part of **SelectionModel**.  Even though RichTextArea exposes **anchorPositionProperty** and **caretPositionProperty** individually, the latter two are considered derivative (and updated after the selectionSegment property when selection changes).  Selection segment uses the **Marker** class which updates the actual position in the presence of edits (such as edits made by the user in another view, or by a background process).
+
+Two sets of convenience methods simplify programmatic setting of the selection segment: one that sets both caret and anchor positions, and the other that extends selection from the anchor position to the (new) caret.
+
+These methods update both the anchor and the caret positions: 
+
+- void **clearSelection**()
+- void **select**(TextPos)
+- void **select**(TextPos anchor, TextPos caret)
+- void **selectAll**()
+
+The following methods extend selection from the existing anchor position to the new caret position.  When no anchor exists, the methods are reduced to setting the anchor to be the same as the caret position:
+
+- void **extendSelection**(TextPos)
+- void **selectToDocumentEnd**()
+- void **selectToDocumentStart**()
+- void **selectDown**()
+- void **selectEndOfNextWord**()
+- void **selectLeft**()
+- void **selectLeftWord**()
+- void **selectNextWord**()
+- void **selectPageDown**()
+- void **selectPageUp**()
+- void **selectParagraph**()
+- void **selectPreviousWord**()
+- void **selectRight**()
+- void **selectRightWord**()
+- void **selectUp**()
+- void **selectWord**()
+
+
+
+### Behavior
+
+RichTextArea control utilizes the new capabilities offered by the new **InputMap** feature.  In this design, the control exposes a number of function tags identifying the public methods that convey the behavior.  There is one public method per each function tag, allowing for customization of the behavior when required.
+
+The table below lists the available function tags:
+
+|Function Tag|Description|
+|:-----------|:----------|
+|BACKSPACE                 |Deletes the symbol before the caret position
+|COPY                      |Copies selected text to the clipboard
+|CUT                       |Cuts selected text and places it to the clipboard
+|DELETE                    |Deletes the symbol after the caret position
+|DELETE_PARAGRAPH          |Deletes paragraph at the caret, or selected paragraphs
+|INSERT_LINE_BREAK         |Inserts a single line break
+|INSERT_TAB                |Inserts a TAB symbol
+|MOVE_DOWN                 |Moves the caret one visual text line down
+|MOVE_LEFT                 |Moves the caret one symbol to the left
+|MOVE_PARAGRAPH_END        |Moves the caret to the end of the current paragraph
+|MOVE_PARAGRAPH_START      |Moves the caret to the beginning of the current paragraph
+|MOVE_RIGHT                |Moves the caret one symbol to the right
+|MOVE_TO_DOCUMENT_END      |Moves the caret to end of the document
+|MOVE_TO_DOCUMENT_START    |Moves the caret to beginning of the document
+|MOVE_UP                   |Moves the caret one visual text line up
+|MOVE_WORD_LEFT            |Moves the caret one word left (previous word if LTR, next word if RTL)
+|MOVE_WORD_NEXT            |Moves the caret to the next word
+|MOVE_WORD_NEXT_END        |Moves the caret to the end of next word
+|MOVE_WORD_PREVIOUS        |Moves the caret to the previous word
+|MOVE_WORD_RIGHT           |Moves the caret one word right (next word if LTR, previous word if RTL)
+|PAGE_DOWN                 |Moves the caret one page down
+|PAGE_UP                   |Moves the caret one page up
+|PASTE                     |Inserts rich text from the clipboard
+|PASTE_PLAIN_TEXT          |Inserts plain text from the clipboard
+|REDO                      |Reverts the last undo operation
+|SELECT_ALL                |Selects all text in the document
+|SELECT_DOWN               |Selects text (or extends selection) from the current caret position one visual text line down
+|SELECT_LEFT               |Selects text (or extends selection) from the current position to one symbol to the left
+|SELECT_PAGE_DOWN          |Selects text (or extends selection) from the current position to one page down
+|SELECT_PAGE_UP            |Selects text (or extends selection) from the current position to one page up
+|SELECT_PARAGRAPH          |Selects text (or extends selection) of the current paragraph
+|SELECT_RIGHT              |Selects text (or extends selection) from the current position to one symbol to the right
+|SELECT_TO_DOCUMENT_END    |Selects text (or extends selection) from the current caret position to the end of document
+|SELECT_TO_DOCUMENT_START  |Selects text (or extends selection) from the current caret position to the start of document
+|SELECT_UP                 |Selects text (or extends selection) from the current caret position one visual text line up
+|SELECT_WORD               |Selects word at the caret position
+|SELECT_WORD_LEFT          |Extends selection to the previous word (LTR) or next word (RTL)
+|SELECT_WORD_NEXT          |Extends selection to the next word
+|SELECT_WORD_NEXT_END      |Extends selection to the end of next word
+|SELECT_WORD_PREVIOUS      |Extends selection to the previous word
+|SELECT_WORD_RIGHT         |Extends selection to the next word (LTR) or previous word (RTL)
+|UNDO                      |Undoes the last edit operation
+
+These functions and the key mappings can be customized using the control's **InputMap**.
+
+
+
+### CodeArea Control
+
+CodeArea extends RichTextArea control to provide a styled text based on a plain text data model coupled with a **SyntaxDecorator**.
+
+
+#### CodeArea Properties
+
+CodeArea adds a few properties in addition to the existing properties declared by the RichTextArea control:
+
+|Property       |Description                                      |Styleable|
+|:--------------|:------------------------------------------------|:--------|
+|font           |the default font                                 |Yes
+|lineNumbers    |determines whether to show line numbers	
+|tabSize        |the size of tab stop in spaces                   |Yes
+
+
+#### CodeTextModel 
+
+CodeArea uses **CodeTextModel** - a dedicated editable, in-memory, plain text model which uses its **decorator** property to style the text.
+
+The function of a decorator, which implements the **SyntaxDecorator** interface, is to embellish the plain text contained in the model with colors and font styles, using the font provided by the control.
+
+
+### Customization
+
+RichTextArea allows for some degree of customization without subclassing.  The application developer can alter the control behavior by:
+
+- mapping a new key binding to an external function
+- redefining existing key bindings
+- redefining the functions corresponding to function tags (including the public methods in the control)
+- setting left and right side paragraph decorators
+- providing custom scroll bars via **ConfigurationParameters**
+
+
+
+#### Mapping a New Key Binding to an External Function
+
+This example illustrates adding a new key binding (Shortcut-W), mapped to a new function, applied to a specific instance of RichTextArea:
+
+```java
+        // creates a new key binding mapped to an external function
+        richTextArea.getInputMap().registerKey(KeyBinding.shortcut(KeyCode.W), () -> {
+            System.out.println("console!");
+        });
+```
+
+
+#### Redefining Existing Key Binding
+
+This example illustrates unbinding all existing key bindings, followed by registering a new key binding mapped to the same function:
+
+```java
+        // unbind old key bindings
+        var old = richTextArea.getInputMap().getKeyBindingsFor(RichTextArea.PASTE_PLAIN_TEXT);
+        for (KeyBinding k : old) {
+            richTextArea.getInputMap().unbind(k);
+        }
+        // map a new key binding
+        richTextArea.getInputMap().registerKey(KeyBinding.shortcut(KeyCode.W), RichTextArea.PASTE_PLAIN_TEXT);
+```
+
+
+#### Redefining Function Mapped to an Existing Function Tag
+
+This example illustrates how to modify the function mapped to a function tag.  The existing key mapping will be automatically use the new behavior.  This example also shows how to revert the mapping back to the original behavior:
+
+```java
+        // redefine a function
+        richTextArea.getInputMap().registerFunction(RichTextArea.PASTE_PLAIN_TEXT, () -> { });
+        richTextArea.pastePlainText(); // becomes a no-op
+        // revert back to the default behavior
+        richTextArea.getInputMap().restoreDefaultFunction(RichTextArea.PASTE_PLAIN_TEXT);
+```
+
+
+#### Setting Side Decorators
+
+This example illustrates how to set a side paragraph decorator (in this case, a LineNumberDecorator):
+
+```java
+        // sets a side decorator
+        richTextArea.setLeftDecorator(new LineNumberDecorator());
+```
+
+
+#### Providing Custom Scroll Bars
+
+In this example, a custom scroll bar will be used by the RichTextArea:
+
+```java
+        // sets a custom vertical scroll bar
+        ConfigurationParameters cp = ConfigurationParameters.
+            builder().
+            verticalScrollBar(ScrollBar::new).
+            build();
+        RichTextArea richTextArea = new RichTextArea(cp, null);
+```
+
+
+
+### Extensibility
+
+While RichTextArea should be useful enough out-of-the-box, it is designed with extensibility in mind.  The application developers can extend the functionality by:
+
+- extending the model
+- adding new data format handlers, or replacing the default ones
+- adding support for new attributes to the model
+- adding new function tags and corresponding public methods 
+
+
+
+#### Extending the Model
+
+A typical use case for extending one of the standard models is to interface with a data source: a file, a stream, or some other kind of data generated on the fly.  The choice of class to be extended is determined by whether the data can be changed by the application, whether the model is allowed to be editable by the user, and whether the data will be stored by the model in memory.  Most likely, however, the application developer would need to extend the base class - StyledTextModel.
+
+
+##### Read-Only Models
 
 A read-only model can be used to present rich text document not editable by the user (for example, a help or an informational page, or a virtualized view backed by a large file).
 
-**SimpleReadOnlyStyledModel** is suitable for a small in-memory styled document.  This model provides a number of methods to populate the document one segment at a time:
+SimpleReadOnlyStyledModel is suitable for a small in-memory styled document.  This model provides a number of methods to populate the document one segment at a time:
 
-- addSegment(String)
-- addSegment(String text, String style, String ... styleNames)
-- addSegment(String, StyleAttrs)
+- SimpleReadOnlyStyledModel **addSegment**(String text)
+- SimpleReadOnlyStyledModel **addSegment**(String text, String style, String ... styleNames)
+- SimpleReadOnlyStyledModel **addSegment**(String text, StyleAttrs)
 
 Other methods allow for adding image paragraphs, embedded Nodes, paragraph containing a single Region, as well as various types of highlights:
 
-- addImage(InputStream)
-- addNodeSegment(Supplier<Node>)
-- addParagraph(Supplier<Region>)
-- highlight(int start, int length, Color)
-- nl()
-- nl(int)
-- setParagraphAttributes(StyleAttrs)
-- squiggly(int start, int length, Color)
+- SimpleReadOnlyStyledModel **addImage**(InputStream)
+- SimpleReadOnlyStyledModel **addNodeSegment**(Supplier<Node>)
+- SimpleReadOnlyStyledModel **addParagraph**(Supplier<Region>)
+- SimpleReadOnlyStyledModel **highlight**(int start, int length, Color)
+- SimpleReadOnlyStyledModel **nl**()
+- SimpleReadOnlyStyledModel **nl**(int)
+- SimpleReadOnlyStyledModel **setParagraphAttributes**(StyleAttrs)
+- SimpleReadOnlyStyledModel **squiggly**(int start, int length, Color)
 
 An example of how to pre-populate the SimpleReadOnlyStyledModel is provided in the "Motivation" section.
 
-
-The abstract base class **StyledTextModelReadOnlyBase** can be used in circumstances when the data is either too large to be stored in memory (such as backed by a large file), or where data is generated on the fly.
+The abstract base class StyledTextModelReadOnlyBase can be used in circumstances when the data is either too large to be stored in memory (such as backed by a large file), or where data is generated on the fly.
 
 In this case, three abstract methods must be implemented:
 
-- int size()
-- String getPlainText(int)
-- RichParagraph getParagraph(int) 
+- int **size**()
+- String **getPlainText**(int)
+- RichParagraph **getParagraph**(int) 
 
-A **RichParagraph** represents a paragraph with rich text.  As an immutable class, it has to be built using the **RichParagraph.Builder** which offers a number of methods which help construct and style the content:
 
-- addHighlight(int, int, Color) 
-- addInlineNode(Supplier<Node>)
-- addSegment(String)
-- addSegment(String text, String inlineStyle, String[] styles)
-- addSegment(String text, StyleAttrs)
-- addSquiggly(int, int, Color)
-- setParagraphAttributes(StyleAttrs)
 
-Below is an example which illustrates the usage of RichParagraph.Builder by generating a demo paragraph on the fly:
+##### Creating a Paragraph
+
+A RichParagraph represents a paragraph with rich text.  As an immutable class, it has to be built using the RichParagraph.Builder which offers a number of methods which help construct and style the content:
+
+- Builder **addHighlight**(int start, int length, Color) 
+- Builder **addInlineNode**(Supplier<Node>)
+- Builder **addSegment**(String text)
+- Builder **addSegment**(String text, String inlineStyle, String[] styles)
+- Builder **addSegment**(String text, StyleAttrs)
+- Builder **addSquiggly**(int start, int length, Color)
+- Builder **setParagraphAttributes**(StyleAttrs)
+
+The following example illustrates how to use RichParagraph.Builder to create a paragraph that looks like this
+
+![paragraph example](paragraph-example.png)
 
 ```java
-    @Override
-    public RichParagraph getParagraph(int ix) {
-        RichParagraph.Builder b = RichParagraph.builder();
-        String s = format.format(ix + 1);
-        String sz = format.format(size);
-        String[] css = monospaced ? new String[] { "monospaced" } : null;
-
-        b.addSegment(s, "-fx-fill:darkgreen;", css);
-        b.addSegment(" / ", null, css);
-        b.addSegment(sz, "-fx-fill:black;", css);
-        if (monospaced) {
-            b.addSegment(" (monospaced)", null, css);
-        }
-
-        if ((ix % 10) == 9) {
-            String words = generateWords(ix);
-            b.addSegment(words, null, css);
-        }
-        return b.build();
-    }
+            StyleAttrs a1 = StyleAttrs.builder().setBold(true).build();
+            RichParagraph.Builder b = RichParagraph.builder();
+            b.addSegment("Example: ", a1);
+            b.addSegment("spelling, highlights, ");
+            b.addSquiggly(9, 8, Color.RED);
+            b.addHighlight(19, 4, Color.rgb(255, 128, 128, 0.5));
+            b.addHighlight(20, 7, Color.rgb(128, 255, 128, 0.5));
+            // creates an embedded control bound to a property within the model
+            b.addInlineNode(() -> {
+               CheckBox cb = new CheckBox("inline node.");
+               cb.selectedProperty().bindBidirectional(exampleProperty);
+               return cb;
+            });
+            return b.build();
 ```
+
 
 
 #### Editing
 
 RichTextArea provides a number of convenience methods for editing the content programmatically:
 
-- appendText(String text, StyleAttrs)
-- appendText(StyledInput)
-- applyStyle(TextPos start, TextPos end, StyleAttrs)
-- clear()
-- insertText(TexPos start, String, StyleAttrs)
-- insertText(TextPos start, StyledInput)
-- replaceText(TextPos start, TextPos end, String text, boolean allowUndo)
-- replaceText(TextPos start, TextPos end, StyledInput, boolean allowUndo)
-- setStyle(TextPos start, TextPos end, StyleAttrs)
+- TextPos **appendText**(String text, StyleAttrs)
+- TextPos **appendText**(StyledInput)
+- void **applyStyle**(TextPos start, TextPos end, StyleAttrs)
+- void **clear**()
+- TextPos **insertText**(TexPos start, String, StyleAttrs)
+- TextPos **insertText**(TextPos start, StyledInput)
+- TextPos **replaceText**(TextPos start, TextPos end, String text, boolean allowUndo)
+- TextPos **replaceText**(TextPos start, TextPos end, StyledInput, boolean allowUndo)
+- void **setStyle**(TextPos start, TextPos end, StyleAttrs)
 
 The following example illustrates how to populate an editable RichTextArea programmatically:
 
@@ -268,8 +486,8 @@ The following example illustrates how to populate an editable RichTextArea progr
 
 All the content modifications are eventually channeled through two methods in the StyledTextModel:
 
-- void applyStyle(TextPos start, TextPos end, StyleAttrs, boolean mergeAttributes)
-- void replace(StyleResolver, TextPos start, TextPos end, StyledInput, boolean createUndo)
+- void **applyStyle**(TextPos start, TextPos end, StyleAttrs, boolean mergeAttributes)
+- void **replace**(StyleResolver, TextPos start, TextPos end, StyledInput, boolean createUndo)
 
 Once the model applies the changes, a corresponding event is broadcast to all the listeners registered with the model - one such listener is the skin, which in turn updates the scene graph by requesting new RichParagraphs within the affected range of text.
 
@@ -279,21 +497,21 @@ Once the model applies the changes, a corresponding event is broadcast to all th
 
 RichTextArea supports undo/redo.  The following methods deal with undo/redo stack:
 
-- void clearUndoRedo()
-- boolean isRedoable()
-- boolean isUndoable()
-- void redo()
-- void undo()
+- void **clearUndoRedo**()
+- boolean **isRedoable**()
+- boolean **isUndoable**()
+- void **redo**()
+- void **undo**()
 
 
-The actual undo/redo stack is stored in the StyledTextModel.  The model a similar set of methods for accessing the undo/redo stack:
+The actual undo/redo stack is stored in the StyledTextModel.
+The model therefore provides a similar set of methods for accessing the undo/redo stack:
 
-- void clearUndoRedo()
-- boolean isRedoable()
-- boolean isUndoable()
-- void redo(StyleResolver)
-- void undo(StyleResolver)
-
+- void **clearUndoRedo**()
+- boolean **isRedoable**()
+- boolean **isUndoable**()
+- void **redo**(StyleResolver)
+- void **undo**(StyleResolver)
 
 
 
@@ -309,9 +527,9 @@ The default model for RichTextArea, EditableRichTextModel, utilizes a number of 
 
 StyledTextModel provides a common mechanism for importing/exporting styled text into/from the model via the following methods:
 
-- exportText(TextPos start, TextPos end, StyledOutput out)
-- TextPos replace(StyleResolver, TextPos start, TextPos end, String text, boolean createUndo)
-- TextPos replace(StyleResolver, TextPos start, TextPos end, StyledInput in, boolean createUndo)
+- void **exportText**(TextPos start, TextPos end, StyledOutput out)
+- TextPos **replace**(StyleResolver, TextPos start, TextPos end, String text, boolean allowUndo)
+- TextPos **replace**(StyleResolver, TextPos start, TextPos end, StyledInput in, boolean allowUndo)
 
 The I/O classes **StyledInput** and **StyledOutput** provide the transport of individual **StyledSegment**s.
 
@@ -326,151 +544,6 @@ The default model, EditableRichTextModel, copies plain text, HTML, RTF, as well 
 At the control level, save() and load() methods allow for data transfer using any of the data formats supported by the underlying model.
 
 
-
-### Skin
-
-The default skin, implemented by the **RichTextAreaSkin** class, provides the visual representation of RichTextArea control
- (i.e. represents a "View" in the MVC paradigm).
-
-The main feature of the default skin is a virtualized text flow, where only a small number of paragraphs is laid out in a sliding window, enabling visualization and even editing of large models.
-
-The size of the sliding window slightly exceeds the visible area, resulting in improved scrolling experience when paragraph heights differ.
-
-
-#### Selection
-
-RichTextArea control maintains a single contiguous selection segment, represented by the **selectionSegment** property.  Selection is ultimately linked with the View, to enable multiple controls working off the same data model to have their own selection.
-
-Selection is determined by two positions: the anchor and the caret.  The anchor comes into play when the user updates selection by pressing and holding the SHIFT key, and the caret is the position visually identified by a blinking caret.  Selection segments uses the **Marker** class which updates the actual position in the presence of edits (such as edits made by the user in another view, or by a background process).
-
-RichTextArea control provides a number of convenience methods to change selection programmatically:
-
-- void clearSelection()
-- void extendSelection(TextPos)
-- void select(TextPos anchor, TextPos caret)
-- void selectAll()
-- void selectDocumentEnd()
-- void selectDocumentStart()
-- void selectDown
-- void selectEndOfNextWord()
-- void selectLeft()
-- void selectLeftWord()
-- void selectNextWord()
-- void selectPageDown()
-- void selectPageUp()
-- void selectParagraph()
-- void selectPreviousWord()
-- void selectRight()
-- void selectRightWord()
-- void selectUp()
-- void selectWord()
-- void setCaret(TextPos)
-
-
-
-
-### Behavior
-
-RichTextArea control utilizes the new capabilities offered by the new **InputMap** feature.  In this design, the control exposes a number of function tags identifying the public methods that convey the behavior.  There is one public method that corresponds to each function tag, allowing for customization of the behavior when required.
-
-The table below lists the available function tags:
-
-|Function Tag|Description|
-|:-----------|:----------|
-|BACKSPACE	|Deletes the symbol before the caret position
-|COPY	|Copies selected text to the clipboard
-|CUT	|Cuts selected text and places it to the clipboard
-|DELETE	|Deletes the symbol after the caret position
-|DELETE_PARAGRAPH	|Deletes paragraph at the caret, or selected paragraphs
-|INSERT_LINE_BREAK	|Inserts a single line break
-|INSERT_TAB	|Inserts a TAB symbol
-|MOVE_DOCUMENT_END	|Moves the caret to end of the document
-|MOVE_DOCUMENT_START	|Moves the caret to beginning of the document
-|MOVE_DOWN	|Moves the caret one visual text line down
-|MOVE_LEFT	|Moves the caret one symbol to the left
-|MOVE_PARAGRAPH_END	|Moves the caret to the end of the current paragraph
-|MOVE_PARAGRAPH_START	|Moves the caret to the beginning of the current paragraph
-|MOVE_RIGHT	|Moves the caret one symbol to the right
-|MOVE_UP	|Moves the caret one visual text line up
-|MOVE_WORD_LEFT	|Moves the caret one word left (previous word if LTR, next word if RTL)
-|MOVE_WORD_NEXT	|Moves the caret to the next word
-|MOVE_WORD_NEXT_END	|Moves the caret to the end of next word
-|MOVE_WORD_PREVIOUS	|Moves the caret to the previous word
-|MOVE_WORD_RIGHT	|Moves the caret one word right (next word if LTR, previous word if RTL)
-|PAGE_DOWN	|Moves the caret one page down
-|PAGE_UP	|Moves the caret one page up
-|PASTE	|Inserts rich text from the clipboard
-|PASTE_PLAIN_TEXT	|Inserts plain text from the clipboard
-|REDO	|Reverts the last undo operation
-|SELECT_ALL	|Selects all text in the document
-|SELECT_DOCUMENT_END	|Selects text (or extends selection) from the current caret position to the end of document
-|SELECT_DOCUMENT_START	|Selects text (or extends selection) from the current caret position to the start of document
-|SELECT_DOWN	|Selects text (or extends selection) from the current caret position one visual text line down
-|SELECT_LEFT	|Selects text (or extends selection) from the current position to one symbol to the left
-|SELECT_PAGE_DOWN	|Selects text (or extends selection) from the current position to one page down
-|SELECT_PAGE_UP	|Selects text (or extends selection) from the current position to one page up
-|SELECT_PARAGRAPH	|Selects text (or extends selection) of the current paragraph
-|SELECT_RIGHT	|Selects text (or extends selection) from the current position to one symbol to the right
-|SELECT_UP	|Selects text (or extends selection) from the current caret position one visual text line up
-|SELECT_WORD	|Selects word at the caret position
-|SELECT_WORD_LEFT	|Extends selection to the previous word (LTR) or next word (RTL)
-|SELECT_WORD_NEXT	|Extends selection to the next word
-|SELECT_WORD_NEXT_END	|Extends selection to the end of next word
-|SELECT_WORD_PREVIOUS	|Extends selection to the previous word
-|SELECT_WORD_RIGHT	|Extends selection to the next word (LTR) or previous word (RTL)
-|UNDO	|Undoes the last edit operation
-
-These functions and the key mappings can be customized using the control's InputMap.
-
-
-
-### CodeArea Control
-
-CodeArea extends RichTextArea control to provide a styled text based on a plain text data model coupled with a SyntaxDecorator.
-
-
-#### CodeArea Properties
-
-CodeArea adds a few properties in addition to the existing properties declared by the RichTextArea control:
-
-|Property |Description |Styleable|
-|:--------|:-----------|:--------|
-|font	|the default font	|Yes
-|lineNumbers	|determines whether to show line numbers	
-|tabSize	|the size of tab stop in spaces	|Yes
-
-
-#### CodeTextModel 
-
-CodeArea uses **CodeTextModel** - a dedicated editable, in-memory, plain text model which uses its decorator property to style the text.
-
-The function of a decorator, which implements the **SyntaxDecorator** interface, is to embellish the plain text contained in the model with colors and font styles, using the font provided by the control.
-
-
-### Customization
-
-RichTextArea is designed with customization in mind.  A number of mechanisms are provided for the application developer to alter the control behavior:
-
-- adding support of new attributes to the model
-- adding new functions with new key bindings
-- redefining the existing key bindings
-- by adding left and right side paragraph decorators
-- providing custom scroll bars via **ConfigurationParameters**
-
-The following example illustrates how the basic navigation can be altered to support custom navigation (for example, allowing to jump to the next CamelCase word):
-
-```java
-        richTextArea.getInputMap().registerFunction(RichTextArea.MOVE_WORD_NEXT, () -> {
-            // refers to custom logic
-            TextPos p = getCustomNextWordPosition(richTextArea);
-            richTextArea.setCaret(p);
-        });
-```
-
-
-### Extensibility
-
-TBD
 
 
 ## Alternatives
