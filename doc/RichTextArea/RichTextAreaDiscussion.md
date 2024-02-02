@@ -34,3 +34,11 @@ TODO CaretInfo enhancement TBD
 
 Should it clamp selection to the document start/end?
 
+
+## Corner Node
+
+How do we want to set the corner node which may appear when both scroll bars are visible?
+
+ag: add a supplier to ConfigurationParameters, similarly to the scroll bars themselves?
+I don't want to force the dev to extend the skin just for that.
+

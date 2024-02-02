@@ -484,7 +484,7 @@ In this case, three abstract methods must be implemented:
 
 ##### Creating a Paragraph
 
-A RichParagraph represents a paragraph with rich text.  As an immutable class, it has to be built using the RichParagraph.Builder which offers a number of methods which help construct and style the content:
+The model returns an instance of **RichParagraph** from its **getParagraph**(int) method.  A RichParagraph represents a paragraph with rich text.  As an immutable class, it has to be built using the **RichParagraph.Builder** which offers a number of methods which help construct and style the content:
 
 - Builder **addHighlight**(int start, int length, Color) 
 - Builder **addInlineNode**(Supplier<Node>)
@@ -494,7 +494,7 @@ A RichParagraph represents a paragraph with rich text.  As an immutable class, i
 - Builder **addSquiggly**(int start, int length, Color)
 - Builder **setParagraphAttributes**(StyleAttrs)
 
-The following example illustrates how to use RichParagraph.Builder to create a paragraph that looks like this:
+The following example illustrates how to use RichParagraph.Builder to build a paragraph that looks like this:
 
 ![paragraph example](paragraph-example.png)
 
@@ -502,21 +502,57 @@ The following example illustrates how to use RichParagraph.Builder to create a p
             StyleAttrs a1 = StyleAttrs.builder().setBold(true).build();
             RichParagraph.Builder b = RichParagraph.builder();
             b.addSegment("Example: ", a1);
-            b.addSegment("spelling, highlights, ");
+            b.addSegment("spelling, highlights");
             b.addSquiggly(9, 8, Color.RED);
             b.addHighlight(19, 4, Color.rgb(255, 128, 128, 0.5));
             b.addHighlight(20, 7, Color.rgb(128, 255, 128, 0.5));
-            // creates an embedded control bound to a property within the model
-            b.addInlineNode(() -> {
-               CheckBox cb = new CheckBox("inline node.");
-               cb.selectedProperty().bindBidirectional(exampleProperty);
-               return cb;
-            });
             return b.build();
 ```
 
 
-#### Styling
+##### Embedded Nodes
+
+A RichParagraph may contains inline Nodes, or can represent a single Rectangle.  The model must not retain references to any Nodes because it may be shared between multiple RichTextAreas.  The use of a Supplier pattern allows the model to create the nodes specific to the view where they will be presented.
+
+The embedded Nodes and Rectangles also can be Controls and handle user input.  Doing so requires addition of properties to the model, which are to be bidirectionally bounds with the corresponding properties in the Controls.  This way a change in one view gets propagated to other controls that show the same model.
+
+The model must also provide [export/import](#exportimport) of properties values.
+
+The following example provides an example using a single TextField, which looks like this:
+
+![embedded nodes](embedded-nodes.png)
+
+```java
+public class ExamplesModel extends StyledTextModelViewOnlyBase {
+    /** properties in the model allow for inline controls */
+    private final SimpleStringProperty exampleProperty = new SimpleStringProperty();
+
+    @Override
+    public StyleAttrs getStyleAttrs(StyleResolver resolver, TextPos pos) {
+        return null;
+    }
+
+    @Override
+    public RichParagraph getParagraph(int index) {
+        switch(index) {
+        case 0: // this model contains a single paragraph
+            RichParagraph.Builder b = RichParagraph.builder();
+            b.addSegment("Input field: ");
+            // creates an embedded control bound to a property within this model
+            b.addInlineNode(() -> {
+               TextField t = new TextField();
+               t.textProperty().bindBidirectional(exampleProperty);
+               return t;
+            });
+            return b.build();
+        }
+        return null;
+}
+``` 
+
+
+
+##### Styling
 
 There are two ways of styling text in RichTextArea: either using inline attributes, or relying on style names in the application style sheet.  It is important to understand the limitation of stylesheet approach as it is only suitable for view-only models because editing of styles by the user is nearly impossible given the static nature of the application stylesheet.
 
@@ -606,8 +642,10 @@ TBD
 
 ## Dependencies
 
-This enhancement depends on the following RFEs:
+This enhancement depends on the following enhancements:
 
-- Public InputMap (Incubator): [BehaviorInputMapProposal](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.behavior.v1/doc/InputMap/BehaviorInputMapProposal.md)
-- Tab stop policy: [JDK-8314482](https://bugs.openjdk.org/browse/JDK-8314482)
+- [JDK-8314968 Public InputMap](https://bugs.openjdk.org/browse/JDK-8314968)
+- [Behavior / InputMap Proposal](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.behavior.v1/doc/InputMap/BehaviorInputMapProposal.md) (Incubator)
+- [JDK-8314482 Tab stop policy](https://bugs.openjdk.org/browse/JDK-8314482)
+
 
