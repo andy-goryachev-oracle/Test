@@ -1,4 +1,4 @@
-# Rich Text Area Control (Incubator)
+# Rich Text Area (Incubator)
 
 Andy Goryachev
 
@@ -397,14 +397,20 @@ This example illustrates unbinding all existing key bindings, followed by regist
 
 #### Redefining Function Mapped to an Existing Function Tag
 
-This example illustrates how to modify the function mapped to a function tag.  The existing key mapping will be automatically use the new behavior.  This example also shows how to revert the mapping back to the original behavior:
+This example illustrates how to modify a function mapped to the function tag.  The existing key mapping will be automatically use the new behavior.  The modified mapping can also be reverted back to its original behavior.
+
+For example, the application might offer an alternative way to navigate over words using the keyboard:
 
 ```java
         // redefine a function
-        richTextArea.getInputMap().registerFunction(RichTextArea.PASTE_PLAIN_TEXT, () -> { });
-        richTextArea.pastePlainText(); // becomes a no-op
+        richTextArea.getInputMap().registerFunction(RichTextArea.MOVE_WORD_NEXT, () -> {
+            // apply alternative navigation logic
+            TextPos p = getCustomNextWordPosition(richTextArea);
+            richTextArea.select(p);
+        });
+
         // revert back to the default behavior
-        richTextArea.getInputMap().restoreDefaultFunction(RichTextArea.PASTE_PLAIN_TEXT);
+        richTextArea.getInputMap().restoreDefaultFunction(RichTextArea.MOVE_WORD_NEXT);
 ```
 
 
@@ -528,11 +534,6 @@ public class ExamplesModel extends StyledTextModelViewOnlyBase {
     private final SimpleStringProperty exampleProperty = new SimpleStringProperty();
 
     @Override
-    public StyleAttrs getStyleAttrs(StyleResolver resolver, TextPos pos) {
-        return null;
-    }
-
-    @Override
     public RichParagraph getParagraph(int index) {
         switch(index) {
         case 0: // this model contains a single paragraph
@@ -547,8 +548,11 @@ public class ExamplesModel extends StyledTextModelViewOnlyBase {
             return b.build();
         }
         return null;
+    }
+
+    ...
 }
-``` 
+```
 
 
 
@@ -609,6 +613,91 @@ At the control level, the following methods allow for data transfer in any forma
 - void **read**(DataFormat, InputStream)
 - void **write**(OutputStream)
 - void **write**(DataFormat, OutputStream)
+
+
+#### Adding New Attributes
+
+At the core of converting the style attributes in the model to the visual representation is a **StyleHandlerRegistry**.  This registry contains code (see **StyleAttributeHandler** interface) which applies the inline styles on either Text node for the text segment attributes (or TextFlow node for the paragraph attributes) during the process of rendering of document content by the skin.
+
+Because this process is linked to a skin, the registry is contained in the control.  Adding support for a new attribute therefore requires extending RichTextArea:
+
+1. declare the new StyledAttribute
+2. create a StyleAttributeHandler which will provide the inline style(s)
+3. extend RichTextArea and initialize the new StyleHandlerRegistry instance for the class, combining the parent class registry and the new handler(s)
+
+Example, based on the CodeArea class:
+
+```java
+public class CodeArea extends RichTextArea {
+    static final StyleAttribute<Font> FONT = new StyleAttribute<>("CodeArea.FONT", Font.class, false);
+    static final StyleAttribute<Integer> TAB_SIZE = new StyleAttribute<>("CodeArea.TAB_SIZE", Integer.class, true);
+
+    /** The style handler registry instance. */
+    protected static final StyleHandlerRegistry styleHandlerRegistry = initStyleHandlerRegistry();
+    
+    @Override
+    public StyleHandlerRegistry getStyleHandlerRegistry() {
+        return styleHandlerRegistry;
+    }
+
+    private static StyleHandlerRegistry initStyleHandlerRegistry() {
+        StyleHandlerRegistry.Builder b = StyleHandlerRegistry.builder(RichTextArea.styleHandlerRegistry);
+
+        // this paragraph attribute affects each segment
+        b.setSegHandler(CodeArea.FONT, (c, cx, v) -> {
+            String family = v.getFamily();
+            double size = v.getSize();
+            cx.addStyle("-fx-font-family:'" + family + "';");
+            cx.addStyle("-fx-font-size:" + size + ";");
+        });
+
+        b.setParHandler(CodeArea.TAB_SIZE, (c, cx, v) -> {
+            if (v > 0) {
+                cx.addStyle("-fx-tab-size:" + v + ";");
+            }
+        });
+
+        return b.build();
+    }
+```
+
+
+
+
+#### Adding New Function Tags
+
+When extending RichTextArea, it might be necessary to allow for adding user-configurable key bindings mapped to some new functionality.
+
+Doing so requires the following steps:
+
+1. declaring a new FunctionTag
+2. creating a new public method in RichTextArea that calls execute() with the newly added FunctionTag
+3. creating a method that implements the new functionality
+4. registering the new function tag and key bindings
+
+This example illustrates the process:
+
+```
+    public class MyControl extends RichTextArea {
+        // function tag allows the user to customize key bindings
+        public static final FunctionTag MY_TAG = new FunctionTag();
+
+        public MyControl() {
+            // register custom functionality with the input map
+            getInputMap().registerFunction(MY_TAG, this::newFunctionImpl);
+            // create a key binding
+            getInputMap().registerKey(KeyBinding.shortcut(KeyCode.W), MY_TAG);
+        }
+
+        private void newFunctionImpl() {
+            // custom functionality
+        }
+    }
+```
+
+NOTE: this process also works without extending the RichTextArea, if the custom functionality requires only the public APIs.
+
+
 
 
 
