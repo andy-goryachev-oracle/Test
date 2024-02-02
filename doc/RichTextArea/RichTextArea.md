@@ -516,7 +516,7 @@ A RichParagraph may contains inline Nodes, or can represent a single Rectangle. 
 
 The embedded Nodes and Rectangles also can be Controls and handle user input.  Doing so requires addition of properties to the model, which are to be bidirectionally bounds with the corresponding properties in the Controls.  This way a change in one view gets propagated to other controls that show the same model.
 
-The model must also provide [export/import](#exportimport) of properties values.
+The model must also provide [export/import](#export-and-import) of properties values.
 
 The following example provides an example using a single TextField, which looks like this:
 
@@ -572,7 +572,7 @@ The default model for RichTextArea, the EditableRichTextModel, uses a number of 
 
 
 
-#### Export/Import
+#### Export And Import
 
 StyledTextModel provides a common mechanism for importing/exporting styled text into/from the model via the following methods:
 
