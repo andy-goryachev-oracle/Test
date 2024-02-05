@@ -558,7 +558,9 @@ public class ExamplesModel extends StyledTextModelViewOnlyBase {
 
 ##### Styling
 
-There are two ways of styling text in RichTextArea: either using inline attributes, or relying on style names in the application style sheet.  It is important to understand the limitation of stylesheet approach as it is only suitable for view-only models because editing of styles by the user is nearly impossible given the static nature of the application stylesheet.
+There are two ways of styling text in RichTextArea: either using inline attributes, or relying on style names in the application style sheet.
+
+It is important to understand the limitation of stylesheet approach as it is only suitable for view-only models because editing of styles by the user is not possible when styles come from the application stylesheet (and might be dynamically changed by the application).  Using stylesheet's names also necessitates the use of **StyleResolver** in order to obtain the actual attribute values when they are needed (for instance, when exporting).  And since the stylesheet might specify totally different styles for different RichTextAreas, the visual rendering and the exported attributes might differ, even when both controls are connected to the same model.
 
 This example illustrates how to style a read-only document created with the SimpleViewOnlyStyledModel and an application stylesheet:
 
