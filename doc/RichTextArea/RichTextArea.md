@@ -739,5 +739,4 @@ This enhancement depends on the following enhancements:
 - [JDK-8314968 Public InputMap](https://bugs.openjdk.org/browse/JDK-8314968)
 - [Behavior / InputMap Proposal](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.behavior.v1/doc/InputMap/BehaviorInputMapProposal.md) (Incubator)
 - [JDK-8314482 Tab stop policy](https://bugs.openjdk.org/browse/JDK-8314482)
-
-
+- [JDK-8309565 [Text] Enhance support for user-perceived characters (grapheme clusters)](https://bugs.openjdk.org/browse/JDK-8309565)
