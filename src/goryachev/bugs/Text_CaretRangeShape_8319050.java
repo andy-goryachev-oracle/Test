@@ -4,11 +4,10 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.NodeOrientation;
 import javafx.geometry.Point2D;
-import javafx.scene.Node;
+import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -30,7 +29,7 @@ public class Text_CaretRangeShape_8319050 extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        control = new Text("Arabic: " + "العربية" + "\n" + "Hebrew: " + "עברית");
+        control = new Text("\nArabic: " + "العربية" + "\n" + "Hebrew: " + "עברית");
         control.setStyle("-fx-font-size:400%");
         control.addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleMousePress);
 
@@ -44,8 +43,7 @@ public class Text_CaretRangeShape_8319050 extends Application {
         range.setStroke(null);
         range.setFill(Color.rgb(255, 0, 0, 0.2));
 
-        BorderPane bp = new BorderPane(control);
-        bp.getChildren().addAll(caret, range);
+        Group bp = new Group(control, caret, range);
 
         Scene scene = new Scene(bp);
         scene.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
