@@ -105,7 +105,7 @@ CodeArea                       control, extends RichTextArea
 
 The code is currently being incubated in the **javafx.incubator.controls module**.
 While this document makes an attempt to give an overview of various parts, please refer to the
-[API Specification](javadoc/javadoc.zip) for more detail.
+[API Specification](https://cr.openjdk.org/~angorya/RichTextArea/javadoc/) for more detail.
 
 
 
