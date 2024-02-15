@@ -103,7 +103,7 @@ CodeArea                       control, extends RichTextArea
  └─ SyntaxDecorator            interface which provides styling for underlying plain text
 ```
 
-The code is currently being incubated in the **javafx.incubator.controls module**.
+We intend to deliver this feature in an incubating module, **javafx.incubator.controls**.
 While this document makes an attempt to give an overview of various parts, please refer to the
 [API Specification](https://cr.openjdk.org/~angorya/RichTextArea/javadoc/) for more detail.
 
@@ -127,20 +127,20 @@ The new **RichTextArea** control exposes the following properties:
 
 |Property                   |Description                                                                 |Styleable|
 |:--------------------------|:---------------------------------------------------------------------------|:--------|
-|anchorPosition	            |provides the anchor position (read-only)	
-|caretBlinkPeriod	        |determines the caret blink period	
-|caretPosition	            |provides the caret position (read-only)	
-|contentPadding	            |defines the amount of padding in the content area                           |Yes
-|displayCaret	            |indicates whether the caret is displayed	
-|editable	                |indicates whether the editing is enabled	
-|highlightCurrentParagraph	|indicates whether the current paragraph is highlighted
-|leftDecorator	            |specifies the left side paragraph decorator
-|model	                    |document data model	
-|rightDecorator	            |specifies the right side paragraph decorator
-|selectionSegment	        |tracks the selection segment (read-only)
-|useContentHeight	        |determines whether the preferred height is the same as the content height
-|useContentWidth	        |determines whether the preferred width is the same as the content width
-|wrapText	                |indicates whether text should be wrapped                                    |Yes
+|anchorPosition             |provides the anchor position (read-only)	
+|caretBlinkPeriod           |determines the caret blink period	
+|caretPosition              |provides the caret position (read-only)	
+|contentPadding             |defines the amount of padding in the content area                           |Yes
+|displayCaret               |indicates whether the caret is displayed	
+|editable                   |indicates whether the editing is enabled	
+|highlightCurrentParagraph  |indicates whether the current paragraph is highlighted
+|leftDecorator              |specifies the left side paragraph decorator
+|model                      |document data model	
+|rightDecorator             |specifies the right side paragraph decorator
+|selection                  |tracks the selection (read-only)
+|useContentHeight           |determines whether the preferred height is the same as the content height
+|useContentWidth            |determines whether the preferred width is the same as the content width
+|wrapText                   |indicates whether text should be wrapped                                    |Yes
 
 
 ### Model
@@ -157,16 +157,16 @@ A number of standard models are provided, each designed for a specific use case.
 
 |Class Name                             |Description                                    |
 |:--------------------------------------|:----------------------------------------------|
-|`StyledTextModel`                      |Base class
+|`StyledTextModel`                      |Base class (abstract)
 |` ├─ EditableRichTextModel`            |Default model for RichTextArea
 |` ├─ BasePlainTextModel`               |Base class for models based on plain text
 |` │   └─ CodeTextModel`                |Default model for CodeArea
-|` └─ StyledTextModelViewOnlyBase`      |Base class for a view-only model
+|` └─ StyledTextModelViewOnlyBase`      |Base class for a view-only model (abstract)
 |`     └─ SimpleViewOnlyStyledModel`    |In-memory view-only styled model
 
 The **EditableRichTextModel** stores the data in memory, in the form of text segments styled with attributes defined in **StyleAttrs** class.  This is a default model for RichTextArea.
 
-The abstract **BasePlainTextModel** is a base class for in-memory text models based on plain text.  This class provides foundation for the **CodeTextModel**, which styles the text using a pluggable **SyntaxDecorator**.
+The **BasePlainTextModel** is a base class for in-memory text models based on plain text.  This class provides foundation for the **CodeTextModel**, which styles the text using a pluggable **SyntaxDecorator**.
 
 The abstract **StyledTextModelViewOnlyBase** is a base class for immutable models.  This class is used by **SimpleViewOnlyStyledModel** which simplifies building of in-memory read-only styled documents.
 
@@ -610,9 +610,9 @@ The following methods in StyledTextModel allow to register, remove, or query the
 - void **registerDataFormatHandler**(DataFormatHandler, boolean forExport, boolean forImport, int priority)
 - void **removeDataFormatHandler**(DataFormat, boolean forExport)
   
-At the control level, the following methods allow for data transfer in any format supported by the model:
+At the control level, the following methods transfer the entire contents of the control in any format supported by the model:
 
-- void **read**(DataFormat)
+- void **read**(InputStream)
 - void **read**(DataFormat, InputStream)
 - void **write**(OutputStream)
 - void **write**(DataFormat, OutputStream)
@@ -628,7 +628,7 @@ Because this process is linked to a skin, the registry is contained in the contr
 2. create a StyleAttributeHandler which will provide the inline style(s)
 3. extend RichTextArea and initialize the new StyleHandlerRegistry instance for the class, combining the parent class registry and the new handler(s)
 
-Example, based on the CodeArea class:
+In the below example, based on the CodeArea class, two new style attributes, FONT and TAB_SIZE are declared to be used by the skin to render fontProperty and tabSizeProperty in the control:
 
 ```java
 public class CodeArea extends RichTextArea {
