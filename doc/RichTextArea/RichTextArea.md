@@ -18,7 +18,7 @@ Provide a RichTextArea control for displaying and editing of rich text that can 
 Out of the box, the **RichTextArea** control provides support for a number of common use cases:
 
 - a simple editor similar to WordPad or TextEdit level, suitable for note taking or message editing
-- read-only presentation of rich text information (help pages, documentation, etc.)
+- view-only presentation of rich text information (help pages, documentation, etc.)
 - an editor which supports large (~2B rows), virtualized models
 - an editor which combines rich text with interactive content, such as a code notebook
 - a code editor with syntax highlighting
@@ -53,7 +53,7 @@ Creating a simple editable control should be as easy as this:
         RichTextArea t = new RichTextArea();
 ```
 
-Creating a read-only informational control should also be easy:
+Creating a view-only informational control should also be easy:
 
 ```java
         SimpleViewOnlyStyledModel m = new SimpleViewOnlyStyledModel();
@@ -168,7 +168,7 @@ The **EditableRichTextModel** stores the data in memory, in the form of text seg
 
 The **BasePlainTextModel** is a base class for in-memory text models based on plain text.  This class provides foundation for the **CodeTextModel**, which styles the text using a pluggable **SyntaxDecorator**.
 
-The abstract **StyledTextModelViewOnlyBase** is a base class for immutable models.  This class is used by **SimpleViewOnlyStyledModel** which simplifies building of in-memory read-only styled documents.
+The abstract **StyledTextModelViewOnlyBase** is a base class for immutable models.  This class is used by **SimpleViewOnlyStyledModel** which simplifies building of in-memory view-only styled documents.
 
 Please refer to [Extensibility](#extensibility) section for more information.
 
@@ -178,7 +178,7 @@ Please refer to [Extensibility](#extensibility) section for more information.
 
 The default skin, implemented by the **RichTextAreaSkin** class, provides the visual representation of RichTextArea control (i.e. represents a "View" in the MVC paradigm).
 
-The main feature of the default skin is a virtualized text flow, where only a small number of paragraphs is laid out, enabling visualization and editing of large models.  In addition to visible paragraphs, a couple of screenful is also laid out in a sliding window, allowing for precise scrolling by some number of pixels (such as page up / page down) , as well as improving the scrolling experience.
+The main feature of the default skin is a virtualized text flow, where only a small number of paragraphs are laid out, enabling visualization and editing of large models.  In addition to visible paragraphs, a couple of screenful is also laid out in a sliding window, allowing for precise scrolling by some number of pixels (such as page up / page down) , as well as improving the scrolling experience.
 
 
 
@@ -447,7 +447,7 @@ While RichTextArea should be useful enough out-of-the-box, it is designed with e
 - extending the model
 - adding new data format handlers, or replacing the default ones
 - adding support for new attributes to the model
-- adding new function tags and corresponding public methods 
+- extending the RIchTextArea class and adding new function tags and corresponding public methods 
 
 
 
@@ -458,7 +458,7 @@ A typical use case for extending one of the standard models is to interface with
 
 ##### View-Only Models
 
-A read-only model can be used to present rich text document not editable by the user (for example, a help or an informational page, or a virtualized view backed by a large file).
+A view-only model can be used to present rich text document not editable by the user (for example, a help or an informational page, or a virtualized view backed by a large file).
 
 **SimpleViewOnlyStyledModel** is suitable for a small in-memory styled document.  This model provides a number of methods to populate the document one segment at a time:
 
@@ -563,7 +563,7 @@ There are two ways of styling text in RichTextArea: either using inline attribut
 
 It is important to understand the limitation of stylesheet approach as it is only suitable for view-only models because editing of styles by the user is not possible when styles come from the application stylesheet (and might be dynamically changed by the application).  Using stylesheet's names also necessitates the use of **StyleResolver** in order to obtain the actual attribute values when they are needed (for instance, when exporting).  And since the stylesheet might specify totally different styles for different RichTextAreas, the visual rendering and the exported attributes might differ, even when both controls are connected to the same model.
 
-This example illustrates how to style a read-only document created with the SimpleViewOnlyStyledModel and an application stylesheet:
+This example illustrates how to style a view-only document created with the SimpleViewOnlyStyledModel and an application stylesheet:
 
 ```java
         SimpleViewOnlyStyledModel m = new SimpleViewOnlyStyledModel();
