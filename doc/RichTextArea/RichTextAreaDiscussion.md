@@ -15,7 +15,12 @@ AG: I prefer RTA to be in its own package.
 
 ## Which properties should be Styleable?
 
-TBD
+- displayCaret
+- editable
+- highlightCurrentParagraph
+- caretBlinkPeriod
+- useContentHeight
+- useContentWidth
 
 
 ## Bidi and caret behavior
@@ -57,3 +62,13 @@ The list of names that generated the most comments:
 ag: I think providing a complete list in the JEP has some value, even though the full information is present 
 in the javadoc.
 
+
+## How to provide configuration parameters?
+
+There are a number of construction-time parameters passed to the constructor via ConfigurationParameters class.
+There used to be more (see Params class), but at least one can be made public: SLIDING_WINDOW_EXTENT.
+
+Do we want to allow the application developers more flexibility by making these parameters public and a part of
+ConfigurationParameters?
+Do we want to allow for run time modification (i.e. convert these construction-time parameters to properties)?
+ 

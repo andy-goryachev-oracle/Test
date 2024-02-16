@@ -99,7 +99,7 @@ CodeArea extends RichTextArea and brings a few additional classes into the pictu
 
 ```
 CodeArea                       control, extends RichTextArea
- ├─ CodeTextModel              document model, extends BasePlainTextModel, extends StyledTextModel
+ ├─ CodeTextModel              document model, extends PlainTextModel, extends StyledTextModel
  └─ SyntaxDecorator            interface which provides styling for underlying plain text
 ```
 
@@ -110,7 +110,7 @@ While this document makes an attempt to give an overview of various parts, pleas
 
 
 
-### Design Principles
+### Design Features
 
 - paragraph-oriented model, up to ~2 billion rows
 - virtualized text cell flow
@@ -159,14 +159,14 @@ A number of standard models are provided, each designed for a specific use case.
 |:--------------------------------------|:----------------------------------------------|
 |`StyledTextModel`                      |Base class (abstract)
 |` ├─ EditableRichTextModel`            |Default model for RichTextArea
-|` ├─ BasePlainTextModel`               |Base class for models based on plain text
+|` ├─ PlainTextModel`                   |Unstyled plain text model
 |` │   └─ CodeTextModel`                |Default model for CodeArea
 |` └─ StyledTextModelViewOnlyBase`      |Base class for a view-only model (abstract)
 |`     └─ SimpleViewOnlyStyledModel`    |In-memory view-only styled model
 
 The **EditableRichTextModel** stores the data in memory, in the form of text segments styled with attributes defined in **StyleAttrs** class.  This is a default model for RichTextArea.
 
-The **BasePlainTextModel** is a base class for in-memory text models based on plain text.  This class provides foundation for the **CodeTextModel**, which styles the text using a pluggable **SyntaxDecorator**.
+The **PlainTextModel** could be used as a base class for in-memory text models based on plain text.  This class provides foundation for the **CodeTextModel**, which styles the text using a pluggable **SyntaxDecorator**.
 
 The abstract **StyledTextModelViewOnlyBase** is a base class for immutable models.  This class is used by **SimpleViewOnlyStyledModel** which simplifies building of in-memory view-only styled documents.
 
@@ -224,50 +224,50 @@ RichTextArea control utilizes the new capabilities offered by the new **InputMap
 
 The table below lists the available function tags:
 
-|Function Tag|Description|
-|:-----------|:----------|
-|BACKSPACE                 |Deletes the symbol before the caret position
+|Function Tag              |Description     |
+|:-------------------------|:---------------|
+|BACKSPACE                 |Deletes the symbol before the caret
 |COPY                      |Copies selected text to the clipboard
 |CUT                       |Cuts selected text and places it to the clipboard
-|DELETE                    |Deletes the symbol after the caret position
+|DELETE                    |Deletes the symbol at the caret
 |DELETE_PARAGRAPH          |Deletes paragraph at the caret, or selected paragraphs
-|INSERT_LINE_BREAK         |Inserts a single line break
-|INSERT_TAB                |Inserts a TAB symbol
-|MOVE_DOWN                 |Moves the caret one visual text line down
+|INSERT_LINE_BREAK         |Inserts a line break at the caret
+|INSERT_TAB                |Inserts a tab symbol at the caret
+|MOVE_DOWN                 |Moves the caret one visual line down
 |MOVE_LEFT                 |Moves the caret one symbol to the left
-|MOVE_PARAGRAPH_END        |Moves the caret to the end of the current paragraph
-|MOVE_PARAGRAPH_START      |Moves the caret to the beginning of the current paragraph
 |MOVE_RIGHT                |Moves the caret one symbol to the right
-|MOVE_TO_DOCUMENT_END      |Moves the caret to end of the document
-|MOVE_TO_DOCUMENT_START    |Moves the caret to beginning of the document
+|MOVE_TO_DOCUMENT_END      |Moves the caret to after the last character of the text
+|MOVE_TO_DOCUMENT_START    |Moves the caret to before the first character of the text
+|MOVE_TO_PARAGRAPH_END     |Moves the caret to the end of the paragraph at caret
+|MOVE_TO_PARAGRAPH_START   |Moves the caret to the beginning of the paragraph at caret
 |MOVE_UP                   |Moves the caret one visual text line up
 |MOVE_WORD_LEFT            |Moves the caret one word left (previous word if LTR, next word if RTL)
-|MOVE_WORD_NEXT            |Moves the caret to the next word
-|MOVE_WORD_NEXT_END        |Moves the caret to the end of next word
-|MOVE_WORD_PREVIOUS        |Moves the caret to the previous word
+|MOVE_WORD_NEXT            |Moves the caret to the beginning of next word
+|MOVE_WORD_NEXT_END        |Moves the caret to the end of the next word
+|MOVE_WORD_PREVIOUS        |Moves the caret to the beginning of previous word
 |MOVE_WORD_RIGHT           |Moves the caret one word right (next word if LTR, previous word if RTL)
-|PAGE_DOWN                 |Moves the caret one page down
-|PAGE_UP                   |Moves the caret one page up
-|PASTE                     |Inserts rich text from the clipboard
-|PASTE_PLAIN_TEXT          |Inserts plain text from the clipboard
-|REDO                      |Reverts the last undo operation
+|PAGE_DOWN                 |Moves the caret one visual page down
+|PAGE_UP                   |Moves the caret one visual page up
+|PASTE                     |Pastes the clipboard content
+|PASTE_PLAIN_TEXT          |Pastes the plain text clipboard content
+|REDO                      |If possible, redoes the last undone modification
 |SELECT_ALL                |Selects all text in the document
-|SELECT_DOWN               |Selects text (or extends selection) from the current caret position one visual text line down
-|SELECT_LEFT               |Selects text (or extends selection) from the current position to one symbol to the left
-|SELECT_PAGE_DOWN          |Selects text (or extends selection) from the current position to one page down
-|SELECT_PAGE_UP            |Selects text (or extends selection) from the current position to one page up
-|SELECT_PARAGRAPH          |Selects text (or extends selection) of the current paragraph
-|SELECT_RIGHT              |Selects text (or extends selection) from the current position to one symbol to the right
-|SELECT_TO_DOCUMENT_END    |Selects text (or extends selection) from the current caret position to the end of document
-|SELECT_TO_DOCUMENT_START  |Selects text (or extends selection) from the current caret position to the start of document
-|SELECT_UP                 |Selects text (or extends selection) from the current caret position one visual text line up
-|SELECT_WORD               |Selects word at the caret position
+|SELECT_DOWN               |Extends selection one visual text line down
+|SELECT_LEFT               |Extends selection one symbol to the left
+|SELECT_PAGE_DOWN          |Extends selection one visible page down
+|SELECT_PAGE_UP            |Extends selection one visible page up
+|SELECT_PARAGRAPH          |Selects the current paragraph
+|SELECT_RIGHT              |Extends selection one symbol to the right
+|SELECT_TO_DOCUMENT_END    |Extends selection to the end of the document
+|SELECT_TO_DOCUMENT_START  |Extends selection to the start of the document
+|SELECT_UP                 |Extends selection one visual text line up
+|SELECT_WORD               |Selects a word at the caret position
 |SELECT_WORD_LEFT          |Extends selection to the previous word (LTR) or next word (RTL)
-|SELECT_WORD_NEXT          |Extends selection to the next word
+|SELECT_WORD_NEXT          |Extends selection to the beginning of next word
 |SELECT_WORD_NEXT_END      |Extends selection to the end of next word
 |SELECT_WORD_PREVIOUS      |Extends selection to the previous word
 |SELECT_WORD_RIGHT         |Extends selection to the next word (LTR) or previous word (RTL)
-|UNDO                      |Undoes the last edit operation
+|UNDO                      |If possible, undoes the last modification
 
 These functions and the key mappings can be customized using the control's **InputMap**.
 
@@ -398,7 +398,9 @@ This example illustrates unbinding all existing key bindings, followed by regist
 
 #### Redefining Function Mapped to an Existing Function Tag
 
-This example illustrates how to modify a function mapped to the function tag.  The existing key mapping will be automatically use the new behavior.  The modified mapping can also be reverted back to its original behavior.
+This example illustrates how to modify a function mapped to a function tag.
+The existing key mapping will automatically use the new behavior.
+The modified mapping can also be reverted back to its original behavior.
 
 For example, the application might offer an alternative way to navigate over words using the keyboard:
 
@@ -739,4 +741,4 @@ This enhancement depends on the following enhancements:
 - [JDK-8314968](https://bugs.openjdk.org/browse/JDK-8314968) Public InputMap
 - [Behavior / InputMap Proposal](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.behavior.v1/doc/InputMap/BehaviorInputMapProposal.md) (Incubator)
 - [JDK-8314482](https://bugs.openjdk.org/browse/JDK-8314482) Tab stop policy
-- [JDK-8309565](https://bugs.openjdk.org/browse/JDK-8309565) [Text] Enhance support for user-perceived characters (grapheme clusters)
+
