@@ -178,7 +178,7 @@ Please refer to [Extensibility](#extensibility) section for more information.
 
 The default skin, implemented by the **RichTextAreaSkin** class, provides the visual representation of RichTextArea control (i.e. represents a "View" in the MVC paradigm).
 
-The main feature of the default skin is a virtualized text flow, where only a small number of paragraphs are laid out, enabling visualization and editing of large models.  In addition to visible paragraphs, a couple of screenful is also laid out in a sliding window, allowing for precise scrolling by some number of pixels (such as page up / page down) , as well as improving the scrolling experience.
+The main feature of the default skin is a virtualized text flow, where only a small number of paragraphs are laid out, enabling visualization and editing of large models.  In addition to paragraphs visible in the viewport, some number of paragraphs before and after the visible area are also laid out, forming a sliding window.  This allows for more precise scrolling experience and when the scrolling amount is measured in pixels (such as page up / page down).
 
 
 
@@ -356,6 +356,19 @@ The model therefore provides a similar set of methods for accessing the undo/red
 
 
 
+### Clipboard
+
+The StyledTextModel provides capability to copy to and paste from the system clipboard in a variety of formats.  Several implementations are provided, all extending the **DataFormatHandler** class:
+
+|Format                             |Implementation                 |Export |Import |
+|:----------------------------------|:------------------------------|:------|:------|
+|DataFormat.HTML                    |**HtmlExportFormatHandler**    |yes    |no
+|DataFormat.PLAIN_TEXT              |**PlainTextFormatHandler**     |yes    |yes
+|RichTextFormatHandler.DATA_FORMAT  |**RichTextFormatHandler**      |yes    |yes
+|DataFormat.RTF                     |**RtfFormatHandler**           |yes    |yes (limited)
+
+The default model, EditableRichTextModel, copies plain text, HTML, RTF, as well as an internal format.  It also supports pasting plain text, internally formatted data, and a limited support for RTF.
+
 
 ### Customization
 
@@ -523,9 +536,9 @@ The following example illustrates how to use RichParagraph.Builder to build a pa
 
 A RichParagraph may contains inline Nodes, or can represent a single Rectangle.  The model must not retain references to any Nodes because it may be shared between multiple RichTextAreas.  The use of a Supplier pattern allows the model to create the nodes specific to the view where they will be presented.
 
-The embedded Nodes and Rectangles also can be Controls and handle user input.  Doing so requires addition of properties to the model, which are to be bidirectionally bounds with the corresponding properties in the Controls.  This way a change in one view gets propagated to other controls that show the same model.
+The embedded Nodes and Rectangles also can be Controls and handle user input.  Doing so might require addition of properties to the model, bidirectionally bound with the corresponding properties in the embedded Controls.  This way a change in one view gets propagated to other views connected to the same model.
 
-The model must also provide [export/import](#export-and-import) of properties values.
+The model must also provide [export/import](#export-and-import) of these properties values in order to preserve the user input.
 
 The following example provides an example using a single TextField, which looks like this:
 
@@ -533,7 +546,7 @@ The following example provides an example using a single TextField, which looks 
 
 ```java
 public class ExamplesModel extends StyledTextModelViewOnlyBase {
-    /** properties in the model allow for inline controls */
+    /** stores the user input from the embedded TextArea */
     private final SimpleStringProperty exampleProperty = new SimpleStringProperty();
 
     @Override
@@ -552,7 +565,6 @@ public class ExamplesModel extends StyledTextModelViewOnlyBase {
         }
         return null;
     }
-
     ...
 }
 ```
@@ -593,24 +605,13 @@ The I/O interfaces **StyledInput** and **StyledOutput** provide the transport me
 
 
 
-#### Clipboard
+#### Adding Export / Import Format Handlers
 
-The StyledTextModel provides capability to copy to and paste from the system clipboard in a variety of formats.  Several implementations are provided, all extending the **DataFormatHandler** class:
+Custom models may offer support for other data formats, or improve support for existing ones.  The following methods in StyledTextModel allow to register, remove, or query the data formats supported by the model:
 
-|Format                             |Implementation                 |Export |Import |
-|:----------------------------------|:------------------------------|:------|:------|
-|DataFormat.HTML                    |**HtmlExportFormatHandler**    |yes    |no
-|DataFormat.PLAIN_TEXT              |**PlainTextFormatHandler**     |yes    |yes
-|RichTextFormatHandler.DATA_FORMAT  |**RichTextFormatHandler**      |yes    |yes
-|DataFormat.RTF                     |**RtfFormatHandler**           |yes    |yes (limited)
-
-The default model, EditableRichTextModel, copies plain text, HTML, RTF, as well as an internal format.  It also supports pasting plain text, internally formatted data, and a limited support for RTF.
-
-The following methods in StyledTextModel allow to register, remove, or query the data formats supported by the model:
-
-- Set<StyleAttribute<?>> **getSupportedAttributes**()
+- DataFormat[] **getSupportedDataFormats**(boolean forExport)
 - void **registerDataFormatHandler**(DataFormatHandler, boolean forExport, boolean forImport, int priority)
-- void **removeDataFormatHandler**(DataFormat, boolean forExport)
+- void **removeDataFormatHandler**(DataFormat, boolean forExport, boolean forImport)
   
 At the control level, the following methods transfer the entire contents of the control in any format supported by the model:
 
