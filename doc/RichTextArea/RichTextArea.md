@@ -461,7 +461,6 @@ While RichTextArea should be useful enough out-of-the-box, it is designed with e
 
 - extending the model
 - adding new data format handlers, or replacing the default ones
-- adding support for new attributes to the model
 - extending the RIchTextArea class and adding new function tags and corresponding public methods 
 
 
@@ -619,53 +618,6 @@ At the control level, the following methods transfer the entire contents of the 
 - void **read**(DataFormat, InputStream)
 - void **write**(OutputStream)
 - void **write**(DataFormat, OutputStream)
-
-
-#### Adding New Attributes
-
-At the core of converting the style attributes in the model to the visual representation is a **StyleHandlerRegistry**.  This registry contains code (see **StyleAttributeHandler** interface) which applies the inline styles on either Text node for the text segment attributes (or TextFlow node for the paragraph attributes) during the process of rendering of document content by the skin.
-
-Because this process is linked to a skin, the registry is contained in the control.  Adding support for a new attribute therefore requires extending RichTextArea:
-
-1. declare the new StyledAttribute
-2. create a StyleAttributeHandler which will provide the inline style(s)
-3. extend RichTextArea and initialize the new StyleHandlerRegistry instance for the class, combining the parent class registry and the new handler(s)
-
-In the below example, based on the CodeArea class, two new style attributes, FONT and TAB_SIZE are declared to be used by the skin to render fontProperty and tabSizeProperty in the control:
-
-```java
-public class CodeArea extends RichTextArea {
-    static final StyleAttribute<Font> FONT = new StyleAttribute<>("CodeArea.FONT", Font.class, false);
-    static final StyleAttribute<Integer> TAB_SIZE = new StyleAttribute<>("CodeArea.TAB_SIZE", Integer.class, true);
-
-    /** The style handler registry instance. */
-    protected static final StyleHandlerRegistry styleHandlerRegistry = initStyleHandlerRegistry();
-    
-    @Override
-    public StyleHandlerRegistry getStyleHandlerRegistry() {
-        return styleHandlerRegistry;
-    }
-
-    private static StyleHandlerRegistry initStyleHandlerRegistry() {
-        StyleHandlerRegistry.Builder b = StyleHandlerRegistry.builder(RichTextArea.styleHandlerRegistry);
-
-        // this paragraph attribute affects each segment
-        b.setSegHandler(CodeArea.FONT, (c, cx, v) -> {
-            String family = v.getFamily();
-            double size = v.getSize();
-            cx.addStyle("-fx-font-family:'" + family + "';");
-            cx.addStyle("-fx-font-size:" + size + ";");
-        });
-
-        b.setParHandler(CodeArea.TAB_SIZE, (c, cx, v) -> {
-            if (v > 0) {
-                cx.addStyle("-fx-tab-size:" + v + ";");
-            }
-        });
-
-        return b.build();
-    }
-```
 
 
 
