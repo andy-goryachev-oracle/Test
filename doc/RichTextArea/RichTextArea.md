@@ -135,9 +135,11 @@ The new **RichTextArea** control exposes the following properties:
 |editable                   |indicates whether the editing is enabled	
 |highlightCurrentParagraph  |indicates whether the current paragraph is highlighted
 |leftDecorator              |specifies the left side paragraph decorator
-|model                      |document data model	
+|model                      |document data model
+|redoable                   |describes if it's currently possible to redo the latest edit (read-only)
 |rightDecorator             |specifies the right side paragraph decorator
 |selection                  |tracks the selection (read-only)
+|undoable                   |describes if it's currently possible to undo the latest edit (read-only)
 |useContentHeight           |determines whether the preferred height is the same as the content height
 |useContentWidth            |determines whether the preferred width is the same as the content width
 |wrapText                   |indicates whether text should be wrapped                                    |Yes
