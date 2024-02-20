@@ -100,7 +100,8 @@ CodeArea extends RichTextArea and brings a few additional classes into the pictu
 ```
 CodeArea                       control, extends RichTextArea
  ├─ CodeTextModel              document model, extends PlainTextModel, extends StyledTextModel
- └─ SyntaxDecorator            interface which provides styling for underlying plain text
+ │   └─ SyntaxDecorator        interface which provides styling for underlying plain text
+ └─ CodeAreaSkin               default skin for the CodeArea control
 ```
 
 We intend to deliver this feature in an incubating module, **javafx.incubator.controls**.
@@ -299,8 +300,13 @@ CodeArea uses **CodeTextModel** - a dedicated editable, in-memory, plain text mo
 The function of a decorator, which implements the **SyntaxDecorator** interface, is to embellish the plain text contained in the model with colors and font styles, using the font provided by the control.
 
 
+#### CodeAreaSkin
 
-#### Editing
+**CodeAreSkin** is the default skin for the CodeArea control.
+
+
+
+### Editing
 
 RichTextArea provides a number of convenience methods for editing the content programmatically:
 
@@ -336,7 +342,7 @@ Once the model applies the changes, a corresponding event is broadcast to all th
 
 
 
-##### Undo / Redo
+### Undo / Redo
 
 RichTextArea supports undo/redo.  The following methods deal with undo/redo stack:
 
@@ -463,7 +469,8 @@ While RichTextArea should be useful enough out-of-the-box, it is designed with e
 
 - extending the model
 - adding new data format handlers, or replacing the default ones
-- extending the RIchTextArea class and adding new function tags and corresponding public methods 
+- extending the RichTextArea class and adding new function tags and corresponding public methods
+- adding new attributes
 
 
 
@@ -657,6 +664,53 @@ This example illustrates the process:
 
 NOTE: this process also works without extending the RichTextArea, if the custom functionality requires only the public APIs.
 
+
+#### Adding New Attributes
+
+At the core of converting the style attributes in the model to the visual representation is a **StyleHandlerRegistry**.  This registry contains code (see **StyleAttributeHandler** interface) which applies the inline styles on either Text node for the text segment attributes (or TextFlow node for the paragraph attributes) during the process of rendering of document content by the skin.
+
+Because this process is linked to a skin, the registry is contained in the control.  Adding support for a new attribute therefore requires extending RichTextArea:
+
+1. declare the new StyledAttribute
+2. create a StyleAttributeHandler which will provide the inline style(s)
+3. extend RichTextArea and initialize the new StyleHandlerRegistry instance for the class, combining the parent class registry and the new handler(s)
+
+In the below example, a new paragraph attribute called OUTLINE which adds a light pink border around its paragraph:
+
+![new attribute rendering](new-attribute.png)
+
+
+Declare the new attribute:
+
+```java
+public static final StyleAttribute<Boolean> OUTLINE = new StyleAttribute<>("OUTLINE", Boolean.class, true);
+```
+
+Extend RichTextArea, a new style handler registry with the new handler added:
+
+```java
+        control = new RichTextArea() {
+            private static final StyleHandlerRegistry registry = init();
+
+            private static StyleHandlerRegistry init() {
+                // brings in the handlers from the base class
+                StyleHandlerRegistry.Builder b = StyleHandlerRegistry.builder(RichTextArea.styleHandlerRegistry);
+                // adds a handler for the new attribute
+                b.setParHandler(NotebookModel.OUTLINE, (c, cx, v) -> {
+                    if (v) {
+                        cx.addStyle("-fx-border-color:LIGHTPINK;");
+                        cx.addStyle("-fx-border-width:1;");
+                    }
+                });
+                return b.build();
+            }
+
+            @Override
+            public StyleHandlerRegistry getStyleHandlerRegistry() {
+                return registry;
+            }
+        };
+```
 
 
 
