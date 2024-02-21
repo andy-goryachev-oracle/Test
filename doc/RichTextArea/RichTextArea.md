@@ -104,7 +104,7 @@ CodeArea                       control, extends RichTextArea
  └─ CodeAreaSkin               default skin for the CodeArea control
 ```
 
-We intend to deliver this feature in an incubating module, **javafx.incubator.controls**.
+We intend to deliver this feature in an incubating module, **javafx.incubator.richtext**.
 While this document makes an attempt to give an overview of various parts, please refer to the
 [API Specification](https://cr.openjdk.org/~angorya/RichTextArea/javadoc/) for more detail.
 
