@@ -302,7 +302,7 @@ The function of a decorator, which implements the **SyntaxDecorator** interface,
 
 #### CodeAreaSkin
 
-**CodeAreSkin** is the default skin for the CodeArea control.
+**CodeAreaSkin** is the default skin for the CodeArea control.
 
 
 
