@@ -475,7 +475,10 @@ An application developer that needs a custom control either needs to craft a com
 
 ## Testing
 
-TBD
+A standard set of unit tests for all the new classes should be developed.
+
+In order to avoid regressions during the process of migration of existing controls to take full advantage of the new InputMap functionality [4] will require development of behavior test suite, both headless and headful [5].
+
 
 
 
@@ -505,3 +508,4 @@ None.
 - [2] API Specification (Javadoc): https://cr.openjdk.org/~angorya/InputMapV2/javadoc/
 - [3] Discussion: https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2-Discussion.md
 - [4] [JDK-8314968](https://bugs.openjdk.org/browse/JDK-8314968) Public InputMap
+- [5] [JDK-8326869](https://bugs.openjdk.org/browse/JDK-8326869) ☂ Develop Behavior Test Suite
