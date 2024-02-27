@@ -369,15 +369,15 @@ Please also refer to
 
 An application can use the InputMap feature to:
 
-- adding a new key mapped to a new function (**Discussion is needed**)
+- adding a new key mapped to a function
 - redefine an existing function while keeping the key binding(s) intact
 - map an existing function to a new key binding
 - obtain the default function after it being redefined
 
 
-#### Adding a New Key Mapped to a New Function
+##### Adding a New Key Mapped to a Function
 
-A simple way of adding a key mapping to a new function, without requiring a FunctionTag:
+A simple way of adding a key mapping to a user-supplied function, without requiring a FunctionTag:
 
 ```java
         // creates a new key binding mapped to an external function
