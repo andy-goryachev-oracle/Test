@@ -61,7 +61,9 @@ Before we delve into more details, it might help to clarify the roles of parts t
 
 ### JavaFX Model-View-Controller Paradigm
 
-JavaFX controls is supposed to follow the classic Model-View-Controller (MVC) paradigm [0].
+JavaFX controls is supposed to follow the classic
+[Model-View-Controller](https://wiki.openjdk.org/display/OpenJFX/UI+Controls+Architecture)
+(MVC) paradigm [0].
 
 In reality, JavaFX does not exhibit a strict adherence to MVC pattern, for example, Control represents both the model (by hosting various properties) and a part of the View (by being a Region and a part of the scene graph).  The table below summarizes the role of each part:
 
@@ -96,7 +98,9 @@ Most of the behavior implementations maintain some kind of state required to pro
 
 It is important to mention that the behavior is usually tightly coupled with its skin and cannot be easily separated (by some kind of common API).  A different skin may provide completely different visual control surfaces and require completely different gestures, which explains why the behavior is still an internal class created by its skin.
 
-Finally, some Controls require no separate behavior class (ButtonBar), or the behavior can be implemented as a singleton if the state is fully captured by the control or its skin (TabPane).  Please refer to [1] for more information.
+Finally, some Controls require no separate behavior class (ButtonBar), or the behavior can be implemented as a singleton if the state is fully captured by the control or its skin (TabPane).  Please refer to
+[Control Class Hierarchy](https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Controls/ControlsClassHierarchy.md)
+[1] for more information.
 
 
 
@@ -119,8 +123,9 @@ Most of the new classes concentrate in the new package **javafx.scene.control.in
 - KeyBinding
 - SkinInputMap
 
-The API surface of the proposed change is fairly large, please refer to the [API Specification](https://cr.openjdk.org/~angorya/InputMapV2/javadoc/) [2] for more detail.
-
+The API surface of the proposed change is fairly large, please refer to the
+[API Specification](https://cr.openjdk.org/~angorya/InputMapV2/javadoc/)
+[2] for more detail.
 
 
 
@@ -367,7 +372,9 @@ An application can use the InputMap feature to:
 
 #### Adding a New Key Mapped to a New Function
 
-(To be discussed, see [3])
+To be discussed, see
+[Discussion](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2-Discussion.md)
+[3]
 
 A simple way of adding a key mapping to a new function, without requiring a FunctionTag:
 
@@ -495,9 +502,9 @@ None.
 
 ## References
 
-[0] JavaFX Model-View-Controller (MVC) https://wiki.openjdk.org/display/OpenJFX/UI+Controls+Architecture
-[1] Control Class Hierarchy https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Controls/ControlsClassHierarchy.md
-[2] API Specification (Javadoc): https://cr.openjdk.org/~angorya/InputMapV2/javadoc/
-[3] Discussion: https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2-Discussion.md
+- [0] JavaFX Model-View-Controller (MVC) https://wiki.openjdk.org/display/OpenJFX/UI+Controls+Architecture
+- [1] Control Class Hierarchy https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Controls/ControlsClassHierarchy.md
+- [2] API Specification (Javadoc): https://cr.openjdk.org/~angorya/InputMapV2/javadoc/
+- [3] Discussion: https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2-Discussion.md
 
 
