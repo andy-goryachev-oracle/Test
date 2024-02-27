@@ -27,3 +27,7 @@ Behavior is usually tightly coupled with its skin.  This might pose a problem fo
 Possible solution: design for a protected createBehavior() method to be invoked from the constructor.
 
 
+
+## Do we want to add other shortcuts to KeyBinding?
+
+KeyBinding provides convenience shortcuts for modifier combinations such as **ctrlShift**.  Do we want to add other popular combinations like **altShift** (see TextAreaBehavior)?

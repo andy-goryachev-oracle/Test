@@ -1,6 +1,7 @@
 # Public InputMap
 
 Andy Goryachev
+
 <andy.goryachev@oracle.com>
 
 
@@ -8,7 +9,7 @@ Andy Goryachev
 
 Add the **InputMap** property in the Control class which enables customization of controls with the user key mappings and event handlers, and to guarantee specific order of event handlers invocation and priority of user mappings over those created by the skin.
 
-Add **SkinInputMap** and **BehaviorBase** classes to simplify creation of skins for exising and new controls.
+Add **SkinInputMap** and **BehaviorBase** classes to simplify creation of skins for existing and new controls.
 
 
 
@@ -159,23 +160,23 @@ The InputMap also supports dynamic (that is, at run time) key mapping customizat
 
 The InputMap class provides the following public methods:
 
-- void **addHandler**(EventType, EventHandler)
-- void **addHandlerLast**(EventType, EventHandler)
-- FunctionHandler **getDefaultFunction**(FunctionTag)
-- FunctionHandler **getFunction**(FunctionTag)
-- FunctionHandler **getFunction**(KeyBinding)
-- Set<KeyBinding> **getKeyBindingsFor**(FunctionTag);
-- void **register**(KeyBinding, FunctionHandler)
-- void **registerFunction**(FunctionTag, FunctionHandler)
-- void **registerFunctionCond**(FunctionTag, FunctionHandlerConditional)
-- void **registerKey**(KeyBinding, FunctionTag)
-- void **removeHandler**(EventType, EventHandler)
-- void **resetKeyBindings**()
-- void **restoreDefaultFunction**(FunctionTag)
-- void **restoreDefaultKeyBinding**(KeyBinding)
-- void **setSkinInputMap**(SkinInputMap)
-- void **unbind**(FunctionTag)
-- void **unbind**(KeyBinding)
+- public void **addHandler**(EventType, EventHandler)
+- public void **addHandlerLast**(EventType, EventHandler)
+- public FunctionHandler **getDefaultFunction**(FunctionTag)
+- public FunctionHandler **getFunction**(FunctionTag)
+- public FunctionHandler **getFunction**(KeyBinding)
+- public Set<KeyBinding> **getKeyBindingsFor**(FunctionTag);
+- public void **register**(KeyBinding, FunctionHandler)
+- public void **registerFunction**(FunctionTag, FunctionHandler)
+- public void **registerFunctionCond**(FunctionTag, FunctionHandlerConditional)
+- public void **registerKey**(KeyBinding, FunctionTag)
+- public void **removeHandler**(EventType, EventHandler)
+- public void **resetKeyBindings**()
+- public void **restoreDefaultFunction**(FunctionTag)
+- public void **restoreDefaultKeyBinding**(KeyBinding)
+- public void **setSkinInputMap**(SkinInputMap)
+- public void **unbind**(FunctionTag)
+- public void **unbind**(KeyBinding)
 
 
 
@@ -187,18 +188,18 @@ For skins whose behaviors are stateless, a singleton SkinInputMap can be used.
 
 SkinInputMap class provides the following public methods:
 
-- void **addHandler**(EventCriteria, boolean consume, EventHandler)
-- void **addHandler**(EventType, boolean consume, EventHandler)
-- void **addHandlerLast**(EventCriteria, boolean consume, EventHandler)
-- void **addHandlerLast**(EventType, boolean consume, EventHandler)
-- void **duplicateMapping**(KeyBinding, KeyBinding)
-- Set<KeyBinding> **getKeyBindingsFor**(FunctionTag);
-- void **register**(FunctionTag, KeyBinding, FunctionHandler)
-- void **register**(FunctionTag, KeyCode, FunctionHandler)
-- void **registerFunction**(FunctionTag, FunctionHandler)
-- void **registerFunction**(FunctionTag, FunctionHandlerConditional)
-- void **registerKey**(KeyBinding, FunctionTag)
-- void **registerKey**(KeyCode, FunctionTag)
+- public void **addHandler**(EventCriteria, boolean consume, EventHandler)
+- public void **addHandler**(EventType, boolean consume, EventHandler)
+- public void **addHandlerLast**(EventCriteria, boolean consume, EventHandler)
+- public void **addHandlerLast**(EventType, boolean consume, EventHandler)
+- public void **duplicateMapping**(KeyBinding, KeyBinding)
+- public Set<KeyBinding> **getKeyBindingsFor**(FunctionTag);
+- public void **register**(FunctionTag, KeyBinding, FunctionHandler)
+- public void **register**(FunctionTag, KeyCode, FunctionHandler)
+- public void **registerFunction**(FunctionTag, FunctionHandler)
+- public void **registerFunction**(FunctionTag, FunctionHandlerConditional)
+- public void **registerKey**(KeyBinding, FunctionTag)
+- public void **registerKey**(KeyCode, FunctionTag)
 
 
 
@@ -225,7 +226,6 @@ The following example is taken from TabPane:
             /** Selects the right tab: next in LTR mode, previous in RTL mode. */
             public static final FunctionTag SELECT_RIGHT_TAB = new FunctionTag();
         }
-
 ```
 
 
@@ -255,55 +255,55 @@ This immutable class represents either a key pressed, a key typed, or a key rele
 
 Most KeyBindings, corresponding to a KEY_PRESSED event, can be constructed with one of the convenient factory methods:
 
-- static KeyBinding **alt**(KeyCode)
-- static KeyBinding **command**(KeyCode)
-- static KeyBinding **ctrl**(KeyCode)
-- static KeyBinding **ctrlShift**(KeyCode)
-- static KeyBinding **of**(KeyCode)
-- static KeyBinding **shift**(KeyCode)
-- static KeyBinding **shortcut**(KeyCode)
+- public static KeyBinding **alt**(KeyCode)
+- public static KeyBinding **command**(KeyCode)
+- public static KeyBinding **ctrl**(KeyCode)
+- public static KeyBinding **ctrlShift**(KeyCode)
+- public static KeyBinding **of**(KeyCode)
+- public static KeyBinding **shift**(KeyCode)
+- public static KeyBinding **shortcut**(KeyCode)
 
 For more complex modifier combinations, or when the key binding corresponds to a KEY_TYPED or KEY_RELEASED event, a builder pattern should be used.  
 
 The Builder can be obtained with either of the two methods:
 
-- static KeyBinding.Builder **with**(KeyCode)
-- static KeyBinding.Builder **with**(String character)
+- public static KeyBinding.Builder **with**(KeyCode)
+- public static KeyBinding.Builder **with**(String character)
 
 The **KeyBinding.Builder** class provides the following methods:
 
-- Builder **alt**()
-- Builder **alt**(boolean)
-- KeyBinding **build**()
-- Builder **command**()
-- Builder **command**(boolean)
-- Builder **ctrl**()
-- Builder **ctrl**(boolean)
-- Builder **meta**()
-- Builder **meta**(boolean)
-- Builder **onKeyReleased**()
-- Builder **onKeyTyped**()
-- Builder **option**()
-- Builder **option**(boolean)
-- Builder **shift**()
-- Builder **shift**(boolean)
-- Builder **shortcut**()
-- Builder **shortcut**(boolean)
+- public Builder **alt**()
+- public Builder **alt**(boolean)
+- public KeyBinding **build**()
+- public Builder **command**()
+- public Builder **command**(boolean)
+- public Builder **ctrl**()
+- public Builder **ctrl**(boolean)
+- public Builder **meta**()
+- public Builder **meta**(boolean)
+- public Builder **onKeyReleased**()
+- public Builder **onKeyTyped**()
+- public Builder **option**()
+- public Builder **option**(boolean)
+- public Builder **shift**()
+- public Builder **shift**(boolean)
+- public Builder **shortcut**()
+- public Builder **shortcut**(boolean)
 
 The following are the public instance methods of the KeyBinding class:
 
-- boolean **isAlt**()
-- boolean **isCommand**()
-- boolean **isCtrl**()
-- boolean **isEventAcceptable**(KeyEvent)
-- boolean **isKeyPressed**()
-- boolean **isKeyReleased**()
-- boolean **isKeyTyped**()
-- boolean **isMeta**()
-- boolean **isMeta**()
-- boolean **isOption**()
-- boolean **isShift**()
-- boolean **isShortcut**()
+- public boolean **isAlt**()
+- public boolean **isCommand**()
+- public boolean **isCtrl**()
+- public boolean **isEventAcceptable**(KeyEvent)
+- public boolean **isKeyPressed**()
+- public boolean **isKeyReleased**()
+- public boolean **isKeyTyped**()
+- public boolean **isMeta**()
+- public boolean **isMeta**()
+- public boolean **isOption**()
+- public boolean **isShift**()
+- public boolean **isShortcut**()
 
 
 
@@ -325,7 +325,6 @@ This convenience class is intended to simplify creation of stateful behaviors, b
         behavior.populateSkinInputMap();
         setSkinInputMap(behavior.getSkinInputMap());
     }
-
 ```
 
 BehaviorBase provides the following public methods:
@@ -453,7 +452,6 @@ The stateless behavior is implemented in the TabPaneBehavior (here for illustrat
         public static void install(TabPane control) {
             control.getInputMap().setSkinInputMap(inputMap);
         }
-
 ```
 
 
@@ -500,12 +498,9 @@ None.
 
 
 
-
 ## References
 
 - [0] JavaFX Model-View-Controller (MVC) https://wiki.openjdk.org/display/OpenJFX/UI+Controls+Architecture
 - [1] Control Class Hierarchy https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Controls/ControlsClassHierarchy.md
 - [2] API Specification (Javadoc): https://cr.openjdk.org/~angorya/InputMapV2/javadoc/
 - [3] Discussion: https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2-Discussion.md
-
-
