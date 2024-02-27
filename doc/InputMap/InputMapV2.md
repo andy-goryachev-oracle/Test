@@ -504,3 +504,4 @@ None.
 - [1] Control Class Hierarchy https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Controls/ControlsClassHierarchy.md
 - [2] API Specification (Javadoc): https://cr.openjdk.org/~angorya/InputMapV2/javadoc/
 - [3] Discussion: https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2-Discussion.md
+- [4] [JDK-8314968](https://bugs.openjdk.org/browse/JDK-8314968) Public InputMap
