@@ -164,8 +164,8 @@ The InputMap class provides the following public methods:
 - FunctionHandler **getDefaultFunction**(FunctionTag)
 - FunctionHandler **getFunction**(FunctionTag)
 - FunctionHandler **getFunction**(KeyBinding)
-- FunctionTag **getFunctionTag**(KeyBinding)
 - Set<KeyBinding> **getKeyBindingsFor**(FunctionTag);
+- void **register**(KeyBinding, FunctionHandler)
 - void **registerFunction**(FunctionTag, FunctionHandler)
 - void **registerFunctionCond**(FunctionTag, FunctionHandlerConditional)
 - void **registerKey**(KeyBinding, FunctionTag)
@@ -192,7 +192,6 @@ SkinInputMap class provides the following public methods:
 - void **addHandlerLast**(EventCriteria, boolean consume, EventHandler)
 - void **addHandlerLast**(EventType, boolean consume, EventHandler)
 - void **duplicateMapping**(KeyBinding, KeyBinding)
-- FunctionTag**getFunctionTag**(KeyBinding)
 - Set<KeyBinding> **getKeyBindingsFor**(FunctionTag);
 - void **register**(FunctionTag, KeyBinding, FunctionHandler)
 - void **register**(FunctionTag, KeyCode, FunctionHandler)
@@ -358,6 +357,12 @@ As well as some additional methods:
 
 ### Examples
 
+The following examples illustrate common use cases for using the InputMap.
+
+Please also refer to
+[Discussion](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2-Discussion.md)
+[3]
+
 
 
 #### Using the InputMap by the Application
@@ -371,10 +376,6 @@ An application can use the InputMap feature to:
 
 
 #### Adding a New Key Mapped to a New Function
-
-To be discussed, see
-[Discussion](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2-Discussion.md)
-[3]
 
 A simple way of adding a key mapping to a new function, without requiring a FunctionTag:
 

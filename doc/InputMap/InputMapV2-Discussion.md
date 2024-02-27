@@ -27,14 +27,3 @@ Behavior is usually tightly coupled with its skin.  This might pose a problem fo
 Possible solution: design for a protected createBehavior() method to be invoked from the constructor.
 
 
-
-## Bypass FunctionTag for Simple Key Mappings
-
-Should we allow a simplified API when the app needs to map a new key to a new function, without the need to redefine it at run time, one that does not require a FunctionTag to be declared?  
-
-```java
-        // creates a new key binding mapped to an external function
-        control.getInputMap().registerKey(KeyBinding.shortcut(KeyCode.W), () -> {
-            System.out.println("console!");
-        });
-```
