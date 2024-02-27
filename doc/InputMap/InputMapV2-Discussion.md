@@ -38,4 +38,3 @@ Should we allow a simplified API when the app needs to map a new key to a new fu
             System.out.println("console!");
         });
 ```
-

@@ -65,12 +65,12 @@ JavaFX controls is supposed to follow the classic Model-View-Controller (MVC) pa
 
 In reality, JavaFX does not exhibit a strict adherence to MVC pattern, for example, Control represents both the model (by hosting various properties) and a part of the View (by being a Region and a part of the scene graph).  The table below summarizes the role of each part:
 
-|Entity    |Role   |Description      |
-|:---------|:------|-----------------|
-|Control   |Model  |A class that provides various properties that map into the "Model" in the MVC pattern.
-|Skin      |View   |The skin provides a visual representation of the control, serving a role of "View" in the MVC pattern.
-|Behavior	Controller	The behavior reacts to the user input and updates the "Model" by modifying the control's properties and/or calling public methods in the control.
-|Input Map |      |Serves as an integration point between Control and Skin/Behavior by providing a repository for the event handlers and the key mappings.  Guarantees the order in which events are being dispatched to the registered event handlers.
+|Entity    |Role       |Description      |
+|:---------|:----------|-----------------|
+|Control   |Model      |A class that provides various properties that map into the "Model" in the MVC pattern.
+|Skin      |View       |The skin provides a visual representation of the control, serving a role of "View" in the MVC pattern.
+|Behavior  |Controller |The behavior reacts to the user input and updates the "Model" by modifying the control's properties and/or calling public methods in the control.
+|Input Map |           |Serves as an integration point between Control and Skin/Behavior by providing a repository for the event handlers and the key mappings.  Guarantees the order in which events are being dispatched to the registered event handlers.
 
 
 #### Role of the Control
@@ -495,9 +495,9 @@ None.
 
 ## References
 
-[0] JavaFX Model-View-Controller (MVC) [https://wiki.openjdk.org/display/OpenJFX/UI+Controls+Architecture]
-[1] Control Class Hierarchy [https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Controls/ControlsClassHierarchy.md]
+[0] JavaFX Model-View-Controller (MVC) https://wiki.openjdk.org/display/OpenJFX/UI+Controls+Architecture
+[1] Control Class Hierarchy https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Controls/ControlsClassHierarchy.md
 [2] API Specification (Javadoc): https://cr.openjdk.org/~angorya/InputMapV2/javadoc/
-[3] Discussion: 
+[3] Discussion: https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2-Discussion.md
 
 
