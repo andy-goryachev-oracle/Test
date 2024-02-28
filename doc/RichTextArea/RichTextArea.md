@@ -104,7 +104,7 @@ CodeArea                       control, extends RichTextArea
  └─ CodeAreaSkin               default skin for the CodeArea control
 ```
 
-We intend to deliver this feature in an incubating module, **javafx.incubator.richtext**.
+We intend to deliver this feature in an incubating module, **jfx.incubator.richtext**.
 While this document makes an attempt to give an overview of various parts, please refer to the
 [API Specification](https://cr.openjdk.org/~angorya/RichTextArea/javadoc/) for more detail.
 
@@ -748,6 +748,6 @@ TBD
 This enhancement depends on the following enhancements:
 
 - [JDK-8314968](https://bugs.openjdk.org/browse/JDK-8314968) Public InputMap
-- [Behavior / InputMap Proposal](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.behavior.v1/doc/InputMap/BehaviorInputMapProposal.md) (Incubator)
+- [InputMap Proposal](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2.md) (Incubator)
 - [JDK-8314482](https://bugs.openjdk.org/browse/JDK-8314482) Tab stop policy
 
