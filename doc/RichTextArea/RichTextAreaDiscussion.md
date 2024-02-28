@@ -59,7 +59,7 @@ The list of names that generated the most comments:
 
 ## Should JEP list all the attributes declared in StyleAttrs?
 
-ag: I think providing a complete list in the JEP has some value, even though the full information is present 
+AG: I think providing a complete list in the JEP has some value, even though the full information is present 
 in the javadoc.
 
 
@@ -71,4 +71,15 @@ There used to be more (see Params class), but at least one can be made public: S
 Do we want to allow the application developers more flexibility by making these parameters public and a part of
 ConfigurationParameters?
 Do we want to allow for run time modification (i.e. convert these construction-time parameters to properties)?
- 
+
+
+## BACKSPACE and DELETE
+
+At the moment, BACKSPACE and DELETE removes as many characters as instructed by a character BreakIterator.
+It is probably not what the user expects, especially in the presence of grapheme clusters: when the user attempts to
+input a cluster by typing individual characters (how?), the BACKSPACE key should delete the previous character, breaking
+the cluster.  On the other hand, the DELETE key should delete the whole cluster.
+
+JavaFX provides only partial support for grapheme clusters, see
+[JDK-8309565](https://bugs.openjdk.org/browse/JDK-8309565) [Text] Enhance support for user-perceived characters (grapheme clusters)
+necessitating further work on BACKSPACE functionality once the full support for grapheme clusters is integrated.
