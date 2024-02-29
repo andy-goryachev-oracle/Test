@@ -143,14 +143,14 @@ The purpose of this class is to store event handlers and key mappings in order t
 
 The InputMap provides an ordered repository of event handlers, working together with **SkinInputMap** supplied by the skin (or static stateless behavior implementation).  Internally, each handler is added with a specific priority according to this table:
 
-|Priority   |Description   |
-|:----------|:-------------|
-|USER_HIGH  |Event handlers set by the user	
-|USER_KB    |Key mappings supplied by the user	
-|SKIN_KB    |Key mappings supplied by the SkinInputMap	
-|SKIN_HIGH  |Event handlers set by the SkinInputMap	
-|SLIN_LOW   |Event handlers set by the SkinInputMap via addHandlerLast()	
-|USER_LOW   |Event handlers set by the user via addHandlerLast()	
+|Priority   |Set By      |Method                             |Description   |
+|:----------|:-----------|:----------------------------------|:-------------|
+|Highest    |Application |InputMap.addEventHandler()         |Event handlers set by the application	
+|           |Application |InputMap.registerKey()             |Key mappings set by the application	
+|           |Skin        |SkinInputMap.registerKey()         |Key mappings set by the skin
+|           |Skin        |SkinInputMap.addEventHandler()     |Event handlers set by the skin	
+|           |Skin        |SkinInputMap.addEventHandlerLast() |Event handlers set by the skin
+|Lowest     |Application |InputMap.addEventHandlerLast()     |Event handlers set by the application
 
 For key mappings, the InputMap utilizes a two-stage lookup.  First, the key event is matched to a **FunctionTag** which identifies a function provided either by the skin or the associated behavior (the "default" function), or by the user.  When such a mapping exists, the found function tag is matched to a function registered either by the user or by the skin.  This mechanism allows for customizing the key mappings and the underlying functions independently and separately.
 
