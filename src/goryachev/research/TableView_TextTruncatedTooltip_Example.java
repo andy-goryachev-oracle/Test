@@ -5,7 +5,6 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
@@ -34,14 +33,6 @@ public class TableView_TextTruncatedTooltip_Example extends Application {
 //        launch(args);
 //    }
 
-    static void changeTooltip(Labeled labeled, boolean on) {
-        if (on) {
-            labeled.setTooltip(new Tooltip(labeled.getText()));
-        } else {
-            labeled.setTooltip(null);
-        }
-    }
-
     @Override
     public void start(Stage stage) {
         stage.setTitle("Table View Sample");
@@ -54,10 +45,13 @@ public class TableView_TextTruncatedTooltip_Example extends Application {
         emailCol.setCellValueFactory(param -> param.getValue().email);
         emailCol.setCellFactory((tableColumn) -> new TextFieldTableCell<>(new DefaultStringConverter()) {
             {
-                textTruncatedProperty().addListener((s,p,c) -> {
-                    System.out.println(getText() + " truncated=" + c);
-                    changeTooltip(this, c);
-                });
+//                textTruncatedProperty().addListener((s, p, on) -> {
+//                    if (on) {
+//                        setTooltip(new Tooltip(getText()));
+//                    } else {
+//                        setTooltip(null);
+//                    }
+//                });
             }
         });
         emailCol.setOnEditCommit(t -> t.getTableView().getItems().get(t.getTablePosition().getRow()).email.set(t.getNewValue()));

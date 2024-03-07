@@ -35,14 +35,6 @@ public class TreeTableView_TextTruncatedTooltip_Example extends Application {
 //        launch(args);
 //    }
 
-    static void changeTooltip(Labeled labeled, boolean on) {
-        if (on) {
-            labeled.setTooltip(new Tooltip(labeled.getText()));
-        } else {
-            labeled.setTooltip(null);
-        }
-    }
-
     @Override
     public void start(Stage stage) {
         stage.setTitle("Table View Sample");
@@ -58,10 +50,13 @@ public class TreeTableView_TextTruncatedTooltip_Example extends Application {
         });
         emailCol.setCellFactory((tc) -> new TextFieldTreeTableCell<>(new DefaultStringConverter()) {
             {
-                textTruncatedProperty().addListener((s,p,c) -> {
-                    System.out.println(getText() + " truncated=" + c);
-                    changeTooltip(this, c);
-                });
+//                textTruncatedProperty().addListener((s, p, on) -> {
+//                    if (on) {
+//                        setTooltip(new Tooltip(getText()));
+//                    } else {
+//                        setTooltip(null);
+//                    }
+//                });
             }
         });
 
