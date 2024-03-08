@@ -748,6 +748,6 @@ TBD
 This enhancement depends on the following enhancements:
 
 - [JDK-8314968](https://bugs.openjdk.org/browse/JDK-8314968) Public InputMap
-- [InputMap Proposal](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2.md) (Incubator)
+- [InputMap Proposal](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2.md)
 - [JDK-8314482](https://bugs.openjdk.org/browse/JDK-8314482) Tab stop policy
 
