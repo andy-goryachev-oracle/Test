@@ -1,4 +1,4 @@
-# Behavior / InputMap Redesign Proposal
+# Behavior / InputMap Redesign Proposal (Withdrawn)
 
 Andy Goryachev
 
