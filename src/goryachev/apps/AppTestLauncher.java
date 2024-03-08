@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2023, 2024, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -26,6 +26,7 @@ package goryachev.apps;
 
 import javafx.application.Application;
 import goryachev.bugs.*;
+import goryachev.research.*;
 import goryachev.tests.*;
 
 /**
@@ -40,7 +41,7 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-        Application.launch(TableView_FocusCommit_8324939.class, args);
+        Application.launch(TreeTableView_TextTruncatedTooltip_Example.class, args);
         //FXPanelThreadBug.main(args);
     }
 }
