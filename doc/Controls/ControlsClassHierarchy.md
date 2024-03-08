@@ -4,68 +4,68 @@ Control classes and their corresponding behaviors, based on jfx22.
 
 (a) denotes an abstract class.
 
-|Control                                     |Behavior                  |Stateful?    |
-|:-------------------------------------------|:-------------------------|:------------|
-|`Accordion`                                 |AccordionBehavior         |yes
-|`ButtonBar`                                 |-                         |-
-|`ChoiceBox`                                 |ChoiceBoxBehavior         |no
-|`ComboBoxBase (a)`                          |                          |
-|`├─ ColorPicker `                           |ColorPickerBehavior       |yes
-|`├─ ComboBox`                               |ComboBoxListViewBehavior  |yes
-|`└─ DatePicker`                             |DatePickerBehavior        |yes
-|`HTMLEditor`                                |HTMLEditorBehavior        |no
-|`Labeled (a)`                               |-                         |-
-|`├─ ButtonBase (a)`                         |-                         |-
-|`│   ├─ Button`                             |ButtonBehavior            |yes
-|`│   ├─ CheckBox`                           |ButtonBehavior            |yes
-|`│   ├─ Hyperlink`                          |ButtonBehavior            |yes
-|`│   ├─ MenuButton`                         |MenuButtonBehavior        |yes
-|`│   │   └─ SplitMenuButton`                |SplitMenuButtonBehavior   |yes
-|`│   └─ ToggleButton`                       |ToggleButtonBehavior      |yes
-|`│       └─ RadioButton`                    |ToggleButtonBehavior      |yes
-|`├─ Cell`                                   |-                         |-
-|`│   ├─ DateCell`                           |DateCellBehavior          |no
-|`│   └─ IndexedCell`                        |-                         |-
-|`│       ├─ ListCell`                       |ListCellBehavior          |yes
-|`│       │   ├─ CheckBoxListCell`           |ListCellBehavior          |yes
-|`│       │   ├─ ChoiceBoxListCell`          |ListCellBehavior          |yes
-|`│       │   ├─ ComboBoxListCell`           |ListCellBehavior          |yes
-|`│       │   └─ TextFieldListCell`          |ListCellBehavior          |yes
-|`│       ├─ TableCell`                      |TableCellBehavior         |yes
-|`│       │   ├─ CheckBoxTableCell`          |TableCellBehavior         |yes
-|`│       │   ├─ ChoiceBoxTableCell`         |TableCellBehavior         |yes
-|`│       │   ├─ ComboBoxTableCell`          |TableCellBehavior         |yes
-|`│       │   ├─ ProgressBarTableCell`       |TableCellBehavior         |yes
-|`│       │   └─ TextFieldTableCell`         |TableCellBehavior         |yes
-|`│       ├─ TableRow`                       |TableRowBehavior          |yes
-|`│       ├─ TreeCell`                       |TreeCellBehavior          |yes
-|`│       ├─ TreeTableCell`                  |TreeTableCellBehavior     |yes
-|`│       │   ├─ CheckBoxTreeTableCell`      |TreeTableCellBehavior     |yes
-|`│       │   ├─ ChoiceBoxTreeTableCell`     |TreeTableCellBehavior     |yes
-|`│       │   ├─ ComboBoxTreeTableCell`      |TreeTableCellBehavior     |yes
-|`│       │   ├─ ProgressBarTreeTableCell`   |TreeTableCellBehavior     |yes
-|`│       │   └─ TextFieldTreeTableCell`     |TreeTableCellBehavior     |yes
-|`│       └─ TreeTableRow`                   |TreeTableRowBehavior      |yes
-|`├─ Label`                                  |-                         |-
-|`└─ TitlePane`                              |TitledPaneBehavior        |no
-|`ListView`                                  |ListViewBehavior          |yes
-|`MenuBar`                                   |-                         |-
-|`Pagination`                                |PaginationBehavior        |no
-|`ProgressIndicator`                         |-                         |-
-|`└─ ProgressBar`                            |-                         |-
-|`ScrollBar`                                 |ScrollBarBehavior         |yes
-|`ScrollPane`                                |ScrollPaneBehavior        |no
-|`Separator`                                 |-                         |-
-|`Slider`                                    |SliderBehavior            |no
-|`Spinner`                                   |SpinnerBehavior           |yes
-|`SplitPane`                                 |-                         |-
-|`TableView`                                 |TableViewBehavior         |yes
-|`TabPane`                                   |TabPaneBehavior           |no
-|`TextInputControl (a)`                      |-                         |-
-|`├─ TextArea`                               |TextAreaBehavior          |yes
-|`└─ TextField`                              |TextFieldBehavior         |yes
-|`    └─ PasswordField`                      |TextFieldBehavior         |yes
-|`ToolBar`                                   |ToolBarBehavior           |no
-|`TreeTableView`                             |TreeTableViewBehavior     |yes
-|`TreeView`                                  |TreeViewBehavior          |yes
+|Control                                     |Default Skin            |Behavior                  |Stateful Behavior|
+|:-------------------------------------------|:-----------------------|:-------------------------|:----------------|
+|`Accordion`                                 |AccordionSkin           |AccordionBehavior         |yes
+|`ButtonBar`                                 |ButtonBarSkin           |-                         |-
+|`ChoiceBox`                                 |ChoiceBoxSkin           |ChoiceBoxBehavior         |no
+|`ComboBoxBase (a)`                          |-                       |                          |
+|`├─ ColorPicker `                           |ColorPickerSkin         |ColorPickerBehavior       |yes
+|`├─ ComboBox`                               |ComboBoxListViewSkin    |ComboBoxListViewBehavior  |yes
+|`└─ DatePicker`                             |DatePickerSkin          |DatePickerBehavior        |yes
+|`HTMLEditor`                                |HTMLEditorSkin          |HTMLEditorBehavior        |no
+|`Labeled (a)`                               |-                       |-                         |-
+|`├─ ButtonBase (a)`                         |-                       |-                         |-
+|`│   ├─ Button`                             |ButtonSkin              |ButtonBehavior            |yes
+|`│   ├─ CheckBox`                           |CheckBoxSkin            |ButtonBehavior            |yes
+|`│   ├─ Hyperlink`                          |HyperlinkSkin           |ButtonBehavior            |yes
+|`│   ├─ MenuButton`                         |MenuButtonSkin          |MenuButtonBehavior        |yes
+|`│   │   └─ SplitMenuButton`                |SplitMenuButtonSkin     |SplitMenuButtonBehavior   |yes
+|`│   └─ ToggleButton`                       |ToggleButtonSkin        |ToggleButtonBehavior      |yes
+|`│       └─ RadioButton`                    |RadioButtonSkin         |ToggleButtonBehavior      |yes
+|`├─ Cell`                                   |-                       |-                         |-
+|`│   ├─ DateCell`                           |DateCellSkin            |DateCellBehavior          |no
+|`│   └─ IndexedCell`                        |-                       |-                         |-
+|`│       ├─ ListCell`                       |ListCellSkin            |ListCellBehavior          |yes
+|`│       │   ├─ CheckBoxListCell`           |ListCellSkin            |ListCellBehavior          |yes
+|`│       │   ├─ ChoiceBoxListCell`          |ListCellSkin            |ListCellBehavior          |yes
+|`│       │   ├─ ComboBoxListCell`           |ListCellSkin            |ListCellBehavior          |yes
+|`│       │   └─ TextFieldListCell`          |ListCellSkin            |ListCellBehavior          |yes
+|`│       ├─ TableCell`                      |TableCellSkin           |TableCellBehavior         |yes
+|`│       │   ├─ CheckBoxTableCell`          |TableCellSkin           |TableCellBehavior         |yes
+|`│       │   ├─ ChoiceBoxTableCell`         |TableCellSkin           |TableCellBehavior         |yes
+|`│       │   ├─ ComboBoxTableCell`          |TableCellSkin           |TableCellBehavior         |yes
+|`│       │   ├─ ProgressBarTableCell`       |TableCellSkin           |TableCellBehavior         |yes
+|`│       │   └─ TextFieldTableCell`         |TableCellSkin           |TableCellBehavior         |yes
+|`│       ├─ TableRow`                       |TableRowSkin            |TableRowBehavior          |yes
+|`│       ├─ TreeCell`                       |TreeCellSkin            |TreeCellBehavior          |yes
+|`│       ├─ TreeTableCell`                  |TreeTableCellSkin       |TreeTableCellBehavior     |yes
+|`│       │   ├─ CheckBoxTreeTableCell`      |TreeTableCellSkin       |TreeTableCellBehavior     |yes
+|`│       │   ├─ ChoiceBoxTreeTableCell`     |TreeTableCellSkin       |TreeTableCellBehavior     |yes
+|`│       │   ├─ ComboBoxTreeTableCell`      |TreeTableCellSkin       |TreeTableCellBehavior     |yes
+|`│       │   ├─ ProgressBarTreeTableCell`   |TreeTableCellSkin       |TreeTableCellBehavior     |yes
+|`│       │   └─ TextFieldTreeTableCell`     |TreeTableCellSkin       |TreeTableCellBehavior     |yes
+|`│       └─ TreeTableRow`                   |TreeTableRowSkin        |TreeTableRowBehavior      |yes
+|`├─ Label`                                  |LabelSkin               |-                         |-
+|`└─ TitlePane`                              |TitledPaneSkin          |TitledPaneBehavior        |no
+|`ListView`                                  |ListViewSkin            |ListViewBehavior          |yes
+|`MenuBar`                                   |MenuBarSkin             |-                         |-
+|`Pagination`                                |PaginationSkin          |PaginationBehavior        |no
+|`ProgressIndicator`                         |ProgressIndicatorSkin   |-                         |-
+|`└─ ProgressBar`                            |ProgressBarSkin         |-                         |-
+|`ScrollBar`                                 |ScrollBarSkin           |ScrollBarBehavior         |yes
+|`ScrollPane`                                |ScrollPaneSkin          |ScrollPaneBehavior        |no
+|`Separator`                                 |SeparatorSkin           |-                         |-
+|`Slider`                                    |SliderSkin              |SliderBehavior            |no
+|`Spinner`                                   |SpinnerSkin             |SpinnerBehavior           |yes
+|`SplitPane`                                 |SplitPaneSkin           |-                         |-
+|`TableView`                                 |TableViewSkin           |TableViewBehavior         |yes
+|`TabPane`                                   |TabPaneSkin             |TabPaneBehavior           |no
+|`TextInputControl (a)`                      |-                       |-                         |-
+|`├─ TextArea`                               |TextAreaSkin            |TextAreaBehavior          |yes
+|`└─ TextField`                              |TextFieldSkin           |TextFieldBehavior         |yes
+|`    └─ PasswordField`                      |TextFieldSkin           |TextFieldBehavior         |yes
+|`ToolBar`                                   |ToolBarSkin             |ToolBarBehavior           |no
+|`TreeTableView`                             |TreeTableViewSkin       |TreeTableViewBehavior     |yes
+|`TreeView`                                  |TreeViewSkin            |TreeViewBehavior          |yes
 
