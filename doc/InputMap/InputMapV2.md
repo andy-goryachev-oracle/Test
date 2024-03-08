@@ -9,7 +9,7 @@ Andy Goryachev
 
 Add the **InputMap** property in the Control class which enables customization of controls with the application key mappings and event handlers, and to guarantee specific order of event handlers invocation and priority of application mappings over those created by the skin.
 
-Add **SkinInputMap** and **BehaviorBase** classes to simplify creation of skins for existing and new controls.
+Add **SkinInputMap** and optional **BehaviorBase** classes to simplify creation of skins for existing and new controls.
 
 
 
