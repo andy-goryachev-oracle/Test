@@ -41,7 +41,7 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-        Application.launch(TreeTableView_TextTruncatedTooltip_Example.class, args);
+        Application.launch(ToolBar_OverflowButton_8328577.class, args);
         //FXPanelThreadBug.main(args);
     }
 }
