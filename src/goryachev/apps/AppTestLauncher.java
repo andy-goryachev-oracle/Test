@@ -26,8 +26,6 @@ package goryachev.apps;
 
 import javafx.application.Application;
 import goryachev.bugs.*;
-import goryachev.research.*;
-import goryachev.tests.*;
 
 /**
  * Use this class to launch various test snippets, so one does not have to 

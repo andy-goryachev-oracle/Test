@@ -30,14 +30,9 @@ import java.time.MonthDay;
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Locale;
-
 import javafx.application.Application;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.NodeOrientation;
 import javafx.scene.Scene;

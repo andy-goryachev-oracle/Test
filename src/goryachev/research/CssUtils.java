@@ -25,9 +25,7 @@
 
 package goryachev.research;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.Arrays;
 
 public class CssUtils {
     public static String[] of(Class<? extends Control> c) {

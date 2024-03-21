@@ -1,10 +1,8 @@
 package goryachev.bugs;
 
 import javafx.application.Application;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.PopupControl;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.skin.TooltipSkin;
 import javafx.scene.layout.BorderPane;

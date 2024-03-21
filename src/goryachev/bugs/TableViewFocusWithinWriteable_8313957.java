@@ -15,7 +15,6 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import goryachev.bugs.TableViewEditNotWritable_8187314.Dummy;
 
 // https://bugs.openjdk.org/browse/JDK-8313956
 public class TableViewFocusWithinWriteable_8313957 extends Application {
