@@ -38,7 +38,7 @@ public class DualFocus
 	{
 	}
 
-
+	@Override
 	public void start(Stage stage) throws Exception
 	{
 		textField = new TextField();

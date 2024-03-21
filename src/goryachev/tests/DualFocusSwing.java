@@ -43,6 +43,7 @@ public class DualFocusSwing {
     public static void main(String[] args) {
         JTextField tf = new JTextField();
         tf.addMouseListener(new MouseAdapter() {
+            @Override
             public void mousePressed(MouseEvent ev) {
                 JPopupMenu m = new JPopupMenu();
                 m.add(new JCheckBox("checkbox"));

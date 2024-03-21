@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 public class Spinner_SetValue_8328701 extends Application {
     int count = 0;
 
+    @Override
     public void start(Stage stage) {
         Spinner<Integer> spinner = new Spinner<>(0, 10, 5, 1);
         spinner.valueProperty().addListener(o -> {
