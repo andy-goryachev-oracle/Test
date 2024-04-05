@@ -20,7 +20,8 @@ import javafx.stage.Stage;
 
 /**
  * JDK-8319050
- * Text.caretShape() and .rangeShape() wrong in RTL orientation
+ * Text.caretShape() and .rangeShape() wrong in RTL orientation.
+ * 2024/04/05
  */
 public class Text_CaretRangeShape_8319050 extends Application {
 

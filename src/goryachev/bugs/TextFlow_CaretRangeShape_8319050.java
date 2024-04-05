@@ -22,7 +22,8 @@ import javafx.stage.Stage;
 
 /**
  * JDK-8319050
- * TextFlow.caretShape() and .rangeShape() wrong in RTL orientation
+ * TextFlow.caretShape() and .rangeShape() wrong in RTL orientation.
+ * 2024/04/05
  */
 public class TextFlow_CaretRangeShape_8319050 extends Application {
 
