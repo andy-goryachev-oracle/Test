@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.NodeOrientation;
 import javafx.geometry.Point2D;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseButton;
@@ -31,24 +32,30 @@ public class TextFlow_CaretRangeShape_8319050 extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        flow = new TextFlow(t("Arabic: ", Color.RED), t("العربية", Color.GREEN), new Text("\n"),
-            t("Hebrew: ", Color.BLUE), t("עברית", Color.BLACK));
+        flow = new TextFlow(
+            t("Arabic: ", Color.RED),
+            t("العربية", Color.GREEN),
+            new Text("\n"),
+            t("Hebrew: ", Color.BLUE),
+            t("עברית", Color.BLACK));
         flow.setStyle("-fx-font-size:400%");
-        flow.addEventHandler(MouseEvent.MOUSE_PRESSED, this::handleMousePress);
+        flow.addEventFilter(MouseEvent.MOUSE_MOVED, this::handleMousePress);
 
         caret = new Path();
         caret.setManaged(false);
         caret.setStroke(Color.MAGENTA);
         caret.setStrokeWidth(1);
+        caret.setMouseTransparent(true);
 
         range = new Path();
         range.setManaged(false);
         range.setStroke(null);
         range.setFill(Color.rgb(255, 0, 0, 0.2));
-
-        flow.getChildren().addAll(caret, range);
+        range.setMouseTransparent(true);
 
         BorderPane bp = new BorderPane(flow);
+        bp.getChildren().addAll(caret, range);
+
         Scene scene = new Scene(bp);
         scene.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
 
@@ -66,7 +73,7 @@ public class TextFlow_CaretRangeShape_8319050 extends Application {
     private void updateRange() {
         int len = getTextLength(flow);
         PathElement[] pe = flow.rangeShape(0, len);
-        System.out.println("range=" + dump(pe));
+        //System.out.println("range=" + dump(pe));
         range.getElements().setAll(pe);
     }
 
@@ -87,17 +94,14 @@ public class TextFlow_CaretRangeShape_8319050 extends Application {
     }
 
     private void handleMousePress(MouseEvent ev) {
-        if (ev.getButton() == MouseButton.PRIMARY) {
-            Point2D p = new Point2D(ev.getX(), ev.getY());
-            HitInfo h = flow.hitTest(p);
-            System.out.println("hit=" + h);
+        Point2D p = new Point2D(ev.getX(), ev.getY());
+        HitInfo h = flow.hitTest(p);
+        //System.out.println("hit=" + h);
 
-            PathElement[] pe = flow.caretShape(h.getCharIndex(), h.isLeading());
-            System.out.println("caret=" + dump(pe));
-            caret.getElements().setAll(pe);
-        } else {
-            updateRange();
-        }
+        PathElement[] pe = flow.caretShape(h.getCharIndex(), h.isLeading());
+        //System.out.println("caret=" + dump(pe));
+        caret.getElements().setAll(pe);
+        updateRange();
     }
 
     /** dumps the path element array to a compact human-readable string */
