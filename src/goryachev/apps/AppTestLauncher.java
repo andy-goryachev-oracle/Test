@@ -39,7 +39,7 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-        Application.launch(TextFlow_CaretRangeShape_8319050.class, args);
+        Application.launch(TableColumn_GraphicSize_8186188.class, args);
         //FXPanelThreadBug.main(args);
     }
 }
