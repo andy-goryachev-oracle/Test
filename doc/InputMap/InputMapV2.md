@@ -260,7 +260,9 @@ Most KeyBindings, corresponding to a KEY_PRESSED event, can be constructed with 
 - public static KeyBinding **ctrl**(KeyCode)
 - public static KeyBinding **ctrlShift**(KeyCode)
 - public static KeyBinding **of**(KeyCode)
+- public static KeyBinding **option**(KeyCode)
 - public static KeyBinding **shift**(KeyCode)
+- public static KeyBinding **shiftShortcut**(KeyCode)
 - public static KeyBinding **shortcut**(KeyCode)
 
 For more complex modifier combinations, or when the key binding corresponds to a KEY_TYPED or KEY_RELEASED event, a builder pattern should be used.  
