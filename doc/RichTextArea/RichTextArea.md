@@ -234,6 +234,8 @@ The table below lists the available function tags:
 |CUT                       |Cuts selected text and places it to the clipboard
 |DELETE                    |Deletes the symbol at the caret
 |DELETE_PARAGRAPH          |Deletes paragraph at the caret, or selected paragraphs
+|FOCUS_NEXT                |Transfer focus to the previous focusable node
+|FOCUS_PREVIOUS            |Transfer focus to the previous focusable node
 |INSERT_LINE_BREAK         |Inserts a line break at the caret
 |INSERT_TAB                |Inserts a tab symbol at the caret
 |MOVE_DOWN                 |Moves the caret one visual line down
