@@ -234,6 +234,7 @@ The table below lists the available function tags:
 |CUT                       |Cuts selected text and places it to the clipboard
 |DELETE                    |Deletes the symbol at the caret
 |DELETE_PARAGRAPH          |Deletes paragraph at the caret, or selected paragraphs
+|DESELECT                  |Clears any existing selection by moving anchor to the caret position
 |FOCUS_NEXT                |Transfer focus to the previous focusable node
 |FOCUS_PREVIOUS            |Transfer focus to the previous focusable node
 |INSERT_LINE_BREAK         |Inserts a line break at the caret
@@ -262,6 +263,8 @@ The table below lists the available function tags:
 |SELECT_PAGE_DOWN          |Extends selection one visible page down
 |SELECT_PAGE_UP            |Extends selection one visible page up
 |SELECT_PARAGRAPH          |Selects the current paragraph
+|SELECT_PARAGRAPH_END      |Extends selection to the paragraph end
+|SELECT_PARAGRAPH_START    |Extends selection to the paragraph start
 |SELECT_RIGHT              |Extends selection one symbol to the right
 |SELECT_TO_DOCUMENT_END    |Extends selection to the end of the document
 |SELECT_TO_DOCUMENT_START  |Extends selection to the start of the document
