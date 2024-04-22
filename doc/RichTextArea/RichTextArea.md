@@ -241,6 +241,8 @@ The table below lists the available function tags:
 |INSERT_TAB                |Inserts a tab symbol at the caret
 |MOVE_DOWN                 |Moves the caret one visual line down
 |MOVE_LEFT                 |Moves the caret one symbol to the left
+|MOVE_PARAGRAPH_DOWN       |Moves the caret to the end of the current paragraph, or, if already there, to the end of the next paragraph
+|MOVE_PARAGRAPH_UP         |Moves the caret to the start of the current paragraph, or, if already there, to the start of the previous paragraph
 |MOVE_RIGHT                |Moves the caret one symbol to the right
 |MOVE_TO_DOCUMENT_END      |Moves the caret to after the last character of the text
 |MOVE_TO_DOCUMENT_START    |Moves the caret to before the first character of the text
@@ -263,8 +265,10 @@ The table below lists the available function tags:
 |SELECT_PAGE_DOWN          |Extends selection one visible page down
 |SELECT_PAGE_UP            |Extends selection one visible page up
 |SELECT_PARAGRAPH          |Selects the current paragraph
+|SELECT_PARAGRAPH_DOWN     |Extends selection to the end of the current paragraph, or, if already there, to the end of the next paragraph
 |SELECT_PARAGRAPH_END      |Extends selection to the paragraph end
 |SELECT_PARAGRAPH_START    |Extends selection to the paragraph start
+|SELECT_PARAGRAPH_UP       |Extends selection to the start of the current paragraph, or, if already there, to the start of the previous paragraph
 |SELECT_RIGHT              |Extends selection one symbol to the right
 |SELECT_TO_DOCUMENT_END    |Extends selection to the end of the document
 |SELECT_TO_DOCUMENT_START  |Extends selection to the start of the document
