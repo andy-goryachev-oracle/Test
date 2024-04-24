@@ -234,6 +234,9 @@ The table below lists the available function tags:
 |CUT                       |Cuts selected text and places it to the clipboard
 |DELETE                    |Deletes the symbol at the caret
 |DELETE_PARAGRAPH          |Deletes paragraph at the caret, or selected paragraphs
+|DELETE_WORD_NEXT_BEG      |Deletes empty paragraph or text to the beginning of the next word
+|DELETE_WORD_NEXT_END      |Deletes empty paragraph or text to the end of the next word
+|DELETE_WORD_PREVIOUS      |Deletes (multiple) empty paragraphs or text to the beginning of the previous word
 |DESELECT                  |Clears any existing selection by moving anchor to the caret position
 |FOCUS_NEXT                |Transfer focus to the previous focusable node
 |FOCUS_PREVIOUS            |Transfer focus to the previous focusable node
@@ -250,7 +253,7 @@ The table below lists the available function tags:
 |MOVE_TO_PARAGRAPH_START   |Moves the caret to the beginning of the paragraph at caret
 |MOVE_UP                   |Moves the caret one visual text line up
 |MOVE_WORD_LEFT            |Moves the caret one word left (previous word if LTR, next word if RTL)
-|MOVE_WORD_NEXT            |Moves the caret to the beginning of next word
+|MOVE_WORD_NEXT            |Moves the caret to the beginning of the next word, or next paragraph if at the start of an empty paragraph
 |MOVE_WORD_NEXT_END        |Moves the caret to the end of the next word
 |MOVE_WORD_PREVIOUS        |Moves the caret to the beginning of previous word
 |MOVE_WORD_RIGHT           |Moves the caret one word right (next word if LTR, previous word if RTL)
