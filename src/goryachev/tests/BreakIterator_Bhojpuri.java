@@ -30,14 +30,22 @@ import java.text.CharacterIterator;
 
 public class BreakIterator_Bhojpuri {
     public static void main(String[] args) {
+        dump(" english english eng: end, eng: \n\n eng");
+    }
+    
+    private static void t() {
         for(char c: "𑂦𑂷𑂔𑂣𑂳𑂩".toCharArray()) {
             boolean letter = Character.isLetterOrDigit(c);
             System.err.println(String.format("char=%04x isLetterOrDigit=%s", (int)c, letter));
         }
     }
     
-    void test() {
+    static void test() {
         String text = "Bhojpuri: 𑂦𑂷𑂔𑂣𑂳𑂩𑂲 test";
+        dump(text);
+    }
+    
+    static void dump(String text) {
         BreakIterator b = BreakIterator.getWordInstance();
         b.setText(text);
         int start = 0;
