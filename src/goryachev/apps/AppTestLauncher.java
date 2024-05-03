@@ -26,6 +26,7 @@ package goryachev.apps;
 
 import javafx.application.Application;
 import goryachev.bugs.*;
+import goryachev.tests.*;
 
 /**
  * Use this class to launch various test snippets, so one does not have to 
@@ -39,7 +40,7 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-        Application.launch(TableColumn_GraphicSize_8186188.class, args);
+        Application.launch(TruncatedTest.class, args);
         //FXPanelThreadBug.main(args);
     }
 }
