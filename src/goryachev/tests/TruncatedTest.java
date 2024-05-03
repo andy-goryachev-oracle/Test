@@ -25,7 +25,7 @@ public class TruncatedTest extends Application {
         root.getChildren().add(button);
 
         var label = new Label();
-        label.textProperty().bind(button.textTruncatedProperty().asString());
+        //label.textProperty().bind(button.textTruncatedProperty().asString());
         root.getChildren().add(label);
 
         stage.setScene(scene);
