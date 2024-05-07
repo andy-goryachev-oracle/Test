@@ -5,19 +5,19 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.control.TreeTableView;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
 import javafx.stage.Stage;
-import javafx.util.converter.DefaultStringConverter;
 
 /**
  * Example illustrates using the textTruncated property to show the full text of the cell with a tooltip when truncated.
  * https://bugs.openjdk.org/browse/JDK-8092102
  * https://bugs.openjdk.org/browse/JDK-8205211
  */
-public class TreeTableView_TextTruncatedTooltip_Example extends Application {
+public class TreeTableView_TextTruncatedTooltip_8205211 extends Application {
 
     private final TreeTableView<Person> tree = new TreeTableView<>();
 
@@ -35,7 +35,7 @@ public class TreeTableView_TextTruncatedTooltip_Example extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Table View Sample");
+        stage.setTitle("TreeTableView Tooltip JDK-8205211");
         stage.setWidth(450);
         stage.setHeight(550);
 
@@ -46,15 +46,11 @@ public class TreeTableView_TextTruncatedTooltip_Example extends Application {
             Person it = cf.getValue().getValue();
             return it == null ? null : it.email;
         });
-        emailCol.setCellFactory((tc) -> new TextFieldTreeTableCell<>(new DefaultStringConverter()) {
+        emailCol.setCellFactory((tc) -> new TextFieldTreeTableCell<>() {
             {
-//                textTruncatedProperty().addListener((s, p, on) -> {
-//                    if (on) {
-//                        setTooltip(new Tooltip(getText()));
-//                    } else {
-//                        setTooltip(null);
-//                    }
-//                });
+                textTruncatedProperty().addListener((s, p, on) -> {
+                    setTooltip(on ? new Tooltip(getText()) : null);
+                });
             }
         });
 

@@ -7,16 +7,16 @@ import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
-import javafx.util.converter.DefaultStringConverter;
 
 /**
  * Example illustrates using the textTruncated property to show the full text of the cell with a tooltip when truncated.
  * https://bugs.openjdk.org/browse/JDK-8092102
  * https://bugs.openjdk.org/browse/JDK-8205211
  */
-public class TableView_TextTruncatedTooltip_Example extends Application {
+public class TableView_TextTruncatedTooltip_8205211 extends Application {
 
     private final TableView<Person> table = new TableView<>();
 
@@ -34,7 +34,7 @@ public class TableView_TextTruncatedTooltip_Example extends Application {
 
     @Override
     public void start(Stage stage) {
-        stage.setTitle("Table View Sample");
+        stage.setTitle("Table View Tooltip JDK-8205211");
         stage.setWidth(450);
         stage.setHeight(550);
 
@@ -42,15 +42,11 @@ public class TableView_TextTruncatedTooltip_Example extends Application {
 
         TableColumn<Person, String> emailCol = new TableColumn<>("Email");
         emailCol.setCellValueFactory(param -> param.getValue().email);
-        emailCol.setCellFactory((tableColumn) -> new TextFieldTableCell<>(new DefaultStringConverter()) {
+        emailCol.setCellFactory((tableColumn) -> new TextFieldTableCell<>() {
             {
-//                textTruncatedProperty().addListener((s, p, on) -> {
-//                    if (on) {
-//                        setTooltip(new Tooltip(getText()));
-//                    } else {
-//                        setTooltip(null);
-//                    }
-//                });
+                textTruncatedProperty().addListener((s, p, on) -> {
+                    setTooltip(on ? new Tooltip(getText()) : null);
+                });
             }
         });
         emailCol.setOnEditCommit(t -> t.getTableView().getItems().get(t.getTablePosition().getRow()).email.set(t.getNewValue()));

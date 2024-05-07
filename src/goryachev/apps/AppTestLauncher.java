@@ -26,6 +26,7 @@ package goryachev.apps;
 
 import javafx.application.Application;
 import goryachev.bugs.*;
+import goryachev.research.*;
 import goryachev.tests.*;
 
 /**
@@ -40,7 +41,7 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-        Application.launch(TruncatedTest.class, args);
+        Application.launch(TreeTableView_TextTruncatedTooltip_8205211.class, args);
         //FXPanelThreadBug.main(args);
     }
 }
