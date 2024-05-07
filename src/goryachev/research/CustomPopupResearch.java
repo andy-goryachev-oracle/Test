@@ -2,6 +2,7 @@ package goryachev.research;
 
 import javafx.application.Application;
 import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -9,7 +10,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 
@@ -19,12 +22,12 @@ import javafx.stage.Stage;
 public class CustomPopupResearch extends Application {
     @Override
     public void start(Stage stage) {
-        Button button = new Button();
+        Button button = new Button("Hover to Show Custom Tooltip");
         BorderPane.setAlignment(button, Pos.CENTER_RIGHT);
         new CustomPopup().install(button);
         
         BorderPane root = new BorderPane();
-        root.setRight(button);
+        root.setLeft(button);
 
         stage.setTitle("Custom Popup Example");
         stage.setScene(new Scene(root, 450, 150));
@@ -48,6 +51,8 @@ public class CustomPopupResearch extends Application {
             pane = new BorderPane(field);
             pane.addEventHandler(MouseEvent.MOUSE_EXITED, this::handleMouseExited2);
             pane.setCenter(field);
+            pane.setPadding(new Insets(10));
+            pane.setBackground(Background.fill(Color.gray(0.3)));
             pane.setPrefSize(200, 150);
             pane.setStyle("-fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.5) , 10, 0.0 , 0 , 3 );");
 
