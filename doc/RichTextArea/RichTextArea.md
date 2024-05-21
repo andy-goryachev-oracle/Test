@@ -60,7 +60,7 @@ Creating a view-only informational control should also be easy:
         // add text segment using CSS style name (requires a style sheet)
         m.addSegment("RichTextArea ", null, "HEADER");
         // add text segment using direct style
-        m.addSegment("Demo", "-fx-font-size:200%;", null);
+        m.addSegment("Demo", "-fx-font-size:200%;");
         // newline
         m.nl();
 
@@ -399,7 +399,6 @@ RichTextArea allows for some degree of customization without subclassing.  The a
 - redefining existing key bindings
 - redefining the functions corresponding to function tags (including the public methods in the control)
 - setting left and right side paragraph decorators
-- providing custom scroll bars via **ConfigurationParameters**
 
 
 
@@ -459,21 +458,6 @@ This example illustrates how to set a side paragraph decorator (in this case, a 
         // sets a side decorator
         richTextArea.setLeftDecorator(new LineNumberDecorator());
 ```
-
-
-#### Providing Custom Scroll Bars
-
-In this example, a custom scroll bar will be used by the RichTextArea:
-
-```java
-        // sets a custom vertical scroll bar
-        ConfigurationParameters cp = ConfigurationParameters.
-            builder().
-            verticalScrollBar(ScrollBar::new).
-            build();
-        RichTextArea richTextArea = new RichTextArea(cp, null);
-```
-
 
 
 ### Extensibility

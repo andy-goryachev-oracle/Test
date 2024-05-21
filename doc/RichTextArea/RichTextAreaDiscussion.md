@@ -3,9 +3,6 @@
 This document captures discussion around [RichTextArea](RichTextArea.md) (RTA) features.
 
 
-## Should a null model be supported?
-
-AG: Yes, it's a valid scenario.  RTA treats the null model as an empty, view-only model.
 
 
 ## Should RichTextArea eventually be in javafx.scene.control or in javafx.scene.control.rich package?
@@ -40,20 +37,12 @@ TODO CaretInfo enhancement TBD
 Should it clamp selection to the document start/end?
 
 
-## Corner node
-
-How do we want to set the corner node which may appear when both scroll bars are visible?
-
-ag: add a supplier to ConfigurationParameters, similarly to the scroll bars themselves?
-I don't want to force the dev to extend the skin just for that.
-
 
 ## Naming controversies
 
 The list of names that generated the most comments:
 
 - StyleAttrs
-- ConfigurationParameters
 - addSquiggly
 
 
@@ -63,23 +52,11 @@ AG: I think providing a complete list in the JEP has some value, even though the
 in the javadoc.
 
 
-## How to provide configuration parameters?
-
-There are a number of construction-time parameters passed to the constructor via ConfigurationParameters class.
-There used to be more (see Params class), but at least one can be made public: SLIDING_WINDOW_EXTENT.
-
-Do we want to allow the application developers more flexibility by making these parameters public and a part of
-ConfigurationParameters?
-Do we want to allow for run time modification (i.e. convert these construction-time parameters to properties)?
 
 
-## BACKSPACE and DELETE
+# Resolved Questions
 
-At the moment, BACKSPACE and DELETE removes as many characters as instructed by a character BreakIterator.
-It is probably not what the user expects, especially in the presence of grapheme clusters: when the user attempts to
-input a cluster by typing individual characters (how?), the BACKSPACE key should delete the previous character, breaking
-the cluster.  On the other hand, the DELETE key should delete the whole cluster.
+## Should a null model be supported?
 
-JavaFX provides only partial support for grapheme clusters, see
-[JDK-8309565](https://bugs.openjdk.org/browse/JDK-8309565) [Text] Enhance support for user-perceived characters (grapheme clusters)
-necessitating further work on BACKSPACE functionality once the full support for grapheme clusters is integrated.
+AG: Yes, it's a valid scenario.  RTA treats the null model as an empty, view-only model.
+
