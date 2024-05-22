@@ -10,16 +10,6 @@ This document captures discussion around [RichTextArea](RichTextArea.md) (RTA) f
 AG: I prefer RTA to be in its own package.
 
 
-## Which properties should be Styleable?
-
-- displayCaret
-- editable
-- highlightCurrentParagraph
-- caretBlinkPeriod
-- useContentHeight
-- useContentWidth
-
-
 ## Bidi and caret behavior
 
 There is a greater discussion (see [PR 1220](https://github.com/openjdk/jfx/pull/1220#issuecomment-1770459622)) about improvements to caret shape in the presense of mixed LTR/RTL text.  JavaFX utilizes the "split caret", which is not what the modern software
