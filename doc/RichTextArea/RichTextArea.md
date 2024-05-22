@@ -129,24 +129,24 @@ While this document makes an attempt to give an overview of various parts, pleas
 
 The new **RichTextArea** control exposes the following properties:
 
-|Property                   |Description                                                                 |Styleable               |
-|:--------------------------|:---------------------------------------------------------------------------|:-----------------------|
-|anchorPosition             |provides the anchor position (read-only)
-|caretBlinkPeriod           |determines the caret blink period                                           |-fx-caret-blink-period
-|caretPosition              |provides the caret position (read-only)
-|contentPadding             |defines the amount of padding in the content area                           |-fx-content-padding
-|displayCaret               |indicates whether the caret is displayed                                    |-fx-display-caret
-|editable                   |indicates whether the editing is enabled
-|highlightCurrentParagraph  |indicates whether the current paragraph is highlighted                      |-fx-highlight-current-paragraph
-|leftDecorator              |specifies the left side paragraph decorator
-|model                      |document data model
-|redoable                   |describes if it's currently possible to redo the latest edit (read-only)
-|rightDecorator             |specifies the right side paragraph decorator
-|selection                  |tracks the selection (read-only)
-|undoable                   |describes if it's currently possible to undo the latest edit (read-only)
-|useContentHeight           |determines whether the preferred height is the same as the content height   |-fx-use-content-height
-|useContentWidth            |determines whether the preferred width is the same as the content width     |-fx-use-content-width
-|wrapText                   |indicates whether text should be wrapped                                    |-fx-wrap-text
+|Property                   |R/O |Description                                                                 |Styleable               |
+|:--------------------------|:---|:---------------------------------------------------------------------------|:-----------------------|
+|anchorPosition             |R/O |provides the anchor position
+|caretBlinkPeriod           |    |determines the caret blink period                                           |-fx-caret-blink-period
+|caretPosition              |R/O |provides the caret position
+|contentPadding             |    |defines the amount of padding in the content area                           |-fx-content-padding
+|displayCaret               |    |indicates whether the caret is displayed                                    |-fx-display-caret
+|editable                   |    |indicates whether the editing is enabled
+|highlightCurrentParagraph  |    |indicates whether the current paragraph is highlighted                      |-fx-highlight-current-paragraph
+|leftDecorator              |    |specifies the left side paragraph decorator
+|model                      |    |document data model
+|redoable                   |R/O |describes if it's currently possible to redo the latest edit
+|rightDecorator             |    |specifies the right side paragraph decorator
+|selection                  |R/O |tracks the selection
+|undoable                   |R/O |describes if it's currently possible to undo the latest edit
+|useContentHeight           |    |determines whether the preferred height is the same as the content height   |-fx-use-content-height
+|useContentWidth            |    |determines whether the preferred width is the same as the content width     |-fx-use-content-width
+|wrapText                   |    |indicates whether text should be wrapped                                    |-fx-wrap-text
 
 
 ### Model
