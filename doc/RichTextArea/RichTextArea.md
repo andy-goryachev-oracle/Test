@@ -257,7 +257,7 @@ The table below lists the available function tags:
 |MOVE_TO_PARAGRAPH_START   |Moves the caret to the beginning of the paragraph at caret
 |MOVE_UP                   |Moves the caret one visual text line up
 |MOVE_WORD_LEFT            |Moves the caret one word left (previous word if LTR, next word if RTL)
-|MOVE_WORD_NEXT            |Moves the caret to the beginning of the next word, or next paragraph if at the start of an empty paragraph
+|MOVE_WORD_NEXT_BEG        |Moves the caret to the beginning of the next word, or next paragraph if at the start of an empty paragraph
 |MOVE_WORD_NEXT_END        |Moves the caret to the end of the next word
 |MOVE_WORD_PREVIOUS        |Moves the caret to the beginning of previous word
 |MOVE_WORD_RIGHT           |Moves the caret one word right (next word if LTR, previous word if RTL)
@@ -442,14 +442,14 @@ For example, the application might offer an alternative way to navigate over wor
 
 ```java
         // redefine a function
-        richTextArea.getInputMap().registerFunction(RichTextArea.MOVE_WORD_NEXT, () -> {
+        richTextArea.getInputMap().registerFunction(RichTextArea.MOVE_WORD_NEXT_BEG, () -> {
             // apply alternative navigation logic
             TextPos p = getCustomNextWordPosition(richTextArea);
             richTextArea.select(p);
         });
 
         // revert back to the default behavior
-        richTextArea.getInputMap().restoreDefaultFunction(RichTextArea.MOVE_WORD_NEXT);
+        richTextArea.getInputMap().restoreDefaultFunction(RichTextArea.MOVE_WORD_NEXT_BEG);
 ```
 
 
