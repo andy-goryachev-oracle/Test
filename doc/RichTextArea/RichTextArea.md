@@ -238,7 +238,7 @@ The table below lists the available function tags:
 |DELETE                    |Deletes the symbol at the caret
 |DELETE_PARAGRAPH          |Deletes paragraph at the caret, or selected paragraphs
 |DELETE_PARAGRAPH_START    |Deletes text from the caret to paragraph start, ignoring selection
-|DELETE_WORD_NEXT_BEG      |Deletes empty paragraph or text to the beginning of the next word
+|DELETE_WORD_NEXT_START    |Deletes empty paragraph or text to the start of the next word
 |DELETE_WORD_NEXT_END      |Deletes empty paragraph or text to the end of the next word
 |DELETE_WORD_PREVIOUS      |Deletes (multiple) empty paragraphs or text to the beginning of the previous word
 |DESELECT                  |Clears any existing selection by moving anchor to the caret position
@@ -257,8 +257,8 @@ The table below lists the available function tags:
 |MOVE_TO_PARAGRAPH_START   |Moves the caret to the beginning of the paragraph at caret
 |MOVE_UP                   |Moves the caret one visual text line up
 |MOVE_WORD_LEFT            |Moves the caret one word left (previous word if LTR, next word if RTL)
-|MOVE_WORD_NEXT_BEG        |Moves the caret to the beginning of the next word, or next paragraph if at the start of an empty paragraph
 |MOVE_WORD_NEXT_END        |Moves the caret to the end of the next word
+|MOVE_WORD_NEXT_START      |Moves the caret to the start of the next word, or next paragraph if at the start of an empty paragraph
 |MOVE_WORD_PREVIOUS        |Moves the caret to the beginning of previous word
 |MOVE_WORD_RIGHT           |Moves the caret one word right (next word if LTR, previous word if RTL)
 |PAGE_DOWN                 |Moves the caret one visual page down
@@ -442,14 +442,14 @@ For example, the application might offer an alternative way to navigate over wor
 
 ```java
         // redefine a function
-        richTextArea.getInputMap().registerFunction(RichTextArea.MOVE_WORD_NEXT_BEG, () -> {
+        richTextArea.getInputMap().registerFunction(RichTextArea.MOVE_WORD_NEXT_START, () -> {
             // apply alternative navigation logic
             TextPos p = getCustomNextWordPosition(richTextArea);
             richTextArea.select(p);
         });
 
         // revert back to the default behavior
-        richTextArea.getInputMap().restoreDefaultFunction(RichTextArea.MOVE_WORD_NEXT_BEG);
+        richTextArea.getInputMap().restoreDefaultFunction(RichTextArea.MOVE_WORD_NEXT_START);
 ```
 
 
