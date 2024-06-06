@@ -22,7 +22,7 @@ import javafx.stage.Stage;
 /**
  * https://bugs.openjdk.org/browse/JDK-8330559
  */
-public class TextFlowExtraSpaceSample extends Application {
+public class TextFlow_ExtraSpace_8330559 extends Application {
 
     private TextFlow flow;
     private Path caret;
@@ -32,7 +32,7 @@ public class TextFlowExtraSpaceSample extends Application {
     public void start(Stage stage) throws Exception {
         flow = new TextFlow(
                 t("Arabic:", Color.RED),
-                t(" ", Color.YELLOW),
+                t("   ", Color.YELLOW),
                 t("العربية", Color.GREEN),
                 new Text("\n"),
                 t("Hebrew: ", Color.BLUE),
