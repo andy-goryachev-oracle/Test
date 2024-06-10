@@ -1,6 +1,6 @@
 # Public InputMap (v3) Discussion Points
 
-This document captures discussion around the [InputMap](InputMapV2.md) proposal (in no particular order).
+This document captures discussion around the [InputMap](InputMapV3.md) proposal (in no particular order).
 
 
 
