@@ -118,14 +118,13 @@ Most of the new classes concentrate in the new package **javafx.scene.control.in
 - BehaviorBase
 - EventCriteria
 - FunctionHandler
-- FunctionHandlerConditional
 - FunctionTag
 - InputMap
 - KeyBinding
 - SkinInputMap
 
 The API surface of the proposed change is fairly large, please refer to the
-[API Specification](https://cr.openjdk.org/~angorya/InputMapV2/javadoc/)
+[API Specification](https://cr.openjdk.org/~angorya/InputMapV3/javadoc/)
 [2] for more detail.
 
 
@@ -162,13 +161,10 @@ The InputMap class provides the following public methods:
 
 - public void **addHandler**(EventType, EventHandler)
 - public void **addHandlerLast**(EventType, EventHandler)
-- public FunctionHandler **getDefaultFunction**(FunctionTag)
-- public FunctionHandler **getFunction**(FunctionTag)
-- public FunctionHandler **getFunction**(KeyBinding)
+- public Set<KeyBinding> **getKeyBindings**()
 - public Set<KeyBinding> **getKeyBindingsFor**(FunctionTag);
-- public void **register**(KeyBinding, FunctionHandler)
-- public void **registerFunction**(FunctionTag, FunctionHandler)
-- public void **registerFunctionCond**(FunctionTag, FunctionHandlerConditional)
+- public void **register**(KeyBinding, Runnable)
+- public void **registerFunction**(FunctionTag, Runnable)
 - public void **registerKey**(KeyBinding, FunctionTag)
 - public void **removeHandler**(EventType, EventHandler)
 - public void **resetKeyBindings**()
@@ -177,29 +173,6 @@ The InputMap class provides the following public methods:
 - public void **setSkinInputMap**(SkinInputMap)
 - public void **unbind**(FunctionTag)
 - public void **unbind**(KeyBinding)
-
-
-
-### SkinInputMap
-
-This class provides a secondary repository for the event handlers and key mappings created by the skin.  The skin is expected to construct an instance of it attach to the control's main InputMap via InputMap.setSkinInputMap() in Skin.install().
-
-For skins whose behaviors are stateless, a singleton SkinInputMap can be used.
-
-SkinInputMap class provides the following public methods:
-
-- public void **addHandler**(EventCriteria, boolean consume, EventHandler)
-- public void **addHandler**(EventType, boolean consume, EventHandler)
-- public void **addHandlerLast**(EventCriteria, boolean consume, EventHandler)
-- public void **addHandlerLast**(EventType, boolean consume, EventHandler)
-- public void **duplicateMapping**(KeyBinding, KeyBinding)
-- public Set<KeyBinding> **getKeyBindingsFor**(FunctionTag);
-- public void **register**(FunctionTag, KeyBinding, FunctionHandler)
-- public void **register**(FunctionTag, KeyCode, FunctionHandler)
-- public void **registerFunction**(FunctionTag, FunctionHandler)
-- public void **registerFunction**(FunctionTag, FunctionHandlerConditional)
-- public void **registerKey**(KeyBinding, FunctionTag)
-- public void **registerKey**(KeyCode, FunctionTag)
 
 
 
@@ -229,12 +202,14 @@ The following example is taken from TabPane:
 ```
 
 
+
 ### Control
 
 Two new methods are added to the **Control** class:
 
 - public InputMap **getInputMap**()
-- protected void **execute**(FunctionTag)
+- public void **execute**(FunctionTag)
+- public void **executeDefault**(FunctionTag)
 
 The use of the InputMap allows the Control to provide public methods for some or all function tags.  These methods allow the application to customize some aspects of behavior without making changes to the public APIs or subclassing.
 
@@ -309,11 +284,57 @@ The following are the public instance methods of the KeyBinding class:
 
 
 
-### FunctionHandler and FunctionHandlerConditional
 
-These two functional interfaces provide distinction between two lambdas used by SkinInputMap and BehaviorBase: **FunctionHandler** always consumes the matching event, whereas **FunctionHandlerConditional** allows the lambda decide whether the event should be consumed or not.
+### SkinInputMap
+
+This class provides a secondary repository for the event handlers and key mappings created by the skin.  The skin is expected to construct an instance of it attach to the control's main InputMap via InputMap.setSkinInputMap() in Skin.install().
+
+Most of the skins create behaviors that contain state, see
+[Control Class Hierarchy](https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Controls/ControlsClassHierarchy.md)
+[1].  
+Most frequently used skin input map is therefore SkinInputMap.Stateful, which can be obtained by calling `SkinInputMap.create()`.
+
+For skins with stateless behaviors, a single instance of SkinInputMap.Stateless can be used, obtained via `SkinInputMap.createStateless()`.
+
+The base SkinInputMap class provides the following public methods:
+
+- public static SkinInputMap.Stateful **create**()
+- public static <C extends Control> SkinInputMap.Stateless<C> **createStateless**()
+
+- public void **addHandler**(EventCriteria, boolean consume, EventHandler)
+- public void **addHandler**(EventType, boolean consume, EventHandler)
+- public void **addHandlerLast**(EventCriteria, boolean consume, EventHandler)
+- public void **addHandlerLast**(EventType, boolean consume, EventHandler)
+- public void **duplicateMapping**(KeyBinding, KeyBinding)
+- public Set<KeyBinding> **getKeyBindings**()
+- public Set<KeyBinding> **getKeyBindingsFor**(FunctionTag)
+- public void **registerKey**(KeyBinding, FunctionTag)
+- public void **registerKey**(KeyCode, FunctionTag)
+
+A Stateful variant adds the following methods:
+
+- public void **register**(FunctionTag, KeyBinding, Runnable)
+- public void **register**(FunctionTag, KeyCode, Runnable)
+- public void **registerFunction**(FunctionTag, FunctionHandler)
+- public void **registerFunction**(FunctionTag, Runnable)
+
+A Stateless variant adds the following methods, which use interfaces FHandler<C> and FHandlerConditional<C>
+intended to pass the reference to the source Control to the handling code:
+
+- public void **register**(FunctionTag, KeyBinding, FHandler<C>)
+- public void **register**(FunctionTag, KeyCode, FHandler<C>)
+- public void **registerFunction**(FunctionTag, FHandler<C>)
+- public void **registerFunction**(FunctionTag, FHandlerConditional<C>)
 
 
+
+### FunctionHandler Interface
+
+In addition to accepting a Runnable handler, the InputMap allows for the handler to control whether to consume
+the corresponding Event.
+
+A similar functionality is utilized by the SkinInputMap.Stateless with its SkinInputMap.FHandler and
+SkinInputMap.FHandlerConditional.
 
 
 ### BehaviorBase
@@ -328,30 +349,33 @@ This convenience class is intended to simplify creation of stateful behaviors, b
     }
 ```
 
-BehaviorBase provides the following public methods:
+BehaviorBase provides the following public method:
 
 - public SkinInputMap<C> **getSkinInputMap**()
-- public void **populateSkinInputMap**()
 
 It also provides a number of protected methods intended to be called by the behavior implementation in BehaviorBase.getSkinInputMap():
 
-- protected void **addHandler**(EventCriteria, boolean consume, EventHandler)
-- protected void **addHandler**(EventType, boolean consume, EventHandler)
-- protected void **addHandlerLast**(EventCriteria, boolean consume, EventHandler)
-- protected void **addHandlerLast**(EventType, boolean consume, EventHandler)
-- protected void **duplicateMapping**(KeyBinding, KeyBinding)
-- protected void **register**(FunctionTag, KeyBinding, FunctionHandler)
-- protected void **register**(FunctionTag, KeyCode, FunctionHandler)
-- protected void **registerFunction**(FunctionTag, FunctionHandler)
-- protected void **registerKey**(KeyBinding, FunctionTag)
-- protected void **registerKey**(KeyCode, FunctionTag)
-
-As well as some additional methods:
-
-- protected <C extends Control> C **getControl**()
-- protected boolean **isLinux**()
-- protected boolean **isMac**()
-- protected boolean **isWindows**()
+- protected final void **addHandler**(EventCriteria, boolean consume, EventHandler)
+- protected final void **addHandler**(EventType, boolean consume, EventHandler)
+- protected final void **addHandlerLast**(EventCriteria, boolean consume, EventHandler)
+- protected final void **addHandlerLast**(EventType, boolean consume, EventHandler)
+- protected final void **duplicateMapping**(KeyBinding, KeyBinding)
+- protected final C **getControl**()
+- protected final boolean **isLinux**()
+- protected final boolean **isMac**()
+- protected final boolean **isWindows**()
+- protected void **populateSkinInputMap**()
+- protected final void **register**(FunctionTag, KeyBinding, Runnable)
+- protected final void **register**(FunctionTag, KeyCode, Runnable)
+- protected final void **registerFunction**(FunctionTag, Runnable)
+- protected final void **registerKey**(KeyBinding, FunctionTag)
+- protected final void **registerKey**(KeyCode, FunctionTag)
+- protected final void **traverseDown**()
+- protected final void **traverseLeft**()
+- protected final void **traverseNext**()
+- protected final void **traversePrevious**()
+- protected final void **traverseRight**()
+- protected final void **traverseUp**()
 
 
 
@@ -360,7 +384,7 @@ As well as some additional methods:
 The following examples illustrate common use cases for using the InputMap.
 
 Please also refer to
-[Discussion](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2-Discussion.md)
+[Discussion](https://github.com/andy-goryachev-oracle/Test/blob/main/doc/InputMap/InputMapV3-Discussion.md)
 [3]
 
 
@@ -402,7 +426,7 @@ This example redefines a copy() method in the control without changing the key b
     private void customCopy() { /** ... */ }
 
     // redefine function keeping existing key mappings
-    getInputMap().registerFunction(Tag.COPY, (control) -> customCopy());
+    getInputMap().registerFunction(Tag.COPY, () -> customCopy());
 ```
 
 ##### Map an Existing Function to a New Key Binding
@@ -445,12 +469,15 @@ The stateless behavior is implemented in the TabPaneBehavior (here for illustrat
 
 ```java
     public class TabPaneBehavior {
-        private static final SkinInputMap<TabPane> inputMap = createInputMap();
+        private static final SkinInputMap.Stateless<TabPane> inputMap = createInputMap();
     
-        private static SkinInputMap<TabPane> createInputMap() {
-            SkinInputMap<TabPane> m = new SkinInputMap<>();
+        private static SkinInputMap.Stateless<TabPane> createInputMap() {
+            SkinInputMap.Stateless<TabPane> m = SkinInputMap.createStateless();
+            // register functions
             m.registerFunction(...);
-            ...
+            // register key bindings
+            m.registerKey(...);
+            // add mouse handler
             m.addHandler(...);
             return m;
         }
