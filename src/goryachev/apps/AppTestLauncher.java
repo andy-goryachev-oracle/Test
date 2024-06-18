@@ -41,7 +41,7 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-        Application.launch(Stage_DebianMaximized_8332222.class, args);
+        Application.launch(KeyCharacter_Combination_8273743.class, args);
         //FXPanelThreadBug.main(args);
     }
 }
