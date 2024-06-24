@@ -41,7 +41,7 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-        Application.launch(TabPane_Trackpad_8334874.class, args);
+        Application.launch(TabPane_MemoryLeak_8283449.class, args);
         //FXPanelThreadBug.main(args);
     }
 }
