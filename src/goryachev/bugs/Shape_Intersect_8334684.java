@@ -130,11 +130,16 @@ public class Shape_Intersect_8334684 extends Application {
             new LineTo(45, 125),
             new ClosePath()
         );
+        
+        pos(p1);
+        pos(p2);
 
         Shape ch = Shape.intersect(p1, p2);
         ch.setSmooth(true);
         ch.setStrokeWidth(0);
         ch.setFill(tran(Color.BLACK));
+
+        pos(ch);
         
         return new Node[] {
             p1,
@@ -166,6 +171,12 @@ public class Shape_Intersect_8334684 extends Application {
         ch.setFill(tran(Color.BLACK));
 
         return new Node[] { r, p, ch };
+    }
+
+    static void pos(Node n) {
+        n.setManaged(false);
+        n.setLayoutX(0);
+        n.setLayoutY(0);
     }
 
     static class Entry {
