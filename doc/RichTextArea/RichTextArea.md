@@ -7,7 +7,8 @@ Andy Goryachev
 
 ## Summary
 
-Provide a RichTextArea control for displaying and editing of rich text that can be styled in a variety of ways.
+Provide a RichTextArea control for displaying and editing of rich text that can be styled in a variety of ways,
+capable of working with large documents.
 
 ![RichTextArea screenshot](rich-text-area.png)
 
@@ -19,7 +20,7 @@ Out of the box, the **RichTextArea** control provides support for a number of co
 
 - a simple editor similar to WordPad or TextEdit level, suitable for note taking or message editing
 - view-only presentation of rich text information (help pages, documentation, etc.)
-- an editor which supports large (~2B rows), virtualized models
+- an editor which supports large (~2B rows), or virtualized models
 - an editor which combines rich text with interactive content, such as a code notebook
 - a code editor with syntax highlighting
 - enable custom key mappings
@@ -41,9 +42,7 @@ The following list represents features RichTextArea does not support:
 
 ## Motivation
 
-JavaFX lacks a dedicated rich text area control, resulting in a functional gap in relation to Swing with its StyledEditorKit/JEditorPane.  
-
-The new RichTextArea control intends to bridge this gap by providing a dedicated control for displaying and editing rich text.
+JavaFX lacks a dedicated rich text area control, resulting in a functional gap in relation to Swing with its StyledEditorKit/JEditorPane.  The new RichTextArea control intends to bridge this gap.
 
 The main design goal is to provide a control that is complete enough to be useful out-of-the box, as well as open to extension by the application developers.  The benefit of providing such a control as a part of the core platform is not just adding support for rich text, but also in taking care of many intricate details required for such support, making it easier for third party developers who decide to extend the basic functionality.
 
@@ -73,7 +72,7 @@ Creating a view-only informational control should also be easy:
 
 ## Description
 
-Two new controls are provided: **RichTextArea** and **CodeArea**.  RichTextArea works with styled text and embedded Nodes, whereas CodeArea is limited to plain text documents using single font, which allows for syntax highlighting.
+Two new controls are provided: **RichTextArea** and **CodeArea**.  RichTextArea works with styled text and embedded Nodes, whereas CodeArea is optimized for plain text documents with syntax highlighting.
 
 The data model (document) is separated from the control, allowing for greater flexibility.  **EditableRichTextModel** is a default model for RichTextArea, **CodeTextModel** is a default model for CodeArea.
 
@@ -113,23 +112,11 @@ While this document makes an attempt to give an overview of various parts, pleas
 
 
 
-
-### Design Features
-
-- paragraph-oriented model, up to ~2 billion rows
-- virtualized text cell flow
-- supports text styling with an application stylesheet or inline attributes
-- supports multiple views connected to the same model
-- single selection
-- input map allows for easy behavior extension
-
-
-
 ### RichTextArea Properties
 
 The new **RichTextArea** control exposes the following properties:
 
-|Property                   |R/O |Description                                                                 |Styleable               |
+|Property                   |R/O |Description                                                                 |Styleable Name              |
 |:--------------------------|:---|:---------------------------------------------------------------------------|:-----------------------|
 |anchorPosition             |R/O |provides the anchor position
 |caretBlinkPeriod           |    |determines the caret blink period                                           |-fx-caret-blink-period
@@ -226,7 +213,10 @@ The following methods extend selection from the existing anchor position to the 
 
 ### Behavior
 
-RichTextArea control utilizes the new capabilities offered by the new **InputMap** feature.  In this design, the control exposes a number of function tags identifying the public methods that convey the behavior.  There is one public method per each function tag, allowing for customization of the behavior when required.
+RichTextArea control utilizes the new capabilities offered by the new **InputMap** feature, which is being incubated
+simultaneously in a **jfx.incubator.input** module.
+
+In this design, the control exposes a number of function tags identifying the public methods that convey the behavior.  There is one public method per each function tag, allowing for customization of the behavior when required.
 
 The table below lists the available function tags:
 
@@ -717,12 +707,18 @@ Extend RichTextArea, a new style handler registry with the new handler added:
 
 ## Alternatives
 
-Do not provide a RichTextArea control as a core part of JavaFX.  
+Do not provide a RichTextArea control as a core part of JavaFX.
+
 A number of existing open source projects already provide some rich text capability:
 
 - https://github.com/FXMisc/RichTextFX
 - https://github.com/gluonhq/rich-text-area
 - https://github.com/andy-goryachev/FxEditor
+
+One special case must be listed along with true alternatives: adding static rich text to existing controls
+such as Buttons, Labels, and the like.  This can be achieved by setting an instance of **TextFlow** as graphic.
+Doing so will require additional effort to support other basic features such as accessibility.
+
 
 
 ## Testing
