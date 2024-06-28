@@ -72,6 +72,18 @@ Creating a view-only informational control should also be easy:
 
 ## Description
 
+Unlike TextArea, which renders the whole document at once,
+RTA is based on the concept of virtualized rendering of paragraphs - an idea similar to the virtual flow
+in the TableView and other virtualized controls.
+By rendering only what is visible, the RTA maintains high performance even with large documents.
+
+Using paragraph-based data models requires a different way of denoting text position within the document,
+an object that encapsulates the paragraph index and the character offset within the paragraph (see **TextPos**).
+
+
+
+### Controls
+
 Two new controls are provided: **RichTextArea** and **CodeArea**.  RichTextArea works with styled text and embedded Nodes, whereas CodeArea is optimized for plain text documents with syntax highlighting.
 
 The data model (document) is separated from the control, allowing for greater flexibility.  **EditableRichTextModel** is a default model for RichTextArea, **CodeTextModel** is a default model for CodeArea.
