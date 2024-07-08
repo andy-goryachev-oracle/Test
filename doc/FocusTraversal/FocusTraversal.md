@@ -79,8 +79,8 @@ mouse clicks or programmatic changes.
 
 Additionally, two new static (application-wide) read-only properties are provided (subject to discussion):
 
-- **currentlyFocusedNode**
-- **currentlyFocusedWindow**
+- **focusedNodeProperty**
+- **focusedWindowProperty**
 
 
 
