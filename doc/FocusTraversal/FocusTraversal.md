@@ -77,11 +77,6 @@ specified by **TraversalDirection** enum:
 **TraversalMethod** differentiates focus traversal resulting from key press versus those resulting from
 mouse clicks or programmatic changes.
 
-Additionally, two new static (application-wide) read-only properties are provided (subject to discussion):
-
-- **focusedNodeProperty**
-- **focusedWindowProperty**
-
 
 
 ### Traversal Event
