@@ -23,7 +23,6 @@
  * questions.
  */
 package goryachev.apps;
-
 import javafx.application.Application;
 import goryachev.bugs.*;
 import goryachev.research.*;
@@ -32,8 +31,6 @@ import goryachev.tests.*;
 /**
  * Use this class to launch various test snippets, so one does not have to 
  * create a new launch configuration each time.
- * 
- * (Remove main(String) from the test snippet)
  */
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
@@ -41,7 +38,7 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-        Application.launch(Tooltip_EdgeBackground_8334995.class, args);
+        Application.launch(TextInputControl_Binding_8336065.class, args);
         //FXPanelThreadBug.main(args);
     }
 }
