@@ -7,8 +7,7 @@ Andy Goryachev
 
 ## Summary
 
-Establishes a public API for focus traversal within a JavaFX application,
-similarly to the way it was done in Swing.
+Establishes a public API for focus traversal within a JavaFX application.
 
 
 
@@ -17,7 +16,7 @@ similarly to the way it was done in Swing.
 The goals of this proposal are:
 
 - facilitate the changing of the focused Node (focus traversal) using the public API
-- allow for setting a custom traversal policy on a **javafx.scene.Parent** via the new propery
+- allow for setting a custom traversal policy on a **javafx.scene.Parent**
 - allow for listening to the focus traversal events
 
 
@@ -26,46 +25,55 @@ The goals of this proposal are:
 
 It is not the goal of this proposal:
 
-- to introduce a new focus traversal logic or expand on the existing one
+- to introduce a new focus traversal logic or alter the existing one
 
 
 
 ## Motivation
 
 While focus traversal is currently implemented in JavaFX, there is no public API to access it,
-making it nearly impossible for an aplication to provide custom focus control.  This also represents
-a functional gap between JavaFX and Swing.
+making it nearly impossible for an aplication to provide custom focus control [0].
 
-The public API would be beneficial for application developers as well as the custom Skin and Control developers.
+The lack of public API makes it impossible for a custom skin or custom control which requires
+keyboard navigation to support focus traversal within the control or transfer focus outside of the custom
+control.
 
-A number of open JBS tickets call for creating the public API for controlling focus [0].
+The lack of public API also represents a functional gap between JavaFX and Swing.
+
 
 
 
 
 ## Description
 
-It is important to say that the new API merely expose the existing focus traversal logic,
-albeit slightly refactored to reduce the number of classes and generally make it simpler.
+The focus traversal API supports two major functions:
 
-The focus traversal API is comprised of the **FocusTraversal** class which publishes static methods
-for traversing focus in various directions, as represented by the **TraversalDirection** enum.
+- changing focus away from the currently focused Node to an adjacent focusable Node as a response to key presses
+(such as Tab, Shift+Tab, or arrow keys)
+- customizing traversal order within a single **java.scene.Parent**
 
-Changes to the currently focused Node are broadcast via the new **TraversalEvent** event.
+The focus traversal is provided by the **FocusTraversal** class which offers static methods
+for traversing focus in various directions, determined by the **TraversalDirection** enum.
 
-A new property called `traversalPolicy` is added to **java.scene.Parent** which allows for setting
-a custom **TraversalPolicy**.
+A new property, called `traversalPolicy`, is added to **java.scene.Parent**.  This property enables
+customization of the order of traversal within the said parent, by specifying a custom **TraversalPolicy**.
 
-Most of the new classes reside in **javafx.scene.traversal** package [1].
+Changes to the currently focused Node are being broadcast via the new **TraversalEvent** event.
+
+Public focus traversal API classes reside in **javafx.scene.traversal** package [1].
 
 
 
 ### FocusTraversal
 
-This class provides a number of static methods enabling focus traversal in the directions
-specified by **TraversalDirection** enum:
+This class provides one general purpose static method which enables focus traversal in the directions
+specified by the **TraversalDirection** enum:
 
 - public static boolean **traverse**(Node node, TraversalDirection dir, TraversalMethod method)
+
+This class also provides a number of convenience methods with the goal of simplifying code
+that needs focus traversal using the keyboard:
+
 - public static boolean **traverseDown**(Node node)
 - public static boolean **traverseLeft**(Node node)
 - public static boolean **traverseNext**(Node node)
@@ -77,6 +85,17 @@ specified by **TraversalDirection** enum:
 **TraversalMethod** differentiates focus traversal resulting from key press versus those resulting from
 mouse clicks or programmatic changes.
 
+A typical use of the `FocusTraversal` class is in built-in and custom skins, as a response to keyboard
+navigation key presses:
+
+```java
+	switch (((KeyEvent)event).getCode()) {
+	case UP :
+	    FocusTraversal.traverse((Node) obj, TraversalDirection.UP, TraversalMethod.KEY);
+        event.consume();
+        break;
+    }
+```
 
 
 ### Traversal Event
@@ -102,9 +121,8 @@ An event filter or event handler can be added in standard fashion to monitor the
 
 ### Focus Traversal Policy
 
-The abstract **TraversalPolicy** class, together with the new `traversalPolicy` property in **java.scene.Parent**,
-allow for creation of custom focus traversal policies.  A custom policy must implement the following
-abstract methods:
+The **TraversalPolicy** interface, together with the new `traversalPolicy` property in **java.scene.Parent**,
+allow for creation of custom focus traversal policies.  A custom policy must implement the following methods:
 
 - public abstract Node select(Parent root, Node owner, TraversalDirection dir)
 - public abstract Node selectFirst(Parent root)
@@ -146,3 +164,4 @@ None.
 - [0] [JDK-8090456](https://bugs.openjdk.org/browse/JDK-8090456) Focus Management
 - [1] API Specification (Javadoc): https://cr.openjdk.org/~angorya/FocusTraversal/javadoc/
 - [2] [JDK-8326869](https://bugs.openjdk.org/browse/JDK-8326869) ☂ Develop Behavior Test Suite
+- [3] [Keyboard Navigation in JavaFX Controls](https://wiki.openjdk.org/display/OpenJFX/Keyboard+Navigation)
