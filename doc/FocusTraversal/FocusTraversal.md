@@ -128,7 +128,9 @@ allow for creation of custom focus traversal policies.  A custom policy must imp
 - public abstract Node selectFirst(Parent root)
 - public abstract Node selectLast(Parent root)
 
-The default policy, used in many standard Controls, is accessible via `public static getDefault()` method.
+The default policy, which is used in many standard Controls, is accessible via the following method:
+
+- public static getDefault()
 
 
 
@@ -148,8 +150,8 @@ This proposal relies on the existing unit tests.  Additional behavior test suite
 ## Risks and Assumptions
 
 The proposed API basically makes the existing internal logic public (with some refactoring).
-It is possible that bugs were introduced during the refactoring process.  This risk is mitigated by the existing
-test suite, and can be further mitigated by creating a behavior test suite [2].
+It is possible that bugs were introduced during the refactoring process.  This risk might be relatively low due to
+the existing test suite, and can be further mitigated by creating a behavior test suite [2].
 
 
 
