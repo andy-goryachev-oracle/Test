@@ -89,9 +89,9 @@ A typical use of the `FocusTraversal` class is in built-in and custom skins, as 
 navigation key presses:
 
 ```java
-	switch (((KeyEvent)event).getCode()) {
-	case UP :
-	    FocusTraversal.traverse((Node) obj, TraversalDirection.UP, TraversalMethod.KEY);
+    switch (((KeyEvent)event).getCode()) {
+    case UP :
+        FocusTraversal.traverse((Node) obj, TraversalDirection.UP, TraversalMethod.KEY);
         event.consume();
         break;
     }
