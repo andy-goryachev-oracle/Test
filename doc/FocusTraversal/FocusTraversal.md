@@ -121,8 +121,8 @@ An event filter or event handler can be added in standard fashion to monitor the
 
 ### Focus Traversal Policy
 
-The **TraversalPolicy** interface, together with the new `traversalPolicy` property in **java.scene.Parent**,
-allow for creation of custom focus traversal policies.  A custom policy must implement the following methods:
+The **TraversalPolicy** abstract class, together with the new `traversalPolicy` property in **java.scene.Parent**,
+allows for creation of custom focus traversal policies.  A custom policy must implement the following methods:
 
 - public abstract Node select(Parent root, Node owner, TraversalDirection dir)
 - public abstract Node selectFirst(Parent root)
