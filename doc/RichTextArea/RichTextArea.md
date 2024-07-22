@@ -51,7 +51,7 @@ Creating a simple editable control should be as easy as this:
 ```java
         RichTextArea textArea = new RichTextArea();
         // insert two paragraphs "A" and "B"
-        StyleAttrs bold = StyleAttrs.builder().setBold(true).build();
+        StyleAttributeMap bold = StyleAttributeMap.builder().setBold(true).build();
         textArea.appendText("A\nB", bold);
 ```
 
@@ -86,7 +86,7 @@ an object that encapsulates the paragraph index and the character offset within 
 
 Two new controls are provided: **RichTextArea** and **CodeArea**.  RichTextArea works with styled text and embedded Nodes, whereas CodeArea is optimized for plain text documents with syntax highlighting.
 
-The data model (document) is separated from the control, allowing for greater flexibility.  **EditableRichTextModel** is a default model for RichTextArea, **CodeTextModel** is a default model for CodeArea.
+The data model (document) is separated from the control, allowing for greater flexibility.  **RichTextModel** is a default model for RichTextArea, **CodeTextModel** is a default model for CodeArea.
 
 The following diagram illustrates the logical relationships between important classes:
 
@@ -98,7 +98,7 @@ RichTextArea                   control
  │
  ├─ StyledTextModel            document data model
  │   ├─ RichParagraph          presents the paragraph contents to view
- │   │   ├─ StyleAttrs         immutable map of style attributes 
+ │   │   ├─ StyleAttributeMap  immutable map of style attributes 
  │   │   ├─ StyledSegment      immutable styled segment
  │   └─ DataFormatHandler      converter for import/export/clipboard operations
  │       ├─ StyledInput        input stream of StyledSegments
@@ -113,7 +113,7 @@ CodeArea extends RichTextArea and brings a few additional classes into the pictu
 
 ```
 CodeArea                       control, extends RichTextArea
- ├─ CodeTextModel              document model, extends PlainTextModel, extends StyledTextModel
+ ├─ CodeTextModel              document model, extends BasicTextModel, extends StyledTextModel
  │   └─ SyntaxDecorator        interface which provides styling for underlying plain text
  └─ CodeAreaSkin               default skin for the CodeArea control
 ```
@@ -163,15 +163,15 @@ A number of standard models are provided, each designed for a specific use case.
 |Class Name                             |Description                                    |
 |:--------------------------------------|:----------------------------------------------|
 |`StyledTextModel`                      |Base class (abstract)
-|` ├─ EditableRichTextModel`            |Default model for RichTextArea
-|` ├─ PlainTextModel`                   |Unstyled plain text model
+|` ├─ RichTextModel`                    |Default model for RichTextArea
+|` ├─ BasicTextModel`                   |Unstyled text model
 |` │   └─ CodeTextModel`                |Default model for CodeArea
 |` └─ StyledTextModelViewOnlyBase`      |Base class for a view-only model (abstract)
 |`     └─ SimpleViewOnlyStyledModel`    |In-memory view-only styled model
 
-The **EditableRichTextModel** stores the data in memory, in the form of text segments styled with attributes defined in **StyleAttrs** class.  This is a default model for RichTextArea.
+The **RichTextModel** stores the data in memory, in the form of text segments styled with attributes defined in **StyleAttributeMap** class.  This is a default model for RichTextArea.
 
-The **PlainTextModel** could be used as a base class for in-memory text models based on plain text.  This class provides foundation for the **CodeTextModel**, which styles the text using a pluggable **SyntaxDecorator**.
+The **BasicTextModel** could be used as a base class for in-memory text models based on plain text.  This class provides foundation for the **CodeTextModel**, which styles the text using a pluggable **SyntaxDecorator**.
 
 The abstract **StyledTextModelViewOnlyBase** is a base class for immutable models.  This class is used by **SimpleViewOnlyStyledModel** which simplifies building of in-memory view-only styled documents.
 
@@ -328,22 +328,22 @@ The function of a decorator, which implements the **SyntaxDecorator** interface,
 
 RichTextArea provides a number of convenience methods for editing the content programmatically:
 
-- TextPos **appendText**(String text, StyleAttrs)
+- TextPos **appendText**(String text, StyleAttributeMap)
 - TextPos **appendText**(StyledInput)
-- void **applyStyle**(TextPos start, TextPos end, StyleAttrs)
+- void **applyStyle**(TextPos start, TextPos end, StyleAttributeMap)
 - void **clear**()
-- TextPos **insertText**(TexPos start, String, StyleAttrs)
+- TextPos **insertText**(TexPos start, String, StyleAttributeMap)
 - TextPos **insertText**(TextPos start, StyledInput)
 - TextPos **replaceText**(TextPos start, TextPos end, String text, boolean allowUndo)
 - TextPos **replaceText**(TextPos start, TextPos end, StyledInput, boolean allowUndo)
-- void **setStyle**(TextPos start, TextPos end, StyleAttrs)
+- void **setStyle**(TextPos start, TextPos end, StyleAttributeMap)
 
 The following example illustrates how to populate an editable RichTextArea programmatically:
 
 ```java
         // create styles
-        StyleAttrs heading = StyleAttrs.builder().setBold(true).setFontSize(24).build();
-        StyleAttrs plain = StyleAttrs.builder().setFontFamily("Monospaced").build();
+        StyleAttributeMap heading = StyleAttributeMap.builder().setBold(true).setFontSize(24).build();
+        StyleAttributeMap plain = StyleAttributeMap.builder().setFontFamily("Monospaced").build();
 
         RichTextArea rta = new RichTextArea();
         // build the content
@@ -353,7 +353,7 @@ The following example illustrates how to populate an editable RichTextArea progr
 
 All the content modifications are eventually channeled through two methods in the StyledTextModel:
 
-- void **applyStyle**(TextPos start, TextPos end, StyleAttrs, boolean mergeAttributes)
+- void **applyStyle**(TextPos start, TextPos end, StyleAttributeMap, boolean mergeAttributes)
 - void **replace**(StyleResolver, TextPos start, TextPos end, StyledInput, boolean createUndo)
 
 Once the model applies the changes, a corresponding event is broadcast to all the listeners registered with the model - one such listener is the skin, which in turn updates the scene graph by requesting new RichParagraphs within the affected range of text.
@@ -393,7 +393,7 @@ The StyledTextModel provides capability to copy to and paste from the system cli
 |RichTextFormatHandler.DATA_FORMAT  |**RichTextFormatHandler**      |yes    |yes
 |DataFormat.RTF                     |**RtfFormatHandler**           |yes    |yes (limited)
 
-The default model, EditableRichTextModel, copies plain text, HTML, RTF, as well as an internal format.  It also supports pasting plain text, internally formatted data, and a limited support for RTF.
+The default model, RichTextModel, copies plain text, HTML, RTF, as well as an internal format.  It also supports pasting plain text, internally formatted data, and a limited support for RTF.
 
 
 ### Customization
@@ -489,7 +489,7 @@ A view-only model can be used to present rich text document not editable by the 
 
 - SimpleViewOnlyStyledModel **addSegment**(String text)
 - SimpleViewOnlyStyledModel **addSegment**(String text, String style, String ... styleNames)
-- SimpleViewOnlyStyledModel **addSegment**(String text, StyleAttrs)
+- SimpleViewOnlyStyledModel **addSegment**(String text, StyleAttributeMap)
 
 Other methods allow for adding image paragraphs, embedded Nodes, paragraph containing a single Region, as well as various types of highlights:
 
@@ -499,7 +499,7 @@ Other methods allow for adding image paragraphs, embedded Nodes, paragraph conta
 - SimpleViewOnlyStyledModel **highlight**(int start, int length, Color)
 - SimpleViewOnlyStyledModel **nl**()
 - SimpleViewOnlyStyledModel **nl**(int)
-- SimpleViewOnlyStyledModel **setParagraphAttributes**(StyleAttrs)
+- SimpleViewOnlyStyledModel **setParagraphAttributes**(StyleAttributeMap)
 - SimpleViewOnlyStyledModel **squiggly**(int start, int length, Color)
 
 An example of how to pre-populate the SimpleViewOnlyStyledModel is provided in the "Motivation" section.
@@ -522,16 +522,16 @@ The model returns an instance of **RichParagraph** from its **getParagraph**(int
 - Builder **addInlineNode**(Supplier<Node>)
 - Builder **addSegment**(String text)
 - Builder **addSegment**(String text, String inlineStyle, String[] styles)
-- Builder **addSegment**(String text, StyleAttrs)
+- Builder **addSegment**(String text, StyleAttributeMap)
 - Builder **addSquiggly**(int start, int length, Color)
-- Builder **setParagraphAttributes**(StyleAttrs)
+- Builder **setParagraphAttributes**(StyleAttributeMap)
 
 The following example illustrates how to use RichParagraph.Builder to build a paragraph that looks like this:
 
 ![paragraph example](paragraph-example.png)
 
 ```java
-            StyleAttrs a1 = StyleAttrs.builder().setBold(true).build();
+            StyleAttributeMap a1 = StyleAttributeMap.builder().setBold(true).build();
             RichParagraph.Builder b = RichParagraph.builder();
             b.addSegment("Example: ", a1);
             b.addSegment("spelling, highlights");
@@ -599,7 +599,7 @@ This example illustrates how to style a view-only document created with the Simp
         m.nl();
 ```
 
-The default model for RichTextArea, the EditableRichTextModel, uses a number of style attributes (found in StyleAttrs class).  These attributes are applicable either to the whole paragraph (BACKGROUND, BULLET, FIRST_LINE_INDENT, ...) or to the individual text segments (BOLD, FONT_FAMILY, etc.).
+The default model for RichTextArea, the RichTextModel, uses a number of style attributes (found in the StyleAttributeMap class).  These attributes are applicable either to the whole paragraph (BACKGROUND, BULLET, FIRST_LINE_INDENT, ...) or to the individual text segments (BOLD, FONT_FAMILY, etc.).
 
 
 

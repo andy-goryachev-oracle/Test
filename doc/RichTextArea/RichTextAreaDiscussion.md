@@ -32,11 +32,11 @@ Should it clamp selection to the document start/end?
 
 The list of names that generated the most comments:
 
-- StyleAttrs
 - addSquiggly
 
 
-## Should JEP list all the attributes declared in StyleAttrs?
+
+## Should the JEP list all the attributes declared in StyleAttributeMap?
 
 AG: I think providing a complete list in the JEP has some value, even though the full information is present 
 in the javadoc.
