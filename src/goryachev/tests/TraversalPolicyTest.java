@@ -40,18 +40,19 @@ public class TraversalPolicyTest extends Application {
         p.add(b20, 2, 0);
         p.add(b21, 2, 1);
         p.add(b22, 2, 2);
-        // TODO uncomment once focus traversal is integrated
-//        p.setTraversalPolicy(customTraversalPolicy(
-//            b00,
-//            b10,
-//            b20,
-//            b01,
-//            b11,
-//            b21,
-//            b02,
-//            b12,
-//            b22
-//        ));
+        /* TODO uncomment once focus traversal is integrated
+        p.setTraversalPolicy(customTraversalPolicy(
+            b00,
+            b10,
+            b20,
+            b01,
+            b11,
+            b21,
+            b02,
+            b12,
+            b22
+        ));
+        */
         
         BorderPane bp = new BorderPane(p);
         bp.setTop(new HBox(
@@ -78,28 +79,34 @@ public class TraversalPolicyTest extends Application {
         return new TraversalPolicy() {
             @Override
             public Node select(Parent root, Node owner, TraversalDirection dir) {
-                int d;
-                switch (dir) {
-                case NEXT:
-                case NEXT_IN_LINE:
-                    return findNextFocusableNode(root, owner, dir);
-                case PREVIOUS:
-                    return findPreviousFocusableNode(root, owner);
-                case LEFT:
-                case UP:
-                    d = -1;
-                    break;
-                case DOWN:
-                case RIGHT:
-                default:
-                    d = 1;
-                }
-
                 int ix = indexOf(owner);
                 if (ix < 0) {
                     return null;
                 }
-                ix += d;
+
+                switch (dir) {
+                case NEXT:
+                case NEXT_IN_LINE:
+                    if (ix >= (nodes.length - 1)) {
+                        return findNextFocusableNode(root, owner, dir);
+                    }
+                    ix++;
+                    break;
+                case PREVIOUS:
+                    if (ix <= 0) {
+                        return findPreviousFocusableNode(root, owner);
+                    }
+                    ix--;
+                    break;
+                case LEFT:
+                case UP:
+                    ix--;
+                    break;
+                case DOWN:
+                case RIGHT:
+                default:
+                    ix++;
+                }
 
                 if (ix < 0) {
                     return selectLast(root);
