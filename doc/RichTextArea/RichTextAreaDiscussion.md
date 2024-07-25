@@ -5,7 +5,7 @@ This document captures discussion around [RichTextArea](RichTextArea.md) (RTA) f
 
 
 
-## Should RichTextArea eventually be in javafx.scene.control or in javafx.scene.control.rich package?
+## Should RichTextArea eventually be in javafx.scene.control or in javafx.scene.control.richtext package?
 
 AG: I prefer RTA to be in its own package.
 
