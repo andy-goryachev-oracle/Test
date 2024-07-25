@@ -10,6 +10,7 @@ This document captures discussion around [RichTextArea](RichTextArea.md) (RTA) f
 AG: I prefer RTA to be in its own package.
 
 
+
 ## Bidi and caret behavior
 
 There is a greater discussion (see [PR 1220](https://github.com/openjdk/jfx/pull/1220#issuecomment-1770459622)) about improvements to caret shape in the presense of mixed LTR/RTL text.  JavaFX utilizes the "split caret", which is not what the modern software
@@ -21,10 +22,6 @@ TODO CaretInfo enhancement TBD
 
 [JDK-8296266](https://bugs.openjdk.org/browse/JDK-8296266): TextArea: Navigation breaks with RTL text (Bug - P3)
 
-
-## SelectionModel.setSelection(Marker, Marker)
-
-Should it clamp selection to the document start/end?
 
 
 

@@ -35,7 +35,7 @@ The following list represents features RichTextArea does not support:
 - models with arbitrarily long (e.g., 10K+ symbols) paragraphs
 - applications requiring arbitrary text/graphics positioning
 - desktop publishing application that require precise control of text appearance
-- non-contiguous selection
+- non-contiguous selection or multiple carets
 - tabular-formatted text
 
 
@@ -223,80 +223,10 @@ The following methods extend selection from the existing anchor position to the 
 
 
 
-### Behavior
-
-RichTextArea control utilizes the new capabilities offered by the new **InputMap** feature, which is being incubated
-simultaneously in a **jfx.incubator.input** module.
-
-In this design, the control exposes a number of function tags identifying the public methods that convey the behavior.  There is one public method per each function tag, allowing for customization of the behavior when required.
-
-The table below lists the available function tags:
-
-|Function Tag              |Description                                                                  |
-|:-------------------------|:----------------------------------------------------------------------------|
-|BACKSPACE                 |Deletes the symbol before the caret
-|COPY                      |Copies selected text to the clipboard
-|CUT                       |Cuts selected text and places it to the clipboard
-|DELETE                    |Deletes the symbol at the caret
-|DELETE_PARAGRAPH          |Deletes paragraph at the caret, or selected paragraphs
-|DELETE_PARAGRAPH_START    |Deletes text from the caret to paragraph start, ignoring selection
-|DELETE_WORD_NEXT_START    |Deletes empty paragraph or text to the start of the next word
-|DELETE_WORD_NEXT_END      |Deletes empty paragraph or text to the end of the next word
-|DELETE_WORD_PREVIOUS      |Deletes (multiple) empty paragraphs or text to the beginning of the previous word
-|DESELECT                  |Clears any existing selection by moving anchor to the caret position
-|FOCUS_NEXT                |Transfer focus to the next focusable node
-|FOCUS_PREVIOUS            |Transfer focus to the previous focusable node
-|INSERT_LINE_BREAK         |Inserts a line break at the caret
-|INSERT_TAB                |Inserts a tab symbol at the caret (editable), or transfer focus to the next focusable node
-|MOVE_DOWN                 |Moves the caret one visual line down
-|MOVE_LEFT                 |Moves the caret one symbol to the left
-|MOVE_PARAGRAPH_DOWN       |Moves the caret to the end of the current paragraph, or, if already there, to the end of the next paragraph
-|MOVE_PARAGRAPH_UP         |Moves the caret to the start of the current paragraph, or, if already there, to the start of the previous paragraph
-|MOVE_RIGHT                |Moves the caret one symbol to the right
-|MOVE_TO_DOCUMENT_END      |Moves the caret to after the last character of the text
-|MOVE_TO_DOCUMENT_START    |Moves the caret to before the first character of the text
-|MOVE_TO_PARAGRAPH_END     |Moves the caret to the end of the paragraph at caret
-|MOVE_TO_PARAGRAPH_START   |Moves the caret to the beginning of the paragraph at caret
-|MOVE_UP                   |Moves the caret one visual text line up
-|MOVE_WORD_LEFT            |Moves the caret one word left (previous word if LTR, next word if RTL)
-|MOVE_WORD_NEXT_END        |Moves the caret to the end of the next word
-|MOVE_WORD_NEXT_START      |Moves the caret to the start of the next word, or next paragraph if at the start of an empty paragraph
-|MOVE_WORD_PREVIOUS        |Moves the caret to the beginning of previous word
-|MOVE_WORD_RIGHT           |Moves the caret one word right (next word if LTR, previous word if RTL)
-|PAGE_DOWN                 |Moves the caret one visual page down
-|PAGE_UP                   |Moves the caret one visual page up
-|PASTE                     |Pastes the clipboard content
-|PASTE_PLAIN_TEXT          |Pastes the plain text clipboard content
-|REDO                      |If possible, redoes the last undone modification
-|SELECT_ALL                |Selects all text in the document
-|SELECT_DOWN               |Extends selection one visual text line down
-|SELECT_LEFT               |Extends selection one symbol to the left
-|SELECT_PAGE_DOWN          |Extends selection one visible page down
-|SELECT_PAGE_UP            |Extends selection one visible page up
-|SELECT_PARAGRAPH          |Selects the current paragraph
-|SELECT_PARAGRAPH_DOWN     |Extends selection to the end of the current paragraph, or, if already there, to the end of the next paragraph
-|SELECT_PARAGRAPH_END      |Extends selection to the paragraph end
-|SELECT_PARAGRAPH_START    |Extends selection to the paragraph start
-|SELECT_PARAGRAPH_UP       |Extends selection to the start of the current paragraph, or, if already there, to the start of the previous paragraph
-|SELECT_RIGHT              |Extends selection one symbol to the right
-|SELECT_TO_DOCUMENT_END    |Extends selection to the end of the document
-|SELECT_TO_DOCUMENT_START  |Extends selection to the start of the document
-|SELECT_UP                 |Extends selection one visual text line up
-|SELECT_WORD               |Selects a word at the caret position
-|SELECT_WORD_LEFT          |Extends selection to the previous word (LTR) or next word (RTL)
-|SELECT_WORD_NEXT          |Extends selection to the beginning of next word
-|SELECT_WORD_NEXT_END      |Extends selection to the end of next word
-|SELECT_WORD_PREVIOUS      |Extends selection to the previous word
-|SELECT_WORD_RIGHT         |Extends selection to the next word (LTR) or previous word (RTL)
-|UNDO                      |If possible, undoes the last modification
-
-These functions and the key mappings can be customized using the control's **InputMap**.
-
-
-
 ### CodeArea Control
 
 CodeArea extends RichTextArea control to provide a styled text based on a plain text data model coupled with a **SyntaxDecorator**.
+
 
 
 #### CodeArea Properties
@@ -633,6 +563,77 @@ At the control level, the following methods transfer the entire contents of the 
 
 
 
+#### Behavior
+
+RichTextArea control utilizes the new capabilities offered by the new **InputMap** feature, which is being incubated
+simultaneously in a **jfx.incubator.input** module.
+
+In this design, the control exposes a number of function tags identifying the public methods that convey the behavior.  There is one public method per each function tag, allowing for customization of the behavior when required.
+
+The table below lists the available function tags:
+
+|Function Tag              |Description                                                                  |
+|:-------------------------|:----------------------------------------------------------------------------|
+|BACKSPACE                 |Deletes the symbol before the caret
+|COPY                      |Copies selected text to the clipboard
+|CUT                       |Cuts selected text and places it to the clipboard
+|DELETE                    |Deletes the symbol at the caret
+|DELETE_PARAGRAPH          |Deletes paragraph at the caret, or selected paragraphs
+|DELETE_PARAGRAPH_START    |Deletes text from the caret to paragraph start, ignoring selection
+|DELETE_WORD_NEXT_START    |Deletes empty paragraph or text to the start of the next word
+|DELETE_WORD_NEXT_END      |Deletes empty paragraph or text to the end of the next word
+|DELETE_WORD_PREVIOUS      |Deletes (multiple) empty paragraphs or text to the beginning of the previous word
+|DESELECT                  |Clears any existing selection by moving anchor to the caret position
+|FOCUS_NEXT                |Transfer focus to the next focusable node
+|FOCUS_PREVIOUS            |Transfer focus to the previous focusable node
+|INSERT_LINE_BREAK         |Inserts a line break at the caret
+|INSERT_TAB                |Inserts a tab symbol at the caret (editable), or transfer focus to the next focusable node
+|MOVE_DOWN                 |Moves the caret one visual line down
+|MOVE_LEFT                 |Moves the caret one symbol to the left
+|MOVE_PARAGRAPH_DOWN       |Moves the caret to the end of the current paragraph, or, if already there, to the end of the next paragraph
+|MOVE_PARAGRAPH_UP         |Moves the caret to the start of the current paragraph, or, if already there, to the start of the previous paragraph
+|MOVE_RIGHT                |Moves the caret one symbol to the right
+|MOVE_TO_DOCUMENT_END      |Moves the caret to after the last character of the text
+|MOVE_TO_DOCUMENT_START    |Moves the caret to before the first character of the text
+|MOVE_TO_PARAGRAPH_END     |Moves the caret to the end of the paragraph at caret
+|MOVE_TO_PARAGRAPH_START   |Moves the caret to the beginning of the paragraph at caret
+|MOVE_UP                   |Moves the caret one visual text line up
+|MOVE_WORD_LEFT            |Moves the caret one word left (previous word if LTR, next word if RTL)
+|MOVE_WORD_NEXT_END        |Moves the caret to the end of the next word
+|MOVE_WORD_NEXT_START      |Moves the caret to the start of the next word, or next paragraph if at the start of an empty paragraph
+|MOVE_WORD_PREVIOUS        |Moves the caret to the beginning of previous word
+|MOVE_WORD_RIGHT           |Moves the caret one word right (next word if LTR, previous word if RTL)
+|PAGE_DOWN                 |Moves the caret one visual page down
+|PAGE_UP                   |Moves the caret one visual page up
+|PASTE                     |Pastes the clipboard content
+|PASTE_PLAIN_TEXT          |Pastes the plain text clipboard content
+|REDO                      |If possible, redoes the last undone modification
+|SELECT_ALL                |Selects all text in the document
+|SELECT_DOWN               |Extends selection one visual text line down
+|SELECT_LEFT               |Extends selection one symbol to the left
+|SELECT_PAGE_DOWN          |Extends selection one visible page down
+|SELECT_PAGE_UP            |Extends selection one visible page up
+|SELECT_PARAGRAPH          |Selects the current paragraph
+|SELECT_PARAGRAPH_DOWN     |Extends selection to the end of the current paragraph, or, if already there, to the end of the next paragraph
+|SELECT_PARAGRAPH_END      |Extends selection to the paragraph end
+|SELECT_PARAGRAPH_START    |Extends selection to the paragraph start
+|SELECT_PARAGRAPH_UP       |Extends selection to the start of the current paragraph, or, if already there, to the start of the previous paragraph
+|SELECT_RIGHT              |Extends selection one symbol to the right
+|SELECT_TO_DOCUMENT_END    |Extends selection to the end of the document
+|SELECT_TO_DOCUMENT_START  |Extends selection to the start of the document
+|SELECT_UP                 |Extends selection one visual text line up
+|SELECT_WORD               |Selects a word at the caret position
+|SELECT_WORD_LEFT          |Extends selection to the previous word (LTR) or next word (RTL)
+|SELECT_WORD_NEXT          |Extends selection to the beginning of next word
+|SELECT_WORD_NEXT_END      |Extends selection to the end of next word
+|SELECT_WORD_PREVIOUS      |Extends selection to the previous word
+|SELECT_WORD_RIGHT         |Extends selection to the next word (LTR) or previous word (RTL)
+|UNDO                      |If possible, undoes the last modification
+
+These functions and the key mappings can be customized using the control's **InputMap**.
+
+
+
 #### Adding New Function Tags
 
 When extending RichTextArea, it might be necessary to allow for adding user-configurable key bindings mapped to some new functionality.
@@ -735,7 +736,7 @@ Doing so will require additional effort to support other basic features such as 
 
 ## Testing
 
-Extensive tests, headless where possible, should be developed.  These tests should exercise every function, every key binding, ideally every condition that affects the behavior, similarly to [JDK-8314906](https://bugs.openjdk.org/browse/JDK-8314906).
+Extensive automated tests, headless where possible, should be developed.  These tests should exercise every function, every key binding, ideally every condition that affects the behavior, similarly to [JDK-8314906](https://bugs.openjdk.org/browse/JDK-8314906).
 
 Two manual test applications are provided - one for RichTextArea (**RichTextAreaDemoApp**)
 and one for the CodeArea (**CodeAreaDemoApp**).
@@ -756,6 +757,6 @@ TBD
 This enhancement depends on the following enhancements:
 
 - [JDK-8314968](https://bugs.openjdk.org/browse/JDK-8314968) Public InputMap
-- [InputMap Proposal](https://github.com/andy-goryachev-oracle/Test/blob/ag.jep.input.map.v2/doc/InputMap/InputMapV2.md)
+- [InputMap Proposal](https://github.com/andy-goryachev-oracle/Test/blob/main/doc/InputMap/InputMapV3.md)
 - [JDK-8314482](https://bugs.openjdk.org/browse/JDK-8314482) Tab stop policy
 
