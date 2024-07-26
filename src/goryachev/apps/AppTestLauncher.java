@@ -38,6 +38,6 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-        Application.launch(TraversalPolicyTest.class, args);
+        Application.launch(Spinner_NonConsuming_8337246.class, args);
     }
 }
