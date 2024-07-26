@@ -5,9 +5,10 @@ This document captures discussion around [RichTextArea](RichTextArea.md) (RTA) f
 
 
 
-## Should RichTextArea eventually be in javafx.scene.control or in javafx.scene.control.rich package?
+## Should RichTextArea eventually be in javafx.scene.control or in javafx.scene.control.richtext package?
 
 AG: I prefer RTA to be in its own package.
+
 
 
 ## Bidi and caret behavior
@@ -21,10 +22,6 @@ TODO CaretInfo enhancement TBD
 
 [JDK-8296266](https://bugs.openjdk.org/browse/JDK-8296266): TextArea: Navigation breaks with RTL text (Bug - P3)
 
-
-## SelectionModel.setSelection(Marker, Marker)
-
-Should it clamp selection to the document start/end?
 
 
 
