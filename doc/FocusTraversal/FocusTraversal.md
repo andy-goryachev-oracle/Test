@@ -124,19 +124,19 @@ An event filter or event handler can be added in standard fashion to monitor the
 The **TraversalPolicy** abstract class, together with the new `traversalPolicy` property in **java.scene.Parent**,
 allows for creation of custom focus traversal policies.  A custom policy must implement the following methods:
 
-- public abstract Node select(Parent root, Node owner, TraversalDirection dir)
-- public abstract Node selectFirst(Parent root)
-- public abstract Node selectLast(Parent root)
+- public abstract Node **select**(Parent root, Node owner, TraversalDirection dir)
+- public abstract Node **selectFirst**(Parent root)
+- public abstract Node **selectLast**(Parent root)
 
 The base class also provides several methods required for implementing a fully functional policy:
 
-- protected Node findNextFocusableNode(Parent root, Node node, TraversalDirection dir)
-- protected Node findPreviousFocusableNode(Parent root, Node node)
-- public boolean isParentTraversable(Parent root)
+- protected Node **findNextFocusableNode**(Parent root, Node node, TraversalDirection dir)
+- protected Node **findPreviousFocusableNode**(Parent root, Node node)
+- public boolean **isParentTraversable**(Parent root)
 
 The default policy, which is used in many standard Controls, is accessible via the following method:
 
-- public static getDefault()
+- public static TraversalPolicy **getDefault**()
 
 
 
