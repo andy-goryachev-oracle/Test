@@ -128,6 +128,12 @@ allows for creation of custom focus traversal policies.  A custom policy must im
 - public abstract Node selectFirst(Parent root)
 - public abstract Node selectLast(Parent root)
 
+The base class also provides several methods required for implementing a fully functional policy:
+
+- protected Node findNextFocusableNode(Parent root, Node node, TraversalDirection dir)
+- protected Node findPreviousFocusableNode(Parent root, Node node)
+- public boolean isParentTraversable(Parent root)
+
 The default policy, which is used in many standard Controls, is accessible via the following method:
 
 - public static getDefault()
