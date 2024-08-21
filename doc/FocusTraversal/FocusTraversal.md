@@ -23,7 +23,7 @@ The goals of this proposal are:
 
 ## Non-Goals
 
-It is not the goal of this proposal:
+It is not a goal of this proposal:
 
 - to introduce a new focus traversal logic or alter the existing one
 
@@ -32,7 +32,7 @@ It is not the goal of this proposal:
 ## Motivation
 
 While focus traversal is currently implemented in JavaFX, there is no public API to access it,
-making it nearly impossible for an aplication to provide custom focus control [0].
+making it nearly impossible for an application to provide custom focus control [0].
 
 The lack of public API makes it impossible for a custom skin or custom control which requires
 keyboard navigation to support focus traversal within the control or transfer focus outside of the custom
@@ -66,7 +66,7 @@ Public focus traversal API classes reside in **javafx.scene.traversal** package 
 
 ### FocusTraversal
 
-This class provides one general purpose static method which enables focus traversal in the directions
+This class provides one general purpose static method which performs focus traversal in the directions
 specified by the **TraversalDirection** enum:
 
 - public static boolean **traverse**(Node node, TraversalDirection dir, TraversalMethod method)
