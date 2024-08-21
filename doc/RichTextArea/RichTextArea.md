@@ -600,6 +600,8 @@ The table below lists the available function tags:
 |MOVE_RIGHT                |Moves the caret one symbol to the right
 |MOVE_TO_DOCUMENT_END      |Moves the caret to after the last character of the text
 |MOVE_TO_DOCUMENT_START    |Moves the caret to before the first character of the text
+|MOVE_TO_LINE_END          |Moves the caret to the end of the visual text line at caret
+|MOVE_TO_LINE_START        |Moves the caret to the beginning of the visual text line at caret
 |MOVE_TO_PARAGRAPH_END     |Moves the caret to the end of the paragraph at caret
 |MOVE_TO_PARAGRAPH_START   |Moves the caret to the beginning of the paragraph at caret
 |MOVE_UP                   |Moves the caret one visual text line up
@@ -626,6 +628,8 @@ The table below lists the available function tags:
 |SELECT_RIGHT              |Extends selection one symbol to the right
 |SELECT_TO_DOCUMENT_END    |Extends selection to the end of the document
 |SELECT_TO_DOCUMENT_START  |Extends selection to the start of the document
+|SELECT_TO_LINE_END        |Extends selection to the end of the visual text line at caret
+|SELECT_TO_LINE_START      |Extends selection to the start of the visual text line at caret
 |SELECT_UP                 |Extends selection one visual text line up
 |SELECT_WORD               |Selects a word at the caret position
 |SELECT_WORD_LEFT          |Extends selection to the previous word (LTR) or next word (RTL)
