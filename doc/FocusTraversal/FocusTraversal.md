@@ -89,9 +89,15 @@ A typical use of the `FocusTraversal` class is in built-in and custom skins, as 
 navigation key presses:
 
 ```java
+    Node from = ...
     switch (((KeyEvent)event).getCode()) {
-    case UP :
-        FocusTraversal.traverse((Node) obj, TraversalDirection.UP, TraversalMethod.KEY);
+    case UP:
+        FocusTraversal.traverse(from, TraversalDirection.UP, TraversalMethod.KEY);
+        event.consume();
+        break;
+    case DOWN:
+        // or use the convenience method
+        FocusTraversal.traverseDown(from);
         event.consume();
         break;
     }
@@ -101,7 +107,7 @@ navigation key presses:
 ### Traversal Event
 
 Focus traversals generate a new type of event, encapsulated by the class **TraversalEvent** which extends
-**javafx.event.Event**, uwing the event type `TraversalEvent.NODE_TRAVERSED`.
+**javafx.event.Event**, using the event type `TraversalEvent.NODE_TRAVERSED`.
 
 The event object encapsulates the Node receiving the focus and the layout bounds of the node,
 transformed into the coordinates of the root element in the traversal root being used
