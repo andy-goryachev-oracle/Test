@@ -149,7 +149,8 @@ there is currently no real alternative to the proposed API.
 
 ## Testing
 
-This proposal relies on the existing unit tests.  Additional behavior test suite [2] wouldn't hurt either.
+This proposal relies on the existing unit tests and new tests that exercise the new API.
+Additional behavior test suite [2] wouldn't hurt either.
 
 
 
