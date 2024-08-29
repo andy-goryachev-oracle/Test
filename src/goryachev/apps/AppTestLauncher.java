@@ -38,6 +38,6 @@ public class AppTestLauncher {
 //        System.setProperty("javafx.pulseLogger", "true");
 //        System.setProperty("javafx.pulseLogger.threshold", "-1");
 //        System.setProperty("prism.showdirty", "true");
-        Application.launch(VirtualFlow_Duplicated_8320232.class, args);
+        Application.launch(TableView_RowJumping_8338962.class, args);
     }
 }
