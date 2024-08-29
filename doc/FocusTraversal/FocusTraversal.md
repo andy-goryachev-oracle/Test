@@ -136,7 +136,8 @@ allows for creation of custom focus traversal policies.  A custom policy must im
 
 The base class also provides several methods required for implementing a fully functional policy:
 
-- protected Node **findNextFocusableNode**(Parent root, Node node, TraversalDirection dir)
+- protected Node **findNextFocusableNode**(Parent root, Node node)
+- protected Node **findNextInLineFocusableNode**(Parent root, Node node)
 - protected Node **findPreviousFocusableNode**(Parent root, Node node)
 - public boolean **isParentTraversable**(Parent root)
 
