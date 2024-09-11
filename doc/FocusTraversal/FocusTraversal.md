@@ -26,6 +26,7 @@ The goals of this proposal are:
 It is not a goal of this proposal:
 
 - to introduce a new focus traversal logic or alter the existing one
+- to provide focus traversal configuration via CSS
 
 
 
