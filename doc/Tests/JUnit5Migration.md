@@ -8,7 +8,7 @@ Most of the changes are trivial, except for the following:
 4. charts: the test hierarchy for charts mixed parameterized and non-parameterized kinds, necessitating more changes
 5. overridden parameterized tests (must be annotated with `@ParameterizedTest, @MethodSource`)
 
-### Parameterized Class-Level Tests
+## Parameterized Class-Level Tests
 
 junit5 does not support parameterized class-level tests yet (see https://github.com/junit-team/junit5/issues/878)
 
@@ -31,7 +31,7 @@ private static Stream<Arguments> parameters() {
 }
 ```
 
-### Migration Tricks
+## Migration Tricks
 
 Here are the steps that might speed up the process:
 
@@ -76,7 +76,7 @@ grep -lre 'org\.junit\.[^j][^u][^p][^i][^t][^e][^r]' .
 
 (A regex provided by @lukostyra `grep -lre 'org\.junit\.(?!jupiter)' .` did not work for some reason.)
 
-### Acceptance Criteria
+## Acceptance Criteria
 
 Aside from the standard review process, I think the following criteria should be sufficient:
 - successful GHA (Github Actions) run on all platforms
