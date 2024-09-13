@@ -31,10 +31,11 @@ import javafx.util.Duration;
  * https://bugs.openjdk.org/browse/JDK-8339606
  */
 public class AbstractPrimaryTimer_PoorAnimation_8339606 extends Application {
-    @Override
-    public void init() {
-        //System.setProperty("com.sun.scenario.animation.fixed.pulse.length", "true");
-    }
+    // TODO
+    // add this to the main() method
+    //    System.setProperty("com.sun.scenario.animation.fixed.pulse.length", "true");
+    // or specify on the command line:
+    //    -Dcom.sun.scenario.animation.fixed.pulse.length=true
 
     @Override
     public void start(Stage primaryStage) {
