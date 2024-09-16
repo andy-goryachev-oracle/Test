@@ -68,17 +68,24 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.params.provider.Arguments;
 ```
 
-The following command verifies that there is no junit4 imports and inline fully qualified names:
+The following command verifies that there is no junit4 or junit.framework imports or
+inline calls using fully qualified names (should be invoked from the top folder of the subsystem being checked,
+like `modules/javafx.web/src/test`):
 
 ```
-grep -lre 'org\.junit\.[^j][^u][^p][^i][^t][^e][^r]' .
+grep -nr -e "org\.junit" -e "junit\.framework" . | grep -v jupiter
 ```
 
-(A regex provided by @lukostyra `grep -lre 'org\.junit\.(?!jupiter)' .` did not work for some reason.)
+A variant that lists the file names only:
+
+```
+grep -nr -e "org\.junit" -e "junit\.framework" . | grep -v jupiter | sed -e 's,:.*$,,' | sort | uniq
+```
+
 
 ## Acceptance Criteria
 
 Aside from the standard review process, I think the following criteria should be sufficient:
 - successful GHA (Github Actions) run on all platforms
 - the same number of tests executed (number of tests minus number of ignored tests)
-- grep shows no hits for junit4 imports
+- grep shows no junit4 or junit.framework hits
