@@ -7,6 +7,8 @@ Most of the changes are trivial, except for the following:
 3. parameterized `@BeforeEach` and `@AfterEach`: (see discussion below)
 4. charts: the test hierarchy for charts mixed parameterized and non-parameterized kinds, necessitating more changes
 5. overridden parameterized tests (must be annotated with `@ParameterizedTest, @MethodSource`)
+6. overridden methods that have JUnit annotations in the base class: the child class need to re-annotate
+7. migration of `@Rule`s
 
 ## Parameterized Class-Level Tests
 
