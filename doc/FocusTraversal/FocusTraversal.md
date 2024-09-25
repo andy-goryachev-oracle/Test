@@ -26,7 +26,7 @@ The goals of this proposal are:
 It is not a goal of this proposal:
 
 - to introduce a new focus traversal logic or alter the existing one
-- to provide focus traversal configuration via CSS
+- to allow for focus traversal configuration via CSS
 
 
 
@@ -67,8 +67,8 @@ Public focus traversal API classes reside in **javafx.scene.traversal** package 
 
 ### FocusTraversal
 
-This class provides one general purpose static method which performs focus traversal in the directions
-specified by the **TraversalDirection** enum:
+This class provides one general purpose static method which performs focus traversal from the given Node
+in the directions specified by the **TraversalDirection** enum:
 
 - public static boolean **traverse**(Node node, TraversalDirection dir, TraversalMethod method)
 
@@ -91,43 +91,48 @@ navigation key presses:
 
 ```java
     Node from = ...
-    switch (((KeyEvent)event).getCode()) {
-    case UP:
-        FocusTraversal.traverse(from, TraversalDirection.UP, TraversalMethod.KEY);
-        event.consume();
-        break;
-    case DOWN:
-        // or use the convenience method
-        FocusTraversal.traverseDown(from);
-        event.consume();
-        break;
-    }
+    KeyEvent ev = ...
+    if(!ev.isAltDown() && !ev.isControlDown() && !ev.isMetaDown() && !ev.isShiftDown() && !ev.isShortcutDown()) {
+        switch (ev.getCode()) {
+        case UP:
+            FocusTraversal.traverse(from, TraversalDirection.UP, TraversalMethod.KEY);
+	        ev.consume();
+	        break;
+	    case DOWN:
+	        // or use the convenience method
+	        FocusTraversal.traverseDown(from);
+	        ev.consume();
+	        break;
+	    }
+	}
 ```
 
 
 ### Traversal Event
 
-Focus traversals generate a new type of event, encapsulated by the class **TraversalEvent** which extends
-**javafx.event.Event**, using the event type `TraversalEvent.NODE_TRAVERSED`.
+Focus traversals generate a new type of event, represented by the **TraversalEvent** class which extends
+**javafx.event.Event**, using the event type `TraversalEvent.NODE_TRAVERSED`.  This event is sent to the Node
+that gets focused as a result of traversal.  The event object encapsulates the Node receiving the focus.
 
-The event object encapsulates the Node receiving the focus and the layout bounds of the node,
-transformed into the coordinates of the root element in the traversal root being used
-(i.e. the Scene or the root Parent).
-
-An event filter or event handler can be added in standard fashion to monitor these events:
+An event handler can be added in standard fashion to monitor these events:
 
 ```java
     Node node = ...;
     node.addEventHandler(TraversalEvent.NODE_TRAVERSED, (ev) -> {
         // Use properties of the TraversalEvent to appropriately react to this event
         Node n = ev.getNode();
-        Bounds b = ev.getBounds();
+        // do not consume this event
     });
 ```
+
+This event serves informational purpose and as such it is not recommended for the application code to filter
+or consumes it.
 
 
 ### Focus Traversal Policy
 
+In many scenarios, the built-in focus traversal logic is sufficient.  In the situations where a custom traversal
+is required, or traversal depends on some condition, a custom traversal policy might be needed.
 The **TraversalPolicy** abstract class, together with the new `traversalPolicy` property in **java.scene.Parent**,
 allows for creation of custom focus traversal policies.  A custom policy must implement the following methods:
 
