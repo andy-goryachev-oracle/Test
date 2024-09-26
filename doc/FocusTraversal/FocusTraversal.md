@@ -145,7 +145,7 @@ Additional behavior test suite [2] wouldn't hurt either.
 
 ## Risks and Assumptions
 
-The proposed API basically makes the existing internal logic public (with some refactoring).
+The proposed API basically makes the existing internal logic public (with minor refactoring).
 It is possible that bugs were introduced during the refactoring process.  This risk might be relatively low due to
 the existing test suite, and can be further mitigated by creating a behavior test suite [2].
 
