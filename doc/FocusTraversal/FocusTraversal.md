@@ -83,6 +83,12 @@ that needs focus traversal using the keyboard:
 **TraversalMethod** differentiates focus traversal resulting from key press versus those resulting from
 mouse clicks or programmatic changes.
 
+Typically, controls do not need to handle focus traversal keys explicitly, relying instead on the built-in
+traversal logic, unless:
+
+- the traversal is conditional upon the state of the control
+- the key used to traverse might be used in a non-traversal capacity (one example is the **tab** key in the context of a text editor)
+
 A typical use of the `FocusTraversal` class is in built-in and custom skins, as a response to keyboard
 navigation key presses:
 
@@ -91,13 +97,12 @@ navigation key presses:
     KeyEvent ev = ...
     if(!ev.isAltDown() && !ev.isControlDown() && !ev.isMetaDown() && !ev.isShiftDown() && !ev.isShortcutDown()) {
         switch (ev.getCode()) {
-        case UP:
-            FocusTraversal.traverse(from, TraversalDirection.UP, TraversalMethod.KEY);
-	        ev.consume();
-	        break;
-	    case DOWN:
-	        // or use the convenience method
-	        FocusTraversal.traverseDown(from);
+        case TAB:
+            if (isEditable()) {
+                insertTab();
+            } else {
+                FocusTraversal.traverseNext(from);
+            }
 	        ev.consume();
 	        break;
 	    }
