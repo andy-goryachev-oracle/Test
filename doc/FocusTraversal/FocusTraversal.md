@@ -95,7 +95,7 @@ navigation key presses:
 ```java
     Node from = ...
     KeyEvent ev = ...
-    if(!ev.isAltDown() && !ev.isControlDown() && !ev.isMetaDown() && !ev.isShiftDown() && !ev.isShortcutDown()) {
+    if (!ev.isAltDown() && !ev.isControlDown() && !ev.isMetaDown() && !ev.isShiftDown() && !ev.isShortcutDown()) {
         switch (ev.getCode()) {
         case TAB:
             if (isEditable()) {
@@ -103,8 +103,8 @@ navigation key presses:
             } else {
                 FocusTraversal.traverseNext(from);
             }
-	        ev.consume();
-	        break;
+            ev.consume();
+            break;
 	    }
 	}
 ```
