@@ -17,7 +17,6 @@ The goals of this proposal are:
 
 - facilitate the changing of the focused Node (focus traversal) using the public API
 - allow for setting a custom traversal policy on a **javafx.scene.Parent**
-- allow for listening to the focus traversal events
 
 
 
@@ -58,8 +57,6 @@ for traversing focus in various directions, determined by the **TraversalDirecti
 
 A new property, called `traversalPolicy`, is added to **java.scene.Parent**.  This property enables
 customization of the order of traversal within the said parent, by specifying a custom **TraversalPolicy**.
-
-Changes to the currently focused Node are being broadcast via the new **TraversalEvent** event.
 
 Public focus traversal API classes reside in **javafx.scene.traversal** package [1].
 
@@ -106,27 +103,6 @@ navigation key presses:
 	    }
 	}
 ```
-
-
-### Traversal Event
-
-Focus traversals generate a new type of event, represented by the **TraversalEvent** class which extends
-**javafx.event.Event**, using the event type `TraversalEvent.NODE_TRAVERSED`.  This event is sent to the Node
-that gets focused as a result of traversal.  The event object encapsulates the Node receiving the focus.
-
-An event handler can be added in standard fashion to monitor these events:
-
-```java
-    Node node = ...;
-    node.addEventHandler(TraversalEvent.NODE_TRAVERSED, (ev) -> {
-        // Use properties of the TraversalEvent to appropriately react to this event
-        Node n = ev.getNode();
-        // do not consume this event
-    });
-```
-
-This event serves informational purpose and as such it is not recommended for the application code to filter
-or consumes it.
 
 
 ### Focus Traversal Policy
