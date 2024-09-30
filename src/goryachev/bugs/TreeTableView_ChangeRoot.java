@@ -1,5 +1,6 @@
 package goryachev.bugs;
 
+import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.Scene;
@@ -12,7 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 /**
- * 
+ * https://bugs.openjdk.org/browse/JDK-8341281
  */
 public class TreeTableView_ChangeRoot extends Application {
     TreeTableView<Entry> tree;
@@ -20,19 +21,12 @@ public class TreeTableView_ChangeRoot extends Application {
     
     @Override
     public void start(Stage stage) {
-        stage.setTitle("TreeView Selection Bug Demo");
-
-        // Populate TreeView. Other than described in the bug report, 2 items are sufficient to reproduce the error.
-        TreeItem<Entry> root = new TreeItem<>(new Entry());
-//        root.setExpanded(true);
-//        root.getChildren().addAll(
-//            new TreeItem<>(new Entry()),
-//            new TreeItem<>(new Entry())
-//        );
+        stage.setTitle("TreeTableView Change Root");
 
         // Simple treeview configuration
-        tree = new TreeTableView<>(root);
+        tree = new TreeTableView<>();
         tree.setShowRoot(true);
+
         {
             TreeTableColumn<Entry, String> c = new TreeTableColumn<>("Title");
             c.setCellValueFactory((v) -> {
@@ -62,19 +56,24 @@ public class TreeTableView_ChangeRoot extends Application {
         Scene scene = new Scene(p, 600, 500);
         stage.setScene(scene);
         stage.show();
+
+        changeRoot();
     }
-    
+
     void changeRoot() {
-        TreeItem<Entry> root = new TreeItem<>(new Entry());
-        root.setExpanded(true);
-        root.getChildren().addAll(
-            new TreeItem<>(new Entry()),
-            new TreeItem<>(new Entry()),
-            new TreeItem<>(new Entry())
-        );
+        // FIX
+        // Breaks the tree table view
+        TreeItem<Entry> root = new TreeItem<>();
+        // and this does not
+        //TreeItem<Entry> root = new TreeItem<>(new Entry());
+        
+        int sz = new Random().nextInt(10) + 1;
+        for (int i = 0; i < sz; i++) {
+            root.getChildren().add(new TreeItem<>(new Entry()));
+        }
         tree.setRoot(root);
     }
-    
+
     static class Entry {
         public final SimpleStringProperty title = new SimpleStringProperty();
         public final SimpleStringProperty text = new SimpleStringProperty();
