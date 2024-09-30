@@ -34,10 +34,14 @@ import goryachev.tests.*;
  */
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
-//        System.setProperty("prism.order", "sw");
-//        System.setProperty("javafx.pulseLogger", "true");
-//        System.setProperty("javafx.pulseLogger.threshold", "-1");
-//        System.setProperty("prism.showdirty", "true");
+        // enableLogging();
         Application.launch(FocusPolicyResearch.class, args);
+    }
+
+    private static void enableLogging() {
+        System.setProperty("prism.order", "sw");
+        System.setProperty("javafx.pulseLogger", "true");
+        System.setProperty("javafx.pulseLogger.threshold", "-1");
+        System.setProperty("prism.showdirty", "true");
     }
 }
