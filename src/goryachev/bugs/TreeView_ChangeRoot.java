@@ -11,10 +11,10 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 /**
- * 
+ * https://bugs.openjdk.org/browse/JDK-8341286
  */
 public class TreeView_ChangeRoot extends Application {
-    TreeView<String> tree;
+    TreeView<Entry> tree;
     static long seq = 1;
     
     @Override
@@ -32,7 +32,7 @@ public class TreeView_ChangeRoot extends Application {
         p.setTop(new HBox(button));
         p.setCenter(tree);
         
-        Scene scene = new Scene(p, 600, 500);
+        Scene scene = new Scene(p, 600, 300);
         stage.setScene(scene);
         stage.show();
 
@@ -40,12 +40,30 @@ public class TreeView_ChangeRoot extends Application {
     }
 
     void changeRoot() {
-        TreeItem<String> root = new TreeItem<>();
+        // FIX
+        // either this line or the next one produces visual artifacts
+        TreeItem<Entry> root = new TreeItem<>(new Entry(null));
+        //TreeItem<Entry> root = new TreeItem<>(null);
+        // this line works ok
+        //TreeItem<Entry> root = new TreeItem<>(new Entry("Root"));
 
         int sz = new Random().nextInt(10);
         for (int i = 0; i < sz; i++) {
-            root.getChildren().add(new TreeItem<>("V" + seq++));
+            root.getChildren().add(new TreeItem<>(new Entry("V" + seq++)));
         }
         tree.setRoot(root);
+    }
+    
+    static class Entry {
+        private final String text;
+
+        public Entry(String s) {
+            this.text = s;
+        }
+        
+        @Override
+        public String toString() {
+            return text;
+        }
     }
 }
