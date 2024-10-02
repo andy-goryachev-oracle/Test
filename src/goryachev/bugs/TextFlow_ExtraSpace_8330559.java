@@ -3,21 +3,18 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.NodeOrientation;
 import javafx.geometry.Point2D;
-import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.LineTo;
-import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.scene.text.HitInfo;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
+import goryachev.util.D;
 
 /**
  * https://bugs.openjdk.org/browse/JDK-8330559
@@ -101,40 +98,8 @@ public class TextFlow_ExtraSpace_8330559 extends Application {
         System.out.println("hit=" + h);
 
         PathElement[] pe = flow.caretShape(h.getCharIndex(), h.isLeading());
-        System.out.println("caret=" + dump(pe));
+        System.out.println("caret=" + D.dump(pe));
         caret.getElements().setAll(pe);
         updateRange();
-    }
-
-    /** dumps the path element array to a compact human-readable string */
-    public static String dump(PathElement[] elements) {
-        StringBuilder sb = new StringBuilder();
-        if (elements == null) {
-            sb.append("null");
-        } else {
-            for (PathElement em : elements) {
-                if (em instanceof MoveTo p) {
-                    sb.append('M');
-                    sb.append(r(p.getX()));
-                    sb.append(',');
-                    sb.append(r(p.getY()));
-                    sb.append(' ');
-                } else if (em instanceof LineTo p) {
-                    sb.append('L');
-                    sb.append(r(p.getX()));
-                    sb.append(',');
-                    sb.append(r(p.getY()));
-                    sb.append(' ');
-                } else {
-                    sb.append(em);
-                    sb.append(' ');
-                }
-            }
-        }
-        return sb.toString();
-    }
-
-    private static int r(double x) {
-        return (int)Math.round(x);
     }
 }

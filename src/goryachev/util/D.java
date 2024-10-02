@@ -1,10 +1,45 @@
 package goryachev.util;
 
 import java.text.DecimalFormat;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
+import javafx.scene.shape.PathElement;
 
-/** debugging aid */
+/** 'D'ebugging aid */
 public class D {
     private static final DecimalFormat DOUBLE_FORMAT = new DecimalFormat("0.###");
+
+    /** dumps the path element array to a compact human-readable string */
+    public static String dump(PathElement[] elements) {
+        StringBuilder sb = new StringBuilder();
+        if (elements == null) {
+            sb.append("null");
+        } else {
+            for (PathElement em : elements) {
+                if (em instanceof MoveTo p) {
+                    sb.append('M');
+                    sb.append(f(p.getX()));
+                    sb.append(',');
+                    sb.append(f(p.getY()));
+                    sb.append(' ');
+                } else if (em instanceof LineTo p) {
+                    sb.append('L');
+                    sb.append(f(p.getX()));
+                    sb.append(',');
+                    sb.append(f(p.getY()));
+                    sb.append(' ');
+                } else {
+                    sb.append(em);
+                    sb.append(' ');
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    private static String f(double v) {
+        return DOUBLE_FORMAT.format(v);
+    }
 
     public static void p(Object... a) {
         StringBuilder sb = new StringBuilder();
@@ -29,10 +64,6 @@ public class D {
 
     public static void trace() {
         new Error("Stack Trace:").printStackTrace();
-    }
-
-    public static String f(double v) {
-        return DOUBLE_FORMAT.format(v);
     }
 
     public static SW sw() {
