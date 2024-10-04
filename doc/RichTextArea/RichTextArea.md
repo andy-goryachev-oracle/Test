@@ -59,11 +59,11 @@ Creating a view-only informational control should also be easy:
 
 ```java
         SimpleViewOnlyStyledModel m = new SimpleViewOnlyStyledModel();
-        // add text segment using CSS style name (requires a style sheet)
+        // add text segment using CSS style name (requires a stylesheet)
         m.withStyles("RichTextArea ", "HEADER");
-        // add text segment using direct style
+        // add text segment using inline style
         m.withInlineStyle("Demo", "-fx-font-size:200%;");
-        // newline
+        // add newline
         m.nl();
 
         RichTextArea textArea = new RichTextArea(m);
