@@ -60,9 +60,9 @@ Creating a view-only informational control should also be easy:
 ```java
         SimpleViewOnlyStyledModel m = new SimpleViewOnlyStyledModel();
         // add text segment using CSS style name (requires a stylesheet)
-        m.withStyles("RichTextArea ", "HEADER");
-        // add text segment using inline style
-        m.withInlineStyle("Demo", "-fx-font-size:200%;");
+        m.addWithStyles("RichTextArea ", "HEADER");
+        // add text segment using inline styles
+        m.addWithInlineStyle("Demo", "-fx-font-size:200%; -fx-font-weight:bold;");
         // add newline
         m.nl();
 
@@ -419,9 +419,9 @@ A view-only model can be used to present rich text document not editable by the 
 
 - SimpleViewOnlyStyledModel **addSegment**(String text)
 - SimpleViewOnlyStyledModel **addSegment**(String text, StyleAttributeMap)
-- SimpleViewOnlyStyledModel **withInlineStyle**(String text, String style)
-- SimpleViewOnlyStyledModel **withInlineAndExternalStyles**(String text, String style, String ... styleNames)
-- SimpleViewOnlyStyledModel **withStyles**(String text, String ... styleNames)
+- SimpleViewOnlyStyledModel **addWithInlineStyle**(String text, String style)
+- SimpleViewOnlyStyledModel **addWithInlineAndStyleNames**(String text, String style, String ... styleNames)
+- SimpleViewOnlyStyledModel **addWithStyleNames**(String text, String ... styleNames)
 
 Other methods allow for adding image paragraphs, embedded Nodes, paragraph containing a single Region, as well as various types of highlights:
 
@@ -455,10 +455,10 @@ The model returns an instance of **RichParagraph** from its **getParagraph**(int
 - Builder **addSegment**(String text)
 - Builder **addSegment**(String text, StyleAttributeMap)
 - Builder **addSquiggly**(int start, int length, Color)
+- Builder **addWithInlineStyle**(String text, String inlineStyle)
+- Builder **addWithInlineAndStyleNames**(String text, String inlineStyle, String ... styles)
+- Builder **addWithStyleNames**(String text, String ... styles)
 - Builder **setParagraphAttributes**(StyleAttributeMap)
-- Builder **withInlineStyle**(String text, String inlineStyle)
-- Builder **withInlineAndExternalStyles**(String text, String inlineStyle, String ... styles)
-- Builder **withStyles**(String text, String[] styles)
 
 
 The following example illustrates how to use RichParagraph.Builder to build a paragraph that looks like this:
@@ -527,9 +527,9 @@ This example illustrates how to style a view-only document created with the Simp
 ```java
         SimpleViewOnlyStyledModel m = new SimpleViewOnlyStyledModel();
         // add text segment using CSS style name (requires a style sheet)
-        m.withStyles("RichTextArea ", "HEADER");
-        // add text segment using direct style
-        m.withInlineStyle("Demo", "-fx-font-size:200%;");
+        m.addWithStyles("RichTextArea ", "HEADER");
+        // add text segment using inline style
+        m.addWithInlineStyle("Demo", "-fx-font-size:200%; -fx-font-weight:bold;");
         // newline
         m.nl();
 ```
