@@ -18,6 +18,7 @@ import goryachev.util.D;
 
 /**
  * https://bugs.openjdk.org/browse/JDK-8330559
+ * https://bugs.openjdk.org/browse/JDK-8341670
  */
 public class TextFlow_ExtraSpace_8330559 extends Application {
 
@@ -61,6 +62,9 @@ public class TextFlow_ExtraSpace_8330559 extends Application {
         stage.setWidth(500);
         stage.setHeight(300);
         stage.show();
+        scene.widthProperty().addListener((p) -> {
+            updateRange();
+        });
 
         Platform.runLater(() -> {
             updateRange();
@@ -93,6 +97,12 @@ public class TextFlow_ExtraSpace_8330559 extends Application {
 
     private void handleMousePress(MouseEvent ev) {
         System.out.println("x: " + ev.getX() + " y:" + ev.getY());
+
+        /** requires JDK-8341670
+        javafx.scene.text.LayoutInfo la = flow.getLayoutInfo();
+        System.out.println("layout=" + la);
+        */
+
         Point2D p = new Point2D(ev.getX(), ev.getY());
         HitInfo h = flow.hitTest(p);
         System.out.println("hit=" + h);
