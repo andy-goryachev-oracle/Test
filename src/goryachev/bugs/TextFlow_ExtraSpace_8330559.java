@@ -80,9 +80,11 @@ public class TextFlow_ExtraSpace_8330559 extends Application {
 
     private int getTextLength(TextFlow f) {
         int len = 0;
-        for (Node n : f.getChildren()) {
-            if (n instanceof Text t) {
+        for (Node n: f.getChildrenUnmodifiable()) {
+            if(n instanceof Text t) {
                 len += t.getText().length();
+            } else {
+                len++;
             }
         }
         return len;
@@ -98,10 +100,14 @@ public class TextFlow_ExtraSpace_8330559 extends Application {
     private void handleMousePress(MouseEvent ev) {
         System.out.println("x: " + ev.getX() + " y:" + ev.getY());
 
-        /** requires JDK-8341670
-        javafx.scene.text.LayoutInfo la = flow.getLayoutInfo();
-        System.out.println("layout=" + la);
-        */
+        // TODO requires JDK-8341670
+//        javafx.scene.text.LayoutInfo la = flow.getLayoutInfo();
+//        int len = getTextLength(flow);
+//        System.out.println("lines=" + la.getTextLines());
+//        System.out.println("bounds=" + la.getBounds());
+//        System.out.println("text=" + la.selectionShape(0, len));
+//        System.out.println("strikeThrough=" + la.strikeThroughShape(0, len));
+//        System.out.println("underline=" + la.underlineShape(0, len));
 
         Point2D p = new Point2D(ev.getX(), ev.getY());
         HitInfo h = flow.hitTest(p);
