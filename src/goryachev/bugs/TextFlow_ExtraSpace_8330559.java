@@ -1,12 +1,17 @@
 package goryachev.bugs;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.geometry.Insets;
 import javafx.geometry.NodeOrientation;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.BorderStroke;
+import javafx.scene.layout.BorderStrokeStyle;
+import javafx.scene.layout.BorderWidths;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
@@ -37,6 +42,10 @@ public class TextFlow_ExtraSpace_8330559 extends Application {
                 t("עברית", Color.BLACK));
         flow.setStyle("-fx-font-size:400%");
         flow.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleMousePress);
+
+        // JDK-8341438
+//        flow.setPadding(new Insets(100));
+//        flow.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, null, new BorderWidths(33.3))));
 
         caret = new Path();
         caret.setManaged(false);
