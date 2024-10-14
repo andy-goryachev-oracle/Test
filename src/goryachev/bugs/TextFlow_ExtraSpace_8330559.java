@@ -100,22 +100,51 @@ public class TextFlow_ExtraSpace_8330559 extends Application {
     private void handleMousePress(MouseEvent ev) {
         System.out.println("x: " + ev.getX() + " y:" + ev.getY());
 
+        Point2D p = new Point2D(ev.getX(), ev.getY());
+        HitInfo h = flow.hitTest(p);
+        System.out.println("hit=" + h);
+
         // TODO requires JDK-8341670
 //        javafx.scene.text.LayoutInfo la = flow.getLayoutInfo();
 //        int len = getTextLength(flow);
+//        System.out.println("caret=" + dump(la.caretInfo(h.getCharIndex(), h.isLeading())));
 //        System.out.println("lines=" + la.getTextLines());
 //        System.out.println("bounds=" + la.getBounds());
 //        System.out.println("text=" + la.selectionShape(0, len));
 //        System.out.println("strikeThrough=" + la.strikeThroughShape(0, len));
 //        System.out.println("underline=" + la.underlineShape(0, len));
 
-        Point2D p = new Point2D(ev.getX(), ev.getY());
-        HitInfo h = flow.hitTest(p);
-        System.out.println("hit=" + h);
-
         PathElement[] pe = flow.caretShape(h.getCharIndex(), h.isLeading());
         System.out.println("caret=" + D.dump(pe));
         caret.getElements().setAll(pe);
         updateRange();
+    }
+
+    // TODO requires JDK-8341670
+//    private static String dump(javafx.scene.text.CaretInfo c) {
+//        StringBuilder sb = new StringBuilder();
+//        sb.append("CaretInfo{");
+//        sb.append("lineSpacing=" + c.lineSpacing());
+//        sb.append(", lines=[");
+//        boolean sep = false;
+//        for (int i = 0; i < c.getLineCount(); i++) {
+//            double[] p = c.getLineAt(i);
+//            if (sep) {
+//                sb.append(",");
+//            } else {
+//                sep = true;
+//            }
+//            sb.append(dumpLine(p));
+//        }
+//        sb.append("}");
+//        return sb.toString();
+//    }
+
+    private static String dumpLine(double[] p) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Line(").append(D.f(p[0])).append(",").append(D.f(p[1]));
+        sb.append(")-(").append(D.f(p[0])).append(",").append(D.f(p[2]));
+        sb.append(")");
+        return sb.toString();
     }
 }

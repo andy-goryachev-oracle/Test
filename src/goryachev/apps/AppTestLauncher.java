@@ -35,7 +35,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(Button_MnemonicTooSmall_8341509.class, args);
+        Application.launch(TextFlow_ExtraSpace_8330559.class, args);
     }
 
     private static void enableLogging() {

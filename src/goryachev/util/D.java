@@ -37,7 +37,7 @@ public class D {
         return sb.toString();
     }
 
-    private static String f(double v) {
+    public static String f(double v) {
         return DOUBLE_FORMAT.format(v);
     }
 
