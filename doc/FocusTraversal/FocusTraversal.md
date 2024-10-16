@@ -24,7 +24,8 @@ The goals of this proposal are:
 
 It is not a goal of this proposal:
 
-- to introduce a new focus traversal logic or alter the existing one
+- to redesign the focus traversal mechanism in JavaFX
+- to alter the existing focus traversal behavior
 - to allow for focus traversal configuration via CSS
 
 
@@ -39,7 +40,6 @@ keyboard navigation to support focus traversal within the control or transfer fo
 control.
 
 The lack of public API also represents a functional gap between JavaFX and Swing.
-
 
 
 
@@ -67,7 +67,7 @@ Public focus traversal API classes reside in **javafx.scene.traversal** package 
 This class provides one general purpose static method which performs focus traversal from the given Node
 in the directions specified by the **TraversalDirection** enum:
 
-- public static boolean **traverse**(Node node, TraversalDirection dir, TraversalMethod method)
+- public static boolean **traverse**(Node node, TraversalDirection dir, boolean focusVisible)
 
 This class also provides a number of convenience methods with the goal of simplifying code
 that needs focus traversal using the keyboard:
@@ -79,9 +79,6 @@ that needs focus traversal using the keyboard:
 - public static boolean **traversePrevious**(Node node)
 - public static boolean **traverseRight**(Node node)
 - public static boolean **traverseUp**(Node node)
-
-**TraversalMethod** differentiates focus traversal resulting from key press versus those resulting from
-mouse clicks or programmatic changes.
 
 Typically, controls do not need to handle focus traversal keys explicitly, relying instead on the built-in
 traversal logic, unless:
@@ -136,8 +133,15 @@ The default policy, which is used in many standard Controls, is accessible via t
 
 ## Alternatives
 
-Apart from using **Node.requestFocus()** in some limited scenarios,
-there is currently no real alternative to the proposed API.
+There is a number of alternatives to the current proposal.  In no particular order:
+
+1. Do nothing.  The application code can always add event handlers and event filters to Nodes and Scene/SubScene and
+issue `requestFocus()` calls to the appropriate Nodes based on the currently focused Node and the specific application
+requirements.
+
+2. Implement functionality expressed by the `FocusTraversal` class only, without making `TraversalPolicy` class
+public and without adding the corresponding functionality.
+
 
 
 
@@ -150,7 +154,8 @@ Additional behavior test suite [2] wouldn't hurt either.
 
 ## Risks and Assumptions
 
-The proposed API basically makes the existing internal logic public (with minor refactoring).
+The proposed API basically makes the existing internal logic public (with some minor refactoring).
+
 It is possible that bugs were introduced during the refactoring process.  This risk might be relatively low due to
 the existing test suite, and can be further mitigated by creating a behavior test suite [2].
 
