@@ -33,9 +33,8 @@ It is not a goal of this proposal:
 ## Motivation
 
 While focus traversal is currently implemented in JavaFX, there is no public API to access it.
-The lack of public API makes it impossible for a custom skin or custom control, which requires
-keyboard navigation, to support focus traversal within the control or transfer focus outside of the custom
-control [0].
+The lack of public API makes it impossible for a custom skin or custom control to support focus traversal
+in the specific direction [0].
 
 
 
