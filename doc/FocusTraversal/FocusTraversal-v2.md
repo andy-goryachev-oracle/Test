@@ -32,15 +32,10 @@ It is not a goal of this proposal:
 
 ## Motivation
 
-While focus traversal is currently implemented in JavaFX, there is no public API to access it,
-making it nearly impossible for a custom component to effect focus traversal [0].
-
-The lack of public API makes it impossible for a custom skin or custom control which requires
-keyboard navigation to support focus traversal within the control or transfer focus outside of the custom
-control.
-
-The lack of public API also represents a functional gap between JavaFX and Swing.
-
+While focus traversal is currently implemented in JavaFX, there is no public API to access it.
+The lack of public API makes it impossible for a custom skin or custom control, which requires
+keyboard navigation, to support focus traversal within the control or transfer focus outside of the custom
+control [0].
 
 
 
