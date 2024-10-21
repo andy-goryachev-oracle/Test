@@ -1,5 +1,8 @@
 # Why Do I Get This Error?
 
+I am getting **both method register(Runnable) in TEST and method register(Func) in TEST match** error
+when no such error should ever be generated.
+
 The reproducer:
 
 ```java
