@@ -35,7 +35,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(Accelerator_EnexpectedBehavior_8342094.class, args);
+        Application.launch(Accelerator_UnexpectedBehavior_8342094.class, args);
     }
 
     private static void enableLogging() {

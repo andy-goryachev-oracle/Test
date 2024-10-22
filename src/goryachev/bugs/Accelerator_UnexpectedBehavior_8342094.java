@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 /**
  * https://bugs.openjdk.org/browse/JDK-8342094
  */
-public class Accelerator_EnexpectedBehavior_8342094 extends Application {
+public class Accelerator_UnexpectedBehavior_8342094 extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         new MainDialog().showAndWait();
