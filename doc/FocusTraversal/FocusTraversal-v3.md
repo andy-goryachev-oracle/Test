@@ -23,7 +23,7 @@ The goals of this proposal are:
 
 It is not a goal of this proposal:
 
-- to introduc a public API for a focus traversal policy
+- to introduce a public API for a focus traversal policy
 - to redesign the focus traversal mechanism in JavaFX
 - to alter the existing focus traversal behavior
 - to allow for focus traversal configuration via CSS
@@ -42,7 +42,7 @@ in the specific direction [0].
 
 The focus traversal is provided adding a single method to the **Node** class:
 
-`public final boolean traverseFocus(TraversalDirection direction)`
+`public final boolean **requestFocusTraversal**(TraversalDirection direction)`
 
 where **TraversalDirection** enumerates the search direction relative to the current node [1].
 
@@ -64,7 +64,7 @@ of the **tab** key:
             if (isEditable()) {
                 insertTab();
             } else {
-                from.traverse(from, TraversalDirection.NEXT);
+                from.requestFocusTraversal(TraversalDirection.NEXT);
             }
             ev.consume();
             break;
