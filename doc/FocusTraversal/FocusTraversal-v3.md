@@ -42,7 +42,9 @@ in the specific direction [0].
 
 The focus traversal is provided adding a single method to the **Node** class:
 
-`public final boolean **requestFocusTraversal**(TraversalDirection direction)`
+``` java
+public final boolean requestFocusTraversal(TraversalDirection direction)
+```
 
 where **TraversalDirection** enumerates the search direction relative to the current node [1].
 
