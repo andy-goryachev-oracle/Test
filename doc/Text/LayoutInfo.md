@@ -209,9 +209,11 @@ None.
 
 A number of issues require further discussion:
 
+- possible discrepancy should the chosen solution for bugs [2] and [3] be to leave the existing functionality as is
 - whether to use `Rectangle2D` for `CaretInfo.getLineAt()`
 - how to deal with possible discrepancy and/or backward compatibility due to bugs in the existing APIs related to
 padding, borders, and line spacing [5], [6], [7].
+- whether to add a boolean flag to include the last line spacing in layout bounds and range shape computation
 
 
 
