@@ -22,7 +22,7 @@ which allows for querying various aspects of the text layout, such as:
 ## Goals
 
 The goal of this proposal is to provide a public API for querying the text layout geometry and extended caret
-information from the text layout.
+information from the text layout [1], [2], [3].
 
 
 
@@ -109,13 +109,13 @@ For example updating the text or the font might change the layout, but a change 
 
 The **LayoutInfo** class provides the following methods:
 
-- public Rectangle2D **getBounds**(boolean includeLineSpacing) - returns the logical bounds of the layout
-- public int **getTextLineCount**() - returns the number of text lines in the layout
-- public List<TextLineInfo> **getTextLines**(boolean includeLineSpacing) - returns the immutable list of the `TextLineInfo` objects describing the layout
-- public TextLineInfo **getTextLine**(int index, boolean includeLineSpacing) - returns the `TextLineInfo` object which contains information about the text line at the given index
-- public List<Rectangle2D> **selectionShape**(int start, int end, boolean includeLineSpacing) - returns the geometry of the text selection, as an immutable list of `Rectangle2D` objects, for the given start and end offsets
-- public List<Rectangle2D> **strikeThroughShape**(int start, int end) - returns the geometry of the strike-through shape, as an immutable list of `Rectangle2D` objects, for the given start and end offsets
-- public List<Rectangle2D> **underlineShape**(int start, int end) - returns the geometry of the underline shape, as an immutable list of `Rectangle2D` objects, for the given start and end offsets
+- `public Rectangle2D getBounds(boolean includeLineSpacing)` - returns the logical bounds of the layout
+- `public int getTextLineCount()` - returns the number of text lines in the layout
+- `public List<TextLineInfo> getTextLines(boolean includeLineSpacing)` - returns information about text lines in the layout
+- `public TextLineInfo getTextLine(int index, boolean includeLineSpacing)` - returns the information about the text line at the given index
+- `public List<Rectangle2D> selectionShape(int start, int end, boolean includeLineSpacing)` - returns the geometry of the text selection for the given start and end offsets
+- `public List<Rectangle2D> strikeThroughShape(int start, int end)` - returns the geometry of the strike-through shape for the given start and end offsets
+- `public List<Rectangle2D> underlineShape(int start, int end)` - returns the geometry of the underline shape for the given start and end offsets
 - `public CaretInfo caretInfo(int charIndex, boolean leading)` - returns the caret geometry for the given character index and the character bias
 
 
@@ -132,8 +132,13 @@ Provides the information about a text line in a text layout:
 
 Provides the information associated with the caret:
 
-- **public int getPartCount()** - returns the number of parts representing the caret
-- **public Rectangle2D **getPartAt(int index)** - returns the geometry of the part at the specified index
+- `public int getPartCount()` - returns the number of parts representing the caret
+- `public Rectangle2D getPartAt(int index)` - returns the geometry of the part at the specified index
+
+
+## Future Additions
+
+In the future, the new API may be easily extended to provide other insights such as glyph runs, text direction, etc. 
 
 
 
@@ -148,20 +153,18 @@ Do nothing.
 The proposed APIs pose some compatibility risk since the application developers can extends `Text` and `TextFlow`
 classes adding methods with similar signatures.
 
+In light of the existing bug [4], there will be discrepancy between the results provided by the new API and
+the `PathElement`s returned by the existing APIs in the `TextFlow` class when non-empty padding and/or borders
+are set.  The new API will have this issue addressed separately from any solution that might eventually be adopted for [4].
+
+A similar, though less impactful, concern exists in regards to the existing bugs [5] and [6],
+since the new API provides dedicated flags to control whether lineSpacing property should be used to generate the result.
+
 
 
 ## Dependencies
 
 None.
-
-
-## To Be Determined
-
-A number of issues require further discussion:
-
-- possible discrepancy should the chosen solution for bugs [2] and [3] be to leave the existing functionality as is
-- how to deal with possible discrepancy and/or backward compatibility due to bugs in the existing APIs related to
-padding, borders, and line spacing [5], [6], [7].
 
 
 
@@ -170,7 +173,6 @@ padding, borders, and line spacing [5], [6], [7].
 1. [JDK-8341670](https://bugs.openjdk.org/browse/JDK-8341670) [Text,TextFlow] Public API for Text Layout Info (Enhancement - P4)
 2. [JDK-8341672](https://bugs.openjdk.org/browse/JDK-8341672): [Text/TextFlow] getRangeInfo (Enhancement - P4)
 3. [JDK-8341671](https://bugs.openjdk.org/browse/JDK-8341671): [Text/TextFlow] getCaretInfo (Enhancement - P4)
-4. [JDK-8092278](https://bugs.openjdk.org/browse/JDK-8092278) Text should have API for selecting group of characters based on their position similar to the DOM's Range.
+4. [JDK-8341438](https://bugs.openjdk.org/browse/JDK-8341438) TextFlow: incorrect caretShape(), hitTest(), rangeShape() with non-empty padding/border
 5. [JDK-8317120](https://bugs.openjdk.org/browse/JDK-8317120) RFE: TextFlow.rangeShape() ignores lineSpacing
 6. [JDK-8317122](https://bugs.openjdk.org/browse/JDK-8317122) RFE: TextFlow.preferredHeight ignores lineSpacing
-7. [JDK-8341438](https://bugs.openjdk.org/browse/JDK-8341438) TextFlow: incorrect caretShape(), hitTest(), rangeShape() with non-empty padding/border
