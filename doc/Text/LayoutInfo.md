@@ -116,7 +116,7 @@ The **LayoutInfo** class provides the following methods:
 - public List<Rectangle2D> **selectionShape**(int start, int end, boolean includeLineSpacing) - returns the geometry of the text selection, as an immutable list of `Rectangle2D` objects, for the given start and end offsets
 - public List<Rectangle2D> **strikeThroughShape**(int start, int end) - returns the geometry of the strike-through shape, as an immutable list of `Rectangle2D` objects, for the given start and end offsets
 - public List<Rectangle2D> **underlineShape**(int start, int end) - returns the geometry of the underline shape, as an immutable list of `Rectangle2D` objects, for the given start and end offsets
-- public CaretInfo **caretInfo**(int charIndex, boolean leading) - returns the caret geometry for the given character index and the character bias
+- `public CaretInfo caretInfo(int charIndex, boolean leading)` - returns the caret geometry for the given character index and the character bias
 
 
 ### javafx.scene.text.TextLineInfo
@@ -132,8 +132,8 @@ Provides the information about a text line in a text layout:
 
 Provides the information associated with the caret:
 
-- public int **getPartCount**() - returns the number of parts representing the caret
-- public double[] **getPartAt**(int index) - returns the geometry of the part at the specified index
+- **public int getPartCount()** - returns the number of parts representing the caret
+- **public Rectangle2D **getPartAt(int index)** - returns the geometry of the part at the specified index
 
 
 
