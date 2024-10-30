@@ -93,9 +93,7 @@ or use the hacks like drawing mid-height lines for the strike-through decoration
      * @return the layout information
      * @since 24
      */
-    public final LayoutInfo getLayoutInfo() {
-        return new PrismLayoutInfo(getTextLayout());
-    }
+    public final LayoutInfo getLayoutInfo()
 ```
 
 
@@ -109,57 +107,16 @@ The information obtained via this object may change after the next layout cycle,
 of actions such as resizing of the container, or modification of certain properties.
 For example updating the text or the font might change the layout, but a change of color would not.
 
-The following sections describe the methods available in this class.
+The **LayoutInfo** class provides the following methods:
 
-
-#### public Rectangle2D getBounds()
-
-Returns the logical bounds of the layout:
-
-- `minX` is always zero
-- `minY` is the ascent of the first line (negative)
-- `width` the width of the widest line
-- `height` the sum of all lines height
-
-TBD: determine is an additional argument is required to determine whether the bounds should return
-the last line's spacing, see [5], [6].
-
-
-#### public int getTextLineCount()
-
-Returns the number of text lines in the layout.
-
-
-#### public List<TextLineInfo> getTextLines()
-
-Returns the immutable list of text lines in the layout.
-
-
-#### public TextLineInfo getTextLine(int index)
-
-Returns the 'TextLineInfo' object which contains information about the text line at the given index.
-
-
-#### public List<Rectangle2D> selectionShape(int start, int end)
-
-Returns the geometry of the text selection, as an immutable list of Rectangle2D objects, for the given start and end offsets.
-
-NOTE: this method should include the last line spacing, see [5].
-
-
-#### public List<Rectangle2D> strikeThroughShape(int start, int end)
-
-Returns the geometry of the strike-through shape, as an immutable list of Rectangle2D objects, for the given start and end offsets.
-
-
-#### public List<Rectangle2D> underlineShape(int start, int end)
-
-Returns the geometry of the strike-through shape, as an immutable list of Rectangle2D objects, for the given start and end offsets.
-
-
-#### public CaretInfo caretInfo(int charIndex, boolean leading)
-
-Returns the geometry of the strike-through shape, as an immutable list of Rectangle2D objects, for the given start and end offsets.
+- public Rectangle2D **getBounds**(boolean includeLineSpacing) - returns the logical bounds of the layout
+- public int **getTextLineCount**() - returns the number of text lines in the layout
+- public List<TextLineInfo> **getTextLines**(boolean includeLineSpacing) - returns the immutable list of the `TextLineInfo` objects describing the layout
+- public TextLineInfo **getTextLine**(int index, boolean includeLineSpacing) - returns the `TextLineInfo` object which contains information about the text line at the given index
+- public List<Rectangle2D> **selectionShape**(int start, int end, boolean includeLineSpacing) - returns the geometry of the text selection, as an immutable list of `Rectangle2D` objects, for the given start and end offsets
+- public List<Rectangle2D> **strikeThroughShape**(int start, int end) - returns the geometry of the strike-through shape, as an immutable list of `Rectangle2D` objects, for the given start and end offsets
+- public List<Rectangle2D> **underlineShape**(int start, int end) - returns the geometry of the underline shape, as an immutable list of `Rectangle2D` objects, for the given start and end offsets
+- public CaretInfo **caretInfo**(int charIndex, boolean leading) - returns the caret geometry for the given character index and the character bias
 
 
 ### javafx.scene.text.TextLineInfo
@@ -170,20 +127,13 @@ Provides the information about a text line in a text layout:
 - `end` the end offset for the line (index of the last character + 1)
 - `bounds` the bounds of the text line, in local coordinates
 
-The bounds:
-
-- `minX` - the x origin of the line (relative to the layout). The x origin is defined by TextAlignment of the text layout, always zero for left-aligned text.
-- `minY` - the ascent of the line (negative). The ascent of the line is the max ascent of all fonts in the line.
-- `width` - the width of the line. The width for the line is sum of all the run widths in the line, it is not affect by the wrapping width but it will include any changes caused by justification.
-- `height` - the height of the line. The height of the line is sum of the max ascent, max descent, and max line gap of all the fonts in the line.
-
 
 ### javafx.scene.text.CaretInfo
 
-Provides the information associated with the caret.
+Provides the information associated with the caret:
 
-- public int **getLineCount**(): returns the number of parts representing the caret
-- public double[] **getLineAt**(int index): returns the geometry of the part at the specified index
+- public int **getPartCount**() - returns the number of parts representing the caret
+- public double[] **getPartAt**(int index) - returns the geometry of the part at the specified index
 
 
 
@@ -196,7 +146,7 @@ Do nothing.
 ## Risks and Assumptions
 
 The proposed APIs pose some compatibility risk since the application developers can extends `Text` and `TextFlow`
-classes adding methods with the same signature.
+classes adding methods with similar signatures.
 
 
 
@@ -210,10 +160,8 @@ None.
 A number of issues require further discussion:
 
 - possible discrepancy should the chosen solution for bugs [2] and [3] be to leave the existing functionality as is
-- whether to use `Rectangle2D` for `CaretInfo.getLineAt()`
 - how to deal with possible discrepancy and/or backward compatibility due to bugs in the existing APIs related to
 padding, borders, and line spacing [5], [6], [7].
-- whether to add a boolean flag to include the last line spacing in layout bounds and range shape computation
 
 
 
