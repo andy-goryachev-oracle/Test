@@ -43,7 +43,7 @@ in the specific direction [0].
 The focus traversal is provided adding a single method to the **Node** class:
 
 ``` java
-public final boolean requestFocusTraversal(TraversalDirection direction, boolean visible)
+public final boolean requestFocusTraversal(TraversalDirection direction)
 ```
 
 where **TraversalDirection** enumerates the search direction relative to the current node [1].
@@ -66,7 +66,7 @@ of the **tab** key:
             if (isEditable()) {
                 insertTab();
             } else {
-                from.requestFocusTraversal(TraversalDirection.NEXT, true);
+                from.requestFocusTraversal(TraversalDirection.NEXT);
             }
             ev.consume();
             break;
