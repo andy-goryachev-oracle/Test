@@ -151,17 +151,18 @@ Do nothing.
 
 ## Risks and Assumptions
 
-The proposed APIs pose some compatibility risk since the application developers can extends `Text` and `TextFlow`
+1. The proposed APIs pose some compatibility risk since the application developers can extends `Text` and `TextFlow`
 classes adding methods with similar signatures.
 
-In light of the existing bug [4], there will be discrepancy between the results provided by the new API and
+2. In light of the existing bug [4], there will be discrepancy between the results provided by the new API and
 the `PathElement`s returned by the existing APIs in the `TextFlow` class when non-empty padding and/or borders
-are set.  The new API will have this issue addressed separately from any solution that might eventually be adopted for [4].
+are set.  The new API should have this issue addressed (i.e. provide the correct results)
+separately from any solution that might eventually be adopted for [4].
 
-A similar, though less impactful, concern exists in regards to the existing bugs [5] and [6],
+3. A similar, though less impactful, concern exists in regards to the existing bugs [5] and [6],
 since the new API provides dedicated flags to control whether lineSpacing property should be used to generate the result.
 
-The proposed APIs are also applicable to the Right-to-Left (RTL) orientation, though a number of existing bugs
+4. The proposed APIs are also applicable to the Right-to-Left (RTL) orientation, though a number of existing bugs
 exist that block the implementation, most notably [7].
 
 
