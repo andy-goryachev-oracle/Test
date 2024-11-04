@@ -138,7 +138,8 @@ Provides the information associated with the caret:
 
 ## Future Additions
 
-In the future, the new API may be easily extended to provide other insights such as glyph runs, text direction, etc. 
+In the future, the new API may be easily extended to provide other insights such as individual glyph runs,
+text direction, and so on. 
 
 
 
@@ -160,6 +161,9 @@ are set.  The new API will have this issue addressed separately from any solutio
 A similar, though less impactful, concern exists in regards to the existing bugs [5] and [6],
 since the new API provides dedicated flags to control whether lineSpacing property should be used to generate the result.
 
+The proposed APIs are also applicable to the Right-to-Left (RTL) orientation, though a number of existing bugs
+exist that block the implementation, most notably [7].
+
 
 
 ## Dependencies
@@ -176,3 +180,4 @@ None.
 4. [JDK-8341438](https://bugs.openjdk.org/browse/JDK-8341438) TextFlow: incorrect caretShape(), hitTest(), rangeShape() with non-empty padding/border
 5. [JDK-8317120](https://bugs.openjdk.org/browse/JDK-8317120) RFE: TextFlow.rangeShape() ignores lineSpacing
 6. [JDK-8317122](https://bugs.openjdk.org/browse/JDK-8317122) RFE: TextFlow.preferredHeight ignores lineSpacing
+7. [JDK-8318095](https://bugs.openjdk.org/browse/JDK-8318095) TextArea/TextFlow: wrong layout in RTL mode
