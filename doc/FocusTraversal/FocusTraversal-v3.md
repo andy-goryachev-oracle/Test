@@ -92,10 +92,7 @@ This proposal relies on the existing unit tests and new tests that exercise the 
 
 ## Risks and Assumptions
 
-The proposed API basically makes the existing internal focus traversal methods public.
-
-It is possible that bugs were introduced during the refactoring process.  This risk might be relatively low due to
-the existing test suite, and can be further mitigated by creating a behavior test suite.
+The proposed API basically makes the existing internal focus traversal method public.
 
 
 
