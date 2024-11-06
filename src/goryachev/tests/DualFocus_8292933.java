@@ -14,13 +14,14 @@ import javafx.stage.Stage;
 
 /**
  * Dual Focus.
+ * https://bugs.openjdk.org/browse/JDK-8292933
  * 
  * Start the application, press SPACE.  Notice that both the text field and the check box
  * have focus.  Pressing SPACE adds a space in the text field as well as toggles the check box.
  *  
  * Only one component is expected to have focus.
  */
-public class DualFocus
+public class DualFocus_8292933
 	extends Application
 {
 	protected PopupControl popup;
@@ -28,13 +29,7 @@ public class DualFocus
 	protected TextField textField;
 	
 	
-//	public static void main(String[] args)
-//	{
-//		launch(args);
-//	}
-	
-	
-	public DualFocus()
+	public DualFocus_8292933()
 	{
 	}
 
@@ -53,7 +48,7 @@ public class DualFocus
 			"2. Notice that both the text field and the check box have focus.\n" +
 			"3. Press SPACE.  Notice both both text field and check box have the input focus.\n" +
 			"\n" +
-			"Only one component is expected to have focus."
+			"Only one component is expected to have input focus."
 		);
 		
 		BorderPane root = new BorderPane();
@@ -62,6 +57,9 @@ public class DualFocus
 		root.setCenter(textArea);
 		
 		Scene sc = new Scene(root);
+		sc.focusOwnerProperty().addListener((s,p,c) -> {
+		    System.out.println(c);
+		});
 		stage.setScene(sc);
 		stage.setTitle("Dual Focus");
 		stage.show();
