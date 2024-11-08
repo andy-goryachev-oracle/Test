@@ -76,6 +76,7 @@ In reality, JavaFX does not exhibit a strict adherence to MVC pattern, for examp
 |Input Map |           |Serves as an integration point between Control and Skin/Behavior by providing a repository for the event handlers and the key mappings.  Guarantees the order in which events are being dispatched to the registered event handlers.
 
 
+
 #### Role of the Control
 
 We might think of Control as a façade, which exposes its properties and methods which enable the user to interact with the control.
@@ -89,6 +90,7 @@ Control is also a Region, and therefore is a part of the scene graph and partici
 The skin creates the visual representation of the control by adding one or more Nodes to the Control (which is a Region).  These Nodes correspond to various visual elements and may also accept user input such as mouse events.
 
 The skin adds listeners to the Control properties and to the events coming from its control surfaces.  These listeners handle input events and modify the Control state by updating the Control's properties through the internal behavior class. 
+
 
 
 #### Role of the Behavior
@@ -201,6 +203,7 @@ The following example is taken from TabPane:
         }
 ```
 
+Note: alternatively, the `FunctionTag` can be replaced by a String at the expense of some loss of string typization and clarity.
 
 
 ### Control
@@ -220,7 +223,6 @@ The following example illustrates a copy() method declared at the control level,
         execute(Tags.COPY);
     }
 ```
-
 
 
 
@@ -269,19 +271,15 @@ The **KeyBinding.Builder** class provides the following methods:
 
 The following are the public instance methods of the KeyBinding class:
 
-- public boolean **isAlt**()
-- public boolean **isCommand**()
-- public boolean **isCtrl**()
 - public boolean **isEventAcceptable**(KeyEvent)
 - public boolean **isKeyPressed**()
 - public boolean **isKeyReleased**()
 - public boolean **isKeyTyped**()
-- public boolean **isMeta**()
-- public boolean **isMeta**()
-- public boolean **isOption**()
-- public boolean **isShift**()
-- public boolean **isShortcut**()
 
+Lastly, sometimes it is useful to create a copy of a KeyBinding with a different key code and the same set of
+the modifier key, in which case there is a utility method:
+
+- public KeyBinding **withNewKeyCode**(KeyCode)
 
 
 
