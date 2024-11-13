@@ -3,6 +3,13 @@
 This document captures discussion around the [InputMap](InputMapV3.md) proposal (in no particular order).
 
 
+## FunctionTag or String Action name?
+
+The `FunctionTag` class can be replaced by the String "action name", losing some degree of type safety, while
+making it somewhat easier to understand.  The action names can be declared at the specific Control level,
+for example `TextArea.SELECT_ALL`.
+
+
 
 ## Functionality of a Control with a null skin
 

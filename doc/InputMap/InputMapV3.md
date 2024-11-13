@@ -146,12 +146,10 @@ The InputMap provides an ordered repository of event handlers, working together 
 
 |Priority   |Set By      |Method                             |Description   |
 |:----------|:-----------|:----------------------------------|:-------------|
-|Highest    |Application |InputMap.addEventHandler()         |Event handlers set by the application	
+|Highest    |Application |InputMap.addHandler()              |Event handlers set by the application	
 |           |Application |InputMap.registerKey()             |Key mappings set by the application	
 |           |Skin        |SkinInputMap.registerKey()         |Key mappings set by the skin
-|           |Skin        |SkinInputMap.addEventHandler()     |Event handlers set by the skin	
-|           |Skin        |SkinInputMap.addEventHandlerLast() |Event handlers set by the skin
-|Lowest     |Application |InputMap.addEventHandlerLast()     |Event handlers set by the application
+|Lowest     |Skin        |SkinInputMap.addHandler()          |Event handlers set by the skin	
 
 For key mappings, the InputMap utilizes a two-stage lookup.  First, the key event is matched to a **FunctionTag** which identifies a function provided either by the skin or the associated behavior (the "default" function), or by the application.  When such a mapping exists, the found function tag is matched to a function registered either by the application or by the skin.  This mechanism allows for customizing the key mappings and the underlying functions independently and separately.
 
@@ -162,7 +160,6 @@ The InputMap also supports dynamic (that is, at run time) key mapping customizat
 The InputMap class provides the following public methods:
 
 - public void **addHandler**(EventType, EventHandler)
-- public void **addHandlerLast**(EventType, EventHandler)
 - public Set<KeyBinding> **getKeyBindings**()
 - public Set<KeyBinding> **getKeyBindingsFor**(FunctionTag);
 - public void **register**(KeyBinding, Runnable)
@@ -301,8 +298,6 @@ The base SkinInputMap class provides the following public methods:
 
 - public void **addHandler**(EventCriteria, boolean consume, EventHandler)
 - public void **addHandler**(EventType, boolean consume, EventHandler)
-- public void **addHandlerLast**(EventCriteria, boolean consume, EventHandler)
-- public void **addHandlerLast**(EventType, boolean consume, EventHandler)
 - public void **duplicateMapping**(KeyBinding, KeyBinding)
 - public Set<KeyBinding> **getKeyBindings**()
 - public Set<KeyBinding> **getKeyBindingsFor**(FunctionTag)
@@ -355,8 +350,6 @@ It also provides a number of protected methods intended to be called by the beha
 
 - protected final void **addHandler**(EventCriteria, boolean consume, EventHandler)
 - protected final void **addHandler**(EventType, boolean consume, EventHandler)
-- protected final void **addHandlerLast**(EventCriteria, boolean consume, EventHandler)
-- protected final void **addHandlerLast**(EventType, boolean consume, EventHandler)
 - protected final void **duplicateMapping**(KeyBinding, KeyBinding)
 - protected final C **getControl**()
 - protected final boolean **isLinux**()
@@ -392,9 +385,9 @@ Please also refer to
 An application can use the InputMap feature to:
 
 - add a new key mapped to a function
-- redefine an existing function while keeping the key binding(s) intact
+- dynamically redefine an existing function while keeping the existing key binding(s) intact
 - map an existing function to a new key binding
-- obtain the default function after it being redefined
+- invoke the default function after it being redefined
 
 
 ##### Adding a New Key Mapped to a Function
@@ -437,13 +430,13 @@ This example adds a key binding to the existing function by referencing the asso
 ```
 
 
-##### Obtain the Default Function
+##### Invoke the Default Function
 
-The following code allows to obtain the default function when it has overwritten by the application:
+The following example illustrates calling the default function even if it has overwritten by the application:
 
 ```java
-    //  obtains the default function handler
-    FunctionHandler<?> h = getInputMap().getDefaultFunction(Tag.COPY);
+    //  run the default function
+    control.executeDefault(Tag.COPY);
 ```
 
 
