@@ -200,6 +200,9 @@ Provides the information associated with the caret:
 - `public int getPartCount()` - returns the number of parts representing the caret
 - `public Rectangle2D getPartAt(int index)` - returns the geometry of the part at the specified index
 
+Note: `CaretInfo.getPartAt()` may return a more complex object (`CaretLineInfo`) instead, to support future
+extension such as direction of text at each caret, and other information.
+
 
 ## Future Additions
 
