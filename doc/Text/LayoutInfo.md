@@ -10,19 +10,20 @@ Andy Goryachev
 This proposal introduces a new method to the `Text` and `TextFlow` classes, `getLayoutInfo()`,
 which returns a view into the text layout for that node.  The new method returns a new class, `LayoutInfo`,
 which allows for querying various aspects of the text layout, such as:
-- text lines: offsets and bounds
+
+- caret information
 - overall layout bounds
+- text lines: offsets and bounds
 - text selection geometry
 - strike-through geometry
 - underline geometry
-- caret information
 
 
 
 ## Goals
 
-The goal of this proposal is to provide a public API for querying the text layout geometry and extended caret
-information from the text layout [1], [2], [3].
+The goal of this proposal is to provide a public API for querying the text layout and the associated caret geometry
+from the internal text layout [1], [2], [3].
 
 
 
@@ -53,6 +54,70 @@ or use the hacks like drawing mid-height lines for the strike-through decoration
 
 
 ## Description
+
+The new API provide a way to query additional information about the text layout within the **Text** and the **TextFlow** nodes,
+for the applications that require additional introspection into details of the text layout.
+
+
+### Caret Information
+
+The new API provides the rectangles represeting a single caret:
+
+![single caret](single-caret.png)
+
+or a split caret:
+
+![split caret](split-caret.png)
+
+ 
+### Layout Bounds
+
+The new API provides the overall layout bounds, including the line spacing:
+
+![layout bounds with the line spacing](bounds-with-line-spacing.png)
+
+or excluding the line spacing:
+
+![layout bounds without the line spacing](bounds-without-line-spacing.png)
+
+
+### Individual Text Lines
+
+The text layout details such as break up of text into multiple lines, the geometry of said lines,
+and the character offsets are provided by the new API.
+
+The caller can request geometry to include the line spacing:
+
+![text lines with the line spacing](lines-with-line-spacing.png)
+
+or exclude the line spacing:
+
+![text lines without the line spacing](lines-without-line-spacing.png)
+
+
+### Text Selection
+
+The selection shape (range shape) for an arbitrary range of text can be requested by the caller to include the line spacing:
+
+![selection shape with the line spacing](selection-with-line-spacing.png)
+
+or exclude line spacing:
+
+![selection shape without the line spacing](selection-without-line-spacing.png)
+
+
+
+### Strike-through and Underline Decoration
+
+The geometry of commonly used decorations can be obtained via the new API.   The supported decorations are strike-through:
+
+![strike-through shapes](strike-through.png)
+
+and underline:
+
+![underline shapes](underline.png)
+
+
 
 ### javafx.scene.text.Text
 
