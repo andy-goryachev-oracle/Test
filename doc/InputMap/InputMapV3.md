@@ -352,8 +352,8 @@ For more complex modifier combinations, or when the key binding corresponds to a
 
 The Builder can be obtained with either of the two methods:
 
-- public static KeyBinding.Builder **with**(KeyCode)
-- public static KeyBinding.Builder **with**(String character)
+- public static KeyBinding.Builder **builder**(KeyCode)
+- public static KeyBinding.Builder **builder**(String character)
 
 The **KeyBinding.Builder** class provides the following methods:
 
