@@ -197,17 +197,16 @@ Provides the information about a text line in a text layout:
 
 Provides the information associated with the caret:
 
-- `public int getPartCount()` - returns the number of parts representing the caret
-- `public Rectangle2D getPartAt(int index)` - returns the geometry of the part at the specified index
+- `public int getSegmentCount()` - returns the number of segments representing the caret
+- `public Rectangle2D getSegmentAt(int index)` - returns the geometry of the segment at the specified index
 
-Note: `CaretInfo.getPartAt()` may return a more complex object (`CaretLineInfo`) instead, to support future
-extension such as direction of text at each caret, and other information.
+
 
 
 ## Future Additions
 
-In the future, the new API may be easily extended to provide other insights such as individual glyph runs,
-text direction, and so on. 
+In the future, these APIs may be extended to provide additional information about
+the text runs for the purposes of better handling of bidirectional use cases.
 
 
 
