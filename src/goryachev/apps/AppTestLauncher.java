@@ -35,7 +35,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(TextInputControl_RTL_8342233.class, args);
+        Application.launch(Popup_InputMethod_8288893.class, args);
     }
 
     private static void enableLogging() {
