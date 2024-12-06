@@ -20,22 +20,38 @@ public class ComboBox_Events extends Application {
         c.valueProperty().addListener((obs, ov, nv) -> {
             System.out.printf("ComboBox.onValueChanged: %s%n", nv);
         });
-        c.getEditor().addEventHandler(MouseEvent.ANY, (ev) -> p("editor", ev));
-        c.addEventHandler(MouseEvent.ANY, (ev) -> p("combobox", ev));
-        c.getEditor().addEventHandler(KeyEvent.ANY, (ev) -> p("editor", ev));
-        c.addEventHandler(KeyEvent.ANY, (ev) -> p("combobox", ev));
 
+        boolean mouse = false;
+
+        if (mouse) {
+            c.getEditor().addEventHandler(MouseEvent.ANY, (ev) -> p("editor handler", ev));
+            c.getEditor().addEventFilter(MouseEvent.ANY, (ev) -> p("editor filter", ev));
+        }
+        c.getEditor().addEventHandler(KeyEvent.ANY, (ev) -> p("editor handler", ev));
+        c.getEditor().addEventFilter(KeyEvent.ANY, (ev) -> p("editor filter", ev));
+
+        if (mouse) {
+            c.addEventHandler(MouseEvent.ANY, (ev) -> p("combobox handler", ev));
+            c.addEventFilter(MouseEvent.ANY, (ev) -> p("combobox filter", ev));
+        }
+        c.addEventHandler(KeyEvent.ANY, (ev) -> p("combobox handler", ev));
+        c.addEventFilter(KeyEvent.ANY, (ev) -> p("combobox filter", ev));
 
         stage.setScene(new Scene(new VBox(c)));
         stage.setWidth(400);
         stage.setHeight(200);
-        stage.addEventHandler(MouseEvent.ANY, (ev) -> p("stage", ev));
-        stage.addEventHandler(KeyEvent.ANY, (ev) -> p("stage", ev));
-        
+        if (mouse) {
+            stage.addEventHandler(MouseEvent.ANY, (ev) -> p("stage handler", ev));
+            stage.addEventFilter(MouseEvent.ANY, (ev) -> p("stage filter", ev));
+        }
+        stage.addEventHandler(KeyEvent.ANY, (ev) -> p("stage handler", ev));
+        stage.addEventFilter(KeyEvent.ANY, (ev) -> p("stage filter", ev));
+
         stage.show();
     }
-    
+
     private void p(String from, Event ev) {
-        System.out.println(from + ": " + ev.getEventType() + " " + (ev.isConsumed() ? "consumed??" : ""));
+        Object t = ev.getTarget();
+        System.out.println(from + ": " + ev.getEventType() + " " + (ev.isConsumed() ? "consumed??" : "") + " target=" + ev.getTarget().hashCode());
     }
 }
