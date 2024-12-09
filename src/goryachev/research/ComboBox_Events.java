@@ -13,7 +13,7 @@ import javafx.stage.Stage;
  */
 public class ComboBox_Events extends Application {
 
-    private int events;
+    private int seq = 1;
 
     @Override
     public void start(Stage stage) {
@@ -71,11 +71,13 @@ public class ComboBox_Events extends Application {
             return;
         }
         System.out.println(
+            seq + ". " +
             from + ": " + ev.getEventType() +
-                " h=" + h(ev) +
-                " " + (ev.isConsumed() ? "consumed!" : "") +
-                " target=" + h(ev.getTarget()));
-        events++;
+            " h=" + h(ev) +
+            " " + (ev.isConsumed() ? "consumed!" : "") +
+            " target=" + h(ev.getTarget())
+        );
+        seq++;
     }
 
     private String h(Object x) {
