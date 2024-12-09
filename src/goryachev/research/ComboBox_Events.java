@@ -2,8 +2,10 @@ package goryachev.research;
 
 import javafx.application.Application;
 import javafx.event.Event;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
@@ -13,42 +15,48 @@ import javafx.stage.Stage;
  */
 public class ComboBox_Events extends Application {
 
+    private Stage stage;
+    private ComboBox<String> cb;
+    private TextField ed;
     private int seq = 1;
 
     @Override
     public void start(Stage stage) {
-        ComboBox<String> c = new ComboBox<String>();
-        c.setEditable(true);
-        c.valueProperty().addListener((obs, ov, nv) -> {
+        this.stage = stage;
+        
+        cb = new ComboBox<String>();
+        cb.setEditable(true);
+        cb.valueProperty().addListener((obs, ov, nv) -> {
             System.out.printf("ComboBox.onValueChanged: %s%n", nv);
         });
+        ed = cb.getEditor();
 
         boolean mouse = false;
         boolean filter = true;
 
         if (mouse) {
-            c.getEditor().addEventHandler(MouseEvent.ANY, (ev) -> p("editor handler", ev));
+            ed.addEventHandler(MouseEvent.ANY, (ev) -> p("editor handler", ev));
             if (filter) {
-                c.getEditor().addEventFilter(MouseEvent.ANY, (ev) -> p("editor filter", ev));
+                ed.addEventFilter(MouseEvent.ANY, (ev) -> p("editor filter", ev));
             }
         }
-        c.getEditor().addEventHandler(KeyEvent.ANY, (ev) -> p("editor handler", ev));
+        ed.addEventHandler(KeyEvent.ANY, (ev) -> p("editor handler", ev));
         if (filter) {
-            c.getEditor().addEventFilter(KeyEvent.ANY, (ev) -> p("editor filter", ev));
+            ed.addEventFilter(KeyEvent.ANY, (ev) -> p("editor filter", ev));
         }
 
         if (mouse) {
-            c.addEventHandler(MouseEvent.ANY, (ev) -> p("combobox handler", ev));
+            cb.addEventHandler(MouseEvent.ANY, (ev) -> p("combobox handler", ev));
             if (filter) {
-                c.addEventFilter(MouseEvent.ANY, (ev) -> p("combobox filter", ev));
+                cb.addEventFilter(MouseEvent.ANY, (ev) -> p("combobox filter", ev));
             }
         }
-        c.addEventHandler(KeyEvent.ANY, (ev) -> p("combobox handler", ev));
+        cb.addEventHandler(KeyEvent.ANY, (ev) -> p("combobox handler", ev));
         if (filter) {
-            c.addEventFilter(KeyEvent.ANY, (ev) -> p("combobox filter", ev));
+            cb.addEventFilter(KeyEvent.ANY, (ev) -> p("combobox filter", ev));
         }
 
-        stage.setScene(new Scene(new VBox(c)));
+        stage.setScene(new Scene(new VBox(cb)));
         stage.setWidth(400);
         stage.setHeight(200);
         if (mouse) {
@@ -78,6 +86,21 @@ public class ComboBox_Events extends Application {
             " target=" + h(ev.getTarget())
         );
         seq++;
+        
+        System.out.println(
+            "   cb: " + foc(cb) +
+            "\n" +
+            "   ed: " + foc(ed)
+        );
+    }
+    
+    private String foc(Node n) {
+        boolean fo = stage.getScene().getFocusOwner() == n;
+        return
+            (n.isFocused() ? "focused" : "") +
+            " " + (n.isFocusVisible() ? "focusVisible" : "") +
+            " " + (n.isFocusWithin() ? "focusWithin" : "") +
+            " " + (fo ? "focusOwner" : "");
     }
 
     private String h(Object x) {

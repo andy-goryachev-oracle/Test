@@ -2,6 +2,7 @@ package goryachev.research;
 
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.KeyboardFocusManager;
 import java.awt.Panel;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -50,6 +51,9 @@ public class JComboBox_Events {
         f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         f.setSize(400, 300);
         f.add(p);
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("focusOwner", (ev) -> {
+            System.out.println("focusOwner=" + ev.getNewValue());
+        });
         f.setVisible(true);
     }
     
