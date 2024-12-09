@@ -13,6 +13,8 @@ import javafx.stage.Stage;
  */
 public class ComboBox_Events extends Application {
 
+    private int events;
+
     @Override
     public void start(Stage stage) {
         ComboBox<String> c = new ComboBox<String>();
@@ -22,36 +24,62 @@ public class ComboBox_Events extends Application {
         });
 
         boolean mouse = false;
+        boolean filter = true;
 
         if (mouse) {
             c.getEditor().addEventHandler(MouseEvent.ANY, (ev) -> p("editor handler", ev));
-            c.getEditor().addEventFilter(MouseEvent.ANY, (ev) -> p("editor filter", ev));
+            if (filter) {
+                c.getEditor().addEventFilter(MouseEvent.ANY, (ev) -> p("editor filter", ev));
+            }
         }
         c.getEditor().addEventHandler(KeyEvent.ANY, (ev) -> p("editor handler", ev));
-        c.getEditor().addEventFilter(KeyEvent.ANY, (ev) -> p("editor filter", ev));
+        if (filter) {
+            c.getEditor().addEventFilter(KeyEvent.ANY, (ev) -> p("editor filter", ev));
+        }
 
         if (mouse) {
             c.addEventHandler(MouseEvent.ANY, (ev) -> p("combobox handler", ev));
-            c.addEventFilter(MouseEvent.ANY, (ev) -> p("combobox filter", ev));
+            if (filter) {
+                c.addEventFilter(MouseEvent.ANY, (ev) -> p("combobox filter", ev));
+            }
         }
         c.addEventHandler(KeyEvent.ANY, (ev) -> p("combobox handler", ev));
-        c.addEventFilter(KeyEvent.ANY, (ev) -> p("combobox filter", ev));
+        if (filter) {
+            c.addEventFilter(KeyEvent.ANY, (ev) -> p("combobox filter", ev));
+        }
 
         stage.setScene(new Scene(new VBox(c)));
         stage.setWidth(400);
         stage.setHeight(200);
         if (mouse) {
             stage.addEventHandler(MouseEvent.ANY, (ev) -> p("stage handler", ev));
-            stage.addEventFilter(MouseEvent.ANY, (ev) -> p("stage filter", ev));
+            if (filter) {
+                stage.addEventFilter(MouseEvent.ANY, (ev) -> p("stage filter", ev));
+            }
         }
         stage.addEventHandler(KeyEvent.ANY, (ev) -> p("stage handler", ev));
-        stage.addEventFilter(KeyEvent.ANY, (ev) -> p("stage filter", ev));
+        if (filter) {
+            stage.addEventFilter(KeyEvent.ANY, (ev) -> p("stage filter", ev));
+        }
 
         stage.show();
     }
 
     private void p(String from, Event ev) {
-        Object t = ev.getTarget();
-        System.out.println(from + ": " + ev.getEventType() + " " + (ev.isConsumed() ? "consumed??" : "") + " target=" + ev.getTarget().hashCode());
+        Object t = ev.getEventType();
+        if (t == MouseEvent.MOUSE_MOVED) {
+            return;
+        }
+        System.out.println(
+            from + ": " + ev.getEventType() +
+                " h=" + h(ev) +
+                " " + (ev.isConsumed() ? "consumed!" : "") +
+                " target=" + h(ev.getTarget()));
+        events++;
+    }
+
+    private String h(Object x) {
+        String s = String.valueOf(x.hashCode());
+        return s.substring(s.length() - 3);
     }
 }
