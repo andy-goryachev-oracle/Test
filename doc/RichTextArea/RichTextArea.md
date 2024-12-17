@@ -351,7 +351,7 @@ This example illustrates adding a new key binding (Shortcut-W), mapped to a new 
 
 #### Redefining Existing Key Binding
 
-This example illustrates unregistering all the existing key bindings, followed by registering a new key binding mapped to the same function:
+This example illustrates disabling of all the existing key bindings, followed by registering a new key binding mapped to the same function:
 
 ```java
         // disable old key bindings
