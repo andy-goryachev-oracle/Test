@@ -279,8 +279,8 @@ The InputMap class provides the following public methods:
 - public void **restoreDefaultFunction**(FunctionTag)
 - public void **restoreDefaultKeyBinding**(KeyBinding)
 - public void **setSkinInputMap**(SkinInputMap)
-- public void **unbind**(FunctionTag)
-- public void **unbind**(KeyBinding)
+- public void **removeKeyBindingsFor**(FunctionTag)
+- public void **disableKeyBinding**(KeyBinding)
 
 
 

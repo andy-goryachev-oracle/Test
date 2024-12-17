@@ -351,13 +351,13 @@ This example illustrates adding a new key binding (Shortcut-W), mapped to a new 
 
 #### Redefining Existing Key Binding
 
-This example illustrates unbinding all existing key bindings, followed by registering a new key binding mapped to the same function:
+This example illustrates unregistering all the existing key bindings, followed by registering a new key binding mapped to the same function:
 
 ```java
-        // unbind old key bindings
-        var old = richTextArea.getInputMap().getKeyBindingsFor(RichTextArea.PASTE_PLAIN_TEXT);
+        // disable old key bindings
+        var old = richTextArea.getInputMap().getKeyBindingsFor(RichTextArea.Tag.PASTE_PLAIN_TEXT);
         for (KeyBinding k : old) {
-            richTextArea.getInputMap().unbind(k);
+            richTextArea.getInputMap().disableKeyBinding(k);
         }
         // map a new key binding
         richTextArea.getInputMap().registerKey(KeyBinding.shortcut(KeyCode.W), RichTextArea.PASTE_PLAIN_TEXT);
