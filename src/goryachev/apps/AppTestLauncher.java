@@ -35,7 +35,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(Label_Layout.class, args);
+        Application.launch(Menu_RenderScale_8346281.class, args);
     }
 
     private static void enableLogging() {
