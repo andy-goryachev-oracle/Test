@@ -60,7 +60,7 @@ Creating a view-only informational control should also be easy:
 ```java
         SimpleViewOnlyStyledModel m = new SimpleViewOnlyStyledModel();
         // add text segment using CSS style name (requires a stylesheet)
-        m.addWithStyles("RichTextArea ", "HEADER");
+        m.addWithStyleNames("RichTextArea ", "HEADER");
         // add text segment using inline styles
         m.addWithInlineStyle("Demo", "-fx-font-size:200%; -fx-font-weight:bold;");
         // add newline
@@ -527,7 +527,7 @@ This example illustrates how to style a view-only document created with the Simp
 ```java
         SimpleViewOnlyStyledModel m = new SimpleViewOnlyStyledModel();
         // add text segment using CSS style name (requires a style sheet)
-        m.addWithStyles("RichTextArea ", "HEADER");
+        m.addWithStyleNames("RichTextArea ", "HEADER");
         // add text segment using inline style
         m.addWithInlineStyle("Demo", "-fx-font-size:200%; -fx-font-weight:bold;");
         // newline
