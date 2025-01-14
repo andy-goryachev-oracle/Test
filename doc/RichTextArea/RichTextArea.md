@@ -233,12 +233,12 @@ CodeArea extends RichTextArea control to provide a styled text based on a plain 
 
 CodeArea adds a few properties in addition to the existing properties declared by the RichTextArea control:
 
-|Property       |Description                                           |Styleable|
-|:--------------|:-----------------------------------------------------|:--------|
-|font           |the default font                                      |Yes
+|Property       |Description                                           |Styleable Name   |
+|:--------------|:-----------------------------------------------------|:----------------|
+|font           |the default font                                      |-fx-font
 |lineNumbers    |determines whether to show line numbers
-|lineSpacing    |defines the vertical space in pixels between lines    |Yes
-|tabSize        |the size of tab stop in spaces                        |Yes
+|lineSpacing    |defines the vertical space in pixels between lines    |-fx-line-spacing
+|tabSize        |the size of tab stop in spaces                        |-fx-tab-size
 
 
 #### CodeTextModel 
