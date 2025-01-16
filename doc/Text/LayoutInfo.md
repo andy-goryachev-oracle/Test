@@ -135,7 +135,7 @@ and underline:
      * For example updating the text or the font might change the layout, but a change of color would not.
      *
      * @return the layout information
-     * @since 24
+     * @since 25
      */
     public final LayoutInfo getLayoutInfo()
 ```
@@ -156,7 +156,7 @@ and underline:
      * For example updating the text or the font might change the layout, but a change of color would not.
      *
      * @return the layout information
-     * @since 24
+     * @since 25
      */
     public final LayoutInfo getLayoutInfo()
 ```
@@ -243,8 +243,8 @@ None.
 ## References
 
 1. [JDK-8341670](https://bugs.openjdk.org/browse/JDK-8341670) [Text,TextFlow] Public API for Text Layout Info (Enhancement - P4)
-2. [JDK-8341672](https://bugs.openjdk.org/browse/JDK-8341672): [Text/TextFlow] getRangeInfo (Enhancement - P4)
-3. [JDK-8341671](https://bugs.openjdk.org/browse/JDK-8341671): [Text/TextFlow] getCaretInfo (Enhancement - P4)
+2. [JDK-8341672](https://bugs.openjdk.org/browse/JDK-8341672) [Text/TextFlow] getRangeInfo (Enhancement - P4)
+3. [JDK-8341671](https://bugs.openjdk.org/browse/JDK-8341671) [Text/TextFlow] getCaretInfo (Enhancement - P4)
 4. [JDK-8341438](https://bugs.openjdk.org/browse/JDK-8341438) TextFlow: incorrect caretShape(), hitTest(), rangeShape() with non-empty padding/border
 5. [JDK-8317120](https://bugs.openjdk.org/browse/JDK-8317120) RFE: TextFlow.rangeShape() ignores lineSpacing
 6. [JDK-8317122](https://bugs.openjdk.org/browse/JDK-8317122) RFE: TextFlow.preferredHeight ignores lineSpacing
