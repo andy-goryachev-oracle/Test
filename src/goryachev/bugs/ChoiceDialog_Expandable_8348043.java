@@ -45,6 +45,10 @@ public class ChoiceDialog_Expandable_8348043 extends Application {
         ta.setText(buf.toString());
         ta.setEditable(false);
         ta.setWrapText(true);
+        // FIX this constraint is IGNORED by the ChoiceDialog
+        ta.setMaxWidth(100);
+        // workaround: set preferred width
+        //ta.setPrefWidth(100);
 
         // Initially the dialog works as expected when
         // the expandable content is expanded/hidden.
