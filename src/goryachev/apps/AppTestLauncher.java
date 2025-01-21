@@ -35,7 +35,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(TreeView_FlickerTogglingExpandedState.class, args);
+        Application.launch(ChoiceDialog_Expandable_8348043.class, args);
     }
 
     private static void enableLogging() {
