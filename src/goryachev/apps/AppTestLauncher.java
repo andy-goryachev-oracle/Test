@@ -35,7 +35,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(ChoiceDialog_Expandable_8348043.class, args);
+        Application.launch(Utils_ThreadUnsafe_8347392.class, args);
     }
 
     private static void enableLogging() {
