@@ -12,53 +12,46 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class Tooltip_BackgroundThread_8348100 extends Application {
-    private Stage stage;
-
     @Override
     public void start(Stage stage) {
-
-        var root = new VBox();
-        var scene = new Scene(root);
-        this.stage = stage;
+        VBox root = new VBox();
+        Scene scene = new Scene(root);
         stage.setScene(scene);
-        var text = new Label("some text");
+
+        Label text = new Label("some text");
         text.setBorder(Border.stroke(Color.BLACK));
-        var tooltip1 = new Tooltip();
-        tooltip1.setShowDelay(new Duration(0.0));
-        tooltip1.setHideDelay(new Duration(0.0));
-        tooltip1.setText("tooltip1");
+
+        Tooltip tooltip1 = new Tooltip("tooltip1");
+        tooltip1.setShowDelay(Duration.ZERO);
+        tooltip1.setHideDelay(Duration.ZERO);
         text.setTooltip(tooltip1);
+
         root.getChildren().add(text);
         stage.show();
 
-        new Thread() {
-            @Override
-            public void run() {
-                for (;;) {
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            var tooltip2 = new Tooltip();
-                            Platform.runLater(() -> resizeMe());
-                        }
-                    }.start();
-
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
+        // Create a thread to continuously resize text and force re-layout
+        new Thread(() -> {
+            double h1 = 400.0;
+            double h2 = 410.0;
+            while (true) {
+                javafx.application.Platform.runLater(() -> {
+                    text.setMinHeight(h1);
+                    text.setMaxHeight(h1);
+                    stage.setHeight(h1);
+                });
+                javafx.application.Platform.runLater(() -> {
+                    text.setMinHeight(h2);
+                    text.setMaxHeight(h2);
+                    stage.setHeight(h2);
+                });
             }
-        }.start();
-    }
+        }).start();
 
-    void resizeMe() {
-        double h = stage.getHeight();
-        if (h != 400) {
-            stage.setHeight(400);
-        } else {
-            stage.setHeight(410);
-        }
+        // Another thread for creating tooltips
+        new Thread(() -> {
+            while (true) {
+                Tooltip tooltip2 = new Tooltip();
+            }
+        }).start();
     }
 }
