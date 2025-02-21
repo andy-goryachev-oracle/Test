@@ -2,9 +2,9 @@ package goryachev.bugs;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import goryachev.util.HorizontalLabel;
 
 /**
  * https://bugs.openjdk.org/browse/JDK-8350149
@@ -13,7 +13,8 @@ import javafx.stage.Stage;
 public class VBox_FillWidth_8350149 extends Application {
     @Override
     public void start(Stage stage) {
-        Label label = new Label("Relatively long text that may need wrapping at some point");
+        //Label label = new Label("Relatively long text that may need wrapping at some point");
+        HorizontalLabel label = new HorizontalLabel("Relatively long text that may need wrapping at some point");
 
         label.setWrapText(true); // make it get a horizontal bias
         //label.setPrefWidth(50);
