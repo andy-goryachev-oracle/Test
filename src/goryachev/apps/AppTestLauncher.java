@@ -35,7 +35,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(PieChart_AddSeries.class, args);
+        Application.launch(PieChart_AddSeries_8350687.class, args);
     }
 
     private static void enableLogging() {

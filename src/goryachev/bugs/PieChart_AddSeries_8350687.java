@@ -36,9 +36,9 @@ import javafx.scene.chart.PieChart.Data;
 import javafx.stage.Stage;
 
 /**
- *
+ * https://bugs.openjdk.org/browse/JDK-8350687
  */
-public class PieChart_AddSeries extends Application {
+public class PieChart_AddSeries_8350687 extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         PieChart chart = new PieChart();
@@ -52,9 +52,14 @@ public class PieChart_AddSeries extends Application {
         new Thread(() -> {
             Random r = new Random();
             for (;;) {
-                sleep(1 + r.nextInt(20));
+                sleep(1 + r.nextInt(40));
                 runAndWait(() -> {
-                    chart.setAnimated(nextBoolean());
+
+                    {
+                        // FIX this causes corruption
+                        chart.setAnimated(nextBoolean());
+                    }
+
                     chart.getData().setAll(createPieSeries());
                 });
             }
