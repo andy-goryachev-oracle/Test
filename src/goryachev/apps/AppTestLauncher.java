@@ -35,7 +35,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(Pagination_MemoryLeak_8349756.class, args);
+        Application.launch(PieChart_AddSeries.class, args);
     }
 
     private static void enableLogging() {
