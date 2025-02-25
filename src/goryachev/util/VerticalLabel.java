@@ -53,8 +53,12 @@ public class VerticalLabel extends Pane {
 
     @Override
     protected void layoutChildren() {
-        label.resizeRelocate(direction == VerticalDirection.DOWN ? getWidth() : 0,
-            direction == VerticalDirection.DOWN ? 0 : getHeight(), getHeight(), getWidth());
+        label.resizeRelocate(
+            direction == VerticalDirection.DOWN ? getWidth() : 0,
+            direction == VerticalDirection.DOWN ? 0 : getHeight(),
+            getHeight(),
+            getWidth()
+        );
     }
 
     @Override

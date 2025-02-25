@@ -14,7 +14,7 @@ import goryachev.util.VerticalLabel;
 public class HBox_FillHeight_8350149 extends Application {
     @Override
     public void start(Stage stage) {
-        VerticalLabel label = new VerticalLabel(VerticalDirection.DOWN, "Relatively long text that may need wrapping at some point") ;
+        VerticalLabel label = new VerticalLabel(VerticalDirection.UP, "Relatively long text that may need wrapping at some point") ;
         label.setWrapText(true); // make it get a horizontal bias
 
         HBox root = new HBox(label);

@@ -44,7 +44,7 @@ public class HorizontalLabel extends Pane {
 
     @Override
     public Orientation getContentBias() {
-        return label.isWrapText() ? Orientation.VERTICAL : null;
+        return label.getContentBias();
     }
 
     @Override
