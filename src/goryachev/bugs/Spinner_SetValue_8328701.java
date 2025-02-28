@@ -14,10 +14,9 @@ public class Spinner_SetValue_8328701 extends Application {
 
     @Override
     public void start(Stage stage) {
-        Spinner<Integer> spinner = new Spinner<>(0, 10, 5, 1);
+        Spinner<Integer> spinner = new Spinner<>(0, 100, 5, 1);
         spinner.valueProperty().addListener(o -> {
-            System.out.println("Listener invoked");
-            System.out.println((int)spinner.getValue());
+            System.out.println("valueProperty=" + spinner.getValue());
             count++;
         });
         spinner.setEditable(true);
@@ -25,7 +24,7 @@ public class Spinner_SetValue_8328701 extends Application {
         spinner.commitValue();
 
         System.out.println(count);
-        System.out.println((int)spinner.getValue());
+        System.out.println(spinner.getValue());
 
         VBox vBox = new VBox(spinner);
 
