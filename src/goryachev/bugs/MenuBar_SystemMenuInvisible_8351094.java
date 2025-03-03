@@ -14,9 +14,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
- * 
+ * https://bugs.openjdk.org/browse/JDK-8351094
  */
-public class MenuBar_SystemMenuInvisible_ extends Application {
+public class MenuBar_SystemMenuInvisible_8351094 extends Application {
 
     @Override
     public void start(Stage stage) {

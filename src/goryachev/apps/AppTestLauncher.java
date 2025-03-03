@@ -35,7 +35,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(MenuBar_SystemMenuInvisible_.class, args);
+        Application.launch(MenuBar_SystemMenuInvisible_8351094.class, args);
     }
 
     private static void enableLogging() {
