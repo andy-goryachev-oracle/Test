@@ -26,7 +26,7 @@ In order to suppress the warning now, and to be able to run your application at 
 
 For example:
 
-```shell
+```console
 java --enable-native-access=javafx.graphics,javafx.media,javafx.web
 ```
 
@@ -42,7 +42,7 @@ To facilitate the transition, `jdk.jsobject` is now an upgradable module in the 
 
 When running with the JavaFX SDK, use the `--upgrade-module-path` argument. For example:
 
-```shell
+```console
 javac --upgrade-module-path=/path/to/javafx-sdk-24/lib
 java --upgrade-module-path=/path/to/javafx-sdk-24/lib
 ```
@@ -53,7 +53,7 @@ NOTE: The above will fail if you run your application with JDK 23 or earlier. JD
 
 When creating your custom Java runtime image, put the JavaFX jmods on the module path ahead of the JDK jmods. For example:
 
-```shell
+```console
 jlink --output jdk-with-javafx \
     --module-path /path/to/javafx-jmods-24:/path/to/jdk-24/jmods \
     --add-modules ALL-MODULE-PATH
@@ -109,7 +109,7 @@ WARNING: sun.misc.Unsafe::allocateMemory will be removed in a future release
 
 To disable this warning, pass `--sun-misc-unsafe-memory-access=allow` to `java` on the command line. For example:
 
-```shell
+```console
 java --sun-misc-unsafe-memory-access=allow
 ```
 
