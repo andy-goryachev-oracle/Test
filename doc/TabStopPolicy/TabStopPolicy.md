@@ -62,19 +62,47 @@ in RTF or MS Word documents.
 ### TabStopPolicy
 
 	/**
-	 * Tab Stop Policy.
+	 * TabStopPolicy determines the tab stop positions within the text layout.
 	 *
-	 * TODO
-	 * @since 999
+	 * @since 999 TODO
 	 */
-	public interface TabStopPolicy {
+	public class TabStopPolicy {
 	
 	    /**
-	     * Specifies the list of tab stops.
-	     *
-	     * @return the non-null observable list of tab stops 
+	     * Constructs a new {@code TabStopPolicy} instance.
 	     */
-	    public ObservableList<TabStop> tabStops();
+	    public TabStopPolicy() {
+	
+	    /**
+	     * Specifies the unmodifiable list of tab stops, sorted by position from smallest to largest.
+	     * The list can be changed using
+	     * {@link #addTabStop(double)},
+	     * {@link #clearTabStops()}, or
+	     * {@link #removeTabStop(TabStop)}.
+	     *
+	     * @return the non-null, unmodifiable list of tab stops, sorted by position
+	     */
+	    public final ObservableList<TabStop> tabStops() {
+	
+	    /**
+	     * Adds a new tab stop at the specified position.
+	     * This method does nothing if the position coincides with an already existing tab stop.
+	     *
+	     * @param position the tab stop position
+	     */
+	    public final void addTabStop(double position) {
+	
+	    /**
+	     * Removes the specified tab stop.
+	     *
+	     * @param stop the tab stop to remove
+	     */
+	    public final void removeTabStop(TabStop stop) {
+	
+	    /**
+	     * Removes all tab stops.
+	     */
+	    public final void clearTabStops() {
 	
 	    /**
 	     * Provides default tab stops (beyond the last tab stop specified by {@code #tabStops()}, as a distance
@@ -82,31 +110,41 @@ in RTF or MS Word documents.
 	     *
 	     * TODO
 	     * It is unclear how to specify NONE value (negative perhaps?).  MS Word does not allow for NONE, but allows 0.
-	     * @return the default tab stops, in pixels.
+	     *
+	     * @return the default tab stops property, in pixels.
+	     * @defaultValue TODO
 	     */
-	    public double defaultStops();
-	}
+	    public final DoubleProperty defaultStops() {
+	
+	    public final double getDefaultStops() {
+	
+	    public final void setDefaultStops(double value) {
 
 
 ### TabStop
 
 	/**
-	 * This class encapsulates a single tab stop.
-	 * A tab stop is at a specified distance from the leading margin.
-	 * TabStops are immutable, and usually contained in {@link TabStopPolicy}.
-	 *
-	 * TODO
-	 * @since 999
+	 * This class encapsulates an immutable single tab stop within the {@link TabStopPolicy}.
+	 * <p>
+	 * A tab stop is at a specified distance from the
+	 * left margin, aligns text in a specified way, and has a specified leader.
+	 * 
+	 * @since 999 TODO
 	 */
-	public interface TabStop {
+	public final class TabStop {
+	
 	    /**
-	     * Returns the position, in points, of the tab.
+	     * Constructs a new tab stop with the specified position.
+	     *
+	     * @param position the position in pixels
+	     */
+	    public TabStop(double position) {
+	
+	    /**
+	     * Returns the position, in pixels, of the tab.
 	     * @return the position of the tab
 	     */
 	    public double getPosition() {
-	        return position;
-	    }
-	}
 
 
 ## Alternatives
@@ -124,6 +162,10 @@ Possible incompatibility with custom controls which define similar property or a
 ## Dependencies
 
 None.
+
+
+
+## JBS
 
 [JDK-8314482](https://bugs.openjdk.org/browse/JDK-8314482)
 
