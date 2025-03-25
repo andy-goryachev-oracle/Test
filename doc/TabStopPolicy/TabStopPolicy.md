@@ -7,35 +7,36 @@ Andy Goryachev
 
 ## Summary
 
-This proposal introduces a tabStopPolicy property in TextFlow (and possibly Text) which, when set, overrides the existing tabSize
-value and provides consistent way of setting tab stops at the paragraph level regardless of the individual text segments'
-font size. 
+Introduce a `tabStopPolicy` property in the `TextFlow` class which, when set, overrides the existing `tabSize`
+value and provides consistent way of setting tab stops at the paragraph level, regardless of the individual text
+segments font.
 
 
 
 ## Goals
 
-The goal of this proposal is to provide a better way to control tab stops, by supporting the existing capability of
-specifying a fixed tab size as well as a variable number of user-definable tab stops positioned relative
-to the document edge.
+The goal of this proposal is to provide a better way for controlling tab stops in the `TextFlow` containing rich text.
 
 
 
 ## Non-Goals
 
-- support for a BAR (|) tab stop
+The following are not the goals of this proposal:
+
+- support for tab stop types (BAR, or DECIMAL), or attributes like `alignment`
 - support the `leader` property (symbols to fill the empty space before the tab stop)
-- provide a replacement for `tabsize` property
+- support for `firstLineIndent` property
+- deprecate the `TextFlow::tabsize` property
 
 
 
 ## Motivation
 
-The existing tabSize property in Text and TextFlow controls is inadequate to represent tab stops in the context
-of a rich text control, failing spectacularly when TextFlow contains multiple Text nodes which use different fonts.
+The existing `tabSize` property in the `TextFlow` is inadequate for representing tab stops when the content
+contains text with different font sizes.
 
-In addition to that, a rich text editor (either the RichTextArea control currently being developed,
-or a custom rich text editor) might need support for user-customizable tab stops offered by RTF or MS Word documents.
+In addition to that, a rich text editor might require support for user-customizable tab stops, similar to that provided
+in RTF or MS Word documents.
 
 
 
@@ -66,52 +67,24 @@ or a custom rich text editor) might need support for user-customizable tab stops
 	 * TODO
 	 * @since 999
 	 */
-	public final class TabStopPolicy {
-	
-	    /**
-	     * Creates an immutable {@code TabStop} instance.
-	     *
-	     * @param tabStops the tab stops (a copy will be made)
-	     * @param firstLineIndent the first line indent, in points
-	     * @param defaultStops the default stops, in points
-	     */
-		public TabStopPolicy(List<TabStop> tabStops, double firstLineIndent, double defaultStops);
+	public interface TabStopPolicy {
 	
 	    /**
 	     * Specifies the list of tab stops.
 	     *
-	     * @return the non-null list of tab stops 
+	     * @return the non-null observable list of tab stops 
 	     */
-	    public List<TabStop> tabStops() {
-	        return tabStops;
-	    }
-	    
-	    /**
-	     * First line indent, in points, a positive value.  Negative or 0 values are treated as no first line indent.
-	     *
-	     * TODO
-	     * It is unclear whether the TextLayout should support negative values as it might impact the size and
-	     * the preferred size of the layout.
-	     *
-	     * @return the first line indent, in points
-	     */
-	    public double firstLineIndent() {
-	        return firstLineIndent;
-	    }
+	    public ObservableList<TabStop> tabStops();
 	
 	    /**
 	     * Provides default tab stops (beyond the last tab stop specified by {@code #tabStops()}, as a distance
 	     * in points from the last tab stop position.
 	     *
 	     * TODO
-	     * It is unclear how to specify NONE value (negative perhaps?).  MS Word does not allow for NONE.
-	     * @return the default tab stops, in points.
+	     * It is unclear how to specify NONE value (negative perhaps?).  MS Word does not allow for NONE, but allows 0.
+	     * @return the default tab stops, in pixels.
 	     */
-	    public double defaultStops() {
-	        return defaultStops;
-	    }
-	    
-	    // TODO hashCode, equals, toString
+	    public double defaultStops();
 	}
 
 
@@ -119,35 +92,13 @@ or a custom rich text editor) might need support for user-customizable tab stops
 
 	/**
 	 * This class encapsulates a single tab stop.
-	 * A tab stop is at a specified distance from the
-	 * left margin, aligns text in a specified way, and has a specified leader.
+	 * A tab stop is at a specified distance from the leading margin.
 	 * TabStops are immutable, and usually contained in {@link TabStopPolicy}.
 	 *
 	 * TODO
 	 * @since 999
 	 */
-	public final class TabStop {
-	    public enum Alignment {
-	        CENTER,
-	        LEFT,
-	        RIGHT,
-	        DECIMAL
-	    }
-	    
-	    private final double position;
-	    private final Alignment alignment;
-	
-	    /**
-	     * Creates an immutable {@code TabStop} instance.
-	     *
-	     * @param position the tab stop position in points
-	     * @param alignment the alignment
-     	*/
-	    public TabStop(double position, Alignment alignment) {
-	        this.position = position;
-	        this.alignment = alignment;
-	    }
-	    
+	public interface TabStop {
 	    /**
 	     * Returns the position, in points, of the tab.
 	     * @return the position of the tab
@@ -155,16 +106,6 @@ or a custom rich text editor) might need support for user-customizable tab stops
 	    public double getPosition() {
 	        return position;
 	    }
-	    
-	    /**
-	     * Returns the alignment of the tab.
-	     * @return the alignment of the tab
-	     */
-	    public Alignment getAlignment() {
-	        return alignment;
-	    }
-	    
-	    // TODO hashCode, equals, toString
 	}
 
 
