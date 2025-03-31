@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(Stage_FullScreenSize_TBD.class, args);
+        Application.launch(Stage_FullScreenSize_8353314.class, args);
     }
 
     private static void enableLogging() {

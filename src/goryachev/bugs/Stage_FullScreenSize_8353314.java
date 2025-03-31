@@ -12,9 +12,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 /**
- *
+ * https://bugs.openjdk.org/browse/JDK-8353314
  */
-public class Stage_FullScreenSize_TBD extends Application {
+public class Stage_FullScreenSize_8353314 extends Application {
 
     private Label content;
     private StackPane container;
