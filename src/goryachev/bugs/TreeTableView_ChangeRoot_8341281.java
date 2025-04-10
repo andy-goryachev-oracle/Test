@@ -47,7 +47,7 @@ public class TreeTableView_ChangeRoot_8341281 extends Application {
         }
         
         Button button = new Button("Change Root");
-        button.setOnAction((ev) -> changeRoot());
+        button.setOnAction((ev) -> changeRoot(true));
 
         BorderPane p = new BorderPane();
         p.setTop(new HBox(button));
@@ -57,13 +57,13 @@ public class TreeTableView_ChangeRoot_8341281 extends Application {
         stage.setScene(scene);
         stage.show();
 
-        changeRoot();
+        changeRoot(false);
     }
 
-    void changeRoot() {
+    void changeRoot(boolean useNull) {
         // FIX
         // Breaks the tree table view
-        TreeItem<Entry> root = new TreeItem<>();
+        TreeItem<Entry> root = new TreeItem<>(useNull ? null : new Entry());
         // and this does not
         //TreeItem<Entry> root = new TreeItem<>(new Entry());
         
