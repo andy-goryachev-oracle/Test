@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 /**
  * https://bugs.openjdk.org/browse/JDK-8341281
  */
-public class TreeTableView_ChangeRoot extends Application {
+public class TreeTableView_ChangeRoot_8341281 extends Application {
     TreeTableView<Entry> tree;
     static long seq = 1;
     

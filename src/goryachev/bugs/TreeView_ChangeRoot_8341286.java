@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 /**
  * https://bugs.openjdk.org/browse/JDK-8341286
  */
-public class TreeView_ChangeRoot extends Application {
+public class TreeView_ChangeRoot_8341286 extends Application {
     TreeView<Entry> tree;
     static long seq = 1;
     
