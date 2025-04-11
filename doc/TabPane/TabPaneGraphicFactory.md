@@ -104,7 +104,7 @@ The proposed solution adds the `menuGraphicFactory` property in the `TabPaneSkin
 
 ## Alternatives
 
-None known.
+Use `ImageView`-based graphic for tabs, which will be shown in the overflow menu.
 
 
 
