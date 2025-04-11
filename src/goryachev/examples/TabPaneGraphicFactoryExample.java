@@ -21,7 +21,7 @@ public class TabPaneGraphicFactoryExample {
 
         TabPaneSkin skin = new TabPaneSkin(tabPane);
         // set overflow menu factory with the same method as was used to create the tabs
-        skin.setMenuGraphicFactory(this::createGraphic);
+        //skin.setMenuGraphicFactory(this::createGraphic);
         tabPane.setSkin(skin);
     }
 
