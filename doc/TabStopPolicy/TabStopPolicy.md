@@ -45,106 +45,111 @@ in RTF or MS Word documents.
 
 ### TextFlow
 
+```java
     /**
-     * Tab stop policy.
-     * This value overrides the {@code tabSize} of this TextFlow as well as
-     * in contained {@link Text} nodes.
+     * {@code TabAdvancePolicy} determines the tab stop positions within this {@code TextFlow}.
+     * <p>
+     * A non-null {@code TabAdvancePolicy} overrides values set by {@link #setTabSize(int)},
+     * as well as any values set by {@link Text#setTabSize(int)} in individual {@code Text} instances within
+     * this {@code TextFlow}.
      *
-	 * TODO
-	 * @since 999
+     * @defaultValue null
+     *
+     * @since 999 TODO
      */
     public final ObjectProperty<TabStopPolicy> tabStopPolicyProperty()
 	
     public final TabStopPolicy getTabStopPolicy()
-	
+
     public final void setTabStopPolicy(TabStopPolicy policy)
+```
+
 
 ### TabStopPolicy
 
-	/**
-	 * TabStopPolicy determines the tab stop positions within the text layout.
-	 *
-	 * @since 999 TODO
-	 */
-	public class TabStopPolicy {
-	
-	    /**
-	     * Constructs a new {@code TabStopPolicy} instance.
-	     */
-	    public TabStopPolicy() {
-	
-	    /**
-	     * Specifies the unmodifiable list of tab stops, sorted by position from smallest to largest.
-	     * The list can be changed using
-	     * {@link #addTabStop(double)},
-	     * {@link #clearTabStops()}, or
-	     * {@link #removeTabStop(TabStop)}.
-	     *
-	     * @return the non-null, unmodifiable list of tab stops, sorted by position
-	     */
-	    public final ObservableList<TabStop> tabStops() {
-	
-	    /**
-	     * Adds a new tab stop at the specified position.
-	     * This method does nothing if the position coincides with an already existing tab stop.
-	     *
-	     * @param position the tab stop position
-	     */
-	    public final void addTabStop(double position) {
-	
-	    /**
-	     * Removes the specified tab stop.
-	     *
-	     * @param stop the tab stop to remove
-	     */
-	    public final void removeTabStop(TabStop stop) {
-	
-	    /**
-	     * Removes all tab stops.
-	     */
-	    public final void clearTabStops() {
-	
-	    /**
-	     * Provides default tab stops (beyond the last tab stop specified by {@code #tabStops()}, as a distance
-	     * in points from the last tab stop position.
-	     *
-	     * TODO
-	     * It is unclear how to specify NONE value (negative perhaps?).  MS Word does not allow for NONE, but allows 0.
-	     *
-	     * @return the default tab stops property, in pixels.
-	     * @defaultValue TODO
-	     */
-	    public final DoubleProperty defaultStops() {
-	
-	    public final double getDefaultStops() {
-	
-	    public final void setDefaultStops(double value) {
+```java
+/**
+ * The TabStopPolicy determines the tab stop positions within the text layout.
+ *
+ * @since 999 TODO
+ */
+public class TabStopPolicy {
 
+    /**
+     * Constructs a new {@code TabStopPolicy} instance.
+     *
+     * @param reference the node which provides the leading edge for the document layout (can be null)
+     */
+    public TabStopPolicy(Region reference) {
+
+    /**
+     * The reference {@code Region} provides the leading {@code x} coordinate for this {@code TabStopPolicy}.
+     * A non-null reference ensures that the tab stops are aligned within a document which is represented by
+     * more than one {@code TextFlow} instance.
+     * <p>
+     * A null reference node results in the leading edge to be set to the leading edge of the {@code TextFlow}
+     * being laid out.
+     *
+     * @return the reference region
+     */
+    public final Region getReference() {
+
+    /**
+     * Specifies the unmodifiable list of tab stops, sorted by position from smallest to largest.
+     * The list can be changed using
+     * {@link #addTabStop(double)},
+     * {@link #clearTabStops()}, or
+     * {@link #removeTabStop(TabStop)}.
+     *
+     * @return the non-null, unmodifiable list of tab stops, sorted by position
+     */
+    public final ObservableList<TabStop> tabStops() {
+
+    /**
+     * Provides default tab stops (beyond the last tab stop specified by {@code #tabStops()},
+     * as a fixed repeating distance in pixels from the last tab stop position.
+     * The position of default tab stops is computed at regular intervals relative to the leading edge
+     * of the {@link #getReference() reference Rectangle} (or, if the reference rectangle is {@code null),
+     * the leading edge of the {@code TextFlow} this policy is registered with).
+     * <p>
+     * The value of {@code 0} disabled the default stops.
+     *
+     * @return the default tab stops property, in pixels.
+     * @defaultValue 0
+     */
+    public final DoubleProperty defaultStopsProperty() {
+
+    public final double getDefaultStops() {
+
+    public final void setDefaultStops(double value) {
+```
 
 ### TabStop
 
-	/**
-	 * This class encapsulates an immutable single tab stop within the {@link TabStopPolicy}.
-	 * <p>
-	 * A tab stop is at a specified distance from the
-	 * left margin, aligns text in a specified way, and has a specified leader.
-	 * 
-	 * @since 999 TODO
-	 */
-	public final class TabStop {
-	
-	    /**
-	     * Constructs a new tab stop with the specified position.
-	     *
-	     * @param position the position in pixels
-	     */
-	    public TabStop(double position) {
-	
-	    /**
-	     * Returns the position, in pixels, of the tab.
-	     * @return the position of the tab
-	     */
-	    public double getPosition() {
+```java
+/**
+ * This class encapsulates an immutable single tab stop within the {@link TabStopPolicy}.
+ * <p>
+ * A tab stop is at a specified distance from the
+ * left margin, aligns text in a specified way, and has a specified leader.
+ *
+ * @since 999 TODO
+ */
+public class TabStop {
+
+    /**
+     * Constructs a new tab stop with the specified position.
+     *
+     * @param position the position in pixels
+     */
+    public TabStop(double position) {
+
+    /**
+     * Returns the position, in pixels, of the tab.
+     * @return the position of the tab
+     */
+    public final double getPosition() {
+```
 
 
 ## Alternatives
@@ -168,4 +173,3 @@ None.
 ## JBS
 
 [JDK-8314482](https://bugs.openjdk.org/browse/JDK-8314482)
-
