@@ -104,7 +104,7 @@ The proposed solution adds the `menuGraphicFactory` property in the `TabPaneSkin
 
 ## Alternatives
 
-Use `ImageView`-based graphic for tabs, which will be shown in the overflow menu.
+Use graphic in tabs based on the `ImageView`, which is currently compatible with the overflow menu.
 
 
 
@@ -129,4 +129,5 @@ None.
 - [JDK-8353599 TabPaneSkin: add 'menuGraphicFactory' property](https://bugs.openjdk.org/browse/JDK-8353599)
 - https://mail.openjdk.org/pipermail/openjfx-dev/2025-April/053306.html
 - https://mail.openjdk.org/pipermail/openjfx-dev/2025-April/053338.html
+- https://github.com/andy-goryachev-oracle/Test/blob/main/doc/TabPane/TabPaneGraphicFactory.md
 
