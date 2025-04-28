@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(TreeTableView_ChangeRoot_8341281.class, args);
+        Application.launch(Stage_RestorePosition_8176813.class, args);
     }
 
     private static void enableLogging() {
