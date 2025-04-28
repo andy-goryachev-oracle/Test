@@ -38,23 +38,26 @@ import javafx.stage.WindowEvent;
 /**
  * https://bugs.openjdk.org/browse/JDK-8176813
  */
-public class Stage_RestorePosition_8176813 extends Application {
+public class Stage_RestorePosition_8176813 {
+    static CountDownLatch startupLatch;
     static Stage stage;
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setScene(new Scene(new VBox()));
-        stage = primaryStage;
-        stage.setX(300);
-        stage.setY(400);
-        stage.show();
-
-        testFullscreenPosition();
-        testDemaximizedPosition();
+    // used to be main()
+    public static void launch() throws Exception {
+        initFX();
+        try {
+            Stage_RestorePosition_8176813 test = new Stage_RestorePosition_8176813();
+            //test.testFullscreenPosition();
+            test.testDemaximizedPosition();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        } finally {
+            teardown();
+        }
     }
 
     static void fail(String msg) {
-        System.err.println(msg);
+        throw new AssertionError(msg);
     }
 
     static void assertTrue(boolean cond) {
@@ -70,22 +73,48 @@ public class Stage_RestorePosition_8176813 extends Application {
     }
     static void assertEquals(String msg, double expected, double actual, double delta) {
         if (Math.abs(expected - actual) > delta) {
-            fail("Assertion failed: expected " + expected + ", was: " + actual);
+            fail("Assertion failed: expected " + expected
+                + ", was: " + actual);
         }
     }
 
+    public static class TestApp extends Application {
+
+        @Override
+        public void start(Stage primaryStage) throws Exception {
+            primaryStage.setScene(new Scene(new VBox()));
+            stage = primaryStage;
+            stage.setX(300);
+            stage.setY(400);
+            stage.addEventHandler(WindowEvent.WINDOW_SHOWN, e ->
+                                    Platform.runLater(startupLatch::countDown));
+            stage.show();
+        }
+    }
+
+    public static void initFX() {
+        startupLatch = new CountDownLatch(1);
+        new Thread(() -> Application.launch(TestApp.class, (String[])null)).start();
+        try {
+            if (!startupLatch.await(15, TimeUnit.SECONDS)) {
+                fail("Timeout waiting for FX runtime to start");
+            }
+        } catch (InterruptedException ex) {
+            fail("Unexpected exception: " + ex);
+        }
+    }
+
+
     public void testFullscreenPosition() throws Exception {
-        //Thread.sleep(200);
+        Thread.sleep(200);
         assertTrue(stage.isShowing());
         assertFalse(stage.isFullScreen());
 
         double x = stage.getX();
         double y = stage.getY();
 
-        //Platform.runLater(() -> { 
-            stage.setFullScreen(true);
-        //});
-        //Thread.sleep(400);
+        Platform.runLater(() -> stage.setFullScreen(true));
+        Thread.sleep(400);
         //Thread.sleep(2000);
         assertTrue(stage.isFullScreen());
         CountDownLatch latch = new CountDownLatch(2);
@@ -102,10 +131,8 @@ public class Stage_RestorePosition_8176813 extends Application {
         };
         stage.xProperty().addListener(listenerX);
         stage.yProperty().addListener(listenerY);
-        //Platform.runLater(() -> {
-            stage.setFullScreen(false);
-        //    });
-        //latch.await(5, TimeUnit.SECONDS);
+        Platform.runLater(() -> stage.setFullScreen(false));
+        latch.await(5, TimeUnit.SECONDS);
         stage.xProperty().removeListener(listenerX);
         stage.xProperty().removeListener(listenerY);
 
@@ -114,17 +141,15 @@ public class Stage_RestorePosition_8176813 extends Application {
     }
 
     public void testDemaximizedPosition() throws Exception {
-        //Thread.sleep(200);
+        Thread.sleep(200);
         assertTrue(stage.isShowing());
         assertFalse(stage.isMaximized());
 
         double x = stage.getX();
         double y = stage.getY();
 
-        //Platform.runLater(() -> {
-            stage.setMaximized(true);
-        //});
-        //Thread.sleep(2000);
+        Platform.runLater(() -> stage.setMaximized(true));
+        Thread.sleep(2000);
         assertTrue(stage.isMaximized());
         CountDownLatch latch = new CountDownLatch(2);
 
@@ -140,14 +165,17 @@ public class Stage_RestorePosition_8176813 extends Application {
         };
         stage.xProperty().addListener(listenerX);
         stage.yProperty().addListener(listenerY);
-        //Platform.runLater(() -> {
-            stage.setMaximized(false);
-        //});
-        //latch.await(5, TimeUnit.SECONDS);
+        Platform.runLater(() -> stage.setMaximized(false));
+        latch.await(5, TimeUnit.SECONDS);
         stage.xProperty().removeListener(listenerX);
         stage.xProperty().removeListener(listenerY);
 
         assertEquals("Window was moved", x, stage.getX(), 0.1);
         assertEquals("Window was moved", y, stage.getY(), 0.1);
+    }
+
+    public static void teardown() {
+        Platform.runLater(stage::hide);
+        Platform.exit();
     }
 }
