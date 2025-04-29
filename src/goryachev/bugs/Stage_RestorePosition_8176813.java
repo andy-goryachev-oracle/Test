@@ -47,12 +47,22 @@ public class Stage_RestorePosition_8176813 {
         initFX();
         try {
             Stage_RestorePosition_8176813 test = new Stage_RestorePosition_8176813();
-            //test.testFullscreenPosition();
-            test.testDemaximizedPosition();
+            t(() -> test.testUnfullscreenPosition());
+            t(() -> test.testDemaximizedPosition());
         } catch (Throwable e) {
             e.printStackTrace();
         } finally {
             teardown();
+        }
+    }
+    
+    interface Ru {
+        public void run() throws Exception;
+    }
+
+    static void t(Ru r) throws Exception {
+        for (int i = 0; i < 10; i++) {
+            r.run();
         }
     }
 
@@ -105,7 +115,7 @@ public class Stage_RestorePosition_8176813 {
     }
 
 
-    public void testFullscreenPosition() throws Exception {
+    public void testUnfullscreenPosition() throws Exception {
         Thread.sleep(200);
         assertTrue(stage.isShowing());
         assertFalse(stage.isFullScreen());
@@ -149,7 +159,7 @@ public class Stage_RestorePosition_8176813 {
         double y = stage.getY();
 
         Platform.runLater(() -> stage.setMaximized(true));
-        Thread.sleep(2000);
+        Thread.sleep(500);
         assertTrue(stage.isMaximized());
         CountDownLatch latch = new CountDownLatch(2);
 
