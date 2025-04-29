@@ -49,6 +49,10 @@ public class Stage_RestorePosition_8176813 {
             Stage_RestorePosition_8176813 test = new Stage_RestorePosition_8176813();
             t(() -> test.testUnfullscreenPosition());
             t(() -> test.testDemaximizedPosition());
+            t(() -> {
+                test.testUnfullscreenPosition();
+                test.testDemaximizedPosition();
+            });
         } catch (Throwable e) {
             e.printStackTrace();
         } finally {
@@ -124,8 +128,7 @@ public class Stage_RestorePosition_8176813 {
         double y = stage.getY();
 
         Platform.runLater(() -> stage.setFullScreen(true));
-        Thread.sleep(400);
-        //Thread.sleep(2000);
+        Thread.sleep(700);
         assertTrue(stage.isFullScreen());
         CountDownLatch latch = new CountDownLatch(2);
 
