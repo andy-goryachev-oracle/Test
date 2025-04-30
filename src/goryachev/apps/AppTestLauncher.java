@@ -11,8 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        //Application.launch(Stage_RestorePosition_8176813.class, args);
-        Stage_RestorePosition_8176813.launch();
+        Application.launch(Node_LocalToScreen.class, args);
     }
 
     private static void enableLogging() {
