@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(TreeView_Misaligned_8340344.class, args);
+        Application.launch(TextArea_Egyptian_8357070.class, args);
     }
 
     private static void enableLogging() {
