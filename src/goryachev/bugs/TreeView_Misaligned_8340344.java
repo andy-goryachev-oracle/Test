@@ -17,7 +17,7 @@ public class TreeView_Misaligned_8340344 extends Application {
     @Override
     public void start(Stage primaryStage) {
         VBox root = new VBox(createTreeView());
-        Scene scene = new Scene(root, 300, 250);
+        Scene scene = new Scene(root, 300, 50);
         primaryStage.setTitle("TreeView Example");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -46,7 +46,7 @@ public class TreeView_Misaligned_8340344 extends Application {
                     setGraphic(null);
                 } else {
                     setText(item);
-                    setGraphic(new Label("W"));
+                    setGraphic(new Label("WWWWWWWWWWWWWWWWW"));
                 }
             }
         });
