@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Panel;
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 /**
  *
@@ -18,10 +19,12 @@ public class JTextArea_Egyptian {
 
     private void startEDT() {
         // 𓅂𓁹𓁋𓁨
-        JTextArea t = new JTextArea("\ud80c\udd42\ud80c\udc79\ud80c\udc4b\ud80c\udc68");
+        JTextArea ta = new JTextArea("\ud80c\udd42\ud80c\udc79\ud80c\udc4b\ud80c\udc68");
+        JTextField tf = new JTextField("\ud80c\udd42\ud80c\udc79\ud80c\udc4b\ud80c\udc68");
         
         Panel p = new Panel(new BorderLayout());
-        p.add(t);
+        p.add(tf, BorderLayout.NORTH);
+        p.add(ta, BorderLayout.CENTER);
 
         JFrame f = new JFrame();
         f.setTitle("Ancient Egyptian 𓅂𓁹𓁋𓁨");
