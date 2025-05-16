@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(TextArea_Egyptian_8357070.class, args);
+        Application.launch(JTextArea_FX_Egyptian_8357071.class, args);
     }
 
     private static void enableLogging() {
