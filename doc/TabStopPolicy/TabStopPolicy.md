@@ -11,7 +11,7 @@ Introduce a `tabStopPolicy` property in the `TextFlow` class which, when set, ov
 value and provides consistent way of setting tab stops at the paragraph level, regardless of the individual text
 segments font [0].
 
-![screenshot](tab-stop-demo.png)
+![screenshot](tab-stops-demo.png)
 
 
 ## Goals
