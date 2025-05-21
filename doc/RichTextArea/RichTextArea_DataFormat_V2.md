@@ -9,7 +9,7 @@ Andy Goryachev
 
 ## Summary
 
-This document describes the data format used by `RichTextArea`'s default text model (`RichTextModel`)
+This document describes the data format used by `RichTextArea`'s default text model `RichTextModel`
 for saving/loading/copying/pasting of the rich text.
 
 
@@ -116,7 +116,7 @@ Example:
 |fs      |FONT_SIZE             |double      |
 |i       |ITALIC                |boolean     |
 |ss      |STRIKE_THROUGH        |boolean     |
-|tc      |TEXT_COLOR            |Color       |6 hex digits `RRGGBB`.  Example: &#123;tc|4D804D}
+|tc      |TEXT_COLOR            |Color       |6 hex digits `RRGGBB`.  Example: {tc&#x007c;4D804D}
 |u       |UNDERLINE             |boolean     |
 
 
