@@ -116,23 +116,23 @@ Example:
 |fs      |FONT_SIZE             |double      |
 |i       |ITALIC                |boolean     |
 |ss      |STRIKE_THROUGH        |boolean     |
-|tc      |TEXT_COLOR            |Color       |6 hex digits `RRGGBB`.  Example: `{tc&#x007c;4D804D}`
+|tc      |TEXT_COLOR            |Color       |6 hex digits `RRGGBB`.  Example: {tc&#x007c;4D804D}
 |u       |UNDERLINE             |boolean     |
 
 
 
 ## Paragraph Attributes
 
-|Name         |StyleAttributeMap                                                           |
-|:------------|:---------------------------------------------------------------------------|
-|alignment    |TEXT_ALIGNMENT
-|bg           |BACKGROUND
-|bullet       |BULLET
-|dir          |PARAGRAPH_DIRECTION
-|firstIndent  |FIRST_LINE_INDENT
-|lineSpacing  |LINE_SPACING
-|spaceAbove   |SPACE_ABOVE
-|spaceBelow   |SPACE_BELOW
-|spaceLeft    |SPACE_LEFT
-|spaceRight   |SPACE_RIGHT
+|Name         |StyleAttributeMap      |Type                |Comments                                                      |
+|:------------|:----------------------|:-------------------|:-------------------------------------------------------------|
+|alignment    |TEXT_ALIGNMENT         |TextAlignment       | `C`, `J`, `L`, `R`
+|bg           |BACKGROUND             |Color               |6 hex digits `RRGGBB`.  Example: {bg&#x007c;4D804D}
+|bullet       |BULLET                 |String              |
+|dir          |PARAGRAPH_DIRECTION    |ParagraphDirection  | `L`, `R`
+|firstIndent  |FIRST_LINE_INDENT      |double              | must be >= 0
+|lineSpacing  |LINE_SPACING           |double              | must be >= 0
+|spaceAbove   |SPACE_ABOVE            |double              | must be >= 0
+|spaceBelow   |SPACE_BELOW            |double              | must be >= 0
+|spaceLeft    |SPACE_LEFT             |double              | must be >= 0
+|spaceRight   |SPACE_RIGHT            |double              | must be >= 0
 
