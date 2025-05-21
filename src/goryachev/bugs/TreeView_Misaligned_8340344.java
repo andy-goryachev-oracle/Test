@@ -1,6 +1,7 @@
 package goryachev.bugs;
 
 import javafx.application.Application;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeCell;
@@ -25,12 +26,21 @@ public class TreeView_Misaligned_8340344 extends Application {
 
     private TreeView createTreeView() {
         TreeItem<String> rootItem = new TreeItem<>("Root");
-        TreeItem<String> item1 = new TreeItem<>("Item 1");
-        TreeItem<String> item2 = new TreeItem<>("Item 2");
-        TreeItem<String> item3 = new TreeItem<>("Item 3");
-        TreeItem<String> item4 = new TreeItem<>("Item 1");
-        item2.getChildren().add(item3);
-        rootItem.getChildren().addAll(item1, item2, item4);
+        TreeItem<String> p1 = new TreeItem<>("P1");
+        p1.getChildren().add(
+            new TreeItem<>("c1")
+        );
+        TreeItem<String> p2 = new TreeItem<>("P2");
+        p2.getChildren().add(
+            new TreeItem<>("c2")
+        );
+        TreeItem<String> p3 = new TreeItem<>("P3");
+        
+        rootItem.getChildren().addAll(
+            p1,
+            p2,
+            p3
+        );
 
         TreeView<String> treeView = new TreeView<>(rootItem);
         rootItem.setExpanded(true);
@@ -46,10 +56,26 @@ public class TreeView_Misaligned_8340344 extends Application {
                     setGraphic(null);
                 } else {
                     setText(item);
-                    setGraphic(new Label("WWWWWWWWWWWWWWWWW"));
+                    setGraphic(new Label("---"));
                 }
+                //setDisclosureNode(dn(item));
             }
         });
         return treeView;
+    }
+
+    private Node dn(String text) {
+        return new Label(getText(text));
+    }
+
+    private String getText(String text) {
+        if(text == null) {
+            return "";
+        } else if(text.contains("1")) {
+            return "+";
+        } else if(text.contains("2")) {
+            return "++";
+        }
+        return "+++";
     }
 }
