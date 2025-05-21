@@ -9,8 +9,9 @@ Andy Goryachev
 
 Introduce a `tabStopPolicy` property in the `TextFlow` class which, when set, overrides the existing `tabSize`
 value and provides consistent way of setting tab stops at the paragraph level, regardless of the individual text
-segments font.
+segments font [0].
 
+![screenshot](tab-stops-demo.png)
 
 
 ## Goals
@@ -57,11 +58,26 @@ in RTF or MS Word documents.
      *
      * @since 999 TODO
      */
-    public final ObjectProperty<TabStopPolicy> tabStopPolicyProperty()
-	
-    public final TabStopPolicy getTabStopPolicy()
+    public final ObjectProperty<TabStopPolicy> tabStopPolicyProperty() {
 
-    public final void setTabStopPolicy(TabStopPolicy policy)
+    public final TabStopPolicy getTabStopPolicy() {
+
+    public final void setTabStopPolicy(TabStopPolicy policy) {
+
+    /**
+     * The size of a tab stop in spaces.
+     * Values less than 1 are treated as 1. This value overrides the
+     * {@code tabSize} of contained {@link Text} nodes.
+     * <p>
++     * Note that this method should not be used to control the tab placement when multiple {@code Text} nodes
++     * with different fonts are contained within this {@code TextFlow}.
++     * In this case, the {@link #setTabStopPolicy(TabStopPolicy)} should be used instead.
+     *
+     * @defaultValue 8
+     *
+     * @since 14
+     */
+    public final IntegerProperty tabSizeProperty() {
 ```
 
 
@@ -74,32 +90,14 @@ in RTF or MS Word documents.
  * @since 999 TODO
  */
 public class TabStopPolicy {
-
     /**
      * Constructs a new {@code TabStopPolicy} instance.
-     *
-     * @param reference the node which provides the leading edge for the document layout (can be null)
      */
-    public TabStopPolicy(Region reference) {
-
-    /**
-     * The reference {@code Region} provides the leading {@code x} coordinate for this {@code TabStopPolicy}.
-     * A non-null reference ensures that the tab stops are aligned within a document which is represented by
-     * more than one {@code TextFlow} instance.
-     * <p>
-     * A null reference node results in the leading edge to be set to the leading edge of the {@code TextFlow}
-     * being laid out.
-     *
-     * @return the reference region
-     */
-    public final Region getReference() {
+    public TabStopPolicy() {
 
     /**
      * Specifies the unmodifiable list of tab stops, sorted by position from smallest to largest.
      * The list can be changed using
-     * {@link #addTabStop(double)},
-     * {@link #clearTabStops()}, or
-     * {@link #removeTabStop(TabStop)}.
      *
      * @return the non-null, unmodifiable list of tab stops, sorted by position
      */
@@ -108,13 +106,12 @@ public class TabStopPolicy {
     /**
      * Provides default tab stops (beyond the last tab stop specified by {@code #tabStops()},
      * as a fixed repeating distance in pixels from the last tab stop position.
-     * The position of default tab stops is computed at regular intervals relative to the leading edge
-     * of the {@link #getReference() reference Rectangle} (or, if the reference rectangle is {@code null),
-     * the leading edge of the {@code TextFlow} this policy is registered with).
+     * The position of default tab stops is computed at regular intervals relative to
+     * the leading edge of the {@code TextFlow} this policy is registered with.
      * <p>
-     * The value of {@code 0} disabled the default stops.
+     * The value of less than or equal 0 disables the default stops.
      *
-     * @return the default tab stops property, in pixels.
+     * @return the default tab stops property
      * @defaultValue 0
      */
     public final DoubleProperty defaultStopsProperty() {
@@ -136,7 +133,6 @@ public class TabStopPolicy {
  * @since 999 TODO
  */
 public class TabStop {
-
     /**
      * Constructs a new tab stop with the specified position.
      *
@@ -160,7 +156,7 @@ None known.
 
 ## Risks and Assumptions
 
-Possible incompatibility with custom controls which define similar property or a property with the same name. 
+Possible incompatibility with custom controls which extend `TextFlow` and declare a property with the same name. 
 
 
 
@@ -170,6 +166,7 @@ None.
 
 
 
-## JBS
+## References
 
-[JDK-8314482](https://bugs.openjdk.org/browse/JDK-8314482)
+0. [JDK-8314482](https://bugs.openjdk.org/browse/JDK-8314482)
+1. https://github.com/andy-goryachev-oracle/Test/blob/main/doc/TabStopPolicy/TabStopPolicy.md
