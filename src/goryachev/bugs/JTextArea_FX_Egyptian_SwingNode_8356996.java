@@ -15,7 +15,9 @@ import javafx.stage.Stage;
  * JTextField/JTextArea inside SwingNode
  * https://bugs.openjdk.org/browse/JDK-8356996
  */
-public class JTextArea_FX_Egyptian_8357071 extends Application {
+public class JTextArea_FX_Egyptian_SwingNode_8356996 extends Application {
+    // TODO𓅂𓁹𓁋𓁨
+    private static final String text = "\ud80c\udd42\ud80c\udc79\ud80c\udc4b\ud80c\udc68";
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -28,13 +30,11 @@ public class JTextArea_FX_Egyptian_8357071 extends Application {
 
         Scene scene = new Scene(bp);
         stage.setScene(scene);
-        stage.setTitle("Ancient Egyptian Algebra 𓅂𓁹𓁋𓁨");
+        stage.setTitle("Ancient Egyptian (SwingNode) JDK-8356996 𓅂𓁹𓁋𓁨" + text);
         stage.show();
     }
 
     private void initEDT(SwingNode swingNode) {
-        // 𓅂𓁹𓁋𓁨
-        String text = "\ud80c\udd42\ud80c\udc79\ud80c\udc4b\ud80c\udc68";
         JTextArea ta = new JTextArea(text);
         JTextField tf = new JTextField(text);
 

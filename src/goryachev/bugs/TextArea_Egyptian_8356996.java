@@ -9,14 +9,16 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 /**
- * https://bugs.openjdk.org/browse/JDK-8357070
+ * JavaFX test case.
+ * https://bugs.openjdk.org/browse/JDK-8356996
  */
-public class TextArea_Egyptian_8357070 extends Application {
+public class TextArea_Egyptian_8356996 extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        // TODO
+        String text = "\ud80c\udd42\ud80c\udc79\ud80c\udc4b\ud80c\udc68";
         Font f = Font.font(24.0);
-        String text = "𓅂𓁹𓁋𓁨";
         
         TextField textField = new TextField(text);
         textField.setFont(f);
@@ -31,7 +33,7 @@ public class TextArea_Egyptian_8357070 extends Application {
         Scene scene = new Scene(bp);
 
         stage.setScene(scene);
-        stage.setTitle("Aramaic issue JDK-8318099");
+        stage.setTitle("Ancient Egyptian (JavaFX) JDK-8356996 " + text);
         stage.show();
     }
 }
