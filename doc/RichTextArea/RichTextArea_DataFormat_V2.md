@@ -78,8 +78,7 @@ A special token `{!}` indicates that the paragraph contains no attributes.
 
 ### Text Escapes
 
-The following characters found in the text are escaped using `%XX` sequence where `XX` is a hexadecimal representation
-of the character: `{`, `%`, `}`.
+The three characters `{`, `%`, `}` are escaped using two-byte hexadecimal representation `%XX`.
 
 
 
