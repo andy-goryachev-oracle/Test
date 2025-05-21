@@ -16,7 +16,7 @@ public class TextArea_Egyptian_8356996 extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        // TODO
+        // 𓅂𓁹𓁋𓁨
         String text = "\ud80c\udd42\ud80c\udc79\ud80c\udc4b\ud80c\udc68";
         Font f = Font.font(24.0);
         
@@ -30,7 +30,7 @@ public class TextArea_Egyptian_8356996 extends Application {
         bp.setTop(textField);
         bp.setCenter(textArea);
         
-        Scene scene = new Scene(bp);
+        Scene scene = new Scene(bp, 500, 300);
 
         stage.setScene(scene);
         stage.setTitle("Ancient Egyptian (JavaFX) JDK-8356996 " + text);

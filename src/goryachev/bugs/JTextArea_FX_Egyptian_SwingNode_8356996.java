@@ -16,7 +16,7 @@ import javafx.stage.Stage;
  * https://bugs.openjdk.org/browse/JDK-8356996
  */
 public class JTextArea_FX_Egyptian_SwingNode_8356996 extends Application {
-    // TODO𓅂𓁹𓁋𓁨
+    // 𓅂𓁹𓁋𓁨
     private static final String text = "\ud80c\udd42\ud80c\udc79\ud80c\udc4b\ud80c\udc68";
 
     @Override
@@ -28,9 +28,10 @@ public class JTextArea_FX_Egyptian_SwingNode_8356996 extends Application {
 
         BorderPane bp = new BorderPane(swingNode);
 
-        Scene scene = new Scene(bp);
+        Scene scene = new Scene(bp, 500, 300);
+
         stage.setScene(scene);
-        stage.setTitle("Ancient Egyptian (SwingNode) JDK-8356996 𓅂𓁹𓁋𓁨" + text);
+        stage.setTitle("Ancient Egyptian (SwingNode) JDK-8356996 " + text);
         stage.show();
     }
 
