@@ -116,7 +116,7 @@ Example:
 |fs      |FONT_SIZE             |double      |
 |i       |ITALIC                |boolean     |
 |ss      |STRIKE_THROUGH        |boolean     |
-|tc      |TEXT_COLOR            |Color       |6 hex digits `RRGGBB` (Example: `{tc|4D804D}`
+|tc      |TEXT_COLOR            |Color       |6 hex digits `RRGGBB`.  Example: ```{tc|4D804D}```
 |u       |UNDERLINE             |boolean     |
 
 
