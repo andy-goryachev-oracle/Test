@@ -1,6 +1,6 @@
 # Rich Text Area (Incubator) Data Format
 
-Version 2 (2025/05/20)
+Draft Version 2 (2025/06/05)
 
 Andy Goryachev
 
@@ -11,6 +11,9 @@ Andy Goryachev
 
 This document describes the data format used by `RichTextArea`'s default text model `RichTextModel`
 for saving/loading/copying/pasting of the rich text.
+
+This format (as a part of an incubator module) is likely to change once the decision to integrate it
+into the JavaFX core is made.
 
 
 ## Example
@@ -134,4 +137,12 @@ Example:
 |spaceBelow   |SPACE_BELOW            |double              | must be >= 0
 |spaceLeft    |SPACE_LEFT             |double              | must be >= 0
 |spaceRight   |SPACE_RIGHT            |double              | must be >= 0
+
+
+
+## Future Enhancements
+
+- format version
+- tab stops paragraph attributes
+
 
