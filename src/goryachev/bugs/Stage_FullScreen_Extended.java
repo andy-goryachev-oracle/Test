@@ -14,9 +14,9 @@ import javafx.stage.StageStyle;
 public class Stage_FullScreen_Extended extends Application {
     @Override
     public void start(Stage stage) {
-        //var headerBar = new HeaderBar();
         var root = new BorderPane();
-        root.setTop(new Label("yo")); //headerBar);
+        root.setTop(new Label("yo"));
+        //root.setTop(new javafx.scene.layout.HeaderBar());
         
         Button btnFullScreen = new Button("FullScreen");
         btnFullScreen.setOnAction((_) -> stage.setFullScreen(!stage.isFullScreen()));
