@@ -1,10 +1,11 @@
 # Rich Text Area (Incubator) Data Format
 
-Draft Version 2 (2025/06/05)
-
 Andy Goryachev
 
 <andy.goryachev@oracle.com>
+
+Draft, June 13, 2025
+
 
 
 ## Summary
@@ -114,13 +115,16 @@ Example:
 |Name    |StyleAttributeMap     |Type        |Comments                                                      |
 |:-------|:---------------------|:-----------|:-------------------------------------------------------------|
 |b       |BOLD                  |boolean     |
-|ff      |FONT_FAMILY           |String      |
-|fs      |FONT_SIZE             |double      |
+|ff      |FONT_FAMILY           |String      | Note 1
+|fs      |FONT_SIZE             |double      | must be > 0 and finite
 |i       |ITALIC                |boolean     |
 |ss      |STRIKE_THROUGH        |boolean     |
-|tc      |TEXT_COLOR            |Color       |6 hex digits `RRGGBB`.  Example: {tc&#x007c;4D804D}
+|tc      |TEXT_COLOR            |Color       | 6 hex digits `RRGGBB`.  Example: {tc&#x007c;4D804D}
 |u       |UNDERLINE             |boolean     |
 
+Notes:
+
+1. the standard JavaFX font substitution is performed to render text when the specified font family cannot be found.
 
 
 ## Paragraph Attributes
@@ -128,15 +132,15 @@ Example:
 |Name         |StyleAttributeMap      |Type                |Comments                                                      |
 |:------------|:----------------------|:-------------------|:-------------------------------------------------------------|
 |alignment    |TEXT_ALIGNMENT         |TextAlignment       | `C`, `J`, `L`, `R`
-|bg           |BACKGROUND             |Color               |6 hex digits `RRGGBB`.  Example: {bg&#x007c;4D804D}
+|bg           |BACKGROUND             |Color               | 6 hex digits `RRGGBB`.  Example: {bg&#x007c;4D804D}
 |bullet       |BULLET                 |String              |
 |dir          |PARAGRAPH_DIRECTION    |ParagraphDirection  | `L`, `R`
-|firstIndent  |FIRST_LINE_INDENT      |double              | must be >= 0
-|lineSpacing  |LINE_SPACING           |double              | must be >= 0
-|spaceAbove   |SPACE_ABOVE            |double              | must be >= 0
-|spaceBelow   |SPACE_BELOW            |double              | must be >= 0
-|spaceLeft    |SPACE_LEFT             |double              | must be >= 0
-|spaceRight   |SPACE_RIGHT            |double              | must be >= 0
+|firstIndent  |FIRST_LINE_INDENT      |double              | must be >= 0 and finite
+|lineSpacing  |LINE_SPACING           |double              | must be >= 0 and finite
+|spaceAbove   |SPACE_ABOVE            |double              | must be >= 0 and finite
+|spaceBelow   |SPACE_BELOW            |double              | must be >= 0 and finite
+|spaceLeft    |SPACE_LEFT             |double              | must be >= 0 and finite
+|spaceRight   |SPACE_RIGHT            |double              | must be >= 0 and finite
 
 
 
@@ -144,5 +148,5 @@ Example:
 
 - format version
 - tab stops paragraph attributes
-
+- embedded image attributes
 
