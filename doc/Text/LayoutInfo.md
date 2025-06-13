@@ -4,6 +4,8 @@ Andy Goryachev
 
 <andy.goryachev@oracle.com>
 
+June 13, 2025
+
 
 ## Summary
 
@@ -123,18 +125,14 @@ and underline:
 
 ```java
     /**
-     * Returns the object which provides a view into the text layout for this node, which allows for querying
-     * the details of the layout.
+     * Returns a copy of the of the text layout geometry for this node. This copy is a snapshot
+     * of the text layout at the time the method is called.
      * <p>
      * While there is no general guarantee that successive invocations of this method return the same instance,
      * it is safe to either cache this object or call this method each time, since the information obtained from
      * this lightweight object remains valid until the next layout cycle.
-     * <p>
-     * The information obtained after the next layout cycle might be different as a result
-     * of actions such as resizing of the container, or modification of certain properties.
-     * For example updating the text or the font might change the layout, but a change of color would not.
      *
-     * @return the layout information
+     * @return a copy of the layout information
      * @since 25
      */
     public final LayoutInfo getLayoutInfo()
@@ -144,18 +142,14 @@ and underline:
 
 ```java
     /**
-     * Returns the object which provides a view into the text layout for this node, which allows for querying
-     * the details of the layout.
+     * Returns a copy of the of the text layout geometry for this node. This copy is a snapshot
+     * of the text layout at the time the method is called.
      * <p>
      * While there is no general guarantee that successive invocations of this method return the same instance,
      * it is safe to either cache this object or call this method each time, since the information obtained from
      * this lightweight object remains valid until the next layout cycle.
-     * <p>
-     * The information obtained after the next layout cycle might be different as a result
-     * of actions such as resizing of the container, or modification of certain properties.
-     * For example updating the text or the font might change the layout, but a change of color would not.
      *
-     * @return the layout information
+     * @return a copy of the layout information
      * @since 25
      */
     public final LayoutInfo getLayoutInfo()
@@ -174,23 +168,23 @@ For example updating the text or the font might change the layout, but a change 
 
 The **LayoutInfo** class provides the following methods:
 
-- `public Rectangle2D getBounds(boolean includeLineSpacing)` - returns the logical bounds of the layout
+- `public CaretInfo caretInfo(int charIndex, boolean leading)` - returns the caret geometry for the given character index and the character bias
+- `public Rectangle2D getLogicalBounds(boolean includeLineSpacing)` - returns the logical bounds of the layout
 - `public int getTextLineCount()` - returns the number of text lines in the layout
 - `public List<TextLineInfo> getTextLines(boolean includeLineSpacing)` - returns information about text lines in the layout
 - `public TextLineInfo getTextLine(int index, boolean includeLineSpacing)` - returns the information about the text line at the given index
-- `public List<Rectangle2D> selectionShape(int start, int end, boolean includeLineSpacing)` - returns the geometry of the text selection for the given start and end offsets
-- `public List<Rectangle2D> strikeThroughShape(int start, int end)` - returns the geometry of the strike-through shape for the given start and end offsets
-- `public List<Rectangle2D> underlineShape(int start, int end)` - returns the geometry of the underline shape for the given start and end offsets
-- `public CaretInfo caretInfo(int charIndex, boolean leading)` - returns the caret geometry for the given character index and the character bias
+- `public List<Rectangle2D> getSelectionGeometry(int start, int end, boolean includeLineSpacing)` - returns the geometry of the text selection for the given start and end offsets
+- `public List<Rectangle2D> getStrikeThroughGeometry(int start, int end)` - returns the geometry of the strike-through shape for the given start and end offsets
+- `public List<Rectangle2D> getUnderlineGeometry(int start, int end)` - returns the geometry of the underline shape for the given start and end offsets
 
 
 ### javafx.scene.text.TextLineInfo
 
 Provides the information about a text line in a text layout:
 
-- `start` the start offset for the line
-- `end` the end offset for the line (index of the last character + 1)
-- `bounds` the bounds of the text line, in local coordinates
+- `int start` the start offset for the line
+- `int end` the end offset for the line (index of the last character + 1)
+- `Rectangle2D bounds` the bounds of the text line, in local coordinates
 
 
 ### javafx.scene.text.CaretInfo
