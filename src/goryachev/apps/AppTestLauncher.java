@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(Stage_FullScreen_Extended.class, args);
+        Application.launch(Shortcut_CmdPlus_8360886.class, args);
     }
 
     private static void enableLogging() {
