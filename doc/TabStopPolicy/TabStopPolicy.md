@@ -44,107 +44,115 @@ in RTF or MS Word documents.
 
 ## Description
 
-### TextFlow
+### javafx.scene.text.TextFlow
 
 ```java
-    /**
-     * {@code TabAdvancePolicy} determines the tab stop positions within this {@code TextFlow}.
-     * <p>
-     * A non-null {@code TabAdvancePolicy} overrides values set by {@link #setTabSize(int)},
-     * as well as any values set by {@link Text#setTabSize(int)} in individual {@code Text} instances within
-     * this {@code TextFlow}.
-     *
-     * @defaultValue null
-     *
-     * @since 999 TODO
-     */
-    public final ObjectProperty<TabStopPolicy> tabStopPolicyProperty() {
+	      * The size of a tab stop in spaces.
+	      * Values less than 1 are treated as 1. This value overrides the
+	      * {@code tabSize} of contained {@link Text} nodes.
+	+     * <p>
+	+     * Note that this method should not be used to control the tab placement when multiple {@code Text} nodes
+	+     * with different fonts are contained within this {@code TextFlow}.
+	+     * In this case, {@link #setTabStopPolicy(TabStopPolicy)} should be used instead.
 
-    public final TabStopPolicy getTabStopPolicy() {
-
-    public final void setTabStopPolicy(TabStopPolicy policy) {
-
-    /**
-     * The size of a tab stop in spaces.
-     * Values less than 1 are treated as 1. This value overrides the
-     * {@code tabSize} of contained {@link Text} nodes.
-     * <p>
-+     * Note that this method should not be used to control the tab placement when multiple {@code Text} nodes
-+     * with different fonts are contained within this {@code TextFlow}.
-+     * In this case, the {@link #setTabStopPolicy(TabStopPolicy)} should be used instead.
-     *
-     * @defaultValue 8
-     *
-     * @since 14
-     */
-    public final IntegerProperty tabSizeProperty() {
+	+    /**
+	+     * Determines the tab stop positions within this {@code TextFlow}.
+	+     * <p>
+	+     * A non-null {@code TabStopPolicy} overrides values set by {@link #setTabSize(int)},
+	+     * as well as any values set by {@link Text#setTabSize(int)} in individual {@code Text} instances within
+	+     * this {@code TextFlow}.
+	+     *
+	+     * @defaultValue null
+	+     *
+	+     * @since 25
+	+     */
+	+    public final ObjectProperty<TabStopPolicy> tabStopPolicyProperty()
+	+
+	+    public final TabStopPolicy getTabStopPolicy()
+	+
+	+    public final void setTabStopPolicy(TabStopPolicy policy)
+	
+	    /**
+	     * The size of a tab stop in spaces.
+	     * Values less than 1 are treated as 1. This value overrides the
+	     * {@code tabSize} of contained {@link Text} nodes.
+	+    * <p>
+	+    * Note that this method should not be used to control the tab placement when multiple {@code Text} nodes
+	+    * with different fonts are contained within this {@code TextFlow}.
+	+    * In this case, {@link #setTabStopPolicy(TabStopPolicy)} should be used instead.
+	     *
+	     * @defaultValue 8
+	     *
+	     * @since 14
+	     */
+	    public final IntegerProperty tabSizeProperty()
 ```
 
 
-### TabStopPolicy
+### javafx.scene.text.TabStopPolicy
 
 ```java
-/**
- * The TabStopPolicy determines the tab stop positions within the text layout.
- *
- * @since 999 TODO
- */
-public class TabStopPolicy {
-    /**
-     * Constructs a new {@code TabStopPolicy} instance.
-     */
-    public TabStopPolicy() {
-
-    /**
-     * Specifies the unmodifiable list of tab stops, sorted by position from smallest to largest.
-     * The list can be changed using
-     *
-     * @return the non-null, unmodifiable list of tab stops, sorted by position
-     */
-    public final ObservableList<TabStop> tabStops() {
-
-    /**
-     * Provides default tab stops (beyond the last tab stop specified by {@code #tabStops()},
-     * as a fixed repeating distance in pixels from the last tab stop position.
-     * The position of default tab stops is computed at regular intervals relative to
-     * the leading edge of the {@code TextFlow} this policy is registered with.
-     * <p>
-     * The value of less than or equal 0 disables the default stops.
-     *
-     * @return the default tab stops property
-     * @defaultValue 0
-     */
-    public final DoubleProperty defaultStopsProperty() {
-
-    public final double getDefaultStops() {
-
-    public final void setDefaultStops(double value) {
+	+/**
+	+ * The TabStopPolicy determines the tab stop positions within the text layout.
+	+ *
+	+ * @since 25
+	+ */
+	+public final class TabStopPolicy {
+	+
+	+    /**
+	+     * Constructs a new {@code TabStopPolicy} instance, with an empty list of stops.
+	+     */
+	+    public TabStopPolicy()
+	+
+	+    /**
+	+     * The list of tab stops.
+	+     *
+	+     * @return the non-null list of tab stops
+	+     */
+	+    public final ObservableList<TabStop> tabStops() 
+	+
+	+    /**
+	+     * Specifies the default tab stop interval for tabs beyond the last stop provided
+	+     * by {@link #tabStops()}.  This is a fixed repeating distance (in pixels) to the
+	+     * next tab stop computed at regular intervals relative to the leading edge
+	+     * of the {@code TextFlow} node.
+	+     * <p>
+	+     * A value of less than or equal 0 disables the default interval.
+	+     *
+	+     * @return the default tab interval property
+	+     * @defaultValue 0
+	+     */
+	+    public final DoubleProperty defaultIntervalProperty() 
+	+
+	+    public final double getDefaultInterval()
+	+
+	+    public final void setDefaultInterval(double value)
 ```
 
-### TabStop
+### javafx.scene.text.TabStop
 
 ```java
-/**
- * This class encapsulates an immutable single tab stop within the {@link TabStopPolicy}.
- * <p>
- * A tab stop is at a specified distance from the
- * left margin, aligns text in a specified way, and has a specified leader.
- *
- * @since 999 TODO
- */
-public class TabStop {
-    /**
-     * Constructs a new tab stop with the specified position.
-     *
-     * @param position the position in pixels
-     */
-    public TabStop(double position) {
-
-    /**
-     * Returns the position, in pixels, of the tab.
-     * @return the position of the tab
-     */
-    public final double getPosition() {
+	+/**
+	+ * This class encapsulates an immutable single tab stop within the {@link TabStopPolicy}.
+	+ *
+	+ * @since 25
+	+ */
+	+public final class TabStop {
+	+
+	+    /**
+	+     * Constructs a new tab stop with the specified position.
+	+     *
+	+     * @param position the position in pixels
+	+     */
+	+    public TabStop(double position) {
+	+        this.position = position;
+	+    }
+	+
+	+    /**
+	+     * Returns the position, in pixels, of the tab.
+	+     * @return the position of the tab
+	+     */
+	+    public final double getPosition()
 ```
 
 
