@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(BorderPane_Regression_8362873.class, args);
+        Application.launch(Toolbar_FractionalScale_8364049_8364088.class, args);
     }
 
     private static void enableLogging() {
