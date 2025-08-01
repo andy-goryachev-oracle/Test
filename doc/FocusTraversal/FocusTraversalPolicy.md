@@ -9,7 +9,7 @@ Andy Goryachev
 
 ## Summary
 
-Establishes a public API for focus traversal within a JavaFX application.
+Adds a traversal policy property to **javafx.scene.Parent**.
 
 
 
@@ -17,8 +17,10 @@ Establishes a public API for focus traversal within a JavaFX application.
 
 The goals of this proposal are:
 
-- allow for setting a custom traversal policy on a **javafx.scene.Parent**
-- simplify development of skins and custom components which include nested Controls
+- allow for setting a custom traversal policy on any **javafx.scene.Parent**
+- simplify development of skins that involve multiple nested Controls
+- allow for custom traversal policies that react to the application state or the information already present in the UI
+- offer easy-to use default policies and easy creation of custom policies for the application developers 
 
 
 
