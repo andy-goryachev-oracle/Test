@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(Toolbar_FractionalScale_8364049_8364088.class, args);
+        Application.launch(TabPane_WrappedText_8365827_8367602.class, args);
     }
 
     private static void enableLogging() {
