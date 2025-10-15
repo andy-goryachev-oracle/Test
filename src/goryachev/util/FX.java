@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, 2023, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2022, 2025, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -64,6 +64,18 @@ public class FX {
         return mi;
     }
 
+    public static MenuItem item(Menu m, String text, Runnable action) {
+        MenuItem mi = new MenuItem(text);
+        applyMnemonic(mi);
+        if (action == null) {
+            mi.setDisable(true);
+        } else {
+            mi.setOnAction((ev) -> action.run());
+        }
+        m.getItems().add(mi);
+        return mi;
+    }
+
     public static MenuItem item(MenuBar b, MenuItem mi) {
         applyMnemonic(mi);
         lastMenu(b).getItems().add(mi);
@@ -94,6 +106,12 @@ public class FX {
     public static SeparatorMenuItem separator(MenuBar b) {
         SeparatorMenuItem s = new SeparatorMenuItem();
         lastMenu(b).getItems().add(s);
+        return s;
+    }
+
+    public static SeparatorMenuItem separator(Menu b) {
+        SeparatorMenuItem s = new SeparatorMenuItem();
+        b.getItems().add(s);
         return s;
     }
 
