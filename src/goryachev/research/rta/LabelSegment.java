@@ -1,0 +1,25 @@
+package goryachev.research.rta;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+
+public class LabelSegment extends AbstractSegment<Object>
+{
+	/**
+	 * Displays data.toString() in a Label<br>
+	 * @param data is embedded in the Label using setUserData
+	 */
+	public LabelSegment( Object data )
+	{
+		super( data );
+	}
+
+	@Override
+	public Node createNode( String style )
+	{
+    	Label  item = new Label( getData().toString() );
+    	item.setStyle( "-fx-border-width: 1; -fx-border-style: solid; -fx-border-color: lightgrey; -fx-padding: 0 2 0 2; -fx-font-weight: normal; -fx-font-size: 12px;" );
+		if ( style != null && ! style.isBlank() )  item.getStyleClass().add( style );
+		item.setUserData( getData() );
+    	return item;
+	}
+}

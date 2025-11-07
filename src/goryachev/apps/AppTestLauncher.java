@@ -2,6 +2,7 @@ package goryachev.apps;
 import javafx.application.Application;
 import goryachev.bugs.*;
 import goryachev.research.*;
+import goryachev.research.rta.CustomSegmentDemo;
 import goryachev.tests.*;
 
 /**
@@ -11,7 +12,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(TabPane_WrappedText_8365827_8367602.class, args);
+        Application.launch(CustomSegmentDemo.class, args);
     }
 
     private static void enableLogging() {

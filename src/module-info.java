@@ -4,6 +4,7 @@ module andy_test {
     exports goryachev.research;
     exports goryachev.tests;
     exports goryachev.util;
+    exports goryachev.research.rta;
 
     requires javafx.base;
     requires javafx.controls;
