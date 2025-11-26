@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.NodeOrientation;
 import javafx.geometry.Point2D;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.input.MouseEvent;
@@ -15,7 +16,9 @@ import javafx.scene.layout.BorderWidths;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
+import javafx.scene.text.CaretInfo;
 import javafx.scene.text.HitInfo;
+import javafx.scene.text.LayoutInfo;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
@@ -43,9 +46,9 @@ public class TextFlow_ExtraSpace_8330559 extends Application {
         flow.setStyle("-fx-font-size:400%");
         flow.addEventFilter(MouseEvent.MOUSE_PRESSED, this::handleMousePress);
 
-        // JDK-8341438
-//        flow.setPadding(new Insets(100));
-//        flow.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, null, new BorderWidths(33.3))));
+        flow.setPadding(new Insets(33));
+        BorderWidths ws = new BorderWidths(33, 133, 33, 133);
+        flow.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID, null, ws)));
 
         caret = new Path();
         caret.setManaged(false);
@@ -66,10 +69,9 @@ public class TextFlow_ExtraSpace_8330559 extends Application {
         scene.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
 
         stage.setScene(scene);
-        stage.setTitle("TextFlow RTL");
-//        stage.setWidth(220);
+        stage.setTitle(getClass().getSimpleName());
         stage.setWidth(500);
-        stage.setHeight(300);
+        stage.setHeight(500);
         stage.show();
         scene.widthProperty().addListener((p) -> {
             updateRange();
@@ -82,7 +84,7 @@ public class TextFlow_ExtraSpace_8330559 extends Application {
 
     private void updateRange() {
         int len = getTextLength(flow);
-        PathElement[] pe = flow.rangeShape(0, len);
+        PathElement[] pe = flow.getRangeShape(0, len, false);
         //System.out.println("range=" + dump(pe));
         range.getElements().setAll(pe);
     }
@@ -110,49 +112,46 @@ public class TextFlow_ExtraSpace_8330559 extends Application {
         System.out.println("x: " + ev.getX() + " y:" + ev.getY());
 
         Point2D p = new Point2D(ev.getX(), ev.getY());
-        HitInfo h = flow.hitTest(p);
+        HitInfo h = flow.getHitInfo(p);
         System.out.println("hit=" + h);
 
-        // TODO requires JDK-8341670
-//        javafx.scene.text.LayoutInfo la = flow.getLayoutInfo();
-//        int len = getTextLength(flow);
-//        System.out.println("caret=" + dump(la.caretInfo(h.getCharIndex(), h.isLeading())));
-//        System.out.println("lines=" + la.getTextLines());
-//        System.out.println("bounds=" + la.getBounds());
-//        System.out.println("text=" + la.selectionShape(0, len));
-//        System.out.println("strikeThrough=" + la.strikeThroughShape(0, len));
-//        System.out.println("underline=" + la.underlineShape(0, len));
+        LayoutInfo la = flow.getLayoutInfo();
+        int len = getTextLength(flow);
+        System.out.println("caret=" + dump(la.caretInfoAt(h.getCharIndex(), h.isLeading())));
+        System.out.println("lines=" + la.getTextLines(false));
+        System.out.println("bounds=" + la.getLogicalBounds(false));
+        System.out.println("text=" + la.getSelectionGeometry(0, len, false));
+        System.out.println("strikeThrough=" + la.getStrikeThroughGeometry(0, len));
+        System.out.println("underline=" + la.getUnderlineGeometry(0, len));
 
-        PathElement[] pe = flow.caretShape(h.getCharIndex(), h.isLeading());
+        PathElement[] pe = flow.getCaretShape(h.getCharIndex(), h.isLeading());
         System.out.println("caret=" + D.dump(pe));
         caret.getElements().setAll(pe);
         updateRange();
     }
 
-    // TODO requires JDK-8341670
-//    private static String dump(javafx.scene.text.CaretInfo c) {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("CaretInfo{");
-//        sb.append("lineSpacing=" + c.lineSpacing());
-//        sb.append(", lines=[");
-//        boolean sep = false;
-//        for (int i = 0; i < c.getLineCount(); i++) {
-//            double[] p = c.getLineAt(i);
-//            if (sep) {
-//                sb.append(",");
-//            } else {
-//                sep = true;
-//            }
-//            sb.append(dumpLine(p));
-//        }
-//        sb.append("}");
-//        return sb.toString();
-//    }
-
-    private static String dumpLine(double[] p) {
+    private static String dump(CaretInfo c) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Line(").append(D.f(p[0])).append(",").append(D.f(p[1]));
-        sb.append(")-(").append(D.f(p[0])).append(",").append(D.f(p[2]));
+        sb.append("CaretInfo{");
+        sb.append(", lines=[");
+        boolean sep = false;
+        for (int i = 0; i < c.getSegmentCount(); i++) {
+            Rectangle2D r = c.getSegmentAt(i);
+            if (sep) {
+                sb.append(",");
+            } else {
+                sep = true;
+            }
+            sb.append(dumpSegment(r));
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+
+    private static String dumpSegment(Rectangle2D r) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Segment(").append(D.f(r.getMinX())).append(",").append(D.f(r.getMinY()));
+        sb.append(")-(").append(D.f(r.getMaxX())).append(",").append(D.f(r.getMaxY()));
         sb.append(")");
         return sb.toString();
     }
