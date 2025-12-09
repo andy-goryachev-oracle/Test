@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(Clipboard_WrongType_8269630.class, args);
+        Application.launch(RichTextArea_CustomModel_8366198.class, args);
     }
 
     private static void enableLogging() {
