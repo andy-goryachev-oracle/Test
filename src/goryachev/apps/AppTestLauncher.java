@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(Clipboard_WrongType_8269630.class, args);
+        Application.launch(XYChart_OOM_8373908.class, args);
     }
 
     private static void enableLogging() {
