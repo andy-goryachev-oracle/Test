@@ -1,4 +1,4 @@
-#Knowledge Base (Seed)
+# Knowledge Base Notes
 
 [Fluent Bindings and Memory Leaks](https://bugs.openjdk.org/browse/JDK-8373908?focusedId=14842224&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-14842224)
 
