@@ -4,3 +4,6 @@
 
 [Snapping](https://github.com/openjdk/jfx/pull/2016#discussion_r2642214031)
 
+Render graph (NGNode, NG* classes), renderLock, JavaFX Application Thread, rendered thread (QuantumRenderer)
+relationship: https://github.com/openjdk/jfx/pull/2043#discussion_r2728511729
+
