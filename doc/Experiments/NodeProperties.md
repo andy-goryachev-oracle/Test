@@ -16,7 +16,7 @@ resulting in reduction of memory footprint of over 500 bytes per a `Node` instan
 The goal is to reduce the memory footprint and, to a lesser extent,
 the garbage collection (GC) overhead of JavaFX applications.
 
-The reduced memory footprint and CPU requirements might be especially benefitial in
+The reduced memory footprint and CPU requirements might be especially beneficial in
 resource constrained environments such as iOS / Android / RaspberryPi devices.
 
 
@@ -385,7 +385,7 @@ With 67 properties using the container:
 
 ### Discussion
 
-Looking at the test test results above, I think we can come to a conclusion that this proposal does indeed
+Looking at the test results above, I think we can come to a conclusion that this proposal does indeed
 provide a saving of ~520 bytes per `Node` instance, which translates into overall saving of several megabytes
 for a typical application of moderate complexity.
 
