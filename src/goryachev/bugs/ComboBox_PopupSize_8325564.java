@@ -31,7 +31,12 @@ public class ComboBox_PopupSize_8325564 extends Application {
 
         Button update = new Button("Update");
         update.setOnAction(event -> animation.playFromStart());
-        stage.setScene(new Scene(new VBox(comboBox, update)));
+        
+        Scene scene = new Scene(new VBox(comboBox, update));
+        // apply CSS to the popup - any flicker or other ill effects?
+        scene.getStylesheets().add("data:text/css, .combo-box-popup > .list-view { -fx-padding: 100px }");
+
+        stage.setScene(scene);
         stage.setWidth(200);
         stage.setHeight(200);
         stage.show();
