@@ -19,10 +19,13 @@ public class ComboBox_PopupSize_8325564 extends Application {
         ComboBox<String> comboBox = new ComboBox<>();
         Timeline animation = new Timeline();
         animation.getKeyFrames().add(new KeyFrame(Duration.seconds(1), event -> {
+            
+            // turn this off to see another issue
             comboBox.show();
+            
             comboBox.getItems().setAll("Dave");
         }));
-        animation.getKeyFrames().add(new KeyFrame(Duration.seconds(2), event -> {
+        animation.getKeyFrames().add(new KeyFrame(Duration.seconds(5), event -> {
             comboBox.getItems().setAll("Rigby 1", "Rigby 2", "Rigby 3", "Rigby 4", "Rigby 5");
         }));
 
