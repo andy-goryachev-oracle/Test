@@ -380,11 +380,11 @@ Nodes=3,633 utilization=0.014 average=0.963 top=22 indexOf=439,833 saved=1,919,2
 Additionally, here are VisualVM memory screenshots illustrating memory consumption before and
 after the `Perform GC` button is pressed:
 
-Without changes:
+Without changes - baseline ~ 57.3 Mb heap:
 
 ![current memory consumption chart](node-properties-before.png)
 
-With 67 properties migrated to use the container:
+With 67 properties migrated to use the container - 53.6 Mb heap:
 
 ![optimized memory consumption chart](node-properties-after.png)
 
