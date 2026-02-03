@@ -389,11 +389,11 @@ after the `Perform GC` button is pressed:
 
 Without changes - baseline ~ 57.3 Mb heap:
 
-![current memory consumption chart](node-properties-before.png)
+![baseline memory consumption](node-properties-before.png)
 
-With 67 properties migrated to use the container - 53.6 Mb heap:
+With 67 properties migrated to use the container ~ 53.6 Mb heap:
 
-![optimized memory consumption chart](node-properties-after.png)
+![memory consumption with proposed changes](node-properties-after.png)
 
 
 
