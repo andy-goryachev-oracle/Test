@@ -382,11 +382,11 @@ after the `Perform GC` button is pressed:
 
 Without changes:
 
-![current memory consumption chart](node-props-before.png)
+![current memory consumption chart](node-properties-before.png)
 
-With 67 properties using the container:
+With 67 properties migrated to use the container:
 
-![optimized memory consumption chart](node-props-after.png)
+![optimized memory consumption chart](node-properties-after.png)
 
 
 
