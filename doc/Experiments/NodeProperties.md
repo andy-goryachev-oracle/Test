@@ -144,7 +144,14 @@ visible
 In order to collect the usage data, a subset of these properties was refactored to be stored in a per instance
 container implemented by the `FastMap` class [2].
 
-Using `onTouchMoved` property to illustrate the code changes:
+Briefly, the changes are:
+
+- add the property container `private final FastMap props`
+- declare a private static final key corresponding to each property to be moved to the container
+- replace pointer dereference with `FastMap.get(PKey<?>)`
+- replace property instantiation with a call to `FastMap.init()`
+
+To illustrate, here is an example using the `onTouchMoved` property:
 
 ```
     private static final PKey<EHProperty<TouchEvent>> K_ON_TOUCH_MOVED = new PKey<>();
@@ -392,9 +399,9 @@ for a typical application of moderate complexity.
 Surprisingly, a large number of instances exhibit 0 allocated properties, so perhaps the `props` container itself 
 can be lazily instantiated.
 
-I encourage everyone to test their JavaFX application with one of the branches and observe
+I encourage everyone to test their JavaFX application with one of the branches and observe:
 
-- the reduction of memory footprint
+- the reduction of memory footprint or lack thereof
 - any changes in performance 
 - any differences in the usage statistics
 
@@ -402,7 +409,14 @@ I encourage everyone to test their JavaFX application with one of the branches a
 
 ## Alternatives
 
-TODO
+One alternative is do nothing and leave everything as is.
+
+Since this is an internal implementation optimization, we might explore a number of possibilities:
+
+- use arrays instead of `ArrayList` to control the array growth (for example, add +2 to the size on each overflow)
+- use one array for both keys and properties, at the expense of having more cache misses
+- allow subclasses such as `Region` to use the `Node`'s property container
+- given large number of nodes with no properies allocated, lazily allocate the property container itself
 
 
 
