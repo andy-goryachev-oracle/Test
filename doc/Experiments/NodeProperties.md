@@ -22,7 +22,7 @@ resource constrained environments such as iOS / Android / RaspberryPi devices.
 
 ## Non-Goals
 
-The following are out of scope for this proposal:
+The following are out of scope at this time:
 
 - applying the same solution to other frequently used classes such as `Region` or `Labeled`
 - provide public API
@@ -141,8 +141,13 @@ viewOrder
 visible
 ```
 
-In order to collect the usage data, a subset of these properties was refactored to be stored in a per instance
-container implemented by the `FastMap` class [2].
+The main idea behind this proposal is to use a small, fast map-like container to store the rarely used properties.
+The container itself (implemented by the `FastMap` class [2]) is optimized for a typical use case determined by the
+usage statistics collected as part of the proof-of-concept trial.
+
+It is expected that the average number of properties in such a container will be no more than a few (on average),
+so that a simple linear search using `==` operator would be the fastest implementation.  There will be one
+container created per the `Node` instance.
 
 Briefly, the changes are:
 
@@ -186,6 +191,8 @@ using a `HashMap` because there is no need to compute `hashCode()`.
 The JavaFX code is available on the `linear.instrumented` branch [3].  This code is instrumented to periodically dump the usage statistics
 to `stdout`.  Since the instrumentation may slightly impact the performance, it can be disabled by setting
 `FastMap.COLLECT_STATISTICS` to `false`.
+
+Note: the instrumentation itself consumes the heap memory, therefore it must be turned off when measuring the heap usage.
 
 
 
@@ -413,8 +420,8 @@ One alternative is do nothing and leave everything as is.
 
 Since this is an internal implementation optimization, we might explore a number of possibilities:
 
-- use arrays instead of `ArrayList` to control the array growth (for example, add +2 to the size on each overflow)
-- use one array for both keys and properties, at the expense of having more cache misses
+- use arrays instead of `ArrayList` in order to control the array growth better and removing redundant `size` field
+- use one array for both keys and properties, at the expense of having more cache misses and the `instanceof` overhead
 - allow subclasses such as `Region` to use the `Node`'s property container
 - given large number of nodes with no properies allocated, lazily allocate the property container itself
 
