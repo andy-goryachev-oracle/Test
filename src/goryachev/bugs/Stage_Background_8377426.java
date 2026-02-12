@@ -19,7 +19,7 @@ public class Stage_Background_8377426 extends Application {
 
     private Paint createPaint() {
         int choice =
-            0
+            7
             ;
         
         return switch(choice) {
@@ -56,6 +56,15 @@ public class Stage_Background_8377426 extends Application {
                 CycleMethod.NO_CYCLE,
                 new Stop(0, Color.TRANSPARENT),
                 new Stop(1, Color.WHITE));
+        case 7 ->
+            // linear gradient: multiple colors
+            new LinearGradient(
+                0, 0, 0, 1, true, 
+                CycleMethod.NO_CYCLE,
+                new Stop(0, Color.TRANSPARENT),
+                new Stop(0.333, Color.WHITE),
+                new Stop(0.666, Color.BLACK),
+                new Stop(1, Color.GREEN));
         default ->
             Color.rgb(0, 0, 0, 0.5);
         };
