@@ -19,7 +19,7 @@ public class Stage_Background_8377426 extends Application {
 
     private Paint createPaint() {
         int choice =
-            1
+            0
             ;
         
         return switch(choice) {
@@ -47,8 +47,15 @@ public class Stage_Background_8377426 extends Application {
             // Image pattern 1
             new ImagePattern(new Image(ClassLoader.getSystemResource("bg1.png").toString(), false));
         case 5 ->
-            // Image pattern 2
+            // Image pattern 2 transparent background
             new ImagePattern(new Image(ClassLoader.getSystemResource("bg2.png").toString(), false));
+        case 6 ->
+            // Stark linear gradient: transparent to white
+            new LinearGradient(
+                0, 0, 0, 1, true, 
+                CycleMethod.NO_CYCLE,
+                new Stop(0, Color.TRANSPARENT),
+                new Stop(1, Color.WHITE));
         default ->
             Color.rgb(0, 0, 0, 0.5);
         };
@@ -61,7 +68,7 @@ public class Stage_Background_8377426 extends Application {
         t.setMaxHeight(50);
         t.setBackground(Background.fill(Color.SALMON));
         
-        Scene sc = new Scene(new Group(t), 640, 480);
+        Scene sc = new Scene(new Group(t), 1240, 1080);
         sc.setFill(createPaint());
         stage.setScene(sc);
         stage.show();
