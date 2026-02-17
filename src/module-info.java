@@ -13,4 +13,5 @@ module andy_test {
     requires java.desktop;
     requires javafx.swing;
     requires jfx.incubator.richtext;
+    requires java.compiler;
 }
