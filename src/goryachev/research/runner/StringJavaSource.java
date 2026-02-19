@@ -6,11 +6,11 @@ import javax.tools.SimpleJavaFileObject;
 /**
  * in memory java source file object
  */
-public class JavaSourceFromString extends SimpleJavaFileObject {
+public class StringJavaSource extends SimpleJavaFileObject {
     
     private final String code;
 
-    public JavaSourceFromString(String name, String code) {
+    public StringJavaSource(String name, String code) {
         super(URI.create(InMemoryJavaFileManager.createUrl(name, true)), Kind.SOURCE);
         this.code = code;
     }

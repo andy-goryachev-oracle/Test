@@ -1,13 +1,8 @@
 package goryachev.research.runner;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
-import java.net.URLStreamHandlerFactory;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
@@ -32,38 +27,6 @@ public class InMemoryJavaFileManager implements JavaFileManager {
     
     public synchronized static InMemoryJavaFileManager init(JavaCompiler compiler) {
         if (instance == null) {
-            URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
-                URLStreamHandler streamHandler = new URLStreamHandler() {
-                    @Override
-                    protected URLConnection openConnection(URL url) throws IOException {
-                        if (InMemoryJavaFileManager.PROTOCOL.equals(url.getProtocol())) {
-                            return new URLConnection(url) {
-                                @Override
-                                public void connect() throws IOException {
-                                }
-
-                                @Override
-                                public InputStream getInputStream() throws IOException {
-                                    p("FM.URLStreamHandler.getInputStream url=" + url);
-                                    return null; 
-                                    //new ByteArrayInputStream(styleSheetContent.getBytes("UTF-8"));
-                                }
-                            };
-                        } else {
-                            throw new FileNotFoundException("url: " + url);
-                        }
-                    }
-                };
-
-                @Override
-                public URLStreamHandler createURLStreamHandler(String protocol) {
-                    if (InMemoryJavaFileManager.PROTOCOL.equals(protocol)) {
-                        return streamHandler;
-                    }
-                    return null;
-                }
-            });
-            
             instance = new InMemoryJavaFileManager(compiler.getStandardFileManager(null, null, null));
         }
         return instance;
@@ -90,42 +53,7 @@ public class InMemoryJavaFileManager implements JavaFileManager {
     public ClassLoader getClassLoader(Location location) {
         var v = fm.getClassLoader(location);
         p("FM.getClassLoader " + location + " " + v);
-        return getClassLoader();
-        /*
-        URLStreamHandler sf = null; //new URLStreamHandler() {
-//            @Override
-//            protected URLConnection openConnection(URL u) throws IOException {
-//                p("openConnection " + u);
-//                return null;
-//            }
-//        };
-        // TODO
-        String singleSourceName = "a";
-        
-        URL[] urls;
-        try {
-            urls = new URL[] {
-                URL.of(URI.create(createUrl(singleSourceName, true)), sf),
-                URL.of(URI.create(createUrl(singleSourceName, false)), sf)
-            };
-        } catch(Exception e) {
-            throw new Error(e);
-        }
-        return new URLClassLoader(urls, v) {
-            @Override
-            public InputStream getResourceAsStream(String name) {
-                p("CL: getResourceAsStream " + name);
-                var v = super.getResourceAsStream(name);
-                return v;
-            }
-            
-            @Override
-            protected Class<?> findClass(String name) throws ClassNotFoundException {
-                name = "/" + name;
-                return super.findClass(name);
-            }
-        };
-        */
+        return getInMemClassLoader();
     }
 
     @Override
@@ -216,10 +144,11 @@ public class InMemoryJavaFileManager implements JavaFileManager {
         return fm.inferModuleName(location);
     }
     
-    public ClassLoader getClassLoader() {
+    public ClassLoader getInMemClassLoader() {
         return new ClassLoader() {
             @Override
             protected URL findResource(String name) {
+                p("CL.findResource name=" + name);
                 try {
                     return URL.of(URI.create(createUrl(name, false)), null);
                 } catch(Exception e) {

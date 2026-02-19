@@ -13,7 +13,7 @@ public class TestRunner {
     
     public static void main(String args[]) throws Exception {
         
-        JavaFileObject file = new JavaSourceFromString(
+        JavaFileObject file = new StringJavaSource(
             "CompilerTest",
             """
             public class CompilerTest {
@@ -37,19 +37,19 @@ public class TestRunner {
         
         boolean success = task.call();
 
-        for (Diagnostic diagnostic: diagnostics.getDiagnostics()) {
-            System.out.println("code=" + diagnostic.getCode());
-            System.out.println("kind=" + diagnostic.getKind());
-            System.out.println("pos=" + diagnostic.getPosition());
-            System.out.println("start=" + diagnostic.getStartPosition());
-            System.out.println("end=" + diagnostic.getEndPosition());
-            System.out.println("source=" + diagnostic.getSource());
-            System.out.println("message=" + diagnostic.getMessage(null));
+        for (Diagnostic d: diagnostics.getDiagnostics()) {
+            System.out.println("code=" + d.getCode());
+            System.out.println("kind=" + d.getKind());
+            System.out.println("pos=" + d.getPosition());
+            System.out.println("start=" + d.getStartPosition());
+            System.out.println("end=" + d.getEndPosition());
+            System.out.println("source=" + d.getSource());
+            System.out.println("message=" + d.getMessage(null));
         }
 
         if (success) {
             try {
-                ClassLoader ldr = fm.getClassLoader(); //StandardLocation.CLASS_OUTPUT);
+                ClassLoader ldr = fm.getInMemClassLoader();
                 Class.forName(name, true, ldr).
                     getDeclaredMethod("main", new Class[] { String[].class }).
                     invoke(null, new Object[] { null });
