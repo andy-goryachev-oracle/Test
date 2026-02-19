@@ -1,15 +1,12 @@
 package goryachev.research.runner;
 
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Arrays;
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaCompiler.CompilationTask;
-import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
 import javax.tools.ToolProvider;
 
 public class TestRunner {
@@ -33,7 +30,7 @@ public class TestRunner {
 
         String name = "CompilerTest";
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
-        JavaFileManager fm = new InMemoryJavaFileManager(compiler.getStandardFileManager(null, null, null), name);
+        InMemoryJavaFileManager fm = InMemoryJavaFileManager.init(compiler);
         Iterable<? extends JavaFileObject> compilationUnits = Arrays.asList(file);
         DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<JavaFileObject>();
         CompilationTask task = compiler.getTask(null, fm, diagnostics, null, null, compilationUnits);
@@ -52,9 +49,8 @@ public class TestRunner {
 
         if (success) {
             try {
-                // FIX url
-                URLClassLoader classLoader = URLClassLoader.newInstance(new URL[] { new File("").toURI().toURL() });
-                Class.forName("CompilerTest", true, classLoader).
+                ClassLoader ldr = fm.getClassLoader(); //StandardLocation.CLASS_OUTPUT);
+                Class.forName(name, true, ldr).
                     getDeclaredMethod("main", new Class[] { String[].class }).
                     invoke(null, new Object[] { null });
             } catch (Exception e) {

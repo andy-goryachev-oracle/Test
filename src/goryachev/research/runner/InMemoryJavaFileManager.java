@@ -1,68 +1,79 @@
-/*
- * Copyright (c) 2026, Oracle and/or its affiliates. All rights reserved.
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * This code is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.  Oracle designates this
- * particular file as subject to the "Classpath" exception as provided
- * by Oracle in the LICENSE file that accompanied this code.
- *
- * This code is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * version 2 for more details (a copy is included in the LICENSE file that
- * accompanied this code).
- *
- * You should have received a copy of the GNU General Public License version
- * 2 along with this work; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
- * or visit www.oracle.com if you need additional information or have any
- * questions.
- */
 package goryachev.research.runner;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import javax.tools.FileObject;
+import javax.tools.JavaCompiler;
 import javax.tools.JavaFileManager;
 import javax.tools.JavaFileObject;
-import javax.tools.JavaFileObject.Kind;
 import javax.tools.StandardJavaFileManager;
 
 /**
  * in memory java file manager
  */
 public class InMemoryJavaFileManager implements JavaFileManager {
+    public static final String PROTOCOL = "in-mem";
     private final StandardJavaFileManager fm;
-    private final URL url;
-    
-    public InMemoryJavaFileManager(StandardJavaFileManager fm, String sourceName) throws Exception {
+    private static InMemoryJavaFileManager instance;
+    private static final HashMap<String,InMemoryJavaFileOutput> files = new HashMap<>();
+
+    private InMemoryJavaFileManager(StandardJavaFileManager fm) {
         this.fm = fm;
-        URLStreamHandler sf = new URLStreamHandler() {
-            @Override
-            protected URLConnection openConnection(URL u) throws IOException {
-                p("openConnection " + u);
-                return null;
-            }
-        };
-        this.url = URL.of(URI.create(createUrl(sourceName)), sf);
+    }
+    
+    public synchronized static InMemoryJavaFileManager init(JavaCompiler compiler) {
+        if (instance == null) {
+            URL.setURLStreamHandlerFactory(new URLStreamHandlerFactory() {
+                URLStreamHandler streamHandler = new URLStreamHandler() {
+                    @Override
+                    protected URLConnection openConnection(URL url) throws IOException {
+                        if (InMemoryJavaFileManager.PROTOCOL.equals(url.getProtocol())) {
+                            return new URLConnection(url) {
+                                @Override
+                                public void connect() throws IOException {
+                                }
+
+                                @Override
+                                public InputStream getInputStream() throws IOException {
+                                    p("FM.URLStreamHandler.getInputStream url=" + url);
+                                    return null; 
+                                    //new ByteArrayInputStream(styleSheetContent.getBytes("UTF-8"));
+                                }
+                            };
+                        } else {
+                            throw new FileNotFoundException("url: " + url);
+                        }
+                    }
+                };
+
+                @Override
+                public URLStreamHandler createURLStreamHandler(String protocol) {
+                    if (InMemoryJavaFileManager.PROTOCOL.equals(protocol)) {
+                        return streamHandler;
+                    }
+                    return null;
+                }
+            });
+            
+            instance = new InMemoryJavaFileManager(compiler.getStandardFileManager(null, null, null));
+        }
+        return instance;
     }
 
-    public static String createUrl(String name) {
-        return "java-input:///" + name.replace('.', '/') + Kind.SOURCE.extension;
+    public static String createUrl(String name, boolean source) {
+        return PROTOCOL + ":///" + name.replace('.', '/') + (source ? ".java" : ".class");
     }
-    
-    private void p(String s) {
+
+    private static void p(String s) {
         if (true) {
             System.out.println(s);
         }
@@ -71,92 +82,117 @@ public class InMemoryJavaFileManager implements JavaFileManager {
     @Override
     public int isSupportedOption(String option) {
         var v = fm.isSupportedOption(option);
-        p("isSupportedOption " + option + " " + v);
+        p("FM.isSupportedOption " + option + " " + v);
         return v;
     }
 
     @Override
     public ClassLoader getClassLoader(Location location) {
         var v = fm.getClassLoader(location);
-        p("getClassLoader " + location + " " + v);
-
-        return new URLClassLoader(new URL[] { url } , v) {
+        p("FM.getClassLoader " + location + " " + v);
+        return getClassLoader();
+        /*
+        URLStreamHandler sf = null; //new URLStreamHandler() {
+//            @Override
+//            protected URLConnection openConnection(URL u) throws IOException {
+//                p("openConnection " + u);
+//                return null;
+//            }
+//        };
+        // TODO
+        String singleSourceName = "a";
+        
+        URL[] urls;
+        try {
+            urls = new URL[] {
+                URL.of(URI.create(createUrl(singleSourceName, true)), sf),
+                URL.of(URI.create(createUrl(singleSourceName, false)), sf)
+            };
+        } catch(Exception e) {
+            throw new Error(e);
+        }
+        return new URLClassLoader(urls, v) {
             @Override
             public InputStream getResourceAsStream(String name) {
                 p("CL: getResourceAsStream " + name);
                 var v = super.getResourceAsStream(name);
                 return v;
             }
+            
+            @Override
+            protected Class<?> findClass(String name) throws ClassNotFoundException {
+                name = "/" + name;
+                return super.findClass(name);
+            }
         };
+        */
     }
 
     @Override
-    public Iterable<JavaFileObject> list(Location location, String packageName, Set<Kind> kinds, boolean recurse) throws IOException {
+    public Iterable<JavaFileObject> list(Location location, String packageName, Set<JavaFileObject.Kind> kinds, boolean recurse) throws IOException {
         var v = fm.list(location, packageName, kinds, recurse);
-        p("list " + location + " " + v);
+        //p("list " + location + " " + v);
         return v;
     }
 
     @Override
     public String inferBinaryName(Location location, JavaFileObject file) {
         var v = fm.inferBinaryName(location, file);
-        p("inferBinaryName " + location + " file=" + file + " " + v);
+        //p("inferBinaryName " + location + " file=" + file + " " + v);
         return v;
     }
 
     @Override
     public boolean isSameFile(FileObject a, FileObject b) {
         var v = fm.isSameFile(a, b);
-        p("isSameFile " + a + " " + b + " " + v);
+        p("FM.isSameFile " + a + " " + b + " " + v);
         return v;
     }
 
     @Override
     public boolean handleOption(String current, Iterator<String> remaining) {
-        var v = fm.handleOption(current, remaining);
-        p("handleOption " + current + " " + v);
-        return v;
+        return fm.handleOption(current, remaining);
     }
 
     @Override
     public boolean hasLocation(Location location) {
         var v = fm.hasLocation(location);
-        p("hasLocation " + location + " " + v);
+        //p("hasLocation " + location + " " + v);
         return v;
     }
 
     @Override
-    public JavaFileObject getJavaFileForInput(Location location, String className, Kind kind) throws IOException {
+    public JavaFileObject getJavaFileForInput(Location location, String className, JavaFileObject.Kind kind) throws IOException {
         var v = fm.getJavaFileForInput(location, className, kind);
-        p("getJavaFileForInput " + location + " " + v);
+        p("FM.getJavaFileForInput " + location + " " + v);
         return v;
     }
 
     @Override
-    public JavaFileObject getJavaFileForOutput(Location location, String className, Kind kind, FileObject sibling) throws IOException {
-        System.out.println("getJavaFileForOutput " + location + " className=" + className + " kind=" + kind + " sibling=" + sibling);
+    public JavaFileObject getJavaFileForOutput(Location location, String className, JavaFileObject.Kind kind, FileObject sibling) throws IOException {
+        p("FM.getJavaFileForOutput " + location + " className=" + className + " kind=" + kind + " sibling=" + sibling);
         if (location.isOutputLocation()) {
-            // TODO location/class name/sibling + store in a hashtable?
-            return new InMemoryJavaFileObject(className, kind);
+            URI uri = URI.create(createUrl(className, false));
+            InMemoryJavaFileOutput f = new InMemoryJavaFileOutput(uri, kind);
+            files.put(className, f);
+            return f;
         }
         var v = fm.getJavaFileForOutput(location, className, kind, sibling);
-        // TODO
-        // getJavaFileForOutput CLASS_OUTPUT className=CompilerTest kind=CLASS sibling=goryachev.research.TestRunner$JavaSourceFromString[java-input:///CompilerTest.java] SimpleFileObject[/Users/angorya/Projects/Test3/Test/CompilerTest.class]
-        p("getJavaFileForOutput " + location + " className=" + className + " kind=" + kind + " sibling=" + sibling + " " + v);
+        p("FM.getJavaFileForOutput " + location + " className=" + className + " kind=" + kind + " sibling=" + sibling + " " + v);
         return v;
     }
 
     @Override
     public FileObject getFileForInput(Location location, String packageName, String relativeName) throws IOException {
         var v = fm.getFileForInput(location, packageName, relativeName);
-        p("getFileForInput " + location + " " + v);
+        p("FM.getFileForInput " + location + " " + v);
         return v;
     }
 
     @Override
     public FileObject getFileForOutput(Location location, String packageName, String relativeName, FileObject sibling) throws IOException {
         var v = fm.getFileForOutput(location, packageName, relativeName, sibling);
-        p("getFileForOutput " + location + " packageName=" + packageName + " relativeName=" + relativeName + " sibling=" + sibling + " " + v);
+        p("FM.getFileForOutput " + location + " packageName=" + packageName + " relativeName=" + relativeName + " sibling=" + sibling + " " + v);
         return v;
     }
 
@@ -169,18 +205,39 @@ public class InMemoryJavaFileManager implements JavaFileManager {
     public void close() throws IOException {
         fm.close();
     }
-    
+
     @Override
     public Iterable<Set<Location>> listLocationsForModules(Location location) throws IOException {
-        var v = fm.listLocationsForModules(location);
-        p("listLocationsForModules " + location + " " + v);
-        return v;
+        return fm.listLocationsForModules(location);
     }
-    
+
     @Override
     public String inferModuleName(Location location) throws IOException {
-        var v = fm.inferModuleName(location);
-        p("inferModuleName " + location + " " + v);
-        return v;
+        return fm.inferModuleName(location);
+    }
+    
+    public ClassLoader getClassLoader() {
+        return new ClassLoader() {
+            @Override
+            protected URL findResource(String name) {
+                try {
+                    return URL.of(URI.create(createUrl(name, false)), null);
+                } catch(Exception e) {
+                    throw new Error(e);
+                }
+            }
+            
+            @Override
+            protected Class<?> findClass(String name) throws ClassNotFoundException {
+                String path = name.replace('.', '/').concat(".class");
+                InMemoryJavaFileOutput f = files.get(name);
+                if (f == null) {
+                    throw new ClassNotFoundException(name);
+                } else {
+                    byte[] b = f.getBytes();
+                    return defineClass(name, b, 0, b.length);
+                }
+            }
+        };
     }
 }
