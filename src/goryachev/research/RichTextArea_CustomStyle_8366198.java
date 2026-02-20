@@ -19,8 +19,8 @@ import jfx.incubator.scene.control.richtext.model.StyleAttributeMap;
  * (e.g. the phase of squiggly lines). 
  */
 public class RichTextArea_CustomStyle_8366198 extends Application {
-    public static final StyleAttribute<Boolean> RED_SQUIGGLY = new StyleAttribute<>("RED_SQUIGGLY", Boolean.class, false);
-    public static final StyleAttribute<Boolean> BLUE_SQUIGGLY = new StyleAttribute<>("BLUE_SQUIGGLY", Boolean.class, false);
+    public static final StyleAttribute<Boolean> RED_SQUIGGLY = StyleAttribute.character("RED_SQUIGGLY", Boolean.class);
+    public static final StyleAttribute<Boolean> BLUE_SQUIGGLY = StyleAttribute.character("BLUE_SQUIGGLY", Boolean.class);
     
     @Override
     public void start(Stage stage) throws Exception {
