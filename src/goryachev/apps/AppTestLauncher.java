@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(FlowPane_MaxWidth_8377153.class, args);
+        Application.launch(ContextMenu_SubMenuNPE_8376492.class, args);
     }
 
     private static void enableLogging() {
