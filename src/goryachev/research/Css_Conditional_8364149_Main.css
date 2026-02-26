@@ -1,1 +1,1 @@
-@import url("Css_Conditional_8364149_Narrow.css") (height < 200) or (width <= 200);
+@import url("Css_Conditional_8364149_Narrow.css") (height < 200) and (not (width <= 200));
