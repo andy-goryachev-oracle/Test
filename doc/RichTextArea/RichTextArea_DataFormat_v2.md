@@ -1,10 +1,10 @@
-# Rich Text Area (Incubator) Data Format
+# Rich Text Area (Incubator) Data Format Version 2
 
 Andy Goryachev
 
 <andy.goryachev@oracle.com>
 
-Version v2, March 3, 2026
+March 3, 2026
 
 
 
