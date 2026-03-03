@@ -11,7 +11,7 @@ Version v2, March 3, 2026
 ## Summary
 
 This document describes the data format used by `RichTextArea`'s default text model `RichTextModel`
-for saving/loading/copying/pasting of the rich text.
+for saving, loading, copying, and pasting of rich content.
 
 This format (as a part of an incubator module) is likely to change once the decision to integrate it
 into the JavaFX core is made.
@@ -23,7 +23,7 @@ In short, the format is plain text which contains a sequence of segments represe
 
 - document properties
 - character attributes
-- paragraph attributes,
+- paragraph attributes
 - text
 - newlines
 
@@ -38,9 +38,9 @@ is represented by the following file:
 {0}default tabs:	1	2	3{!}
 {ff|System}{fs|12.0}{tc|669966}green{!}
 {b}{ff|System}{fs|12.0}bold {ff|System}{fs|12.0}{i}italic {ff|System}{fs|12.0}{ss}strikethrough{4} {ff|System}{fs|12.0}{u}underline{!}
-{0}Arial 32{!}
+{ff|Arial}{fs|32.0}Arial 32{!}
 {ff|System}{fs|12.0}{tc|000000}monospaced{!}
-{7}paragraph attributes{!bg|FFFF4D}{!bullet}{!dir|L}{!spaceAbove|3.0}{!spaceBelow|4.0}{!spaceLeft|1.0}{!spaceRight|2.0}{!alignment|C}
+{8}paragraph attributes{!bg|FFFF4D}{!bullet}{!dir|L}{!spaceAbove|3.0}{!spaceBelow|4.0}{!spaceLeft|1.0}{!spaceRight|2.0}{!alignment|C}
 ```
 
 In this example, the document properties are enclosed in `{# }`, each paragraph attribute is enclosed in `{! }`,
@@ -140,7 +140,7 @@ A special token `{!}` indicates that the paragraph contains no attributes.
 |spaceBelow   |SPACE_BELOW            |double              | must be >= 0 and finite
 |spaceLeft    |SPACE_LEFT             |double              | must be >= 0 and finite
 |spaceRight   |SPACE_RIGHT            |double              | must be >= 0 and finite
-
+|tabs         |TAB_STOPS              |double[]            | comma-separated list
 
 
 
@@ -153,7 +153,7 @@ ASCII values:
 |:------------|:------------------- |
 |`%`          |`%25`
 |`{`          |`%7B`
-|`|`          |`%7C`
+|```|```      |`%7C`
 |`}`          |`%7D`
 
 
