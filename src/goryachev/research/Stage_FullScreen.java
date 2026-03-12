@@ -1,6 +1,5 @@
 package goryachev.research;
 
-import java.awt.Paint;
 import java.util.Random;
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
@@ -10,7 +9,6 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyEvent;

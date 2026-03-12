@@ -26,7 +26,6 @@
 package goryachev.tests;
 
 import java.text.BreakIterator;
-import java.text.CharacterIterator;
 
 public class BreakIterator_Bhojpuri {
     public static void main(String[] args) {
