@@ -4,17 +4,16 @@ Andy Goryachev
 
 <andy.goryachev@oracle.com>
 
-March 3, 2026
+March 13, 2026
 
 
 
 ## Summary
 
-This document describes the data format used by `RichTextArea`'s default text model `RichTextModel`
-for saving, loading, copying, and pasting of rich content.
+This document describes the data format used by `RichTextModel`, the default model used by the `RichTextArea`'s control.
 
-This format (as a part of an incubator module) is likely to change once the decision to integrate it
-into the JavaFX core is made.
+This format (as a part of an incubator module) is likely to change once the decision is made to integrate it
+into the JavaFX core.
 
 
 ## Example
