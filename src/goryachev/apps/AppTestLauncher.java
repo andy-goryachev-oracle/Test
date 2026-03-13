@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(Css_Conditional_8364149.class, args);
+        Application.launch(TreeView_Focus_8256142.class, args);
     }
 
     private static void enableLogging() {
