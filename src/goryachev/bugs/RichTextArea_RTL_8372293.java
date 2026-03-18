@@ -2,7 +2,6 @@ package goryachev.bugs;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;
-import javafx.geometry.NodeOrientation;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;

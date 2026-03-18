@@ -1,6 +1,5 @@
 package goryachev.bugs;
 
-import java.util.List;
 import javafx.application.Application;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
