@@ -52,7 +52,7 @@ public class RichTextArea_CustomAttributes_Example extends Application {
     /// The value is a String representing a valid CSS style, for example:
     /// 
     /// `-fx-font-size:200%; -fx-underline:true;`
-    public static final StyleAttribute<String> CSS_CHAR = new StyleAttribute("CSS_CHAR", String.class, false);
+    public static final StyleAttribute<String> CSS_CHAR = StyleAttribute.character("CSS_CHAR", String.class);
     
     @Override
     public void start(Stage stage) throws Exception {
