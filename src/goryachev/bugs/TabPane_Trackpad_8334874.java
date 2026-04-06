@@ -1,7 +1,6 @@
 package goryachev.bugs;
 
 import javafx.application.Application;
-import javafx.geometry.Side;
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;

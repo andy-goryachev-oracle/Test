@@ -1,5 +1,4 @@
 package goryachev.bugs;
-import java.util.List;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

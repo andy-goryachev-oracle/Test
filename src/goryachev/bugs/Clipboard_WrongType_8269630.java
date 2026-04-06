@@ -2,11 +2,9 @@ package goryachev.bugs;
 import java.util.Arrays;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.scene.Scene;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
-import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 /**
