@@ -14,12 +14,16 @@ import javafx.beans.property.StringProperty;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import goryachev.research.runner.examples.EmojiTest_Legacy;
 import goryachev.research.runner.examples.EmojiTest_New;
@@ -76,26 +80,28 @@ public class TestRunnerApp extends Application {
         runButton.setOnAction((_) -> {
             runTest();
         });
-        
-        Button clearButton = new Button("Clear Log");
-        clearButton.setOnAction((_) -> {
-            clearLog();
-        });
 
         ToolBar tb = new ToolBar();
         tb.getItems().addAll(
-            runButton,
-            clearButton
+            runButton
         );
 
         log = new TextArea();
         log.setEditable(false);
 
+        MenuBar mb = new MenuBar();
+        Menu m;
+        MenuItem mi;
+        mb.getMenus().add(m = new Menu("File"));
+        mb.getMenus().add(m = new Menu("Log"));
+        m.getItems().add(mi = new MenuItem("Clear"));
+        mi.setOnAction((_) -> clearLog());
+
         SplitPane split = new SplitPane(table, log);
         split.setOrientation(Orientation.VERTICAL);
         
         BorderPane bp = new BorderPane(split);
-        bp.setTop(tb);
+        bp.setTop(new VBox(mb, tb));
         Scene scene = new Scene(bp, 1100, 500);
         
         stage.setTitle("Manual Test Runner");
