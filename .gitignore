@@ -4,3 +4,4 @@
 /testbin/
 /*.jar
 /hs_err*.log
+*.class

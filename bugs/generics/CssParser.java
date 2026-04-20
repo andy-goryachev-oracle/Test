@@ -4,6 +4,9 @@ package generics;
 final public class CssParser {
     private ParsedValueImpl<ParsedValue<ParsedValue[], BackgroundPosition>[], BackgroundPosition[]> parseBackgroundPositionLayers() {
         ParsedValueImpl<ParsedValue[], BackgroundPosition>[] layers = new ParsedValueImpl[0];
+
+        // hmmm, adding constructors to ParsedValue/ParsedValueImpl solves the issue in both Eclipse and javac
+        // but not in the real code, where constructors already exist!
         
         // Eclipse: reports Java Problem
         // Cannot infer type arguments for ParsedValueImpl<>
@@ -30,8 +33,8 @@ final public class CssParser {
         1 error
         */
         // TODO uncomment to show the error
-        //return new ParsedValueImpl<>(layers, LayeredBackgroundPositionConverter.getInstance());
+        return new ParsedValueImpl<>(layers, (StyleConverter<ParsedValue<ParsedValue[], BackgroundPosition>[], BackgroundPosition[]>)LayeredBackgroundPositionConverter.getInstance());
         // dummy return value so I can check this example into my repo
-        return null;
+        //return null;
     }
 }
