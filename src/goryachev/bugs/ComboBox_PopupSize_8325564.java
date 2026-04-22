@@ -25,9 +25,17 @@ public class ComboBox_PopupSize_8325564 extends Application {
             
             comboBox.getItems().setAll("Dave");
         }));
-        animation.getKeyFrames().add(new KeyFrame(Duration.seconds(5), event -> {
-            comboBox.getItems().setAll("Rigby 1", "Rigby 2", "Rigby 3", "Rigby 4", "Rigby 5");
-        }));
+        animation.getKeyFrames().addAll(
+            new KeyFrame(Duration.seconds(5), event -> {
+                comboBox.getItems().setAll("Rigby 1", "Rigby 2", "Rigby 3", "Rigby 4", "Rigby 5");
+            }),
+            new KeyFrame(Duration.seconds(10), event -> {
+                comboBox.getItems().setAll("One");
+            }),
+            new KeyFrame(Duration.seconds(15), event -> {
+                comboBox.getItems().setAll("1", "2", "3");
+            })
+        );
 
         Button update = new Button("Update");
         update.setOnAction(event -> animation.playFromStart());

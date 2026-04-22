@@ -1,15 +1,24 @@
 package generics;
 
-// https://github.com/openjdk/jfx/blob/6ddb2b2f76a2facfd9d1345787cfa4a6658b0412/modules/javafx.graphics/src/main/java/javafx/css/CssParser.java#L3086
-public class CssParser {
+// https://github.com/openjdk/jfx/blob/master/modules/javafx.graphics/src/main/java/javafx/css/CssParser.java
+final public class CssParser {
     private ParsedValueImpl<ParsedValue<ParsedValue[], BackgroundPosition>[], BackgroundPosition[]> parseBackgroundPositionLayers() {
         ParsedValueImpl<ParsedValue[], BackgroundPosition>[] layers = new ParsedValueImpl[0];
+
+        // hmmm, adding constructors to ParsedValue/ParsedValueImpl solves the issue in both Eclipse and javac
+        // but not in the real code, where constructors already exist!
         
         // Eclipse: reports Java Problem
         // Cannot infer type arguments for ParsedValueImpl<>
-        // return new ParsedValueImpl<>(layers, LayeredBackgroundPositionConverter.getInstance());
-        
         /*
+         * Javac reports an error as well, with a simple reproducer.
+         * However, it DOES NOT report an error in opendjk/jfx build
+         * https://github.com/openjdk/jfx/blob/master/modules/javafx.graphics/src/main/java/javafx/css/CssParser.java
+         *
+        
+        javac -version
+        javac 25.0.2
+
         javac *.java
         CssParser.java:9: error: cannot infer type arguments for ParsedValueImpl<>
                 return new ParsedValueImpl<>(layers, LayeredBackgroundPositionConverter.getInstance());
@@ -23,8 +32,9 @@ public class CssParser {
         Note: Recompile with -Xlint:unchecked for details.
         1 error
         */
-        
+        // TODO uncomment to show the error
+        return new ParsedValueImpl<>(layers, (StyleConverter<ParsedValue<ParsedValue[], BackgroundPosition>[], BackgroundPosition[]>)LayeredBackgroundPositionConverter.getInstance());
         // dummy return value so I can check this example into my repo
-        return null;
+        //return null;
     }
 }
