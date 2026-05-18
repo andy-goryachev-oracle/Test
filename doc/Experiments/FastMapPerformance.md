@@ -34,8 +34,8 @@ The results are in nanoseconds per access cycle, including computation of the ne
 Columns:
 
 - Size: the map size
-- FastMap: FastMap implementation (two arrays, one for keys, one for values)
-- FasterMap: FasterMap (a single array for keys and values)
+- FastMap: FastMap [2] implementation (two arrays, one for keys, one for values)
+- FasterMap: FasterMap [3] (a single `ArrayList` for keys and values)
 - HashMap: standard JDK `HashMap`
 
 
@@ -81,3 +81,7 @@ Even when the alternatives perform better than the `HashMap`, the difference is 
 [0] https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Experiments/NodeProperties.md
 
 [1] https://github.com/andy-goryachev-oracle/jfx/blob/node.props/modules/javafx.graphics/src/test/java/test/com/sun/javafx/util/FastMapTest.java
+
+[2] https://github.com/andy-goryachev-oracle/jfx/blob/node.props/modules/javafx.graphics/src/main/java/com/sun/javafx/util/FastMap.java
+
+[3] https://github.com/andy-goryachev-oracle/jfx/blob/801a0efbb1f0026df480ff2443b8ffc3ab79ab41/modules/javafx.graphics/src/test/java/test/com/sun/javafx/util/FastMapTest.java#L124
