@@ -25,22 +25,25 @@ public class ComboBox_PopupSize_8325564 extends Application {
             
             comboBox.getItems().setAll("Dave");
         }));
+
+        Button update = new Button("Update");
+        update.setOnAction(event -> animation.playFromStart());
+
+        Scene scene = new Scene(new VBox(comboBox, update));
+
         animation.getKeyFrames().addAll(
             new KeyFrame(Duration.seconds(5), event -> {
                 comboBox.getItems().setAll("Rigby 1", "Rigby 2", "Rigby 3", "Rigby 4", "Rigby 5");
             }),
             new KeyFrame(Duration.seconds(10), event -> {
                 comboBox.getItems().setAll("One");
+                scene.getStylesheets().add("data:text/css, .combo-box-popup > .list-view { -fx-padding: 20px }");
             }),
             new KeyFrame(Duration.seconds(15), event -> {
                 comboBox.getItems().setAll("1", "2", "3");
             })
         );
-
-        Button update = new Button("Update");
-        update.setOnAction(event -> animation.playFromStart());
         
-        Scene scene = new Scene(new VBox(comboBox, update));
         // apply CSS to the popup - any flicker or other ill effects?
         scene.getStylesheets().add("data:text/css, .combo-box-popup > .list-view { -fx-padding: 100px }");
 
