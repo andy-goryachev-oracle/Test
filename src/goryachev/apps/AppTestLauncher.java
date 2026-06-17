@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(ComboBox_ConsumeEvent_8354539.class, args);
+        Application.launch(ScrollStop_8384814.class, args);
     }
 
     private static void enableLogging() {
