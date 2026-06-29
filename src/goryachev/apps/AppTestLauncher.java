@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(ScrollStop_8384814.class, args);
+        Application.launch(GridPane_Gap_8386590.class, args);
     }
 
     private static void enableLogging() {
