@@ -1,24 +1,24 @@
-# Public InputMap (Draft, v3)
+# Public InputMap (Draft, v4)
 
 Andy Goryachev
 
 <andy.goryachev@oracle.com>
 
-15 November 2024
+29 June 2026
 
 
 
 ## Summary
 
-Add the **InputMap** property in the Control class, allowing the application code to customize controls
+Adds the `InputMap` property in the `Control` class, allowing the application code to customize controls
 by adding, removing, or modifying the key mappings, at compile time or dynamically.
 
-Add the **SkinInputMap** and an optional **BehaviorBase** classes to simplify development of skins for existing
+Adds the `SkinInputMap` and an optional `BehaviorBase` classes to simplify development of skins for the existing
 and custom controls.
 
-In the absence of a generic solution to the priority inversion problem [6],
-provide a mechanism for guaranteed prioritization
-of the event handlers and key mappings between application and the skin.
+In the absence of a generic solution to the priority inversion problem [7],
+provides a mechanism for guaranteed order
+of the event handlers and key mappings between the application and the skin.
 
 
 
@@ -26,13 +26,13 @@ of the event handlers and key mappings between application and the skin.
 
 The goals of this proposal are:
 
-- allow for customization of a control behavior by changing the existing, or adding new key mappings
-- support dynamic modification of key mappings
-- allow for reverting customization to the default implementation
-- allow for accessing the default functionality even when it was overwritten by the application
-- allow for *gradual* migration of the existing controls to use the new InputMap
+- guarantee priority of the application handlers and key mappings over those defined by the skin
+- enable minor changes to the behavior by altering existing mappings or adding new mappings
+- support dynamic modification of key mappings (for example, via user preferences)
+- allow for calling the default implementation even when it was overwritten by the application
+- allow for *gradual* migration of the existing controls to use the new `InputMap`
 - support stateful and stateless (fully static) behavior implementations
-- guarantee priorities between the application and the skin event handlers and key mappings
+
 
 
 ## Non-Goals
@@ -41,29 +41,30 @@ It is not the goal of this proposal:
 
 - to require specific base class for the behavior implementations
 - to allow for complete decoupling of the skin from the behavior
-- to make the legacy internal InputMap class public
-- to require making the behaviors public
+- to make the legacy internal `InputMap` class public
+- to require making the behavior implementations public
 
 
 
 ## Motivation
 
-Historically, going outside of what is provided by JavaFX core, such as customizing an existing component or creating a new one, has always been an arduous endeavor due to rather opaque nature of JavaFX.  Neither BehaviorBase, InputMap, nor KeyBinding classes used by the skins are public; the controls and their skins lack public APIs suitable for behavior customization.  Even a simple customization, such as remapping or adding key bindings, is nearly impossible.
+Historically, going outside of what is provided by JavaFX core, such as customizing an existing component or creating a new one, has always been an arduous endeavor due to rather opaque nature of JavaFX.  Neither `BehaviorBase`, `InputMap`, nor `KeyBinding` classes used by the skins are public; the controls and their skins lack public APIs suitable for behavior customization.  Even a simple customization, such as remapping or adding a key binding, is nearly impossible.
 
 Another problem encountered by the developers is undetermined order of event dispatching to the handlers added by the application and by the skin: since the order or invocation is determined by the order an event handler is added to the control, the default skin always has priority (which many consider to be incorrect).  The order reverses after the skin is replaced, which is unexpected,
-as described in [6].
+as described in [7].
 
 The proposed solution will benefit:
 
-- application developers, by providing a mechanism for controlling key bindings
-- custom controls developers, by providing a clear integration point and convenient public APIs
-- skin developers, by simplifying skin's event handlers management
+- application developers, by providing a mechanism for controlling the key bindings
+- custom controls developers, by providing a clear integration point and a convenient public APIs
+- skin developers, by simplifying the registration of event handlers and key mappings provided by the skin
 
 
 
 ## Description
 
-A new property, represented by the **InputMap** class, is added to the Control class.  The InputMap provides prioritized storage of the event handlers as well as key mappings, added by the application as well as the skin.
+A new property, represented by the `InputMap` class, is added to the `Control` class.
+The `InputMap` provides prioritized storage of the event handlers and the key mappings, registered by the application and the the skin.
 
 Before we delve into more details, it might help to clarify the roles of parts that constitute a Control.
 
@@ -75,7 +76,78 @@ JavaFX controls is supposed to follow the classic
 [Model-View-Controller](https://wiki.openjdk.org/display/OpenJFX/UI+Controls+Architecture)
 (MVC) paradigm [0].
 
-In reality, JavaFX does not exhibit a strict adherence to MVC pattern, for example, Control represents both the model (by hosting various properties) and a part of the View (by being a Region and a part of the scene graph).  The table below summarizes the role of each part:
+In reality, JavaFX does not exhibit a strict adherence to MVC pattern, for example, `Control` represents both the model (by hosting various properties) and a part of the View (by being a `Region` and a part of the scene graph).
+
+To make the separation of concerns clearer, we propose a clear separation of responsibilities between the
+constituent parts.
+
+
+
+#### Role of the Control
+
+We propose to think of the `Control` as a public _façade_, which exposes the properties and the methods
+through which the application interacts with the control.
+
+`Control` is also a `Region`, and therefore is a part of the scene graph and participates in the event handling.
+We can think of this `Region` as a container that holds the `Skin`.
+
+
+#### Role of the Skin
+
+The `Skin` defines the visual representation of the control by providing the `Nodes` representing various surfaces
+that render the control content and accept user input.
+Note that it is possible to have skins that
+provide completely different set of control surfaces, for example a traditional 2D control may have totally
+different look and feel in a virtual 3D world.
+
+The skin adds listeners to the `Control` properties and to the events directed at the `Control` or its input surfaces.
+These listeners process the input events and effect a change of the `Control` state by updating its properties,
+which in turn result in updating the visuals.
+
+While it is possible to make all the listeners a part of the `Skin`, they typically organized in a separate
+class known as "behavior".
+
+
+#### Role of the Behavior
+
+Behavior is an internal implementation detail, created by the `Skin`, for the purpose of handling the user input by converting it to updates of the Control's properties, either directly or via APIs published by the `Control`.
+
+Most of the behavior implementations maintain some kind of state required to properly interpret the user input.
+For example, mouse events are processed differently depending on whether the `shift` key was pressed or not.
+
+The behavior part of the Skin is tied tightly to the visual surfaces defined by it.  Depending on the type of the
+`Control`, the behavior may or may not be exposed via a public API.  This proposal does not require he behavior
+implementation to be public.  However, it is possible to offer a limited flexibility to customize behavior
+without making the behavior a public API, as long as the Control provides the properties and public methods that
+allow such customization.
+
+For example, a text editor may want to redefine the behavior of the "next word" / "previous word" key mappings,
+navigating either to the next whole word (that is, surrounded by whitespace or punctuation), or next / previous part
+of a CamelCase identifier.  The application requirements might call for such customization to be dependent on
+the user preference (loaded at startup), or even on the context.
+
+While it is possible to provide such a customization via event handlers and event filters, it will be much easier 
+to use the proposed `InputMap`.
+
+
+#### Role of the InputMap
+
+The `InputMap` provides a prioritized repository of event handlers and key mappings registered by the application
+and the skin, guaranteeing the order in which handers and mappings are invoked, regardless of when the skin
+was created or replaced. 
+
+The `InputMap` provides additional separation between the key mappings and the functions associated with the said
+mappings.  This enables the application to map these two aspects separately.  For example, a new function
+(like the "next word" described earlier) can be mapped to an existing (platform-specific) mapping, or, alternatively,
+a new key can be mapped to an existing function, for instance, mapping `ctrl-D` to the "delete paragraph" function. 
+
+This customization mechanism has been prototyped and validated by the RichTextArea incubating module [3], [4].
+
+
+
+#### Summary
+
+This table summarizes the role of each part:
 
 |Entity    |Role       |Description      |
 |:---------|:----------|-----------------|
@@ -86,56 +158,6 @@ In reality, JavaFX does not exhibit a strict adherence to MVC pattern, for examp
 
 
 
-#### Role of the Control
-
-We propose to think of the `Control` as a public _façade_, which exposes its properties and methods that enable the application
-to interact with the control.
-
-Control is also a Region, and therefore is a part of the scene graph and participates in the event handling.
-We can think of this Region as a container that holds the `Skin`.
-
-
-
-#### Role of the Skin
-
-The `Skin` creates a visual representation of the control by providing the `Nodes` which represent various surfaces
-that render the control content and/or accept user input events.
-
-The skin adds listeners to the Control properties and to the events directed at the `Control` or its input surfaces.
-These listeners process the input events and effect a change of the `Control` state by updating its properties,
-resulting in updating the visuals.
-
-While it is possible to make all the listeners a part of the `Skin`, they typically organized in a separate
-class known as "behavior".
-
-
-
-#### Role of the Behavior
-
-Behavior is an internal implementation detail, created by the `Skin`, for the purpose of handling the user input by converting it to updates of the Control's properties, either directly or via APIs published by the `Control`.
-
-Most of the behavior implementations maintain some kind of state required to properly interpret the user input.
-For example, mouse events are processed differently depending on whether the `shift` key was pressed or not.
-
-It is important to mention that the behavior is usually tightly coupled with its skin and cannot be easily separated,
-or, more specifically, is difficult to separate without creating a public API.  This may or may not be feasible:
-for instance, a different skin may provide completely different visual surfaces and require completely different gestures.
-
-We propose to solve this problem by introducing an **InputMap**, which provides a link that ties the `Skin` and the corresponding  behavior.
-
-
-#### Role of the InputMap
-
-The **InputMap** serves as an integration point between the Control and its Skin.  The InputMap provides an ordered repository of event handlers, guaranteeing the order in which handers are invoked.  It also stores key mappings with a similar guarantee that the application mappings always take precedence over mappings created by the skin, regardless of when the skin was created or replaced.
-
-The **InputMap** also allows the application to change the behavior by changing the key mappings.  To enable this,
-the `Control` must declare a set of function identifiers (represented by the **FunctionTag** class).
-The **InputMap** provides a two-stage mechanism for registering key bindings to the function identifier,
-and a function identifier to the actual code that implements the particular function.
-
-This mechanism allows the application to control the key bindings separately from the implementation.
-For example, a different key might be assigned to an existing function, or a different function may be assigned to
-the existing key bindings (which might be platform-specific), or a function can be disabled altogether.
 
 
 ### Examples
@@ -234,9 +256,7 @@ Most of the new classes concentrate in the new package **javafx.scene.control.in
 - KeyBinding
 - SkinInputMap
 
-The API surface of the proposed change is fairly large, please refer to the
-[API Specification](https://cr.openjdk.org/~angorya/InputMapV3/javadoc/)
-[2] for more detail.
+The API surface of the proposed change is fairly large, please refer to the pull request [2] for more detail.
 
 
 
@@ -255,10 +275,10 @@ The InputMap provides an ordered repository of event handlers, working together 
 
 |Priority   |Set By      |Method                             |Description   |
 |:----------|:-----------|:----------------------------------|:-------------|
-|Highest    |Application |InputMap.addHandler()              |Event handlers set by the application	
-|           |Application |InputMap.registerKey()             |Key mappings set by the application	
+|Highest    |Application |InputMap.addHandler()              |Event handlers set by the application 
+|           |Application |InputMap.registerKey()             |Key mappings set by the application   
 |           |Skin        |SkinInputMap.registerKey()         |Key mappings set by the skin
-|Lowest     |Skin        |SkinInputMap.addHandler()          |Event handlers set by the skin	
+|Lowest     |Skin        |SkinInputMap.addHandler()          |Event handlers set by the skin    
 
 For key mappings, the InputMap utilizes a two-stage lookup.  First, the key event is matched to a **FunctionTag** which identifies a function provided either by the skin or the associated behavior (the "default" function), or by the application.  When such a mapping exists, the found function tag is matched to a function registered either by the application or by the skin.  This mechanism allows for customizing the key mappings and the underlying functions independently and separately.
 
@@ -523,11 +543,10 @@ In order to fully utilize the capability of the InputMap, a new Control should:
 
 ## Alternatives
 
-An application developer that needs a custom control either needs to craft a completely new implementation, or jerry-rig special event filters and handlers, hoping that their custom code won't interfere with the rest of the Control behavior and functionality (accessibility, focus traversal, etc.)
+An application developer that needs a custom control either needs to craft a completely new implementation,
+or jerry-rig custom event filters and handlers,
+hoping that their custom code won't interfere with the rest of the `Control` behavior and functionality (accessibility, focus traversal, etc.)
 
-Please also refer to
-[Discussion](https://github.com/andy-goryachev-oracle/Test/blob/main/doc/InputMap/InputMapV3-Discussion.md)
-[3].
 
 
 
@@ -535,7 +554,7 @@ Please also refer to
 
 A standard set of unit tests for all the new classes should be developed.
 
-In order to avoid regressions during the process of migration of existing controls to take full advantage of the new InputMap functionality [4] will require development of behavior test suite, both headless and headful [5].
+In order to avoid regressions during the process of migration of existing controls to take full advantage of the new InputMap functionality [5] will require development of behavior test suite, both headless and headful [6].
 
 
 
@@ -548,8 +567,7 @@ Migration of the existing core Controls to the new BehaviorBase has a risk of re
 
 - no test suite currently exists that exhaustively exercises every key mapping on every platform
 - no headful tests currently exist that go beyond simple features and try to test system as a whole, complete with focus traversal, popups, etc.
-- extensive manual testing would be needed
-- some of the default functions may not be available when the Skin is null
+- extensive manual testing might be needed
 
 
 
@@ -563,8 +581,9 @@ None.
 
 - [0] JavaFX Model-View-Controller (MVC) https://wiki.openjdk.org/display/OpenJFX/UI+Controls+Architecture
 - [1] Control Class Hierarchy https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Controls/ControlsClassHierarchy.md
-- [2] API Specification (Javadoc): https://cr.openjdk.org/~angorya/InputMapV3/javadoc/
-- [3] Discussion: https://github.com/andy-goryachev-oracle/Test/blob/main/doc/InputMap/InputMapV3-Discussion.md
-- [4] [JDK-8314968](https://bugs.openjdk.org/browse/JDK-8314968) Public InputMap
-- [5] [JDK-8326869](https://bugs.openjdk.org/browse/JDK-8326869) ☂ Develop Behavior Test Suite
-- [6] [JDK-8231245](https://bugs.openjdk.org/browse/JDK-8231245) Controls' behavior must not depend on sequence of handler registration
+- [2] [8314968: Public InputMap (v4)](https://github.com/openjdk/jfx/pull/1495)
+- [3] [RichTextArea Control (Incubator)](https://bugs.openjdk.org/browse/JDK-8301121)
+- [4] [Public InputMap (Incubator)](https://bugs.openjdk.org/browse/JDK-8343646)
+- [5] [JDK-8314968](https://bugs.openjdk.org/browse/JDK-8314968) Public InputMap
+- [6] [JDK-8326869](https://bugs.openjdk.org/browse/JDK-8326869) ☂ Develop Behavior Test Suite
+- [7] [JDK-8231245](https://bugs.openjdk.org/browse/JDK-8231245) Controls' behavior must not depend on sequence of handler registration
