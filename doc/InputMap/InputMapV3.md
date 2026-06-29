@@ -1,4 +1,4 @@
-# Public InputMap (Draft, v4)
+# Public InputMap (Draft, v3)
 
 Andy Goryachev
 
