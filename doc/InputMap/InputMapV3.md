@@ -4,7 +4,7 @@ Andy Goryachev
 
 <andy.goryachev@oracle.com>
 
-29 June 2026
+30 June 2026
 
 
 
@@ -547,10 +547,17 @@ In order to fully utilize the capability of the `InputMap`, a new `Control` shou
 
 ## Alternatives
 
-An application developer that needs a custom control either needs to craft a completely new implementation,
-or jerry-rig custom event filters and handlers,
-hoping that their custom code won't interfere with the rest of the `Control` behavior and functionality (accessibility, focus traversal, etc.)
+This proposal solves several problems with one elegant *[citation needed]* solution.
 
+The only alternative that currently exists is to employ event filters, which would guarantee the listeners registered
+by the application will be invoked first.  This solution, however, does not completely solve the problem for the skin
+developers.
+
+Another alternative proposed earlier [8] is to introduce an optional priority for event handler invocations.
+I believe this idea suffers from two possible problems: firstly, it changes the `EventTarget` interface, affecting
+other areas where we don't have contention between two actors (the application and the skin), and secondly, it is
+open for misuse because the application can use the new interface to register a listener at the level allocated
+to the skin, `EventHandlerPriority.SYSTEM`, effectively re-introducing the same problem again.
 
 
 
@@ -592,3 +599,4 @@ None.
 - [5] [JDK-8314968](https://bugs.openjdk.org/browse/JDK-8314968) Public InputMap
 - [6] [JDK-8326869](https://bugs.openjdk.org/browse/JDK-8326869) ☂ Develop Behavior Test Suite
 - [7] [JDK-8231245](https://bugs.openjdk.org/browse/JDK-8231245) Controls' behavior must not depend on sequence of handler registration
+- [8] [Prioritized event handlers #1266](https://github.com/openjdk/jfx/pull/1266)
