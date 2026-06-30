@@ -1,7 +1,6 @@
 package goryachev.bugs;
 
 import javafx.application.Application;
-import javafx.beans.binding.Bindings;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -56,17 +55,22 @@ public class GridPane_Gap_8386590 extends Application {
         //result.getChildren().add( innerContent );
         result.setStyle("-fx-border-width: 1px; -fx-border-color: red; -fx-border-style: segments(0.5em, 0.5em);");
 
-        result.add(new Label("a"), 0, 0);
-        result.add(new Label("b"), 1, 0);
-        result.add(innerContent, 2, 1);
+        result.add(new Label(" ") {
+            {
+                setStyle("-fx-background-color: yellow;");
+            }
+        }, 0, 0);
+        result.add(new Label(" ") {
+            {
+                setStyle("-fx-background-color: yellow;");
+            }
+        }, 1, 0);
+
+        result.add(innerContent, 0, 0, 2, 1);
 
         result.setHgap(16);
         result.hgapProperty().bind(hGapSpinner.valueProperty());
 
-        GridPane.setConstraints(innerContent, 0, 0, 2, 1);
-        //colSpanSpinner.valueProperty().addListener( ( obs, ol, ne ) -> {
-        //    GridPane.setConstraints( innerContent, 0, 0, ne, 1 );
-        //} );
         return result;
     }
 
