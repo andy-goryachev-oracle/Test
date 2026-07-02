@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import goryachev.bugs.FXMLLoader_Map_8203870?>
+<?import java.lang.String?>
+
+<FXMLLoader_Map_8203870 xmlns:fx="http://javafx.com/fxml">
+<listProp>
+<String fx:value="BB"/>
+<String fx:value="AA"/>
+</listProp>
+</FXMLLoader_Map_8203870>
