@@ -1,4 +1,4 @@
-# Overflow Menu Graphic Property in the TabPaneSkin
+# Overflow Menu Decorator Property in the TabPaneSkin
 
 Andy Goryachev
 
@@ -7,8 +7,9 @@ Andy Goryachev
 
 ## Summary
 
-Introduce a `menuGraphicFactory` property in the `TabPaneSkin` class eliminates the current limitation of this skin
-in supporting menu item graphics other than an `ImageView` or `Label` with an `ImageView` graphic.
+Add the `overflowMenuDecorator` property in the `TabPaneSkin` class for the purpose of eliminating the current
+limitation which makes it impossible to customize the menu items' text, as well as graphic, which is currently
+limited to either an `ImageView` or a `Label` with an `ImageView` graphic.
 
 
 
@@ -16,7 +17,8 @@ in supporting menu item graphics other than an `ImageView` or `Label` with an `I
 
 The goals of this proposal are:
 
-- to allow the application developers to customize the overflow menu items' graphic
+- to allow the application developers to customize the overflow menu item graphic
+- to enable wider choices for the graphic in the overflow menu
 - retain the backward compatibility with the existing application code
 - clarify the behavior of the skin when the property is null (i.e. the current behavior)
 
@@ -47,29 +49,29 @@ Example:
 public class TabPaneGraphicFactoryExample {
     public void example() {
         Tab tab1 = new Tab("Tab1");
-        tab1.setGraphic(createGraphic(tab1));
+        tab1.setGraphic(...);
 
         Tab tab2 = new Tab("Tab2");
-        tab2.setGraphic(createGraphic(tab2));
+        tab2.setGraphic(...);
 
         TabPane tabPane = new TabPane();
         tabPane.getTabs().addAll(tab1, tab2);
 
         TabPaneSkin skin = new TabPaneSkin(tabPane);
         // set overflow menu factory with the same method as was used to create the tabs
-        skin.setMenuGraphicFactory(this::createGraphic);
+        skin.setOverflowMenuDecorator(this::decorateMenu);
         tabPane.setSkin(skin);
     }
 
-    // creates graphic Nodes for tabs as well as the overflow menu
-    private Node createGraphic(Tab tab) {
+    // custom overflow menu decorator
+    private void decorateMenu(Tab tab, MenuItem menu) {
         switch (tab.getText()) {
         case "Tab1":
-            return new Circle(10);
+            menu.setGraphic(new Circle(10));
+            break;
         case "Tab2":
-            return new Canvas(10, 10);
-        default:
-            return null;
+            menu.setText(null);
+            menu.setGraphic(new Canvas(10, 10));
         }
     }
 }
@@ -78,27 +80,29 @@ public class TabPaneGraphicFactoryExample {
 
 ## Description
 
-The proposed solution adds the `menuGraphicFactory` property in the `TabPaneSkin` class:
+The proposed solution adds the `overflowMenuDecorator` property in the `TabPaneSkin` class:
 
 ```java
     /**
-     * This property allows to control the graphic for the overflow menu items,
-     * by generating graphic {@code Node}s when the menu is shown.
+     * This property allows to customize the overflow menu items.  When this property is not {@code null},
+     * the {@link MenuItem} text will get initialized to be the same as the {@link Tab} text and {@code null}
+     * graphic prior to invocation of the decorator.
      * <p>
-     * When this property is {@code null}, the menu provides only the basic graphic copied from the corresponding
-     * {@link Tab} - either an {@link ImageView} or a {@link Label} with an {@link ImageView} as its graphic.
+     * When this property is {@code null}, the menu item is initialized with the text and the graphic
+     * obtained from the corresponding {@link Tab}.  For the graphic, either an {@link ImageView}
+     * or a {@link Label} with an {@link ImageView} will be used.
      * <p>
      * Changing this property while the menu is shown has no effect.
      *
-     * @since 25
+     * @since 28
      * @defaultValue null
      */
 
-    public final ObjectProperty<Function<Tab, Node>> menuGraphicFactoryProperty() {
+    public final ObjectProperty<BiConsumer<Tab, MenuItem>> overflowMenuDecoratorProperty()
 
-    public final Function<Tab,Node> getMenuGraphicFactory() {
+    public final BiConsumer<Tab, MenuItem> getOverflowMenuDecorator()
 
-    public final void setMenuGraphicFactory(Function<Tab,Node> f) {
+    public final void setOverflowMenuDecorator(BiConsumer<Tab, MenuItem> d)
 ```
 
 
