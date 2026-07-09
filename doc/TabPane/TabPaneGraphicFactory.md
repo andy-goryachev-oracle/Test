@@ -130,7 +130,7 @@ None.
 
 ## References
 
-- [JDK-8353599 TabPaneSkin: add 'menuGraphicFactory' property](https://bugs.openjdk.org/browse/JDK-8353599)
+- [JDK-8353599 TabPaneSkin: 'overflowMenuDecorator' property](https://bugs.openjdk.org/browse/JDK-8353599)
 - https://mail.openjdk.org/pipermail/openjfx-dev/2025-April/053306.html
 - https://mail.openjdk.org/pipermail/openjfx-dev/2025-April/053338.html
 - https://github.com/andy-goryachev-oracle/Test/blob/main/doc/TabPane/TabPaneGraphicFactory.md
