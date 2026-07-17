@@ -44,6 +44,7 @@ import javafx.scene.input.ClipboardContent;
 import javafx.stage.Stage;
 import goryachev.util.ImgUtil;
 
+// https://bugs.openjdk.org/browse/JDK-8388450
 public class ImageWriteTest extends Application {
     
     Label view;
@@ -64,7 +65,10 @@ public class ImageWriteTest extends Application {
         stage.setScene(sc);
         stage.show();
         
+        // change to match the test image path
         test("/Users/angorya/Work/ImageImport/1/eclipse-key-mappings.png");
+        
+        // bulk test
         new Thread(this::execute).start();
     }
 
