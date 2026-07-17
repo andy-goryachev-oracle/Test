@@ -14,6 +14,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 // https://bugs.openjdk.org/browse/JI-9080656
+// https://bugs.openjdk.org/browse/JDK-8388446
 public class Canvas_Crash_JI_9080656 extends Application {
     
     int CYCLES = 200;
