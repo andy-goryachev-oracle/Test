@@ -25,31 +25,84 @@
 
 package goryachev.research;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.text.MessageFormat;
+import javax.imageio.ImageIO;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.stage.Stage;
+import goryachev.util.ImgUtil;
 
 public class ImageImportResearch extends Application {
-    
+
     public static void main(String[] args) throws Exception {
         launch();
     }
 
     @Override
     public void start(Stage stage) throws Exception {
-        
-        // TODO: compress both, check against the detector
-        // also return an info object
-        // also a histogram
         String path = "/Users/angorya/Work/ImageImport";
         for (File f : new File(path).listFiles()) {
             Stats s = detectPhoto(new Image(f.toURI().toURL().toString()));
             IO.println((s.photo() ? "JPG" : "PNG") + " - " + s.cause() + " - " + f.getName());
+            copyPaste(f);
         }
         System.exit(0);
+    }
+
+    private void copyPaste(File f) throws Exception {
+        byte[] b = Files.readAllBytes(f.toPath());
+        Image im = new Image(new ByteArrayInputStream(b));
+        ClipboardContent cc = new ClipboardContent();
+        cc.putImage(im);
+        Clipboard cb = Clipboard.getSystemClipboard();
+        cb.setContent(cc);
+        
+        byte[] b3 = writeJPG(im);
+        if (b3 == null) {
+            IO.println("3: null bytes!");
+        } else {
+            if (b3.length == 0) {
+                IO.println("*** ERROR: zero length " + f.getName());
+            }
+        }
+
+        try {
+            Image im2 = cb.getImage();
+            byte[] b2 = writeJPG(im2);
+            if (b2 == null) {
+                IO.println("null bytes!");
+            } else {
+                IO.println("length=" + b2.length + " progress=" + im2.getProgress());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static byte[] writeJPG(Image im) throws IOException {
+        return writeImage(im, "JPG");
+    }
+
+    private static byte[] writeImage(Image im, String format) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream(65536);
+        // using disk cache slows things down
+        boolean old = ImageIO.getUseCache();
+        ImageIO.setUseCache(false);
+        try {
+            ImageIO.write(ImgUtil.fromFXImage(im, null), format, out);
+        } finally {
+            ImageIO.setUseCache(old);
+        }
+        return out.toByteArray();
     }
 
     private static int diff(int a, int b) {
@@ -60,22 +113,23 @@ public class ImageImportResearch extends Application {
         a >>= 8;
         b >>= 8;
         d += diffChannel(a, b);
-        a >>= 8;
-        b >>= 8;
-        d += diffChannel(a, b);
+        // no alpha
+        //        a >>= 8;
+        //        b >>= 8;
+        //        d += diffChannel(a, b);
         return d;
     }
 
     private static int diffChannel(int a, int b) {
         int d = (a & 0xff) - (b & 0xff);
-        return d < 0 ? -d : d;
+        return d * d;
     }
 
     private static String list(int[] a) {
         StringBuilder sb = new StringBuilder();
         sb.append("[");
-        for(int i=0; i<a.length; i++) {
-            if(i > 0) {
+        for (int i = 0; i < a.length; i++) {
+            if (i > 0) {
                 sb.append(",");
             }
             sb.append(a[i]);
@@ -86,8 +140,9 @@ public class ImageImportResearch extends Application {
 
     private Stats detectPhoto(Image im) {
         int SMALL_SIZE = 128;
-        int MAX_DIFF = 255 * 4;
-        
+        int MAX_DIFF_LINEAR = 255 * 4;
+        int MAX_DIFF = MAX_DIFF_LINEAR * MAX_DIFF_LINEAR;
+
         int w = (int)im.getWidth();
         int h = (int)im.getHeight();
 
@@ -109,15 +164,15 @@ public class ImageImportResearch extends Application {
         int same = 0;
         long diff = 0;
 
-        int jumpBands = 4;
+        int jumpBands = 8;
         int[] jumps = new int[jumpBands];
         int[] thresholds = new int[jumpBands + 1];
-        for(int i=0; i<jumpBands; i++) {
-            // linear
+        // 130050
+        for (int i = 0; i < jumpBands; i++) {
             int t = (MAX_DIFF * (i + 1)) / jumpBands;
             thresholds[i + 1] = t;
         }
-        
+
         long start = System.nanoTime();
 
         x = stepx;
@@ -127,7 +182,7 @@ public class ImageImportResearch extends Application {
                 int argb = rd.getArgb(x, y);
 
                 // alpha
-                if((argb & 0xff000000) != 0xff000000) {
+                if ((argb & 0xff000000) != 0xff000000) {
                     return new Stats(false, "alpha");
                 }
 
@@ -135,7 +190,7 @@ public class ImageImportResearch extends Application {
                 if (prev == argb) {
                     same++;
                 }
-                
+
                 int d = diff(argb, prev);
                 for (int i = 0; i < jumpBands; i++) {
                     if (d <= thresholds[i]) {
@@ -144,7 +199,7 @@ public class ImageImportResearch extends Application {
                     }
                 }
                 diff += d;
-                
+
                 prev = argb;
             }
             x += stepx;
@@ -157,7 +212,7 @@ public class ImageImportResearch extends Application {
                 int argb = rd.getArgb(x, y);
 
                 // alpha
-                if((argb & 0xff000000) != 0xff000000) {
+                if ((argb & 0xff000000) != 0xff000000) {
                     return new Stats(false, "alpha");
                 }
 
@@ -165,7 +220,7 @@ public class ImageImportResearch extends Application {
                 if (prev == argb) {
                     same++;
                 }
-                
+
                 int d = diff(argb, prev);
                 for (int i = 0; i < jumpBands; i++) {
                     if (d <= thresholds[i]) {
@@ -174,7 +229,7 @@ public class ImageImportResearch extends Application {
                     }
                 }
                 diff += d;
-                
+
                 prev = argb;
             }
             y += stepy;
@@ -182,19 +237,14 @@ public class ImageImportResearch extends Application {
 
         long end = System.nanoTime();
 
-        // TODO
-        // possible cases where heuristics might fail:
-        // - a photo with large solid color
-
         // sharp edges dominate -> png
-        String s = (MessageFormat.format("same={0}% jumps={1} diff={2,number,#0.0}% time={3,number,#0.0} ms",
-            (int)((100L * same) / total),
-            list(jumps),
-            ((100.0 * diff / MAX_DIFF) / total),
-            (end - start)/1_000_000.0
-            ));
+        String s = (MessageFormat.format(
+            "same={0}% jumps={1} diff={2,number,#0.0}% time={3,number,#0.0} ms ({4} x {5})",
+            (int)((100L * same) / total), list(jumps), ((100.0 * diff / MAX_DIFF) / total), (end - start) / 1_000_000.0,
+            w, h));
         return new Stats(false, s);
     }
 
-    static record Stats(boolean photo, String cause) { }
+    static record Stats(boolean photo, String cause) {
+    }
 }
