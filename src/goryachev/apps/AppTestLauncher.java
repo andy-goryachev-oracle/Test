@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(CssError_8291853.class, args);
+        Application.launch(Css_Font_8389094.class, args);
     }
 
     private static void enableLogging() {
