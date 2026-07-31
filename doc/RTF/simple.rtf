@@ -1,0 +1,75 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2870
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Iosevka-Fixed-SS16;}
+{\colortbl;\red255\green255\blue255;\red255\green38\blue0;\red78\green143\blue0;\red100\green100\blue100;
+\red42\green0\blue255;}
+{\*\expandedcolortbl;;\csgenericrgb\c100000\c14902\c0;\csgenericrgb\c30588\c56078\c0;\csgenericrgb\c39216\c39216\c39216;
+\csgenericrgb\c16471\c0\c100000;}
+\margl1440\margr1440\vieww11520\viewh9000\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs24 \cf2 /*\cf0 \
+\cf2  * Copyright (c) 2023, 2024, Oracle and/or its affiliates.\cf0 \
+\cf2  * All rights reserved. Use is subject to license terms.\cf0 \
+\cf2  *\cf0 \
+\cf2  * This file is available and licensed under the following license:\cf0 \
+\cf2  *\cf0 \
+\cf2  * Redistribution and use in source and binary forms, with or without\cf0 \
+\cf2  * modification, are permitted provided that the following conditions\cf0 \
+\cf2  * are met:\cf0 \
+\cf2  *\cf0 \
+\cf2  *  - Redistributions of source code must retain the above copyright\cf0 \
+\cf2  *    notice, this list of conditions and the following disclaimer.\cf0 \
+\cf2  *  - Redistributions in binary form must reproduce the above copyright\cf0 \
+\cf2  *    notice, this list of conditions and the following disclaimer in\cf0 \
+\cf2  *    the documentation and/or other materials provided with the distribution.\cf0 \
+\cf2  *  - Neither the name of Oracle Corporation nor the names of its\cf0 \
+\cf2  *    contributors may be used to endorse or promote products derived\cf0 \
+\cf2  *    from this software without specific prior written permission.\cf0 \
+\cf2  *\cf0 \
+\cf2  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS\cf0 \
+\cf2  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT\cf0 \
+\cf2  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR\cf0 \
+\cf2  * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT\cf0 \
+\cf2  * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,\cf0 \
+\cf2  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT\cf0 \
+\cf2  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,\cf0 \
+\cf2  * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY\cf0 \
+\cf2  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT\cf0 \
+\cf2  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE\cf0 \
+\cf2  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\cf0 \
+\cf2  */\cf0 \
+\
+\pard\pardeftab720\partightenfactor0
+\cf3 package\cf0  com.oracle.demo.richtext.editor;\
+\
+\cf3 import\cf0  javafx.application.Application;\
+\cf3 import\cf0  javafx.stage.Stage;\
+\cf3 import\cf0  com.oracle.demo.richtext.settings.FxSettings;\
+\
+\pard\pardeftab720\partightenfactor0
+\cf2 /**\cf0 \
+\cf2  * Rich Text Editor Demo Application.\cf0 \
+\cf2  * <p>\cf0 \
+\cf2  * It's a minimal rich text editor based on the new\cf0 \
+\cf2  * \{@link jfx.incubator.scene.control.richtext.RichTextArea\} control.\cf0 \
+\cf2  *\cf0 \
+\cf2  * @author Andy Goryachev\cf0 \
+\cf2  */\cf0 \
+\pard\pardeftab720\partightenfactor0
+\cf3 public\cf0  \cf3 class\cf0  RichEditorDemoApp \cf3 extends\cf0  Application \{\
+    \cf3 public\cf0  \cf3 static\cf0  \cf3 void\cf0  main(String[] args) \{\
+        Application.launch(RichEditorDemoApp.\cf3 class\cf0 , args);\
+    \}\
+\
+    \cf4 @Override\cf0 \
+    \cf3 public\cf0  \cf3 void\cf0  init() \{\
+        FxSettings.useDirectory(\cf5 ".RichEditorDemoApp"\cf0 );\
+    \}\
+\
+    \cf4 @Override\cf0 \
+    \cf3 public\cf0  \cf3 void\cf0  start(Stage stage) \cf3 throws\cf0  Exception \{\
+        \cf3 new\cf0  RichEditorDemoWindow().show();\
+    \}\
+\}\
+}
