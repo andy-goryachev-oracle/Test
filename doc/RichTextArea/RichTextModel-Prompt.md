@@ -49,10 +49,6 @@ of lambda expression.  The value obtained by this method will be interpreted usi
 
 ## Specification
 
-The `jfx.incubator.scene.control.richtext.model.ImageFormatHandler`
-class supports pasting of images from the clipboard.
-A global instance of this class is added to the `RichTextModel` to handle import of the `DataFormat.IMAGE` mime type.
-
 ```java
     /*
      * The prompt to display in the {@code RichTextArea}.  The prompt becomes visible when the model is
