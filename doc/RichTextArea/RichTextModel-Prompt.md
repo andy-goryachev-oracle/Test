@@ -38,7 +38,7 @@ A `String` value set results in the text being shown inside a semi-transparent L
 
 A `Node` value will be shown directly.
 
-An `Object` value works similarly to the `String` one showin that object's `toString()` value.
+An `Object` value works similarly to the `String` one shown that object's `toString()` value.
 
 A `null` value disables the prompt.
 
@@ -65,7 +65,7 @@ A global instance of this class is added to the `RichTextModel` to handle import
      *   <li>a {@link Supplier}
      * </ul>
      * A {@code null} value set or supplied removes the prompt.
-     * If the the property is set to a {@code Node} value, or a {@code Supplier} that supplies a {@code Node},
+     * If the property is set to a {@code Node} value, or a {@code Supplier} that supplies a {@code Node},
      * that node will be used.  For any other type, its {@code toString()} value will be used.
      *
      * @defaultValue An empty String
