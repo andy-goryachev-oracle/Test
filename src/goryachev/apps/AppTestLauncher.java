@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(MenuItem_Accelerator_8389582.class, args);
+        Application.launch(Labeled_Mnemonic_8389970.class, args);
     }
 
     private static void enableLogging() {
