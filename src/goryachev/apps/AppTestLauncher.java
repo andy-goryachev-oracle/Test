@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(ImageWriteTest_8388450.class, args);
+        Application.launch(KeyCodeCombination_DisplayName.class, args);
     }
 
     private static void enableLogging() {
