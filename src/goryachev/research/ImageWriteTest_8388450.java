@@ -35,6 +35,7 @@ import java.util.concurrent.CountDownLatch;
 import javax.imageio.ImageIO;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -42,7 +43,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.stage.Stage;
-import goryachev.util.ImgUtil;
 
 // https://bugs.openjdk.org/browse/JDK-8388450
 public class ImageWriteTest_8388450 extends Application {
@@ -196,7 +196,7 @@ public class ImageWriteTest_8388450 extends Application {
             boolean old = ImageIO.getUseCache();
             ImageIO.setUseCache(false);
             try {
-                var bi = ImgUtil.fromFXImage(im, null);
+                var bi = SwingFXUtils.fromFXImage(im, null);
                 ImageIO.write(bi, format, out);
             } finally {
                 ImageIO.setUseCache(old);
