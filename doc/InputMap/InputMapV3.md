@@ -428,7 +428,6 @@ The base SkinInputMap class provides the following public methods:
 
 - public static SkinInputMap.Stateful **create**()
 - public static <C extends Control> SkinInputMap.Stateless<C> **createStateless**()
-
 - public void **addHandler**(EventCriteria, EventHandler)
 - public void **addHandler**(EventType, EventHandler)
 - public void **duplicateMapping**(KeyBinding, KeyBinding)
