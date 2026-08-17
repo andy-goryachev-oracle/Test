@@ -4,7 +4,7 @@ Andy Goryachev
 
 <andy.goryachev@oracle.com>
 
-30 June 2026
+17 August 2026
 
 
 
@@ -429,8 +429,8 @@ The base SkinInputMap class provides the following public methods:
 - public static SkinInputMap.Stateful **create**()
 - public static <C extends Control> SkinInputMap.Stateless<C> **createStateless**()
 
-- public void **addHandler**(EventCriteria, boolean consume, EventHandler)
-- public void **addHandler**(EventType, boolean consume, EventHandler)
+- public void **addHandler**(EventCriteria, EventHandler)
+- public void **addHandler**(EventType, EventHandler)
 - public void **duplicateMapping**(KeyBinding, KeyBinding)
 - public Set<KeyBinding> **getKeyBindings**()
 - public Set<KeyBinding> **getKeyBindingsFor**(FunctionTag)
@@ -466,31 +466,33 @@ This convenience class is intended to simplify creation of stateful behaviors, b
     }
 ```
 
-BehaviorBase provides the following public method:
+`BehaviorBase` provides the following public methods:
 
-- public SkinInputMap<C> **getSkinInputMap**()
+- public final SkinInputMap.Stateful **getSkinInputMap**()
+- public final void **traverseDown**()
+- public final void **traverseLeft**()
+- public final void **traverseNext**()
+- public final void **traversePrevious**()
+- public final void **traverseRight**()
+- public final void **traverseUp**()
 
 It also provides a number of protected methods intended to be called by the behavior implementation in `BehaviorBase.getSkinInputMap()`:
 
-- protected final void **addHandler**(EventCriteria, boolean consume, EventHandler)
-- protected final void **addHandler**(EventType, boolean consume, EventHandler)
+- protected final void **addHandler**(EventCriteria, EventHandler)
+- protected final void **addHandler**(EventType, EventHandler)
 - protected final void **duplicateMapping**(KeyBinding, KeyBinding)
 - protected final C **getControl**()
 - protected final boolean **isLinux**()
 - protected final boolean **isMac**()
 - protected final boolean **isWindows**()
 - protected void **populateSkinInputMap**()
+- protected final void **register**(FunctionTag, KeyBinding, BooleanSupplier)
 - protected final void **register**(FunctionTag, KeyBinding, Runnable)
 - protected final void **register**(FunctionTag, KeyCode, Runnable)
+- protected final void **registerFunction**(FunctionTag, BooleanSupplier)
 - protected final void **registerFunction**(FunctionTag, Runnable)
 - protected final void **registerKey**(KeyBinding, FunctionTag)
 - protected final void **registerKey**(KeyCode, FunctionTag)
-- protected final void **traverseDown**()
-- protected final void **traverseLeft**()
-- protected final void **traverseNext**()
-- protected final void **traversePrevious**()
-- protected final void **traverseRight**()
-- protected final void **traverseUp**()
 
 
 
