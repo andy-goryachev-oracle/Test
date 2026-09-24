@@ -1,27 +1,39 @@
-Public `SkinInputMap` and `BehaviorBase` simplified writing platform and custom `Skin`s.
+## Summary
 
-For the complete picture, please refer to the InputMap proposal [0] and the draft pull request [1].
-
-
-
-## Goals
-
-The goals of this PR are:
-
-- simplify development of `Skin`s for custom controls
-- provide consistent mechanism for plugging the `Skin` input map into the control's input map
-- support stateful and stateless (fully static) behaviors
+Adding the `SkinInputMap` class and an optional `BehaviorBase` utility class aimed to simplify development of skins
+for existing and custom controls.
 
 
+## Problem
 
-## Non-Goals
+While the `Skin` is a public API, there is no convenient mechanism for registering the skin's event handlers.
+Even worse, changing the skin after the application added its own event handlers changes the invocation order
+of handlers, leading to [3].
 
-It is not the goal of this proposal:
+Developers of custom skins have to invent their own mechanisms to register and unregister handlers,
+use their own implementation of platform detectors (`isWindows()`).  There is also no convenient public API
+for adding key event handlers / key bindings.
 
-- to require a specific base class for the behavior implementations
-- to require making the behavior implementations public
 
 
+## Solution
+
+The first step in solving the problem was introduction of the `InputMap` incubator in jfx24 [0].
+The next step is to provide a similar public API for skins, in the form of the `SkinInputMap`.
+
+The purpose of the `SkinInputMap` class is to provide convenient APIs for skins to register event handlers
+and key bindings which will be registered with the `Control`'s `InputMap` at the time of `Skin.install()`.
+The `SkinInputMap` also guarantees that these handlers and key bindings will be invoked at lower priority
+than the application handlers and bindings, regardless of the order of skin initialization.
+
+As an added bonus, the `BehaviorBase` provides convenience methods that simplify implementation of
+custom (and standard) skins.
+
+For complete picture that includes migration of a representative subset of simple and complex `Control`s,
+please refer to the InputMap proposal [1] and draft pull request [2].
+
+
+## Specification
 
 ### SkinInputMap
 
@@ -111,7 +123,8 @@ It also provides a number of protected methods intended to be called by the beha
 
 #### Stateless (Static) Behaviors
 
-A number of Controls have behavior classes that require no state: examples are `DateCell`, `TabPane`, and a few more [1].  For these situations, a single static `SkinInputMap` instance might be sufficient, eliminating the need for per-instance behavior objects.
+A number of Controls have behavior classes that require no state: examples are `DateCell`, `TabPane`, and a few more [2].
+For these situations, a single static `SkinInputMap` instance might be sufficient, eliminating the need for per-instance behavior objects.
 
 This example illustrates the use of a static behavior in the context of `TabPaneSkin`:
 
@@ -124,7 +137,7 @@ This example illustrates the use of a static behavior in the context of `TabPane
     }
 ```
 
-The stateless behavior is implemented in the `TabPaneBehavior` in [1]
+The stateless behavior is implemented in the `TabPaneBehavior` in [2]
 (provided here for illustration purposes only, as it is not part of the public API):
 
 ```java
@@ -156,6 +169,7 @@ a new public API: `Skin.getSkinInputMap()`.
 
 ## References
 
-[0] https://github.com/andy-goryachev-oracle/Test/blob/main/doc/InputMap/InputMapV3.md
-
-[1] [8314968: Public InputMap (v3)](https://github.com/openjdk/jfx/pull/1495)
+- [0] [Public InputMap (Incubator)](https://bugs.openjdk.org/browse/JDK-8343646)
+- [1] https://github.com/andy-goryachev-oracle/Test/blob/main/doc/InputMap/InputMapV3.md
+- [2] [8314968: Public InputMap](https://github.com/openjdk/jfx/pull/1495)
+- [3] [JDK-8231245](https://bugs.openjdk.org/browse/JDK-8231245) Controls' behavior must not depend on sequence of handler registration
