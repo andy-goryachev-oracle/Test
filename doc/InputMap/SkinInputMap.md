@@ -147,10 +147,15 @@ The stateless behavior is implemented in the `TabPaneBehavior` in [1]
         }
 ```
 
+### Alternatives
+
+The boilerplate can be further reduced by moving the registration of the skin input map inside of `Control.setSkin()`
+instead of having to manually invoke `InputMap.setSkinInputMap(SkinInputMap)`.  This will require adding
+a new public API: `Skin.getSkinInputMap()`.
+
 
 ## References
 
 [0] https://github.com/andy-goryachev-oracle/Test/blob/main/doc/InputMap/InputMapV3.md
 
-[1] https://github.com/openjdk/jfx/pull/1495
-
+[1] [8314968: Public InputMap (v3)](https://github.com/openjdk/jfx/pull/1495)
