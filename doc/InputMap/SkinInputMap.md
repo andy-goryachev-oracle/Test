@@ -1,24 +1,24 @@
 ## Summary
 
-Adding the `SkinInputMap` class and an optional `BehaviorBase` utility class aimed to simplify development of skins
+Introduce the `SkinInputMap` class and an optional `BehaviorBase` utility class to simplify development of skins
 for existing and custom controls.
 
 
 ## Problem
 
 While the `Skin` is a public API, there is no convenient mechanism for registering the skin's event handlers.
-Even worse, changing the skin after the application added its own event handlers changes the invocation order
+Even worse, changing the skin after an application has added its own event handlers changes the invocation order
 of handlers, leading to [3].
 
 Developers of custom skins have to invent their own mechanisms to register and unregister handlers,
-use their own implementation of platform detectors (`isWindows()`).  There is also no convenient public API
+use their own implementation of platform detectors (like `isWindows()`).  There is also no convenient public API
 for adding key event handlers / key bindings.
 
 
 
 ## Solution
 
-The first step in solving the problem was introduction of the `InputMap` incubator in jfx24 [0].
+The first step in solving the problem was the introduction of the `InputMap` incubator in JavaFX 24 [0].
 The next step is to provide a similar public API for skins, in the form of the `SkinInputMap`.
 
 The purpose of the `SkinInputMap` class is to provide convenient APIs for skins to register event handlers
@@ -29,7 +29,7 @@ than the application handlers and bindings, regardless of the order of skin init
 As an added bonus, the `BehaviorBase` provides convenience methods that simplify implementation of
 custom (and standard) skins.
 
-For complete picture that includes migration of a representative subset of simple and complex `Control`s,
+For the complete picture that includes migration of a representative subset of simple and complex `Control`s,
 please refer to the InputMap proposal [1] and draft pull request [2].
 
 
@@ -41,11 +41,12 @@ This class provides a secondary repository for the event handlers and key mappin
 The skin constructs an instance of this class and then registers it with the control by calling
 `InputMap.setSkinInputMap()` inside `Skin.install()`.
 
-Most skins create stateful behavior implementaions, see the
+Most skins create stateful behavior implementations, see the
 [Control Class Hierarchy](https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Controls/ControlsClassHierarchy.md) .  
-Most frequently used skin input map is therefore SkinInputMap.Stateful, which can be obtained by calling `SkinInputMap.create()`.
+The most frequently used skin input map is therefore `SkinInputMap.Stateful`,
+which can be obtained by calling `SkinInputMap.create()`.
 
-For skins with stateless behaviors, a single instance of SkinInputMap.Stateless can be used, obtained via `SkinInputMap.createStateless()`.
+For skins with stateless behaviors, a single instance of `SkinInputMap.Stateless` can be used, obtained via `SkinInputMap.createStateless()`.
 
 The base SkinInputMap class provides the following public methods:
 
