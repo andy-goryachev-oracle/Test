@@ -22,7 +22,8 @@ The first step in solving the problem was the introduction of the `InputMap` inc
 The next step is to provide a similar public API for skins, in the form of the `SkinInputMap`.
 
 The purpose of the `SkinInputMap` class is to provide convenient APIs for skins to register event handlers
-and key bindings which will be registered with the `Control`'s `InputMap` at the time of `Skin.install()`.
+and key bindings which will be registered with the `Control`'s `InputMap` at the time of `Skin.install()`
+(eventually).
 The `SkinInputMap` also guarantees that these handlers and key bindings will be invoked at lower priority
 than the application handlers and bindings, regardless of the order of skin initialization.
 
@@ -39,7 +40,7 @@ please refer to the InputMap proposal [1] and draft pull request [2].
 
 This class provides a secondary repository for the event handlers and key mappings created by the skin.
 The skin constructs an instance of this class and then registers it with the control by calling
-`InputMap.setSkinInputMap()` inside `Skin.install()`.
+`InputMap.setSkinInputMap_INCUBATOR()` inside `Skin.install()`.
 
 Most skins create stateful behavior implementations, see the
 [Control Class Hierarchy](https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Controls/ControlsClassHierarchy.md) .  
@@ -85,12 +86,9 @@ This convenience class is intended to simplify creation of stateful behaviors, b
     @Override
     public void install() {
         super.install();
-        setSkinInputMap(behavior.getSkinInputMap());
+        getSkinnable().getInputMap().setSkinInputMap_INCUBATOR(behavior.getSkinInputMap());
     }
 ```
-
-Note: alternatively, the skin input map registration/deregistration can be moved to `Control.setSkin()`,
-making the whole process automated.  Going this route necessitates adding a public `Skin.getSkinInputMap()` method.
 
 `BehaviorBase` provides the following public methods:
 
@@ -157,15 +155,16 @@ The stateless behavior is implemented in the `TabPaneBehavior` in [2]
         }
     
         public static void install(TabPane control) {
-            control.getInputMap().setSkinInputMap(inputMap);
+            control.getInputMap().setSkinInputMap_INCUBATOR(inputMap);
         }
 ```
 
-### Alternatives
+### Future API Changes
 
-The boilerplate can be further reduced by moving the registration of the skin input map inside of `Control.setSkin()`
-instead of having to manually invoke `InputMap.setSkinInputMap(SkinInputMap)`.  This will require adding
-a new public API: `Skin.getSkinInputMap()`.
+The next, and final, step is to make the `InputMap` a property of the `Control`, also adding a public `Skin.getSkinInputMap()`
+method.
+Once that happens, connecting control's input map with its skin input map will happen automatically inside of `Control.setSkin()`,
+eliminating `InputMap.setSkinInputMap_INCUBATOR(SkinInputMap)` method.
 
 
 ## References
