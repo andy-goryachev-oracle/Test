@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(RichTextArea_DownArrow_8390913.class, args);
+        Application.launch(TextField_End_8393175.class, args);
     }
 
     private static void enableLogging() {
