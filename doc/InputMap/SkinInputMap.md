@@ -98,7 +98,11 @@ This convenience class is intended to simplify creation of stateful behaviors, b
 - public final void **traverseRight**()
 - public final void **traverseUp**()
 
-It also provides a number of protected methods intended to be called by the behavior implementation in `BehaviorBase.getSkinInputMap()`:
+Initialization of the skin input map happens inside the following abstract method:
+
+- protected abstract void **populateSkinInputMap**()
+
+Inside that method, a number of protected methods can be used to build the skin input map:
 
 - protected final void **addHandler**(EventCriteria, EventHandler)
 - protected final void **addHandler**(EventType, EventHandler)
@@ -107,7 +111,6 @@ It also provides a number of protected methods intended to be called by the beha
 - protected final boolean **isLinux**()
 - protected final boolean **isMac**()
 - protected final boolean **isWindows**()
-- protected void **populateSkinInputMap**()
 - protected final void **register**(FunctionTag, KeyBinding, BooleanSupplier)
 - protected final void **register**(FunctionTag, KeyBinding, Runnable)
 - protected final void **register**(FunctionTag, KeyCode, Runnable)
@@ -170,6 +173,12 @@ discovered by reflection.
 
 The next, and final, step is to make the `InputMap` a property of the `Control`, and adding a public `Skin.getSkinInputMap()`
 method.
+
+
+## Other API Changes
+
+- `InputMap.removeKeyBindingsFor(FunctionTag)` method is removed.
+
 
 
 ## References
