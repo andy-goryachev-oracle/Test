@@ -171,7 +171,7 @@ discovered by reflection.
 
 ### Future API Changes
 
-The next, and final, step is to make the `InputMap` a property of the `Control`, and adding a public `Skin.getSkinInputMap()`
+The next, and final, step is to make the `InputMap` a property of the `Control`, and add a public `Skin.getSkinInputMap()`
 method.
 
 
