@@ -39,8 +39,7 @@ please refer to the InputMap proposal [1] and draft pull request [2].
 ### SkinInputMap
 
 This class provides a secondary repository for the event handlers and key mappings created by the skin.
-The skin constructs an instance of this class and then registers it with the control by calling
-`InputMap.setSkinInputMap_INCUBATOR()` inside `Skin.install()`.
+The handlers and key mappings will be registered against the `Control` instance during `Skin.install()`.
 
 Most skins create stateful behavior implementations, see the
 [Control Class Hierarchy](https://github.com/andy-goryachev-oracle/Test/blob/main/doc/Controls/ControlsClassHierarchy.md) .  
@@ -80,13 +79,12 @@ intended to pass the reference to the source Control to the handling code:
 
 ### BehaviorBase
 
-This convenience class is intended to simplify creation of stateful behaviors, by maintaining an instance of `SkinInputMap` and adding helpful methods for registering key mappings and event handlers.  It enables easy integration of the default functionality into its owning `Skin` and its `install()` method:
+This convenience class is intended to simplify creation of stateful behaviors, by maintaining an instance of `SkinInputMap` and adding helpful methods for registering key mappings and event handlers.  It enables easy integration of the default functionality into its owning `Skin` and its `getSkinInputMap()` method:
 
 ```java
     @Override
-    public void install() {
-        super.install();
-        getSkinnable().getInputMap().setSkinInputMap_INCUBATOR(behavior.getSkinInputMap());
+    public SkinInputMap getSkinInputMap() {
+        return behavior.getSkinInputMap();
     }
 ```
 
@@ -129,10 +127,9 @@ This example illustrates the use of a static behavior in the context of `TabPane
 
 ```java
     @Override
-    public void install() {
-        super.install();
-        // install stateless behavior
-        TabPaneBehavior.install(getSkinnable());
+    public SkinInputMap getSkinInputMap() {
+        // stateless input map
+        return TabPaneBehavior.INPUT_MAP;
     }
 ```
 
@@ -141,7 +138,7 @@ The stateless behavior is implemented in the `TabPaneBehavior` in [2]
 
 ```java
     public class TabPaneBehavior {
-        private static final SkinInputMap.Stateless<TabPane> inputMap = createInputMap();
+         public static final SkinInputMap.Stateless<TabPane> INPUT_MAP = createInputMap();
     
         private static SkinInputMap.Stateless<TabPane> createInputMap() {
             SkinInputMap.Stateless<TabPane> m = SkinInputMap.createStateless();
@@ -153,18 +150,26 @@ The stateless behavior is implemented in the `TabPaneBehavior` in [2]
             m.addHandler(...);
             return m;
         }
-    
-        public static void install(TabPane control) {
-            control.getInputMap().setSkinInputMap_INCUBATOR(inputMap);
-        }
 ```
+
+### Custom Skin Checklist
+
+1. Add `public InputMap getInputMap()` method to the `Control`.
+2. Create custom skin that manages the control surfaces for the `Control`.
+3. Create behavior for your custom skin which attaches necessary event handlers to the skin's control surfaces.
+   Extend `BehaviorBase` class to reduce the boilerplate.
+4. Populate skin input map in the behavior for all the handlers and key mappings that will get attached to the `Control`.
+5. Implement a `public SkinInputMap getSkinInputMap()` method in the custom skin which delegates to the behavior's
+   `getSkinInputMap()`.
+
+The steps 1 and 5 are only needed during the incubation period, since the methods mentioned there are being
+discovered by reflection.
+
 
 ### Future API Changes
 
-The next, and final, step is to make the `InputMap` a property of the `Control`, also adding a public `Skin.getSkinInputMap()`
+The next, and final, step is to make the `InputMap` a property of the `Control`, and adding a public `Skin.getSkinInputMap()`
 method.
-Once that happens, connecting control's input map with its skin input map will happen automatically inside of `Control.setSkin()`,
-eliminating `InputMap.setSkinInputMap_INCUBATOR(SkinInputMap)` method.
 
 
 ## References
