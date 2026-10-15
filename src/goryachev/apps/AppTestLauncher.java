@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(TableView_StaleCells_8394617.class, args);
+        Application.launch(ListenerHelper_Leak_8384258.class, args);
     }
 
     private static void enableLogging() {
