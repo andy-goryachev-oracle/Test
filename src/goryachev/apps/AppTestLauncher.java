@@ -11,7 +11,7 @@ import goryachev.tests.*;
 public class AppTestLauncher {
     public static void main(String[] args) throws Throwable {
         // enableLogging();
-        Application.launch(ListenerHelper_Leak_8384258.class, args);
+        Application.launch(DrawingContext_8390915.class, args);
     }
 
     private static void enableLogging() {
