@@ -30,10 +30,14 @@ import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.DrawingContext;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.ArcType;
+import javafx.scene.shape.Rectangle;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class DrawingContext_8390915 extends Application {
@@ -43,16 +47,31 @@ public class DrawingContext_8390915 extends Application {
 
     @Override
     public void start(Stage stage) {
-        WritableImage im = new WritableImage(SIZE, SIZE);
+        /*
+         * A WritableImage is a 1x bitmap. Rendering it at the screen's output
+         * scale and displaying it at its logical size avoids the ImageView
+         * smoothing (and blurring) the image on a HiDPI display.
+         */
+        double outputScale = Math.max(
+            Screen.getPrimary().getOutputScaleX(),
+            Screen.getPrimary().getOutputScaleY());
+        int imageSize = (int)Math.ceil(SIZE * outputScale);
+
+        WritableImage im = new WritableImage(imageSize, imageSize);
         DrawingContext cx = im.getDrawingContext();
+        cx.scale(outputScale, outputScale); // Undoes the larger images size by scaling all operations back down
         plop(cx);
 
         ImageView v = new ImageView(im);
+        v.setFitWidth(SIZE);
+        v.setFitHeight(SIZE);
+        v.setSmooth(false);
+
         BorderPane bp = new BorderPane(new ScrollPane(v));
 
-        Scene scene = new Scene(bp, 500, 500);
+        Scene scene = new Scene(bp, 1200, 800);
         stage.setScene(scene);
-        stage.setTitle(getClass().getSimpleName());
+        stage.setTitle(getClass().getSimpleName() + " (scale " + outputScale + ")");
         stage.show();
 
         Thread t = new Thread() {
@@ -61,7 +80,7 @@ public class DrawingContext_8390915 extends Application {
                 try {
                     Thread.sleep(500);
                     for (;;) {
-                        Thread.sleep(10);
+                        Thread.sleep(1);
                         Platform.runLater(() -> {
                             plop(cx);
                         });
@@ -77,6 +96,41 @@ public class DrawingContext_8390915 extends Application {
     private static Color color() {
         return Color.color(random.nextDouble(), random.nextDouble(), random.nextDouble(), random.nextDouble());
     }
+    
+    private static Color color(boolean withNull) {
+        if(withNull) {
+            if (random.nextDouble() < 0.1) {
+                return null;
+            }
+        }
+        return color();
+    }
+
+    private static double rnd(double min, double max) {
+        return min + (max - min) * random.nextDouble();
+    }
+    
+    private static double rnd(double max) {
+        return max * random.nextDouble();
+    }
+
+    private static <T extends Enum> T rnd(Class<T> type) {
+        T[] vals = type.getEnumConstants();
+        int ix = random.nextInt(vals.length);
+        return vals[ix];
+    }
+    
+    private static double[] rndArr(int sz) {
+        double[] a = new double[sz];
+        double v = SIZE * random.nextDouble();
+        for (int i = 0; i < sz; i++) {
+            if (i > 0) {
+                v += rnd(-50, 50);
+            }
+            a[i] = v;
+        }
+        return a;
+    }
 
     private static void plop(DrawingContext cx) {
         double x = 2 * SIZE * random.nextDouble() - SIZE;
@@ -86,18 +140,57 @@ public class DrawingContext_8390915 extends Application {
         cx.setFill(color());
         cx.setStroke(color());
 
-        int op = random.nextInt(4);
+        int op = random.nextInt(20);
         switch (op) {
         case 0:
             cx.fillOval(x, y, r, r);
             break;
         case 1:
             cx.fillText(text, x, y);
+            break;
         case 2:
             cx.strokeText(text, x, y);
             break;
         case 3:
             cx.fillRect(x, y, r, r);
+            break;
+        case 4:
+            cx.beginPath();
+            cx.arc(x, y, r, r, rnd(0, 360), rnd(100));
+            break;
+        case 5:
+            cx.beginPath();
+            cx.arcTo(x, y, x + rnd(-100, 100), y + rnd(-100, 100), r);
+            break;
+        case 6:
+            int n = random.nextInt(7);
+            cx.fillPolygon(rndArr(n), rndArr(n), n);
+            break;
+        case 7:
+            cx.beginPath();
+            cx.bezierCurveTo(x, y, x + rnd(-100, 100), y + rnd(-100, 100), x + rnd(-100, 100), y + rnd(-100, 100));
+            break;
+        case 8:
+            cx.clearRect(x, y, r, r);
+            break;
+        case 9:
+            cx.closePath();
+            break;
+        case 10:
+            Rectangle rc = new Rectangle(0, 1 + rnd(100));
+            rc.setFill(color(false));
+            Image im = rc.snapshot(null, null);
+            cx.drawImage(im, x, y);
+            break;
+        case 11:
+            cx.fill();
+            break;
+        case 12:
+            cx.beginPath();
+            cx.fillArc(x, y, r, r, rnd(0, 360), rnd(0, 360), rnd(ArcType.class));
+            break;
+        case 13:
+            cx.fillRoundRect(x, y, r, r, rnd(10), rnd(10));
             break;
         }
     }
