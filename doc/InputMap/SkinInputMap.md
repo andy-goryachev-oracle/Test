@@ -1,18 +1,18 @@
 ## Summary
 
-Introduce the `SkinInputMap` class and an optional `BehaviorBase` utility class to simplify development of skins
+Introduce the `SkinInputMap` class and the optional `BehaviorBase` utility class to simplify development of skins
 for existing and custom controls.
 
 
 ## Problem
 
-While the `Skin` is a public API, there is no convenient mechanism for registering the skin's event handlers.
-Even worse, changing the skin after an application has added its own event handlers changes the invocation order
-of handlers, leading to [3].
-
 Developers of custom skins have to invent their own mechanisms to register and unregister handlers,
 use their own implementation of platform detectors (like `isWindows()`).  There is also no convenient public API
 for adding key event handlers / key bindings.
+
+While the `Skin` is a public API, there is no convenient mechanism for registering the skin's event handlers.
+Even worse, changing the skin after an application has added its own event handlers changes the invocation order
+of handlers, leading to [3].
 
 
 
@@ -27,7 +27,7 @@ and key bindings which will be registered with the `Control`'s `InputMap` at the
 The `SkinInputMap` also guarantees that these handlers and key bindings will be invoked at lower priority
 than the application handlers and bindings, regardless of the order of skin initialization.
 
-As an added bonus, the `BehaviorBase` provides convenience methods that simplify implementation of
+As an added bonus, the optional `BehaviorBase` provides convenience methods that simplify implementation of
 custom (and standard) skins.
 
 For the complete picture that includes migration of a representative subset of simple and complex `Control`s,
@@ -172,7 +172,7 @@ discovered by reflection.
 ### Future API Changes
 
 The next, and final, step is to make the `InputMap` a property of the `Control`, and add a public `Skin.getSkinInputMap()`
-method.
+method [0].
 
 
 ## Other API Changes
