@@ -119,6 +119,7 @@ Inside that method, a number of protected methods can be used to build the skin 
 - protected final void **registerKey**(KeyBinding, FunctionTag)
 - protected final void **registerKey**(KeyCode, FunctionTag)
 
+[5] provides an example of the `BehaviorBase` conversion.
 
 
 #### Stateless (Static) Behaviors
@@ -136,7 +137,7 @@ This example illustrates the use of a static behavior in the context of `TabPane
     }
 ```
 
-The stateless behavior is implemented in the `TabPaneBehavior` in [2]
+The stateless behavior is implemented in the `TabPaneBehavior` in [4]
 (provided here for illustration purposes only, as it is not part of the public API):
 
 ```java
@@ -187,3 +188,5 @@ method [0].
 - [1] https://github.com/andy-goryachev-oracle/Test/blob/main/doc/InputMap/InputMapV3.md
 - [2] [8314968: Public InputMap](https://github.com/openjdk/jfx/pull/1495)
 - [3] [JDK-8231245](https://bugs.openjdk.org/browse/JDK-8231245) Controls' behavior must not depend on sequence of handler registration
+- [4] Example: [TabPaneBehavior](https://github.com/openjdk/jfx/pull/1495/changes#diff-a762dfb2301557eedd51694cb5b90d1060086ee1c192ec235dc7820c5907f5a3R41)
+- [5] Example: [TextInputControlBehavior](https://github.com/openjdk/jfx/pull/1495/changes#diff-8a97ba966d9ece7a16dd12bd722505f1fcddc93d44a3c15f7e97777c508c0563R98)
